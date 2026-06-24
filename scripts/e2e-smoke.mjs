@@ -150,6 +150,8 @@ try {
   await page.goto(url);
   await page.getByRole("heading", { name: "Buildo" }).waitFor({ state: "visible" });
   await page.getByLabel("Project setup status").waitFor({ state: "visible" });
+  await page.getByRole("tablist", { name: "Building rooms" }).waitFor({ state: "visible" });
+  await page.getByRole("heading", { name: "Prompt Lab" }).waitFor({ state: "visible" });
   await page.getByLabel("Generation run state").getByText("complete").waitFor({ state: "visible" });
   await page.getByLabel("Roof Type").selectOption("gable");
   await page.getByLabel("Invalidation preview").getByText("roofType").waitFor({ state: "visible" });
@@ -163,7 +165,6 @@ try {
   await page.getByLabel("Invalidation preview").getByText("Material sources regenerate").waitFor({ state: "visible" });
   await page.getByRole("button", { name: "Run Current" }).click();
   await page.getByLabel("Generation run state").getByText("complete").waitFor({ state: "visible" });
-  await page.getByRole("heading", { name: "Atlas Lab" }).waitFor({ state: "visible" });
   await page.getByRole("heading", { name: "Artifact Trace" }).waitFor({ state: "visible" });
   await page
     .getByRole("table", { name: "Registered artifacts" })
@@ -175,11 +176,14 @@ try {
     .getByRole("cell", { name: /^packed-atlas:/ })
     .first()
     .waitFor({ state: "visible" });
+  await page.getByRole("tab", { name: "Atlas Lab" }).click();
+  await page.getByRole("heading", { name: "Atlas Lab" }).waitFor({ state: "visible" });
   await page.getByRole("img", { name: "baseColor channel" }).waitFor({ state: "visible" });
   await page
     .getByRole("table", { name: "Semantic Slots" })
     .getByRole("cell", { name: "wall.primary", exact: true })
     .waitFor({ state: "visible" });
+  await page.getByRole("tab", { name: "Component Forge" }).click();
   await page.getByRole("heading", { name: "Component Forge" }).waitFor({ state: "visible" });
   const componentSelector = page.getByRole("combobox", { name: "Component selector" });
   await componentSelector.selectOption("component-gallery.recipe.window.tall-arched.frame");
@@ -193,14 +197,18 @@ try {
     .getByLabel("Component lock status")
     .getByText("recipe.window.tall-arched.frame")
     .waitFor({ state: "visible" });
+  await page.getByRole("tab", { name: "Prompt Lab" }).click();
+  await page.getByRole("heading", { name: "Prompt Lab" }).waitFor({ state: "visible" });
   await page.getByLabel("Invalidation preview").getByText("localComponentLock").waitFor({ state: "visible" });
   await page.getByLabel("Invalidation preview").getByText("branchOrFullMvp").waitFor({ state: "visible" });
   await page.getByRole("button", { name: "New Building" }).click();
   await page.getByLabel("Generation run state").getByText("complete").waitFor({ state: "visible" });
+  await page.getByRole("tab", { name: "Component Forge" }).click();
   await page
     .getByLabel("Component lock status")
     .getByText("recipe.window.tall-arched.frame")
     .waitFor({ state: "visible" });
+  await page.getByRole("tab", { name: "Assembly Hall" }).click();
   await page.getByRole("heading", { name: "Assembly Hall" }).waitFor({ state: "visible" });
   await page.getByRole("combobox", { name: "Reveal through stage" }).selectOption("facade");
   await page.getByLabel("Assembly stage visibility").getByText("openings").waitFor({ state: "visible" });

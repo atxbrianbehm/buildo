@@ -126,6 +126,82 @@ h1 {
   text-transform: uppercase;
 }
 
+.room-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  max-width: 1180px;
+  margin: 0 auto 22px;
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.58);
+  box-shadow:
+    inset 0 0 0 1px rgba(24, 32, 28, 0.1),
+    0 12px 32px rgba(22, 29, 25, 0.08);
+}
+
+.room-tabs__tab {
+  min-width: 0;
+  min-height: 42px;
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 6px;
+  color: #435149;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.86rem;
+  font-weight: 800;
+  line-height: 1.15;
+  transition-duration: 140ms;
+  transition-property: background-color, box-shadow, color, transform;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
+.room-tabs__tab[aria-selected="true"] {
+  color: #f9fbf6;
+  background: #263c31;
+  box-shadow: 0 10px 22px rgba(28, 48, 38, 0.18);
+}
+
+.room-tabs__tab:active {
+  transform: scale(0.96);
+}
+
+.room-tabs__tab:focus-visible {
+  outline: 3px solid rgba(70, 118, 86, 0.28);
+  outline-offset: 2px;
+}
+
+.room-panel {
+  min-width: 0;
+}
+
+.room-panel__heading {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 2px 0 14px;
+}
+
+.room-panel__heading h2 {
+  margin: 0;
+  color: #121816;
+  font-size: 2rem;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.room-panel__loading {
+  display: grid;
+  min-height: 320px;
+  max-width: 1180px;
+  margin: 0 auto;
+  place-items: center;
+  border-radius: 8px;
+  color: #5b6d62;
+  background: rgba(255, 255, 255, 0.66);
+  box-shadow: inset 0 0 0 1px rgba(24, 32, 28, 0.14);
+}
+
 .run-panel {
   display: grid;
   grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
@@ -1377,6 +1453,10 @@ h1 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .room-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .component-forge__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1414,6 +1494,7 @@ h1 {
   .component-forge__grid,
   .component-forge__toggles,
   .component-forge__lock-controls,
+  .room-tabs,
   .run-panel__timeline {
     grid-template-columns: 1fr;
   }
