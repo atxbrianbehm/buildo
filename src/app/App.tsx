@@ -54,6 +54,34 @@ const roomOptions: Array<{ label: string; room: BuildingRoom }> = [
   { label: "Assembly Hall", room: "assemblyHall" }
 ];
 
+const roomKeys = new Set<BuildingRoom>(roomOptions.map((option) => option.room));
+
+function isBuildingRoom(value: string | null): value is BuildingRoom {
+  return value !== null && roomKeys.has(value as BuildingRoom);
+}
+
+function roomFromHash(hash: string): BuildingRoom {
+  const params = new URLSearchParams(hash.startsWith("#") ? hash.slice(1) : hash);
+  const room = params.get("room");
+  return isBuildingRoom(room) ? room : "promptLab";
+}
+
+function currentRouteRoom(): BuildingRoom {
+  return typeof window === "undefined" ? "promptLab" : roomFromHash(window.location.hash);
+}
+
+function pushRoomHash(room: BuildingRoom): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const nextHash = `#room=${room}`;
+  if (window.location.hash === nextHash) {
+    return;
+  }
+  window.history.pushState(null, "", nextHash);
+}
+
 function promptWithPatch(
   promptControls: BuildingPromptControls,
   patch: BuildingPromptControlPatch
@@ -80,7 +108,7 @@ function advanceSeed(seed: string): string {
 
 export function App() {
   const [{ store, registry, controller }] = useState(() => {
-    const createdStore: BuildingStoreApi = createBuildingStore();
+    const createdStore: BuildingStoreApi = createBuildingStore(undefined, currentRouteRoom());
     const createdRegistry = new BuildingArtifactRegistry();
     return {
       store: createdStore,
@@ -113,6 +141,26 @@ export function App() {
       controller.dispose();
     };
   }, [controller]);
+
+  useEffect(() => {
+    const syncRoomFromRoute = () => {
+      selectRoom(currentRouteRoom());
+    };
+
+    window.addEventListener("hashchange", syncRoomFromRoute);
+    window.addEventListener("popstate", syncRoomFromRoute);
+    syncRoomFromRoute();
+
+    return () => {
+      window.removeEventListener("hashchange", syncRoomFromRoute);
+      window.removeEventListener("popstate", syncRoomFromRoute);
+    };
+  }, [selectRoom]);
+
+  function selectRoutedRoom(room: BuildingRoom): void {
+    selectRoom(room);
+    pushRoomHash(room);
+  }
 
   function startRun(nextPrompt: BuildingPromptControls): void {
     void controller.startDemoRun(nextPrompt).catch(() => undefined);
@@ -166,7 +214,7 @@ export function App() {
               className="room-tabs__tab"
               id={`building-room-tab-${option.room}`}
               key={option.room}
-              onClick={() => selectRoom(option.room)}
+              onClick={() => selectRoutedRoom(option.room)}
               role="tab"
               type="button"
             >

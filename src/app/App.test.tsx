@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { App } from "./App";
 
 async function waitForInitialRun(): Promise<void> {
@@ -10,6 +10,10 @@ function selectRoom(name: "Prompt Lab" | "Atlas Lab" | "Component Forge" | "Asse
 }
 
 describe("App", () => {
+  beforeEach(() => {
+    window.history.replaceState(null, "", "/");
+  });
+
   it("renders the Buildo launch shell as a four-room workflow", async () => {
     render(<App />);
 
@@ -69,6 +73,34 @@ describe("App", () => {
     expect(screen.getByRole("combobox", { name: "Reveal through stage" })).toBeInTheDocument();
     expect(screen.getByRole("img", { name: "Rendered generated building fixture" })).toBeInTheDocument();
     expect(screen.getByLabelText("Assembly Hall renderer metrics")).toHaveTextContent("Draw calls");
+  });
+
+  it("deep-links room selection through the URL hash and browser history", async () => {
+    window.history.replaceState(null, "", "/#room=assemblyHall");
+
+    render(<App />);
+
+    await waitFor(() =>
+      expect(screen.getByRole("tab", { name: "Assembly Hall" })).toHaveAttribute("aria-selected", "true")
+    );
+    expect(await screen.findByRole("heading", { name: "Assembly Hall" })).toBeInTheDocument();
+
+    selectRoom("Atlas Lab");
+    expect(window.location.hash).toBe("#room=atlasLab");
+    expect(screen.getByRole("tab", { name: "Atlas Lab" })).toHaveAttribute("aria-selected", "true");
+
+    selectRoom("Component Forge");
+    expect(window.location.hash).toBe("#room=componentForge");
+    expect(screen.getByRole("tab", { name: "Component Forge" })).toHaveAttribute("aria-selected", "true");
+
+    act(() => {
+      window.history.back();
+    });
+
+    await waitFor(() =>
+      expect(screen.getByRole("tab", { name: "Atlas Lab" })).toHaveAttribute("aria-selected", "true")
+    );
+    expect(window.location.hash).toBe("#room=atlasLab");
   });
 
   it("exposes committed roof, trim, and seed controls with invalidation feedback", async () => {

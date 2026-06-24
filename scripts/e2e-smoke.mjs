@@ -146,6 +146,21 @@ try {
   const url = server.resolvedUrls?.local[0] ?? "http://127.0.0.1:5173/";
 
   browser = await chromium.launch();
+
+  const deepLinkPage = await browser.newPage();
+  await deepLinkPage.goto(`${url}#room=assemblyHall`);
+  await deepLinkPage.getByRole("tab", { name: "Assembly Hall" }).waitFor({ state: "visible" });
+  await deepLinkPage
+    .getByRole("tab", { name: "Assembly Hall" })
+    .evaluate((tab) => {
+      if (tab.getAttribute("aria-selected") !== "true") {
+        throw new Error("Assembly Hall deep link did not select the Assembly Hall tab.");
+      }
+    });
+  await deepLinkPage.getByRole("heading", { name: "Assembly Hall" }).waitFor({ state: "visible" });
+  await deepLinkPage.getByLabel("16-variant family stress view").getByText("16 variants").waitFor({ state: "visible" });
+  await deepLinkPage.close();
+
   const page = await browser.newPage();
   await page.goto(url);
   await page.getByRole("heading", { name: "Buildo" }).waitFor({ state: "visible" });

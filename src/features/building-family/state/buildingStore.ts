@@ -143,7 +143,8 @@ function controlSnapshot(controls: BuildingPromptControls): BuildingControlSnaps
 }
 
 export function createBuildingStore(
-  initialPrompt: BuildingPromptControls = defaultBuildingPromptControls
+  initialPrompt: BuildingPromptControls = defaultBuildingPromptControls,
+  initialRoom: BuildingRoom = "promptLab"
 ): BuildingStoreApi {
   return createStore<BuildingStoreState>()((set) => ({
     prompt: initialPrompt,
@@ -160,7 +161,7 @@ export function createBuildingStore(
       byType: {}
     },
     selection: {
-      room: "promptLab",
+      room: initialRoom,
       showProvenance: false,
       showSemanticPaths: true
     },
