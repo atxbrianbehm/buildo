@@ -1,0 +1,227 @@
+import { createStore, type StoreApi } from "zustand/vanilla";
+import { useStore } from "zustand";
+import type { GenerationRun, GenerationRunEvent, GenerationStage } from "../contracts/generationRun";
+import type { Seeds } from "../contracts/shared";
+import type { BuildingArtifactMetadata, BuildingArtifactType } from "./artifactRegistry";
+
+export type BuildingRoom = "promptLab" | "atlasLab" | "componentForge" | "assemblyHall";
+
+export interface BuildingPromptControls {
+  prompt: string;
+  psgPresetId: "late19cCommercialDemo";
+  stylePackId: "late-19c-commercial-demo";
+  seeds: Seeds;
+  floorCount: number;
+  bayCount: number;
+  roofType: "flat";
+  trimDensity: "ornate";
+}
+
+export interface BuildingRunSliceState {
+  activeRunId?: string;
+  activeFixtureArtifactId?: string;
+  currentRun: GenerationRun | null;
+  error?: string;
+  status: "idle" | "running" | "complete" | "failed" | "cancelled";
+}
+
+export interface BuildingArtifactSliceState {
+  byId: Record<string, BuildingArtifactMetadata>;
+  byType: Partial<Record<BuildingArtifactType, string[]>>;
+}
+
+export interface BuildingSelectionSliceState {
+  room: BuildingRoom;
+  selectedSemanticPath?: string;
+  selectedComponentRecipeId?: string;
+  showProvenance: boolean;
+  showSemanticPaths: boolean;
+}
+
+export interface BuildingStoreState {
+  prompt: BuildingPromptControls;
+  runs: BuildingRunSliceState;
+  artifacts: BuildingArtifactSliceState;
+  selection: BuildingSelectionSliceState;
+  beginRun(input: { runId: string; event: GenerationRunEvent }): void;
+  appendRunEvent(runId: string, event: GenerationRunEvent): void;
+  completeRun(input: { runId: string; artifactId: string; event: GenerationRunEvent }): void;
+  failRun(input: { runId: string; event: GenerationRunEvent; message: string }): void;
+  cancelRun(input: { runId: string; event: GenerationRunEvent }): void;
+  registerArtifact(metadata: BuildingArtifactMetadata): void;
+  selectRoom(room: BuildingRoom): void;
+  selectSemanticPath(semanticPath: string | undefined): void;
+}
+
+export type BuildingStoreApi = StoreApi<BuildingStoreState>;
+
+export const defaultBuildingPromptControls: BuildingPromptControls = {
+  prompt: "four floors, 7 bays, brick, flat roof, ornate trim",
+  psgPresetId: "late19cCommercialDemo",
+  stylePackId: "late-19c-commercial-demo",
+  seeds: {
+    family: "family-seed",
+    building: "building-seed",
+    material: "material-seed",
+    trim: "trim-seed"
+  },
+  floorCount: 4,
+  bayCount: 7,
+  roofType: "flat",
+  trimDensity: "ornate"
+};
+
+function runWithEvent(runId: string, event: GenerationRunEvent): GenerationRun {
+  return {
+    schemaVersion: "0.1.0",
+    runId,
+    stage: event.stage,
+    events: [event]
+  };
+}
+
+function appendEvent(run: GenerationRun, event: GenerationRunEvent): GenerationRun {
+  return {
+    ...run,
+    stage: event.stage,
+    events: [...run.events, event]
+  };
+}
+
+function statusForStage(stage: GenerationStage): BuildingRunSliceState["status"] {
+  if (stage === "complete" || stage === "failed" || stage === "cancelled") {
+    return stage;
+  }
+  return "running";
+}
+
+export function createBuildingStore(
+  initialPrompt: BuildingPromptControls = defaultBuildingPromptControls
+): BuildingStoreApi {
+  return createStore<BuildingStoreState>()((set) => ({
+    prompt: initialPrompt,
+    runs: {
+      currentRun: null,
+      status: "idle"
+    },
+    artifacts: {
+      byId: {},
+      byType: {}
+    },
+    selection: {
+      room: "promptLab",
+      showProvenance: false,
+      showSemanticPaths: true
+    },
+    beginRun: ({ runId, event }) =>
+      set(() => ({
+        runs: {
+          activeRunId: runId,
+          currentRun: runWithEvent(runId, event),
+          error: undefined,
+          status: statusForStage(event.stage)
+        }
+      })),
+    appendRunEvent: (runId, event) =>
+      set((state) => {
+        const currentRun = state.runs.currentRun;
+        if (!currentRun || state.runs.activeRunId !== runId || currentRun.runId !== runId) {
+          return state;
+        }
+
+        return {
+          runs: {
+            ...state.runs,
+            currentRun: appendEvent(currentRun, event)
+          }
+        };
+      }),
+    completeRun: ({ runId, artifactId, event }) =>
+      set((state) => {
+        const currentRun = state.runs.currentRun;
+        if (!currentRun || state.runs.activeRunId !== runId || currentRun.runId !== runId) {
+          return state;
+        }
+
+        return {
+          runs: {
+            ...state.runs,
+            activeFixtureArtifactId: artifactId,
+            currentRun: appendEvent(currentRun, event),
+            error: undefined,
+            status: "complete"
+          }
+        };
+      }),
+    failRun: ({ runId, event, message }) =>
+      set((state) => {
+        const currentRun = state.runs.currentRun;
+        if (!currentRun || state.runs.activeRunId !== runId || currentRun.runId !== runId) {
+          return state;
+        }
+
+        return {
+          runs: {
+            ...state.runs,
+            currentRun: appendEvent(currentRun, event),
+            error: message,
+            status: "failed"
+          }
+        };
+      }),
+    cancelRun: ({ runId, event }) =>
+      set((state) => {
+        const currentRun = state.runs.currentRun;
+        if (!currentRun || state.runs.activeRunId !== runId || currentRun.runId !== runId) {
+          return state;
+        }
+
+        return {
+          runs: {
+            ...state.runs,
+            currentRun: appendEvent(currentRun, event),
+            status: "cancelled"
+          }
+        };
+      }),
+    registerArtifact: (metadata) =>
+      set((state) => {
+        const existingByType = state.artifacts.byType[metadata.artifactType] ?? [];
+        const byType = existingByType.includes(metadata.artifactId)
+          ? existingByType
+          : [...existingByType, metadata.artifactId];
+        return {
+          artifacts: {
+            byId: {
+              ...state.artifacts.byId,
+              [metadata.artifactId]: metadata
+            },
+            byType: {
+              ...state.artifacts.byType,
+              [metadata.artifactType]: byType
+            }
+          }
+        };
+      }),
+    selectRoom: (room) =>
+      set((state) => ({
+        selection: {
+          ...state.selection,
+          room
+        }
+      })),
+    selectSemanticPath: (semanticPath) =>
+      set((state) => ({
+        selection: {
+          ...state.selection,
+          selectedSemanticPath: semanticPath
+        }
+      }))
+  }));
+}
+
+export const buildingStore = createBuildingStore();
+
+export function useBuildingStore<T>(selector: (state: BuildingStoreState) => T): T {
+  return useStore(buildingStore, selector);
+}

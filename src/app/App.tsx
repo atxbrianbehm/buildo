@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
+import { useStore } from "zustand";
 import "./App.css";
 import { AtlasLab } from "../features/building-family/ui/AtlasLab";
 import { AssemblyHall } from "../features/building-family/ui/AssemblyHall";
-import {
-  createAssemblyHallFixture,
-  type AssemblyHallFixture
-} from "../features/building-family/ui/assemblyHallFixture";
+import type { AssemblyHallFixture } from "../features/building-family/ui/assemblyHallFixture";
+import { BuildingArtifactRegistry } from "../features/building-family/state/artifactRegistry";
+import { BuildingRunController } from "../features/building-family/state/buildingRunController";
+import { createBuildingStore, type BuildingStoreApi } from "../features/building-family/state/buildingStore";
 
 const setupCards = [
   {
@@ -26,33 +27,32 @@ const setupCards = [
 ];
 
 export function App() {
-  const [fixture, setFixture] = useState<AssemblyHallFixture | null>(null);
-  const [fixtureError, setFixtureError] = useState<string | null>(null);
+  const [{ store, registry, controller }] = useState(() => {
+    const createdStore: BuildingStoreApi = createBuildingStore();
+    const createdRegistry = new BuildingArtifactRegistry();
+    return {
+      store: createdStore,
+      registry: createdRegistry,
+      controller: new BuildingRunController({
+        store: createdStore,
+        registry: createdRegistry
+      })
+    };
+  });
+  const runState = useStore(store, (state) => state.runs);
+  const currentRun = runState.currentRun;
+  const activeFixtureArtifactId = runState.activeFixtureArtifactId;
+  const fixture = activeFixtureArtifactId
+    ? registry.get<AssemblyHallFixture>(activeFixtureArtifactId) ?? null
+    : null;
 
   useEffect(() => {
-    let cancelled = false;
-    let activeFixture: AssemblyHallFixture | null = null;
-
-    createAssemblyHallFixture()
-      .then((result) => {
-        if (!cancelled) {
-          activeFixture = result;
-          setFixture(result);
-        } else {
-          result.familyRuntime.dispose();
-        }
-      })
-      .catch((error: unknown) => {
-        if (!cancelled) {
-          setFixtureError(error instanceof Error ? error.message : "Assembly Hall fixture generation failed");
-        }
-      });
+    void controller.startDemoRun();
 
     return () => {
-      cancelled = true;
-      activeFixture?.familyRuntime.dispose();
+      controller.dispose();
     };
-  }, []);
+  }, [controller]);
 
   return (
     <main className="app-shell">
@@ -77,6 +77,41 @@ export function App() {
           ))}
         </div>
       </section>
+      <section className="run-panel" aria-labelledby="generation-run-heading">
+        <div className="run-panel__summary">
+          <p className="project-label">Run Controller</p>
+          <h2 id="generation-run-heading">Generation Run</h2>
+          <dl className="run-panel__metrics" aria-label="Generation run state">
+            <div>
+              <dt>Status</dt>
+              <dd>{runState.status}</dd>
+            </div>
+            <div>
+              <dt>Run</dt>
+              <dd>{runState.activeRunId ?? "pending"}</dd>
+            </div>
+            <div>
+              <dt>Events</dt>
+              <dd>{currentRun?.events.length ?? 0}</dd>
+            </div>
+          </dl>
+          <p className="run-panel__artifact" aria-label="Generation run artifact">
+            {activeFixtureArtifactId ?? "pending"}
+          </p>
+        </div>
+        <ol className="run-panel__timeline" aria-label="Generation run timeline">
+          {currentRun?.events.map((event, index) => (
+            <li key={`${event.stage}-${index}`}>
+              <span>{event.stage}</span>
+              {event.outputArtifactId ? <small>{event.outputArtifactId}</small> : null}
+            </li>
+          )) ?? (
+            <li>
+              <span>idle</span>
+            </li>
+          )}
+        </ol>
+      </section>
       <section className="atlas-fixture" aria-labelledby="atlas-fixture-heading">
         <div className="atlas-fixture__intro">
           <p className="project-label">Material Atlas</p>
@@ -84,7 +119,7 @@ export function App() {
           <p>
             {fixture
               ? fixture.prompt
-              : fixtureError ?? "Generating deterministic atlas fixture..."}
+              : runState.error ?? "Generating deterministic atlas fixture..."}
           </p>
           {fixture ? (
             <dl className="atlas-fixture__provenance" aria-label="Atlas fixture provenance">
@@ -106,8 +141,8 @@ export function App() {
         {fixture ? (
           <AtlasLab packedAtlas={fixture.packedAtlas} debugExport={fixture.debugExport} />
         ) : (
-          <div className="atlas-fixture__loading" role={fixtureError ? "alert" : "status"}>
-            {fixtureError ?? "Preparing atlas channels"}
+          <div className="atlas-fixture__loading" role={runState.error ? "alert" : "status"}>
+            {runState.error ?? "Preparing atlas channels"}
           </div>
         )}
       </section>

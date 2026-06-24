@@ -126,6 +126,89 @@ h1 {
   text-transform: uppercase;
 }
 
+.run-panel {
+  display: grid;
+  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 22px 0 30px;
+  border-top: 1px solid rgba(24, 32, 28, 0.14);
+  border-bottom: 1px solid rgba(24, 32, 28, 0.14);
+}
+
+.run-panel__summary h2 {
+  margin: 0;
+  color: #121816;
+  font-size: 1.6rem;
+  line-height: 1.08;
+}
+
+.run-panel__metrics {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 0;
+}
+
+.run-panel__metrics div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: baseline;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(24, 32, 28, 0.12);
+}
+
+.run-panel__metrics dt {
+  color: #5f6d66;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.run-panel__metrics dd,
+.run-panel__artifact,
+.run-panel__timeline small {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: #18201c;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.82rem;
+}
+
+.run-panel__artifact {
+  margin-top: 14px;
+  color: #526159;
+}
+
+.run-panel__timeline {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.run-panel__timeline li {
+  display: grid;
+  gap: 6px;
+  min-height: 54px;
+  padding: 11px 12px;
+  border-left: 3px solid rgba(72, 113, 82, 0.48);
+  background: rgba(255, 255, 255, 0.48);
+}
+
+.run-panel__timeline span {
+  overflow-wrap: anywhere;
+  color: #24312b;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
 .atlas-fixture {
   display: grid;
   grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
@@ -527,6 +610,7 @@ h1 {
   }
 
   .atlas-fixture,
+  .run-panel,
   .assembly-hall__stage,
   .atlas-lab__header {
     grid-template-columns: 1fr;
@@ -565,7 +649,12 @@ h1 {
 
   .assembly-hall__metrics div,
   .assembly-hall__identity div,
+  .run-panel__metrics div,
   .assembly-hall__selection-details div {
+    grid-template-columns: 1fr;
+  }
+
+  .run-panel__timeline {
     grid-template-columns: 1fr;
   }
 

@@ -1,6 +1,6 @@
 # Dynamic Building Family Integration Map
 
-**Status:** Milestone 4G WebGPU renderer activation foundation
+**Status:** Milestone 5A run controller and state foundation
 **Plan source:** `docs/plans/dynamic-building-family.md`
 **Workspace:** `C:\Users\behmb\Documents\Cascade Projects\buildo`
 **Date:** 2026-06-24
@@ -46,7 +46,7 @@ docs/
     dynamic-building-family.md
 ```
 
-The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, the Milestone 3B pure compiler IR foundation, the Milestone 3C compiler worker boundary, the Milestone 3D component gallery data foundation, the Milestone 4A renderer adapter foundation, the Milestone 4B atlas texture/material sampling foundation, the Milestone 4C shared family runtime foundation, the Milestone 4D Assembly Hall rendered fixture foundation, the Milestone 4E renderer resource disposal foundation, the Milestone 4F Assembly Hall semantic selection foundation, and the Milestone 4G WebGPU renderer activation foundation. No router, Zustand state slice, Component Forge UI, control surface, or four-room flow has been implemented.
+The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, the Milestone 3B pure compiler IR foundation, the Milestone 3C compiler worker boundary, the Milestone 3D component gallery data foundation, the Milestone 4A renderer adapter foundation, the Milestone 4B atlas texture/material sampling foundation, the Milestone 4C shared family runtime foundation, the Milestone 4D Assembly Hall rendered fixture foundation, the Milestone 4E renderer resource disposal foundation, the Milestone 4F Assembly Hall semantic selection foundation, the Milestone 4G WebGPU renderer activation foundation, and the Milestone 5A run controller / Zustand state foundation. No router, Component Forge UI, editable control surface, full invalidation matrix, or four-room flow has been implemented.
 
 ## 2. Active Instructions
 
@@ -542,7 +542,27 @@ scripts/e2e-smoke.mjs
 
 The focused renderer-factory tests cover WebGPU-first activation, WebGPU-to-WebGL fallback, and direct WebGL selection when WebGPU is unavailable. The e2e smoke waits for the active backend attribute, checks the visible active-backend metric, keeps the direct WebGL `readPixels` probe for WebGL fallback, and uses a dependency-free screenshot PNG probe for WebGPU presentation because WebGPU canvas export/readback can be transparent even when the presented canvas draws correctly.
 
-The next roadmap slice should begin Milestone 5 orchestration with state/run-controller work unless a smaller Milestone 4 hardening pass is needed.
+## 6.14 Run Controller And State Foundation
+
+Actual Milestone 5A orchestration/UI paths:
+
+```text
+src/features/building-family/state/artifactRegistry.ts
+src/features/building-family/state/buildingStore.ts
+src/features/building-family/state/buildingRunController.ts
+src/features/building-family/tests/buildingState.test.ts
+src/app/App.tsx
+src/app/App.css
+src/app/App.test.tsx
+```
+
+`BuildingArtifactRegistry` is the runtime artifact registry for heavyweight objects that must not live in persisted or serializable state. It validates serializable artifact metadata with Zod, keeps the `AssemblyHallFixture` and future runtime objects outside Zustand, and owns disposer callbacks so stale or unmounted family runtimes can be released exactly once.
+
+`createBuildingStore` creates a vanilla Zustand store with prompt controls, run state, artifact metadata, and selection state. The store keeps artifact ids and metadata only; it does not store `ImageBitmap`, Three.js objects, typed geometry buffers, or family runtime objects.
+
+`BuildingRunController` is now the UI-facing orchestration boundary for the current demo pipeline. It creates run ids, starts a real generation run event stream using the existing fixture pipeline stages, registers the completed Assembly Hall fixture artifact, cancels prior runs, ignores stale completions, and disposes stale fixture runtimes. The root `App` now instantiates a per-app store/controller/registry bundle and renders a compact Generation Run timeline before the existing Atlas Lab and Assembly Hall surfaces.
+
+This is not the complete Milestone 5 four-room demo yet. Prompt Lab controls, Component Forge, stage-driven reveal, invalidation decisions, explicit new-family/new-building rerolls, lock/unlock, provenance panels, and 16-variant stress view remain future Milestone 5 slices.
 
 ## 7. App Shell, Renderer, State, Workers, And Routing
 
@@ -556,7 +576,7 @@ src/features/building-family/ui/AtlasLab.tsx
 src/features/building-family/ui/AssemblyHall.tsx
 ```
 
-Actual feature routing: root route only. No router dependency exists yet. The root app shell currently shows the Atlas Lab and Assembly Hall fixture surfaces.
+Actual feature routing: root route only. No router dependency exists yet. The root app shell currently shows the controller-backed Generation Run timeline, Atlas Lab, and Assembly Hall fixture surfaces.
 
 Actual Three.js renderer setup:
 
@@ -576,15 +596,22 @@ Recommended renderer paths:
 src/features/building-family/renderer-three/instanceRuntime.ts
 ```
 
-Actual Zustand state: not present.
-
-Recommended state paths:
+Actual Zustand state:
 
 ```text
+src/features/building-family/state/artifactRegistry.ts
 src/features/building-family/state/buildingStore.ts
+src/features/building-family/state/buildingRunController.ts
+```
+
+Recommended remaining state paths:
+
+```text
 src/features/building-family/state/slices/runSlice.ts
 src/features/building-family/state/slices/artifactSlice.ts
 src/features/building-family/state/slices/selectionSlice.ts
+src/features/building-family/state/slices/controlSlice.ts
+src/features/building-family/state/slices/rendererSlice.ts
 ```
 
 Actual worker patterns:
@@ -599,8 +626,8 @@ src/features/building-family/compiler/compilerWorkerRuntime.ts
 Remaining worker/orchestration paths for later milestones:
 
 ```text
-src/features/building-family/state/buildingRunController.ts
-src/features/building-family/state/slices/runSlice.ts
+src/features/building-family/state/invalidationController.ts
+src/features/building-family/state/variantStressController.ts
 ```
 
 Actual server/API routes: not present.
@@ -941,10 +968,11 @@ Latest validation results:
 
 ```text
 typecheck: passed
-unit tests: passed, 73 tests across 28 files
+unit tests: passed, 77 tests across 29 files
 lint: passed
 build: passed
-e2e smoke: passed, including active renderer backend assertion, Assembly Hall semantic selection, and backend-specific canvas pixel probe
+e2e smoke: passed, including controller-backed app shell, active renderer backend assertion, Assembly Hall semantic selection, and backend-specific canvas pixel probe
+Building state/controller focused tests: passed
 Assembly renderer factory focused tests: passed
 Assembly Hall focused tests: passed
 resource disposal focused tests: passed
@@ -977,6 +1005,15 @@ Browser/IAB desktop DOM pass: app loaded at http://127.0.0.1:5173/, canvas data-
 Playwright desktop screenshot: 1280x720 viewport, WebGPU Assembly Hall canvas visible, backend metric present, no console errors, screenshot C:\tmp\buildo-renderer-qa\desktop.png.
 Playwright mobile screenshot: 390x844 viewport, WebGPU Assembly Hall canvas visible at 358x340, backend metric present, semantic selection present, no console errors, no horizontal overflow, screenshot C:\tmp\buildo-renderer-qa\mobile.png.
 E2E smoke: active backend assertion plus WebGPU screenshot PNG probe or WebGL readPixels fallback.
+```
+
+Rendered QA for Milestone 5A:
+
+```text
+Browser/IAB desktop DOM pass: app loaded at http://127.0.0.1:5173/, Generation Run reached complete with 12 events, artifact id began assembly-hall-fixture:, Atlas Lab and Assembly Hall remained present, canvas data-rendered=true, data-renderer-backend=webgpu, and no console errors.
+Playwright desktop screenshot: 1280x720 viewport, Generation Run panel visible below the hero, complete status and timeline present, no console errors, screenshot C:\tmp\buildo-run-controller-qa\desktop.png.
+Playwright mobile screenshots: 390x844 viewport, no horizontal overflow, run panel verified in scrolled view, no console errors, screenshots C:\tmp\buildo-run-controller-qa\mobile.png and C:\tmp\buildo-run-controller-qa\mobile-run-panel.png.
+E2E smoke: controller-backed app shell still reaches the rendered Assembly Hall canvas and semantic selection path.
 ```
 
 ## 13. Current Implemented Surface
@@ -1160,6 +1197,18 @@ src/features/building-family/ui/assemblyHallFixture.ts
 scripts/e2e-smoke.mjs
 ```
 
+Milestone 5A introduced:
+
+```text
+src/features/building-family/state/artifactRegistry.ts
+src/features/building-family/state/buildingStore.ts
+src/features/building-family/state/buildingRunController.ts
+src/features/building-family/tests/buildingState.test.ts
+src/app/App.tsx
+src/app/App.css
+src/app/App.test.tsx
+```
+
 Generated and ignored directories:
 
 ```text
@@ -1168,7 +1217,7 @@ dist/
 test-results/
 ```
 
-No preassembled meshes, provider routes, router-backed room navigation, Component Forge UI, or Zustand state slice has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers through the pure TypeScript compiler path, can deliver them across the compiler worker boundary with transferable buffers, can summarize catalog/IR component data for a future Component Forge gallery, can convert that IR into Three.js scene objects under `renderer-three/*`, can convert packed atlas channels into texture-backed slot materials at the renderer boundary, can host multiple per-building scene runtimes against one shared family atlas/material runtime, can centralize idempotent renderer resource disposal across standalone and shared-family ownership modes, renders one deterministic fixture building in a WebGPU-first browser Assembly Hall canvas with WebGL fallback from those generated artifacts, and surfaces semantic renderer lookup entries in a selectable Assembly Hall inspector.
+No preassembled meshes, provider routes, router-backed room navigation, Component Forge UI, editable control surface, or complete four-room flow has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers through the pure TypeScript compiler path, can deliver them across the compiler worker boundary with transferable buffers, can summarize catalog/IR component data for a future Component Forge gallery, can convert that IR into Three.js scene objects under `renderer-three/*`, can convert packed atlas channels into texture-backed slot materials at the renderer boundary, can host multiple per-building scene runtimes against one shared family atlas/material runtime, can centralize idempotent renderer resource disposal across standalone and shared-family ownership modes, renders one deterministic fixture building in a WebGPU-first browser Assembly Hall canvas with WebGL fallback from those generated artifacts, surfaces semantic renderer lookup entries in a selectable Assembly Hall inspector, and now drives the root app through a Zustand-backed run controller with serializable run events plus an out-of-store runtime artifact registry.
 
 ## 14. Milestone 0 And Setup Exit Criteria
 
