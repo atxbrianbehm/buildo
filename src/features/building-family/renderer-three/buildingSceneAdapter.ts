@@ -7,6 +7,7 @@ import {
   Matrix4,
   Mesh,
   MeshStandardMaterial,
+  REVISION,
   WebGLRenderer,
 } from "three";
 import type { ComponentCatalog } from "../components/componentCatalogBuilder";
@@ -198,9 +199,8 @@ export async function detectRendererBackendSupport(): Promise<RendererBackendSup
     .then((webgpu) => "WebGPURenderer" in webgpu)
     .catch(() => false);
 
-  const threeRevision = (await import("three")).REVISION;
   return {
-    threeRevision,
+    threeRevision: REVISION,
     webgl: {
       available: typeof WebGLRenderer === "function",
       importPath: "three"

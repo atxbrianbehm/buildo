@@ -1,6 +1,6 @@
 # Dynamic Building Family Integration Map
 
-**Status:** Milestone 4C shared family runtime foundation
+**Status:** Milestone 4D Assembly Hall rendered fixture foundation
 **Plan source:** `docs/plans/dynamic-building-family.md`
 **Workspace:** `C:\Users\behmb\Documents\Cascade Projects\buildo`
 **Date:** 2026-06-24
@@ -46,7 +46,7 @@ docs/
     dynamic-building-family.md
 ```
 
-The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, the Milestone 3B pure compiler IR foundation, the Milestone 3C compiler worker boundary, the Milestone 3D component gallery data foundation, the Milestone 4A renderer adapter foundation, the Milestone 4B atlas texture/material sampling foundation, and the Milestone 4C shared family runtime foundation. No canvas route, state slice, Component Forge UI, or rendered building asset has been implemented.
+The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, the Milestone 3B pure compiler IR foundation, the Milestone 3C compiler worker boundary, the Milestone 3D component gallery data foundation, the Milestone 4A renderer adapter foundation, the Milestone 4B atlas texture/material sampling foundation, the Milestone 4C shared family runtime foundation, and the Milestone 4D Assembly Hall rendered fixture foundation. No router, Zustand state slice, Component Forge UI, control surface, or four-room flow has been implemented.
 
 ## 2. Active Instructions
 
@@ -471,11 +471,27 @@ The family runtime can create or replace per-building scene runtimes from `Runti
 
 The focused runtime and renderer adapter tests cover the current Milestone 4 requirements that can be verified without opening a browser canvas: one shared family runtime can support 16 building runtimes, repeated components remain instanced through the existing scene adapter, geometry replacement disposes old resources, and final family disposal releases building geometries plus shared atlas materials/textures exactly once.
 
-The next roadmap slice should continue Milestone 4 with a rendered fixture route:
+## 6.10 Assembly Hall Rendered Fixture Foundation
+
+Actual Milestone 4D renderer/UI paths:
 
 ```text
+src/features/building-family/ui/assemblyHallFixture.ts
 src/features/building-family/ui/AssemblyHall.tsx
+src/features/building-family/tests/assemblyHallFixture.test.ts
+src/features/building-family/tests/AssemblyHall.test.tsx
+src/app/App.tsx
+src/app/App.css
+scripts/e2e-smoke.mjs
 ```
+
+`createAssemblyHallFixture` composes the real fixture pipeline from PSG evaluation through normalized spec, atlas plan/packing/debug export, component catalog, building graph, compiler IR, component gallery, backend support detection, shared family runtime, and one per-building scene runtime. The same packed atlas artifacts feed both Atlas Lab and the rendered Assembly Hall fixture in the root app shell.
+
+`AssemblyHall` mounts a Three.js WebGL canvas for the fixture building, using the shared family runtime root and atlas-backed slot materials. The surface shows active/preferred backend, draw calls, instance count, triangle count, atlas content hash, texture count, and a compact component-gallery summary. In non-WebGL unit-test environments it renders an accessible fallback while keeping the real browser path canvas-backed.
+
+The e2e smoke now waits for the Assembly Hall canvas, verifies the canvas marked a rendered frame, and performs a WebGL pixel probe so a blank canvas cannot satisfy the smoke. Additional Playwright QA captured desktop and mobile screenshots and verified varied canvas pixels at both viewports. The Browser/IAB path was attempted first but failed to attach to the in-app browser webview, so Playwright was used as the documented fallback.
+
+The next roadmap slice should continue Milestone 4 or begin Milestone 5 orchestration with state/run-controller work. Remaining Milestone 4 gaps include explicit WebGPU renderer activation, richer selection lookup UI, and centralized renderer resource-disposal helpers.
 
 ## 7. App Shell, Renderer, State, Workers, And Routing
 
@@ -485,9 +501,11 @@ Actual React shell:
 src/app/main.tsx
 src/app/App.tsx
 src/app/App.css
+src/features/building-family/ui/AtlasLab.tsx
+src/features/building-family/ui/AssemblyHall.tsx
 ```
 
-Actual feature routing: root route only. No router dependency exists yet.
+Actual feature routing: root route only. No router dependency exists yet. The root app shell currently shows the Atlas Lab and Assembly Hall fixture surfaces.
 
 Actual Three.js renderer setup:
 
@@ -496,6 +514,7 @@ src/features/building-family/renderer-three/buildingSceneAdapter.ts
 src/features/building-family/renderer-three/buildingAtlasMaterialFactory.ts
 src/features/building-family/renderer-three/buildingAtlasTextureFactory.ts
 src/features/building-family/renderer-three/familyRuntime.ts
+src/features/building-family/ui/AssemblyHall.tsx
 ```
 
 Recommended renderer paths:
@@ -792,6 +811,18 @@ src/features/building-family/renderer-three/familyRuntime.ts
 src/features/building-family/tests/buildingFamilyRuntime.test.ts
 ```
 
+Milestone 4D introduced:
+
+```text
+src/features/building-family/ui/assemblyHallFixture.ts
+src/features/building-family/ui/AssemblyHall.tsx
+src/features/building-family/tests/assemblyHallFixture.test.ts
+src/features/building-family/tests/AssemblyHall.test.tsx
+src/app/App.tsx
+src/app/App.css
+scripts/e2e-smoke.mjs
+```
+
 ## 12. Verification Report
 
 Commands run during reconnaissance:
@@ -832,12 +863,22 @@ Latest validation results:
 
 ```text
 typecheck: passed
-unit tests: passed, 64 tests across 24 files
+unit tests: passed, 66 tests across 26 files
 lint: passed
 build: passed
-e2e smoke: passed at http://127.0.0.1:5173/
+e2e smoke: passed, including Assembly Hall canvas pixel probe
 contracts/core/materials/components/compiler renderer-import scan: no matches
 Math.random scan: no matches
+```
+
+Rendered QA for Milestone 4D:
+
+```text
+Browser/IAB: attempted first; webview attach timed out, then no active tab was available on retry.
+Playwright desktop viewport: 1366x900, Assembly Hall canvas visible, varied WebGL pixels sampled.
+Playwright mobile viewport: 390x844, Assembly Hall canvas visible, varied WebGL pixels sampled.
+Screenshots: C:\tmp\buildo-assembly-hall-desktop.png and C:\tmp\buildo-assembly-hall-mobile.png
+Console: no app runtime errors; WebGL driver performance warnings came from/around readback diagnostics.
 ```
 
 ## 13. Current Implemented Surface
@@ -983,6 +1024,18 @@ src/features/building-family/renderer-three/familyRuntime.ts
 src/features/building-family/tests/buildingFamilyRuntime.test.ts
 ```
 
+Milestone 4D introduced:
+
+```text
+src/features/building-family/ui/assemblyHallFixture.ts
+src/features/building-family/ui/AssemblyHall.tsx
+src/features/building-family/tests/assemblyHallFixture.test.ts
+src/features/building-family/tests/AssemblyHall.test.tsx
+src/app/App.tsx
+src/app/App.css
+scripts/e2e-smoke.mjs
+```
+
 Generated and ignored directories:
 
 ```text
@@ -991,7 +1044,7 @@ dist/
 test-results/
 ```
 
-No preassembled meshes, provider routes, canvas route, Component Forge UI, or Zustand state slice has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers through the pure TypeScript compiler path, can deliver them across the compiler worker boundary with transferable buffers, can summarize catalog/IR component data for a future Component Forge gallery, can convert that IR into Three.js scene objects under `renderer-three/*`, can convert packed atlas channels into texture-backed slot materials at the renderer boundary, and can host multiple per-building scene runtimes against one shared family atlas/material runtime.
+No preassembled meshes, provider routes, router-backed room navigation, Component Forge UI, or Zustand state slice has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers through the pure TypeScript compiler path, can deliver them across the compiler worker boundary with transferable buffers, can summarize catalog/IR component data for a future Component Forge gallery, can convert that IR into Three.js scene objects under `renderer-three/*`, can convert packed atlas channels into texture-backed slot materials at the renderer boundary, can host multiple per-building scene runtimes against one shared family atlas/material runtime, and now renders one deterministic fixture building in a browser Assembly Hall canvas from those generated artifacts.
 
 ## 14. Milestone 0 And Setup Exit Criteria
 

@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { createAtlasLabFixture, type AtlasLabFixture } from "../features/building-family/materials/atlasLabFixture";
 import { AtlasLab } from "../features/building-family/ui/AtlasLab";
+import { AssemblyHall } from "../features/building-family/ui/AssemblyHall";
+import {
+  createAssemblyHallFixture,
+  type AssemblyHallFixture
+} from "../features/building-family/ui/assemblyHallFixture";
 
 const setupCards = [
   {
@@ -22,26 +26,31 @@ const setupCards = [
 ];
 
 export function App() {
-  const [fixture, setFixture] = useState<AtlasLabFixture | null>(null);
+  const [fixture, setFixture] = useState<AssemblyHallFixture | null>(null);
   const [fixtureError, setFixtureError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
+    let activeFixture: AssemblyHallFixture | null = null;
 
-    createAtlasLabFixture()
+    createAssemblyHallFixture()
       .then((result) => {
         if (!cancelled) {
+          activeFixture = result;
           setFixture(result);
+        } else {
+          result.familyRuntime.dispose();
         }
       })
       .catch((error: unknown) => {
         if (!cancelled) {
-          setFixtureError(error instanceof Error ? error.message : "Atlas fixture generation failed");
+          setFixtureError(error instanceof Error ? error.message : "Assembly Hall fixture generation failed");
         }
       });
 
     return () => {
       cancelled = true;
+      activeFixture?.familyRuntime.dispose();
     };
   }, []);
 
@@ -102,6 +111,7 @@ export function App() {
           </div>
         )}
       </section>
+      {fixture ? <AssemblyHall fixture={fixture} /> : null}
     </main>
   );
 }
