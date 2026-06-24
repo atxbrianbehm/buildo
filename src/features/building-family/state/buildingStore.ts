@@ -2,6 +2,11 @@ import { createStore, type StoreApi } from "zustand/vanilla";
 import { useStore } from "zustand";
 import type { GenerationRun, GenerationRunEvent, GenerationStage } from "../contracts/generationRun";
 import type { Seeds } from "../contracts/shared";
+import {
+  computeBuildingInvalidation,
+  type BuildingControlSnapshot,
+  type BuildingInvalidation
+} from "../core/invalidation";
 import type { BuildingArtifactMetadata, BuildingArtifactType } from "./artifactRegistry";
 
 export type BuildingRoom = "promptLab" | "atlasLab" | "componentForge" | "assemblyHall";
@@ -17,6 +22,10 @@ export interface BuildingPromptControls {
   trimDensity: "ornate";
 }
 
+export type BuildingPromptControlPatch = Partial<Omit<BuildingPromptControls, "seeds">> & {
+  seeds?: Partial<Seeds>;
+};
+
 export interface BuildingRunSliceState {
   activeRunId?: string;
   activeFixtureArtifactId?: string;
@@ -30,6 +39,10 @@ export interface BuildingArtifactSliceState {
   byType: Partial<Record<BuildingArtifactType, string[]>>;
 }
 
+export interface BuildingControlSliceState {
+  invalidation: BuildingInvalidation;
+}
+
 export interface BuildingSelectionSliceState {
   room: BuildingRoom;
   selectedSemanticPath?: string;
@@ -40,6 +53,7 @@ export interface BuildingSelectionSliceState {
 
 export interface BuildingStoreState {
   prompt: BuildingPromptControls;
+  controls: BuildingControlSliceState;
   runs: BuildingRunSliceState;
   artifacts: BuildingArtifactSliceState;
   selection: BuildingSelectionSliceState;
@@ -49,6 +63,7 @@ export interface BuildingStoreState {
   failRun(input: { runId: string; event: GenerationRunEvent; message: string }): void;
   cancelRun(input: { runId: string; event: GenerationRunEvent }): void;
   registerArtifact(metadata: BuildingArtifactMetadata): void;
+  updatePromptControls(patch: BuildingPromptControlPatch): void;
   selectRoom(room: BuildingRoom): void;
   selectSemanticPath(semanticPath: string | undefined): void;
 }
@@ -95,11 +110,29 @@ function statusForStage(stage: GenerationStage): BuildingRunSliceState["status"]
   return "running";
 }
 
+function mergePromptControls(previous: BuildingPromptControls, patch: BuildingPromptControlPatch): BuildingPromptControls {
+  return {
+    ...previous,
+    ...patch,
+    seeds: {
+      ...previous.seeds,
+      ...(patch.seeds ?? {})
+    }
+  };
+}
+
+function controlSnapshot(controls: BuildingPromptControls): BuildingControlSnapshot {
+  return controls;
+}
+
 export function createBuildingStore(
   initialPrompt: BuildingPromptControls = defaultBuildingPromptControls
 ): BuildingStoreApi {
   return createStore<BuildingStoreState>()((set) => ({
     prompt: initialPrompt,
+    controls: {
+      invalidation: computeBuildingInvalidation(controlSnapshot(initialPrompt), controlSnapshot(initialPrompt))
+    },
     runs: {
       currentRun: null,
       status: "idle"
@@ -200,6 +233,17 @@ export function createBuildingStore(
               ...state.artifacts.byType,
               [metadata.artifactType]: byType
             }
+          }
+        };
+      }),
+    updatePromptControls: (patch) =>
+      set((state) => {
+        const nextPrompt = mergePromptControls(state.prompt, patch);
+        return {
+          prompt: nextPrompt,
+          controls: {
+            ...state.controls,
+            invalidation: computeBuildingInvalidation(controlSnapshot(state.prompt), controlSnapshot(nextPrompt))
           }
         };
       }),

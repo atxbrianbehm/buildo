@@ -148,3 +148,31 @@ describe("building run controller", () => {
     expect(store.getState().runs.activeRunId).toBe("run-002");
   });
 });
+
+describe("building control invalidation state", () => {
+  it("records a structural-only invalidation preview for floor-count edits", () => {
+    const store = createBuildingStore();
+
+    store.getState().updatePromptControls({ floorCount: 6 });
+
+    expect(store.getState().prompt.floorCount).toBe(6);
+    expect(store.getState().controls.invalidation.changedControls).toEqual(["floorCount"]);
+    expect(store.getState().controls.invalidation.materialGenerationRequired).toBe(false);
+    expect(store.getState().controls.invalidation.stageImpacts.materialSources).toBe("none");
+    expect(store.getState().controls.invalidation.reusableArtifacts.packedAtlas).toBe(true);
+  });
+
+  it("records new-building reuse and new-family regeneration separately", () => {
+    const store = createBuildingStore();
+
+    store.getState().updatePromptControls({ seeds: { building: "new-building-seed" } });
+    expect(store.getState().controls.invalidation.changedControls).toEqual(["buildingSeed"]);
+    expect(store.getState().controls.invalidation.reusableArtifacts.componentCatalog).toBe(true);
+    expect(store.getState().controls.invalidation.materialGenerationRequired).toBe(false);
+
+    store.getState().updatePromptControls({ seeds: { family: "new-family-seed" } });
+    expect(store.getState().controls.invalidation.changedControls).toEqual(["familySeed"]);
+    expect(store.getState().controls.invalidation.reusableArtifacts.componentCatalog).toBe(false);
+    expect(store.getState().controls.invalidation.materialGenerationRequired).toBe(true);
+  });
+});

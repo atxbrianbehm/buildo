@@ -138,6 +138,125 @@ h1 {
   border-bottom: 1px solid rgba(24, 32, 28, 0.14);
 }
 
+.control-panel {
+  display: grid;
+  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 22px 0 30px;
+  border-top: 1px solid rgba(24, 32, 28, 0.14);
+}
+
+.control-panel__inputs h2 {
+  margin: 0;
+  color: #121816;
+  font-size: 1.6rem;
+  line-height: 1.08;
+}
+
+.control-panel__fields {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.control-panel__fields label {
+  display: grid;
+  gap: 6px;
+}
+
+.control-panel__fields span {
+  color: #5f6d66;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.control-panel__fields input {
+  min-height: 40px;
+  width: 100%;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid rgba(24, 32, 28, 0.18);
+  border-radius: 6px;
+  color: #18201c;
+  background: rgba(255, 255, 255, 0.74);
+}
+
+.control-panel__fields input:focus-visible {
+  outline: 3px solid rgba(70, 118, 86, 0.28);
+  outline-offset: 2px;
+}
+
+.control-panel__preview {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.control-panel__metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.control-panel__metrics div {
+  min-width: 0;
+  padding: 11px 12px;
+  border-left: 3px solid rgba(72, 113, 82, 0.48);
+  background: rgba(255, 255, 255, 0.48);
+}
+
+.control-panel__metrics dt {
+  color: #5f6d66;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.control-panel__metrics dd {
+  margin: 6px 0 0;
+  overflow-wrap: anywhere;
+  color: #18201c;
+  font-size: 0.82rem;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.control-panel__stages {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.control-panel__stages li {
+  display: grid;
+  gap: 6px;
+  min-height: 52px;
+  padding: 11px 12px;
+  border: 1px solid rgba(24, 32, 28, 0.1);
+  background: rgba(247, 248, 244, 0.62);
+}
+
+.control-panel__stages span {
+  overflow-wrap: anywhere;
+  color: #24312b;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.control-panel__stages small {
+  color: #526159;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
 .run-panel__summary h2 {
   margin: 0;
   color: #121816;
@@ -610,6 +729,7 @@ h1 {
   }
 
   .atlas-fixture,
+  .control-panel,
   .run-panel,
   .assembly-hall__stage,
   .atlas-lab__header {
@@ -655,6 +775,11 @@ h1 {
   }
 
   .run-panel__timeline {
+    grid-template-columns: 1fr;
+  }
+
+  .control-panel__metrics,
+  .control-panel__stages {
     grid-template-columns: 1fr;
   }
 

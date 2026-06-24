@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { App } from "./App";
 
 describe("App", () => {
@@ -8,6 +8,11 @@ describe("App", () => {
     expect(screen.getByRole("heading", { name: "Buildo" })).toBeInTheDocument();
     expect(screen.getByText("Wild Construct Lab")).toBeInTheDocument();
     expect(screen.getByLabelText("Project setup status")).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Control Invalidation" })).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Floors"), { target: { value: "5" } });
+    expect(screen.getByLabelText("Invalidation preview")).toHaveTextContent("floorCount");
+    expect(screen.getByLabelText("Invalidation preview")).toHaveTextContent("Material sources reusable");
+    expect(screen.getByLabelText("Invalidation preview")).toHaveTextContent("runtimeBuildingIr");
     expect(await screen.findByRole("heading", { name: "Generation Run" })).toBeInTheDocument();
     await waitFor(() => expect(screen.getByLabelText("Generation run state")).toHaveTextContent("complete"));
     expect(screen.getByLabelText("Generation run timeline")).toHaveTextContent("uploadingGpuResources");

@@ -40,8 +40,12 @@ export function App() {
     };
   });
   const runState = useStore(store, (state) => state.runs);
+  const promptControls = useStore(store, (state) => state.prompt);
+  const controlState = useStore(store, (state) => state.controls);
+  const updatePromptControls = useStore(store, (state) => state.updatePromptControls);
   const currentRun = runState.currentRun;
   const activeFixtureArtifactId = runState.activeFixtureArtifactId;
+  const invalidation = controlState.invalidation;
   const fixture = activeFixtureArtifactId
     ? registry.get<AssemblyHallFixture>(activeFixtureArtifactId) ?? null
     : null;
@@ -75,6 +79,77 @@ export function App() {
               <span>{card.status}</span>
             </article>
           ))}
+        </div>
+      </section>
+      <section className="control-panel" aria-labelledby="control-invalidation-heading">
+        <div className="control-panel__inputs">
+          <p className="project-label">Control Surface</p>
+          <h2 id="control-invalidation-heading">Control Invalidation</h2>
+          <div className="control-panel__fields" aria-label="Building controls">
+            <label>
+              <span>Floors</span>
+              <input
+                aria-label="Floors"
+                min={1}
+                type="number"
+                value={promptControls.floorCount}
+                onChange={(event) => updatePromptControls({ floorCount: Number(event.currentTarget.value) })}
+              />
+            </label>
+            <label>
+              <span>Bays</span>
+              <input
+                aria-label="Bays"
+                min={1}
+                type="number"
+                value={promptControls.bayCount}
+                onChange={(event) => updatePromptControls({ bayCount: Number(event.currentTarget.value) })}
+              />
+            </label>
+            <label>
+              <span>Building Seed</span>
+              <input
+                aria-label="Building Seed"
+                value={promptControls.seeds.building}
+                onChange={(event) => updatePromptControls({ seeds: { building: event.currentTarget.value } })}
+              />
+            </label>
+          </div>
+        </div>
+        <div className="control-panel__preview" aria-label="Invalidation preview">
+          <dl className="control-panel__metrics">
+            <div>
+              <dt>Changed</dt>
+              <dd>{invalidation.changedControls.length ? invalidation.changedControls.join(", ") : "none"}</dd>
+            </div>
+            <div>
+              <dt>Material sources</dt>
+              <dd>{invalidation.reusableArtifacts.materialSources ? "Material sources reusable" : "Material sources regenerate"}</dd>
+            </div>
+            <div>
+              <dt>Atlas</dt>
+              <dd>{invalidation.reusableArtifacts.packedAtlas ? "atlas reusable" : "atlas refresh"}</dd>
+            </div>
+            <div>
+              <dt>Catalog</dt>
+              <dd>{invalidation.reusableArtifacts.componentCatalog ? "catalog reusable" : "catalog refresh"}</dd>
+            </div>
+          </dl>
+          <ol className="control-panel__stages">
+            {invalidation.invalidatedStages.length ? (
+              invalidation.invalidatedStages.map((stage) => (
+                <li key={stage}>
+                  <span>{stage}</span>
+                  <small>{invalidation.stageImpacts[stage]}</small>
+                </li>
+              ))
+            ) : (
+              <li>
+                <span>none</span>
+                <small>reusable</small>
+              </li>
+            )}
+          </ol>
         </div>
       </section>
       <section className="run-panel" aria-labelledby="generation-run-heading">
