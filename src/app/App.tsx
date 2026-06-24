@@ -6,6 +6,7 @@ import { ArtifactTracePanel } from "../features/building-family/ui/ArtifactTrace
 import { AssemblyHall } from "../features/building-family/ui/AssemblyHall";
 import { ComponentForge } from "../features/building-family/ui/ComponentForge";
 import { PromptTracePanel } from "../features/building-family/ui/PromptTracePanel";
+import { createIndexedDbArtifactPersistence } from "../features/building-family/materials/indexedDbArtifactPersistence";
 import type { AssemblyHallFixture } from "../features/building-family/ui/assemblyHallFixture";
 import { decodeBrowserPngLayer } from "../features/building-family/ui/browserPngLayerDecoder";
 import { BuildingArtifactRegistry } from "../features/building-family/state/artifactRegistry";
@@ -136,6 +137,14 @@ function advanceSeed(seed: string): string {
   return `${match[1]}-${Number(match[2]) + 1}`;
 }
 
+function createBrowserCompletedFamilyPersistence() {
+  if (typeof globalThis.indexedDB === "undefined") {
+    return undefined;
+  }
+
+  return createIndexedDbArtifactPersistence();
+}
+
 export function App() {
   const [{ store, registry, controller }] = useState(() => {
     const routeSelection = currentRouteSelection();
@@ -151,6 +160,7 @@ export function App() {
       controller: new BuildingRunController({
         store: createdStore,
         registry: createdRegistry,
+        completedFamilyPersistence: createBrowserCompletedFamilyPersistence(),
         remoteMaterial: {
           decodePngLayer: decodeBrowserPngLayer
         }

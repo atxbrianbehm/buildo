@@ -2,6 +2,79 @@ import { act, fireEvent, render, screen, waitFor, within } from "@testing-librar
 import { App } from "./App";
 import { latestMaterialSourceCacheHit } from "./runEventSelectors";
 
+class FakeIdbRequest<T = unknown> {
+  error: Error | null = null;
+  result: T | undefined;
+  onsuccess: (() => void) | null = null;
+  onerror: (() => void) | null = null;
+
+  succeed(result: T): void {
+    this.result = result;
+    queueMicrotask(() => this.onsuccess?.());
+  }
+}
+
+class FakeObjectStore {
+  constructor(private readonly records: Map<string, unknown>) {}
+
+  put(record: { key: string; entry: unknown }): FakeIdbRequest<string> {
+    const request = new FakeIdbRequest<string>();
+    this.records.set(record.key, structuredClone(record));
+    request.succeed(record.key);
+    return request;
+  }
+
+  get(key: string): FakeIdbRequest<unknown> {
+    const request = new FakeIdbRequest<unknown>();
+    request.succeed(structuredClone(this.records.get(key)));
+    return request;
+  }
+
+  getAll(): FakeIdbRequest<unknown[]> {
+    const request = new FakeIdbRequest<unknown[]>();
+    request.succeed(Array.from(this.records.values()).map((record) => structuredClone(record)));
+    return request;
+  }
+}
+
+class FakeDatabase {
+  readonly records = new Map<string, unknown>();
+  readonly objectStoreNames = {
+    contains: () => this.created
+  };
+  private created = false;
+
+  createObjectStore(): FakeObjectStore {
+    this.created = true;
+    return new FakeObjectStore(this.records);
+  }
+
+  transaction(): { objectStore: () => FakeObjectStore } {
+    this.created = true;
+    return {
+      objectStore: () => new FakeObjectStore(this.records)
+    };
+  }
+}
+
+class FakeOpenRequest extends FakeIdbRequest<FakeDatabase> {
+  onupgradeneeded: (() => void) | null = null;
+}
+
+class FakeIndexedDbFactory {
+  readonly database = new FakeDatabase();
+
+  open(): FakeOpenRequest {
+    const request = new FakeOpenRequest();
+    queueMicrotask(() => {
+      request.result = this.database;
+      request.onupgradeneeded?.();
+      request.onsuccess?.();
+    });
+    return request;
+  }
+}
+
 async function waitForInitialRun(): Promise<void> {
   await waitFor(() => expect(screen.getByLabelText("Generation run state")).toHaveTextContent("complete"));
 }
@@ -120,6 +193,49 @@ describe("App", () => {
 
     expect(window.location.hash).toBe("#document=family-doc-alpha&room=atlasLab");
     expect(screen.getByLabelText("Route document identity")).toHaveTextContent("family-doc-alpha");
+  });
+
+  it("persists the completed family to IndexedDB using the route document id", async () => {
+    const fakeIndexedDb = new FakeIndexedDbFactory();
+    const previousIndexedDb = Object.getOwnPropertyDescriptor(globalThis, "indexedDB");
+    Object.defineProperty(globalThis, "indexedDB", {
+      configurable: true,
+      value: fakeIndexedDb as unknown as IDBFactory
+    });
+    window.history.replaceState(null, "", "/#document=family-doc-alpha&room=promptLab");
+
+    try {
+      render(<App />);
+      await waitForInitialRun();
+
+      const records = Array.from(fakeIndexedDb.database.records.values()) as Array<{
+        key: string;
+        entry: {
+          artifactType: string;
+          artifact: {
+            documentId: string;
+            runId: string;
+            requestHash: string;
+          };
+        };
+      }>;
+      const completedFamilyRecord = records.find((record) => record.entry.artifactType === "completed-family");
+
+      expect(completedFamilyRecord).toBeDefined();
+      const completedFamilyEntry = completedFamilyRecord!;
+      expect(completedFamilyEntry.key).toMatch(/^0\.1\.0:completed-family:[a-f0-9]{64}$/);
+      expect(completedFamilyEntry.entry.artifact).toMatchObject({
+        documentId: "family-doc-alpha",
+        requestHash: completedFamilyEntry.entry.artifact.requestHash
+      });
+      expect(completedFamilyEntry.entry.artifact.runId).toMatch(/^building-run-/);
+    } finally {
+      if (previousIndexedDb) {
+        Object.defineProperty(globalThis, "indexedDB", previousIndexedDb);
+      } else {
+        Reflect.deleteProperty(globalThis, "indexedDB");
+      }
+    }
   });
 
   it("exposes committed roof, trim, and seed controls with invalidation feedback", async () => {
