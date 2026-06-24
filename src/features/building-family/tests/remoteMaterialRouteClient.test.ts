@@ -90,6 +90,36 @@ describe("remote material route client", () => {
     });
   });
 
+  it("passes the caller abort signal into the hosted route fetch", async () => {
+    const abortController = new AbortController();
+    const fetchCalls: Array<{ input: string; init: RequestInit }> = [];
+
+    await requestRemoteMaterialImages(
+      { runId: "route-client-signal-run", requests: [sourceRequest()], signal: abortController.signal },
+      {
+        fetcher: async (input, init) => {
+          fetchCalls.push({ input: String(input), init: init ?? {} });
+          return {
+            ok: true,
+            status: 200,
+            json: async () => ({
+              schemaVersion: "0.1.0",
+              status: "fallback",
+              providerId: "procedural",
+              requestHash: "route-fallback-hash",
+              acceptedRequestCount: 1,
+              cacheStatus: "not-checked",
+              diagnostics: []
+            })
+          } as Response;
+        }
+      }
+    );
+
+    expect(fetchCalls).toHaveLength(1);
+    expect(fetchCalls[0].init.signal).toBe(abortController.signal);
+  });
+
   it("preserves route fallback diagnostics without image artifacts", async () => {
     const result = await requestRemoteMaterialImages(
       { runId: "route-client-fallback-run", requests: [sourceRequest()] },

@@ -39,13 +39,15 @@ function routeRequest(
     remoteMaterialTimeoutMs?: number;
     remoteMaterialConcurrencyLimit?: number;
     remoteMaterialRetryCount?: number;
+    signal?: AbortSignal;
   } = {}
 ): Promise<Response> {
   return handleMaterialProviderRequest(
     new Request("http://127.0.0.1/api/building-material-provider", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
+      signal: options.signal
     }),
     { env, ...options }
   );
@@ -482,6 +484,70 @@ describe("material provider route", () => {
             image: {
               format: "png",
               b64Json: encodedPng("fresh-wall")
+            }
+          })
+        ]
+      })
+    );
+  });
+
+  it("returns a cancellation diagnostic without retrying or caching aborted provider work", async () => {
+    const cache = createInMemoryRemoteMaterialArtifactCache();
+    const requestAbortController = new AbortController();
+    const env = {
+      BUILDING_MATERIAL_PROVIDER: "openai",
+      OPENAI_API_KEY: "sk-buildo-secret-test-key",
+      OPENAI_IMAGE_MODEL: "gpt-image-test"
+    };
+    let transportCallCount = 0;
+    let receivedProviderSignal: AbortSignal | undefined;
+
+    const cancelledResponse = await routeRequest(validPayload, env, {
+      signal: requestAbortController.signal,
+      remoteMaterialCache: cache,
+      remoteMaterialRetryCount: 3,
+      openAITransport: async (_request, signal) => {
+        transportCallCount += 1;
+        receivedProviderSignal = signal;
+        requestAbortController.abort();
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        throw new Error("transport aborted with sk-buildo-secret-test-key");
+      }
+    });
+    const cancelledBodyText = await cancelledResponse.text();
+
+    expect(receivedProviderSignal?.aborted).toBe(true);
+    expect(transportCallCount).toBe(1);
+    expect(cancelledBodyText).not.toContain("sk-buildo-secret-test-key");
+    expect(JSON.parse(cancelledBodyText)).toEqual(
+      expect.objectContaining({
+        status: "fallback",
+        providerId: "procedural",
+        cacheStatus: "not-checked",
+        diagnostics: expect.arrayContaining([
+          expect.objectContaining({
+            code: "remoteMaterialProvider.cancelled",
+            severity: "warning"
+          })
+        ])
+      })
+    );
+
+    const freshResponse = await routeRequest(validPayload, env, {
+      remoteMaterialCache: cache,
+      openAITransport: async () => ({ data: [{ b64_json: encodedPng("fresh-after-cancel") }] })
+    });
+    const freshBody = await readJson(freshResponse);
+
+    expect(freshBody).toEqual(
+      expect.objectContaining({
+        status: "generated",
+        cacheStatus: "miss",
+        artifacts: [
+          expect.objectContaining({
+            image: {
+              format: "png",
+              b64Json: encodedPng("fresh-after-cancel")
             }
           })
         ]

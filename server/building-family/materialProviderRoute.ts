@@ -239,6 +239,14 @@ function openAITimeoutDiagnostic(timeoutMs: number): Diagnostic {
   };
 }
 
+function openAICancelledDiagnostic(): Diagnostic {
+  return {
+    code: "remoteMaterialProvider.cancelled",
+    message: "OpenAI material provider request was cancelled; procedural material generation should be used.",
+    severity: "warning"
+  };
+}
+
 async function parseJsonPayload(request: Request): Promise<unknown> {
   try {
     return await request.json();
@@ -274,6 +282,12 @@ function fallbackResponse(
 class RemoteMaterialProviderTimeoutError extends Error {
   constructor(readonly timeoutMs: number) {
     super("Remote material provider timed out.");
+  }
+}
+
+class RemoteMaterialProviderCancelledError extends Error {
+  constructor() {
+    super("Remote material provider request was cancelled.");
   }
 }
 
@@ -357,20 +371,39 @@ async function generateWithTimeout(
   }
 
   let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  let rejectCancellation: ((error: RemoteMaterialProviderCancelledError) => void) | undefined;
   const timeout = new Promise<never>((_resolve, reject) => {
     timeoutId = setTimeout(() => {
       providerAbortController.abort();
       reject(new RemoteMaterialProviderTimeoutError(timeoutMs));
     }, timeoutMs);
   });
+  const cancellation = new Promise<never>((_resolve, reject) => {
+    rejectCancellation = reject;
+  });
+  const rejectIfCancelled = () => {
+    if (requestSignal.aborted) {
+      rejectCancellation?.(new RemoteMaterialProviderCancelledError());
+    }
+  };
+  if (requestSignal.aborted) {
+    rejectIfCancelled();
+  } else {
+    requestSignal.addEventListener("abort", rejectIfCancelled, { once: true });
+  }
 
   try {
-    return await Promise.race([provider.generate(sourceRequest, providerAbortController.signal), timeout]);
+    return await Promise.race([
+      provider.generate(sourceRequest, providerAbortController.signal),
+      timeout,
+      cancellation
+    ]);
   } finally {
     if (timeoutId) {
       clearTimeout(timeoutId);
     }
     requestSignal.removeEventListener("abort", abortProvider);
+    requestSignal.removeEventListener("abort", rejectIfCancelled);
   }
 }
 
@@ -386,7 +419,11 @@ async function generateWithRetry(
     try {
       return await generateWithTimeout(provider, sourceRequest, requestSignal, timeoutMs);
     } catch (error) {
-      if (error instanceof RemoteMaterialProviderTimeoutError || attempt >= retryCount) {
+      if (
+        error instanceof RemoteMaterialProviderTimeoutError ||
+        error instanceof RemoteMaterialProviderCancelledError ||
+        attempt >= retryCount
+      ) {
         throw error;
       }
       attempt += 1;
@@ -492,6 +529,9 @@ export async function handleMaterialProviderRequest(
       return fallbackResponse(requestHash, payloadResult.data.requests.length, [
         openAITimeoutDiagnostic(error.timeoutMs)
       ]);
+    }
+    if (error instanceof RemoteMaterialProviderCancelledError) {
+      return fallbackResponse(requestHash, payloadResult.data.requests.length, [openAICancelledDiagnostic()]);
     }
 
     return fallbackResponse(requestHash, payloadResult.data.requests.length, [fallbackDiagnostic(env)]);

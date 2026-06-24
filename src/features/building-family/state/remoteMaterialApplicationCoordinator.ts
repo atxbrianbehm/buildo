@@ -50,6 +50,7 @@ export interface ApplyRemoteMaterialRouteOverlaysInput {
   requests: MaterialSourceRequest[];
   proceduralArtifacts: MaterialSourceArtifact[];
   decodePngLayer: PngLayerDecoder;
+  signal?: AbortSignal;
   requestRemoteImages?: RemoteMaterialImageRequester;
   overlayOptions?: RemoteMaterialOverlayOptions;
 }
@@ -119,7 +120,8 @@ export async function applyRemoteMaterialRouteOverlays(
   const requestRemoteImages = input.requestRemoteImages ?? requestRemoteMaterialImages;
   const routeResult = await requestRemoteImages({
     runId: input.runId,
-    requests: input.requests
+    requests: input.requests,
+    signal: input.signal
   });
   const diagnostics: Diagnostic[] = [...routeResult.diagnostics];
   const requestsBySourceId = new Map(input.requests.map((request) => [request.sourceId, request]));

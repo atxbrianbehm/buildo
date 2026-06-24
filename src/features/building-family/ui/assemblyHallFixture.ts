@@ -396,6 +396,7 @@ export async function createAssemblyHallFixture(
           requests: remoteRequests,
           proceduralArtifacts: materialSources,
           decodePngLayer: input.remoteMaterial.decodePngLayer,
+          signal,
           requestRemoteImages: input.remoteMaterial.requestRemoteImages,
           overlayOptions: input.remoteMaterial.overlayOptions
         });

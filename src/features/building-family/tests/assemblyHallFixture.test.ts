@@ -29,11 +29,13 @@ const createFixtureWithOptions = createAssemblyHallFixture as (input?: {
   reusableArtifacts?: Pick<AssemblyHallFixture, "catalog" | "debugExport" | "packedAtlas">;
   materialProvider?: MaterialGenerationProvider;
   runId?: string;
+  signal?: AbortSignal;
   remoteMaterial?: {
     selectRequests?: (requests: MaterialSourceRequest[]) => MaterialSourceRequest[];
     requestRemoteImages: (input: {
       runId: string;
       requests: MaterialSourceRequest[];
+      signal?: AbortSignal;
     }) => Promise<RemoteMaterialRouteResult>;
     decodePngLayer: (input: PngLayerDecoderInput) => Promise<PixelLayer>;
   };
@@ -325,10 +327,13 @@ describe("assembly hall fixture", () => {
     );
 
     expect(routeCalls).toHaveLength(1);
-    expect(routeCalls[0]).toEqual({
-      runId: "fixture-remote-material-run",
-      requests: [expect.objectContaining({ sourceId: "source.wall.primary" })]
-    });
+    expect(routeCalls[0]).toEqual(
+      expect.objectContaining({
+        runId: "fixture-remote-material-run",
+        requests: [expect.objectContaining({ sourceId: "source.wall.primary" })],
+        signal: expect.any(AbortSignal)
+      })
+    );
     expect(decodeCalls).toEqual([
       {
         b64Json: "remote-png-b64:source.wall.primary",
@@ -377,5 +382,42 @@ describe("assembly hall fixture", () => {
 
     fixture.familyRuntime.dispose();
     baseline.familyRuntime.dispose();
+  });
+
+  it("passes the fixture abort signal into remote material route requests", async () => {
+    const abortController = new AbortController();
+    const routeCalls: Array<{ runId: string; requests: MaterialSourceRequest[]; signal?: AbortSignal }> = [];
+
+    const fixture = await createFixtureWithOptions({
+      runId: "fixture-remote-material-signal-run",
+      signal: abortController.signal,
+      promptControls: explicitPromptControls,
+      remoteMaterial: {
+        selectRequests: (requests) => requests.filter((request) => request.sourceId === "source.wall.primary"),
+        requestRemoteImages: async (input) => {
+          routeCalls.push(input);
+          return {
+            schemaVersion: "0.1.0",
+            status: "fallback",
+            providerId: "procedural",
+            requestHash: "fixture-route-fallback-hash",
+            acceptedRequestCount: input.requests.length,
+            cacheStatus: "not-checked",
+            diagnostics: []
+          };
+        },
+        decodePngLayer: async (input) => makeLayer(input.widthPx, input.heightPx, [200, 50, 0, 128])
+      }
+    });
+
+    expect(routeCalls).toEqual([
+      {
+        runId: "fixture-remote-material-signal-run",
+        requests: [expect.objectContaining({ sourceId: "source.wall.primary" })],
+        signal: abortController.signal
+      }
+    ]);
+
+    fixture.familyRuntime.dispose();
   });
 });

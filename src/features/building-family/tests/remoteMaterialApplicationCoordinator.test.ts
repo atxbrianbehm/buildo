@@ -190,6 +190,39 @@ describe("remote material application coordinator", () => {
     });
   });
 
+  it("forwards the caller abort signal to the remote image requester", async () => {
+    const abortController = new AbortController();
+    const routeCalls: Array<{ runId: string; requests: MaterialSourceRequest[]; signal?: AbortSignal }> = [];
+
+    await applyRemoteMaterialRouteOverlays({
+      runId: "remote-application-signal-run",
+      requests: [sourceRequest()],
+      proceduralArtifacts: [proceduralArtifact()],
+      signal: abortController.signal,
+      requestRemoteImages: async (input) => {
+        routeCalls.push(input);
+        return {
+          schemaVersion: "0.1.0",
+          status: "fallback",
+          providerId: "procedural",
+          requestHash: "fallback-route-hash",
+          acceptedRequestCount: 1,
+          cacheStatus: "not-checked",
+          diagnostics: []
+        };
+      },
+      decodePngLayer: async (input) => makeLayer(input.widthPx, input.heightPx, [200, 50, 0, 128])
+    });
+
+    expect(routeCalls).toEqual([
+      {
+        runId: "remote-application-signal-run",
+        requests: [sourceRequest()],
+        signal: abortController.signal
+      }
+    ]);
+  });
+
   it("records a diagnostic when a generated route response omits a requested source", async () => {
     const result = await applyRemoteMaterialRouteOverlays({
       runId: "remote-application-missing-source-run",

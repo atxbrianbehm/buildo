@@ -60,6 +60,7 @@ export type RemoteMaterialRouteFetch = (
 export interface RequestRemoteMaterialImagesInput {
   runId: string;
   requests: MaterialSourceRequest[];
+  signal?: AbortSignal;
 }
 
 export interface RequestRemoteMaterialImagesOptions {
@@ -114,7 +115,8 @@ export async function requestRemoteMaterialImages(
         runId: input.runId,
         outputFormat: "rgba8-layer-set",
         requests: input.requests
-      })
+      }),
+      signal: input.signal
     });
     body = await response.json();
   } catch {
