@@ -359,10 +359,16 @@ describe("building run controller", () => {
       remoteMaterial
     });
 
-    await controller.startDemoRun(defaultBuildingPromptControls);
+    const remoteEnabledPrompt = {
+      ...defaultBuildingPromptControls,
+      remoteMaterialEnabled: true
+    };
+
+    await controller.startDemoRun(remoteEnabledPrompt);
     const floorRerunPrompt = {
       ...defaultBuildingPromptControls,
-      floorCount: defaultBuildingPromptControls.floorCount + 1
+      floorCount: defaultBuildingPromptControls.floorCount + 1,
+      remoteMaterialEnabled: true
     };
     await controller.startDemoRun(floorRerunPrompt);
     await controller.startDemoRun({
@@ -370,7 +376,8 @@ describe("building run controller", () => {
       seeds: {
         ...floorRerunPrompt.seeds,
         family: "family-seed-regenerated"
-      }
+      },
+      remoteMaterialEnabled: true
     });
 
     const baselineInput = createFixture.mock.calls[0][0] as CreateAssemblyHallFixtureInput;
@@ -384,6 +391,45 @@ describe("building run controller", () => {
     expect(floorRerunInput.remoteMaterial).toBeUndefined();
     expect(newFamilyInput.reusableArtifacts).toEqual({});
     expect(newFamilyInput.remoteMaterial).toBe(remoteMaterial);
+  });
+
+  it("keeps the remote material lane disabled until the prompt feature flag is enabled", async () => {
+    const store = createBuildingStore();
+    const registry = new BuildingArtifactRegistry();
+    const disabledFixture = fakeAssemblyFixture("disabled");
+    const enabledFixture = fakeAssemblyFixture("enabled", {
+      atlasId: "enabled-atlas",
+      atlasContentHash: "enabled-atlas-hash"
+    });
+    const remoteMaterial: NonNullable<CreateAssemblyHallFixtureInput["remoteMaterial"]> = {
+      decodePngLayer: vi.fn(async (input) => ({
+        widthPx: input.widthPx,
+        heightPx: input.heightPx,
+        channels: "rgba8" as const,
+        data: new Uint8ClampedArray(input.widthPx * input.heightPx * 4)
+      }))
+    };
+    const createFixture = vi.fn().mockResolvedValueOnce(disabledFixture).mockResolvedValueOnce(enabledFixture);
+    const controller = new BuildingRunController({
+      store,
+      registry,
+      createRunId: vi.fn().mockReturnValueOnce("run-001").mockReturnValueOnce("run-002"),
+      createFixture,
+      remoteMaterial
+    });
+
+    await controller.startDemoRun(defaultBuildingPromptControls);
+    await controller.startDemoRun({
+      ...defaultBuildingPromptControls,
+      remoteMaterialEnabled: true,
+      seeds: {
+        ...defaultBuildingPromptControls.seeds,
+        material: "material-seed-remote-enabled"
+      }
+    });
+
+    expect((createFixture.mock.calls[0][0] as CreateAssemblyHallFixtureInput).remoteMaterial).toBeUndefined();
+    expect((createFixture.mock.calls[1][0] as CreateAssemblyHallFixtureInput).remoteMaterial).toBe(remoteMaterial);
   });
 
   it("cancels a pending run, disposes its stale fixture, and keeps the prior completed scene active", async () => {
@@ -502,5 +548,20 @@ describe("building control invalidation state", () => {
 
     expect(store.getState().prompt.lockedComponentKeys).toEqual(["recipe.window.tall-arched.frame"]);
     expect(store.getState().controls.invalidation.changedControls).toEqual(["buildingSeed"]);
+  });
+
+  it("tracks the remote material feature flag as a material-source invalidation", () => {
+    const store = createBuildingStore();
+
+    expect(store.getState().prompt.remoteMaterialEnabled).toBe(false);
+
+    store.getState().updatePromptControls({ remoteMaterialEnabled: true });
+
+    expect(store.getState().prompt.remoteMaterialEnabled).toBe(true);
+    expect(store.getState().controls.invalidation.changedControls).toEqual(["remoteMaterial"]);
+    expect(store.getState().controls.invalidation.materialGenerationRequired).toBe(true);
+    expect(store.getState().controls.invalidation.stageImpacts.materialSources).toBe("full");
+    expect(store.getState().controls.invalidation.reusableArtifacts.packedAtlas).toBe(false);
+    expect(store.getState().controls.invalidation.reusableArtifacts.componentCatalog).toBe(true);
   });
 });

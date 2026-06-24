@@ -103,7 +103,7 @@ export class BuildingRunController {
     });
 
     try {
-      const remoteMaterial = reusableArtifacts.packedAtlas ? undefined : this.remoteMaterial;
+      const remoteMaterial = reusableArtifacts.packedAtlas || !prompt.remoteMaterialEnabled ? undefined : this.remoteMaterial;
       const fixturePromise = this.createFixture({
         runId,
         signal: abortController.signal,

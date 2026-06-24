@@ -22,6 +22,7 @@ export interface BuildingPromptControls {
   bayCount: number;
   roofType: BuildingRoofType;
   trimDensity: BuildingTrimDensity;
+  remoteMaterialEnabled: boolean;
   lockedComponentKeys: string[];
 }
 
@@ -89,6 +90,7 @@ export const defaultBuildingPromptControls: BuildingPromptControls = {
   bayCount: 7,
   roofType: "flat",
   trimDensity: "ornate",
+  remoteMaterialEnabled: false,
   lockedComponentKeys: []
 };
 

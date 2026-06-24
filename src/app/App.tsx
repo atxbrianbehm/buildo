@@ -7,6 +7,7 @@ import { AssemblyHall } from "../features/building-family/ui/AssemblyHall";
 import { ComponentForge } from "../features/building-family/ui/ComponentForge";
 import { PromptTracePanel } from "../features/building-family/ui/PromptTracePanel";
 import type { AssemblyHallFixture } from "../features/building-family/ui/assemblyHallFixture";
+import { decodeBrowserPngLayer } from "../features/building-family/ui/browserPngLayerDecoder";
 import { BuildingArtifactRegistry } from "../features/building-family/state/artifactRegistry";
 import { BuildingRunController } from "../features/building-family/state/buildingRunController";
 import {
@@ -115,7 +116,10 @@ export function App() {
       registry: createdRegistry,
       controller: new BuildingRunController({
         store: createdStore,
-        registry: createdRegistry
+        registry: createdRegistry,
+        remoteMaterial: {
+          decodePngLayer: decodeBrowserPngLayer
+        }
       })
     };
   });
@@ -335,6 +339,17 @@ export function App() {
                     value={promptControls.seeds.trim}
                     onChange={(event) => updatePromptControls({ seeds: { trim: event.currentTarget.value } })}
                   />
+                </label>
+                <label className="control-panel__toggle">
+                  <input
+                    aria-label="Remote Detail Provider"
+                    checked={promptControls.remoteMaterialEnabled}
+                    type="checkbox"
+                    onChange={(event) =>
+                      updatePromptControls({ remoteMaterialEnabled: event.currentTarget.checked })
+                    }
+                  />
+                  <span>Remote Detail Provider</span>
                 </label>
               </div>
               <div className="control-panel__actions" aria-label="Committed run controls">

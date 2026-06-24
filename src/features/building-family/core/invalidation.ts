@@ -35,6 +35,7 @@ export type BuildingControlName =
   | "roofType"
   | "trimDensity"
   | "localComponentLock"
+  | "remoteMaterial"
   | "weathering";
 
 export interface BuildingControlSnapshot {
@@ -45,6 +46,7 @@ export interface BuildingControlSnapshot {
   bayCount: number;
   roofType: string;
   trimDensity: string;
+  remoteMaterialEnabled?: boolean;
   weathering?: number;
   lockedComponentKeys?: string[];
 }
@@ -169,6 +171,12 @@ const controlImpactMatrix: Record<BuildingControlName, Record<BuildingInvalidati
     runtimeBuildingIr: "branchOrFullMvp",
     gpuScene: "full"
   },
+  remoteMaterial: {
+    ...noImpact,
+    materialSources: "full",
+    packedAtlas: "full",
+    gpuScene: "materialRefresh"
+  },
   weathering: {
     ...noImpact,
     normalizedSpec: "partial",
@@ -185,7 +193,8 @@ const legacyArtifactMatrix: Record<string, ArtifactKind[]> = {
   familySeed: ["intent", "spec", "atlas", "componentCatalog", "graph", "geometry"],
   materialSeed: ["atlas"],
   trimSeed: ["spec", "componentCatalog", "graph", "geometry"],
-  trimDensity: ["spec", "componentCatalog", "graph", "geometry"]
+  trimDensity: ["spec", "componentCatalog", "graph", "geometry"],
+  remoteMaterial: ["atlas"]
 };
 
 const impactPriority: Record<BuildingInvalidationImpact, number> = {
@@ -225,6 +234,9 @@ function changedControls(previous: BuildingControlSnapshot, next: BuildingContro
   if (previous.bayCount !== next.bayCount) changed.push("bayCount");
   if (previous.roofType !== next.roofType) changed.push("roofType");
   if (previous.trimDensity !== next.trimDensity) changed.push("trimDensity");
+  if (Boolean(previous.remoteMaterialEnabled) !== Boolean(next.remoteMaterialEnabled)) {
+    changed.push("remoteMaterial");
+  }
   if (previous.weathering !== next.weathering) changed.push("weathering");
   if (!arrayEquals(previous.lockedComponentKeys, next.lockedComponentKeys)) {
     changed.push("localComponentLock");

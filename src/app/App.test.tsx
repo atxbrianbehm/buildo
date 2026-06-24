@@ -135,6 +135,23 @@ describe("App", () => {
     expect(screen.getByLabelText("Generation run timeline")).toHaveTextContent("cache miss");
   });
 
+  it("keeps the remote material provider behind an explicit Prompt Lab toggle", async () => {
+    render(<App />);
+
+    expect(await screen.findByRole("heading", { name: "Control Invalidation" })).toBeInTheDocument();
+    await waitForInitialRun();
+
+    const remoteToggle = screen.getByRole("checkbox", { name: "Remote Detail Provider" });
+    expect(remoteToggle).not.toBeChecked();
+
+    fireEvent.click(remoteToggle);
+
+    expect(remoteToggle).toBeChecked();
+    expect(screen.getByLabelText("Invalidation preview")).toHaveTextContent("remoteMaterial");
+    expect(screen.getByLabelText("Invalidation preview")).toHaveTextContent("Material sources regenerate");
+    expect(screen.getByLabelText("Invalidation preview")).toHaveTextContent("packedAtlas");
+  });
+
   it("locks a Component Forge recipe and keeps the lock through a new-building rerun", async () => {
     render(<App />);
 

@@ -53,6 +53,7 @@ const defaultFixturePromptControls: BuildingPromptControls = {
   bayCount: 7,
   roofType: "flat",
   trimDensity: "ornate",
+  remoteMaterialEnabled: false,
   lockedComponentKeys: [],
   seeds: {
     family: "family-seed",
