@@ -16,6 +16,7 @@ export interface BuildingRunControllerOptions {
   createFixture?: (input: CreateAssemblyHallFixtureInput & { runId: string; signal: AbortSignal }) => Promise<AssemblyHallFixture>;
   createRunId?: () => string;
   nowMs?: () => number;
+  remoteMaterial?: CreateAssemblyHallFixtureInput["remoteMaterial"];
 }
 
 export interface StartDemoRunResult {
@@ -63,6 +64,7 @@ export class BuildingRunController {
   private readonly createFixture: (input: CreateAssemblyHallFixtureInput & { runId: string; signal: AbortSignal }) => Promise<AssemblyHallFixture>;
   private readonly createRunId: () => string;
   private readonly nowMs: () => number;
+  private readonly remoteMaterial: CreateAssemblyHallFixtureInput["remoteMaterial"];
   private activeRun: ActiveRun | undefined;
   private lastCompletedFixture: AssemblyHallFixture | undefined;
   private lastCompletedPrompt: BuildingPromptControls | undefined;
@@ -73,6 +75,7 @@ export class BuildingRunController {
     this.createFixture = options.createFixture ?? createAssemblyHallFixture;
     this.createRunId = options.createRunId ?? defaultRunId;
     this.nowMs = options.nowMs ?? (() => Date.now());
+    this.remoteMaterial = options.remoteMaterial;
   }
 
   async startDemoRun(prompt: BuildingPromptControls = defaultBuildingPromptControls): Promise<StartDemoRunResult> {
@@ -100,11 +103,13 @@ export class BuildingRunController {
     });
 
     try {
+      const remoteMaterial = reusableArtifacts.packedAtlas ? undefined : this.remoteMaterial;
       const fixturePromise = this.createFixture({
         runId,
         signal: abortController.signal,
         promptControls: prompt,
-        reusableArtifacts
+        reusableArtifacts,
+        ...(remoteMaterial ? { remoteMaterial } : {})
       });
       const [requestHash, fixture] = await Promise.all([requestHashPromise, fixturePromise]);
       if (abortController.signal.aborted || this.activeRun?.runId !== runId) {

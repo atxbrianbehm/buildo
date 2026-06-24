@@ -1,5 +1,5 @@
 import { vi } from "vitest";
-import type { AssemblyHallFixture } from "../ui/assemblyHallFixture";
+import type { AssemblyHallFixture, CreateAssemblyHallFixtureInput } from "../ui/assemblyHallFixture";
 import { BuildingArtifactRegistry } from "../state/artifactRegistry";
 import { BuildingRunController } from "../state/buildingRunController";
 import { defaultBuildingPromptControls, createBuildingStore } from "../state/buildingStore";
@@ -318,6 +318,72 @@ describe("building run controller", () => {
       cacheHit: false,
       outputArtifactId: "component-catalog:catalog-regenerated"
     });
+  });
+
+  it("passes opt-in remote material wiring only to material-generating fixture runs", async () => {
+    const store = createBuildingStore();
+    const registry = new BuildingArtifactRegistry();
+    const baselineFixture = fakeAssemblyFixture("baseline", {
+      atlasId: "atlas-shared",
+      atlasContentHash: "atlas-content-shared",
+      catalogId: "catalog-shared"
+    });
+    const floorRerunFixture = fakeAssemblyFixture("floor-rerun", {
+      atlasId: "atlas-shared",
+      atlasContentHash: "atlas-content-shared",
+      catalogId: "catalog-shared"
+    });
+    const newFamilyFixture = fakeAssemblyFixture("new-family", {
+      atlasId: "atlas-regenerated",
+      atlasContentHash: "atlas-content-regenerated",
+      catalogId: "catalog-regenerated"
+    });
+    const remoteMaterial: NonNullable<CreateAssemblyHallFixtureInput["remoteMaterial"]> = {
+      decodePngLayer: vi.fn(async (input) => ({
+        widthPx: input.widthPx,
+        heightPx: input.heightPx,
+        channels: "rgba8" as const,
+        data: new Uint8ClampedArray(input.widthPx * input.heightPx * 4)
+      }))
+    };
+    const createFixture = vi
+      .fn()
+      .mockResolvedValueOnce(baselineFixture)
+      .mockResolvedValueOnce(floorRerunFixture)
+      .mockResolvedValueOnce(newFamilyFixture);
+    const controller = new BuildingRunController({
+      store,
+      registry,
+      createRunId: vi.fn().mockReturnValueOnce("run-001").mockReturnValueOnce("run-002").mockReturnValueOnce("run-003"),
+      createFixture,
+      remoteMaterial
+    });
+
+    await controller.startDemoRun(defaultBuildingPromptControls);
+    const floorRerunPrompt = {
+      ...defaultBuildingPromptControls,
+      floorCount: defaultBuildingPromptControls.floorCount + 1
+    };
+    await controller.startDemoRun(floorRerunPrompt);
+    await controller.startDemoRun({
+      ...floorRerunPrompt,
+      seeds: {
+        ...floorRerunPrompt.seeds,
+        family: "family-seed-regenerated"
+      }
+    });
+
+    const baselineInput = createFixture.mock.calls[0][0] as CreateAssemblyHallFixtureInput;
+    const floorRerunInput = createFixture.mock.calls[1][0] as CreateAssemblyHallFixtureInput;
+    const newFamilyInput = createFixture.mock.calls[2][0] as CreateAssemblyHallFixtureInput;
+    expect(baselineInput.remoteMaterial).toBe(remoteMaterial);
+    expect(floorRerunInput.reusableArtifacts).toMatchObject({
+      packedAtlas: baselineFixture.packedAtlas,
+      debugExport: baselineFixture.debugExport
+    });
+    expect(floorRerunInput.remoteMaterial).toBeUndefined();
+    expect(newFamilyInput.reusableArtifacts).toEqual({});
+    expect(newFamilyInput.remoteMaterial).toBe(remoteMaterial);
   });
 
   it("cancels a pending run, disposes its stale fixture, and keeps the prior completed scene active", async () => {
