@@ -13,6 +13,7 @@ export interface AdaptPsgEvaluationInput {
   prompt: string;
   seeds: BuildingIntent["seeds"];
   evaluation: PsgEvaluationResult;
+  locks?: BuildingIntent["locks"];
   promptOverrides?: BuildingRequested & { stylePackId?: string };
 }
 
@@ -123,7 +124,7 @@ export function adaptPsgEvaluationToBuildingIntent(
       ...overrides
     },
     seeds: input.seeds,
-    locks: [],
+    locks: input.locks ?? [],
     psg: {
       evaluatedVariables: input.evaluation.variables,
       traceId: `trace-${input.evaluation.trace.length}-${input.evaluation.outputs.length}`
@@ -132,4 +133,3 @@ export function adaptPsgEvaluationToBuildingIntent(
 
   return { intent, diagnostics };
 }
-

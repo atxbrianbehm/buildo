@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
+import { vi } from "vitest";
 import { ComponentForge } from "../ui/ComponentForge";
 import { createAssemblyHallFixture } from "../ui/assemblyHallFixture";
 
@@ -41,5 +42,48 @@ describe("ComponentForge", () => {
 
     expect(screen.getByLabelText("Selected semantic anchors")).toHaveTextContent("origin");
     expect(screen.getByLabelText("Selected component recipe JSON")).toHaveTextContent('"role": "window"');
+
+    fixture.familyRuntime.dispose();
+  });
+
+  it("locks and unlocks the selected component recipe through the parent control surface", async () => {
+    const fixture = await createAssemblyHallFixture();
+    const lockedComponentKeys: string[] = [];
+    const toggleLock = vi.fn((componentKey: string) => {
+      const index = lockedComponentKeys.indexOf(componentKey);
+      if (index === -1) {
+        lockedComponentKeys.push(componentKey);
+      } else {
+        lockedComponentKeys.splice(index, 1);
+      }
+    });
+
+    const { rerender } = render(
+      <ComponentForge
+        fixture={fixture}
+        lockedComponentKeys={lockedComponentKeys}
+        onToggleComponentLock={toggleLock}
+      />
+    );
+
+    fireEvent.change(screen.getByRole("combobox", { name: "Component selector" }), {
+      target: { value: "component-gallery.recipe.window.tall-arched.frame" }
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Lock selected component" }));
+
+    expect(toggleLock).toHaveBeenCalledWith("recipe.window.tall-arched.frame");
+    rerender(
+      <ComponentForge
+        fixture={fixture}
+        lockedComponentKeys={lockedComponentKeys}
+        onToggleComponentLock={toggleLock}
+      />
+    );
+    expect(screen.getByLabelText("Component lock status")).toHaveTextContent("recipe.window.tall-arched.frame");
+    expect(screen.getByLabelText("Selected component recipe")).toHaveTextContent("Locked");
+    expect(screen.getByRole("button", { name: "Unlock selected component" })).toBeInTheDocument();
+
+    fixture.familyRuntime.dispose();
   });
 });

@@ -22,6 +22,7 @@ export interface BuildingPromptControls {
   bayCount: number;
   roofType: BuildingRoofType;
   trimDensity: BuildingTrimDensity;
+  lockedComponentKeys: string[];
 }
 
 export type BuildingPromptControlPatch = Partial<Omit<BuildingPromptControls, "seeds">> & {
@@ -87,7 +88,8 @@ export const defaultBuildingPromptControls: BuildingPromptControls = {
   floorCount: 4,
   bayCount: 7,
   roofType: "flat",
-  trimDensity: "ornate"
+  trimDensity: "ornate",
+  lockedComponentKeys: []
 };
 
 function clonePromptControls(prompt: BuildingPromptControls): BuildingPromptControls {
@@ -95,7 +97,8 @@ function clonePromptControls(prompt: BuildingPromptControls): BuildingPromptCont
     ...prompt,
     seeds: {
       ...prompt.seeds
-    }
+    },
+    lockedComponentKeys: [...prompt.lockedComponentKeys]
   };
 }
 
@@ -130,7 +133,8 @@ function mergePromptControls(previous: BuildingPromptControls, patch: BuildingPr
     seeds: {
       ...previous.seeds,
       ...(patch.seeds ?? {})
-    }
+    },
+    lockedComponentKeys: [...(patch.lockedComponentKeys ?? previous.lockedComponentKeys)]
   };
 }
 

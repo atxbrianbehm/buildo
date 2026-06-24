@@ -416,4 +416,25 @@ describe("building control invalidation state", () => {
     store.getState().updatePromptControls({ seeds: { building: "building-seed-2" } });
     expect(store.getState().controls.invalidation.changedControls).toEqual(["buildingSeed"]);
   });
+
+  it("tracks local component locks as prompt controls with branch-scoped invalidation", () => {
+    const store = createBuildingStore();
+
+    store.getState().updatePromptControls({
+      lockedComponentKeys: ["recipe.window.tall-arched.frame"]
+    });
+
+    expect(store.getState().prompt.lockedComponentKeys).toEqual(["recipe.window.tall-arched.frame"]);
+    expect(store.getState().controls.invalidation.changedControls).toEqual(["localComponentLock"]);
+    expect(store.getState().controls.invalidation.materialGenerationRequired).toBe(false);
+    expect(store.getState().controls.invalidation.stageImpacts.componentCatalog).toBe("partial");
+    expect(store.getState().controls.invalidation.stageImpacts.buildingGraph).toBe("branch");
+    expect(store.getState().controls.invalidation.stageImpacts.runtimeBuildingIr).toBe("branchOrFullMvp");
+
+    store.getState().commitPromptControls();
+    store.getState().updatePromptControls({ seeds: { building: "building-seed-reroll" } });
+
+    expect(store.getState().prompt.lockedComponentKeys).toEqual(["recipe.window.tall-arched.frame"]);
+    expect(store.getState().controls.invalidation.changedControls).toEqual(["buildingSeed"]);
+  });
 });

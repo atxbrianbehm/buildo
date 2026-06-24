@@ -188,6 +188,19 @@ try {
   const forgeAtlasSlots = page.getByRole("table", { name: "Selected atlas slots" });
   await forgeAtlasSlots.getByRole("cell", { name: "glass.primary", exact: true }).waitFor({ state: "visible" });
   await forgeAtlasSlots.getByRole("cell", { name: "frame.primary", exact: true }).waitFor({ state: "visible" });
+  await page.getByRole("button", { name: "Lock selected component" }).click();
+  await page
+    .getByLabel("Component lock status")
+    .getByText("recipe.window.tall-arched.frame")
+    .waitFor({ state: "visible" });
+  await page.getByLabel("Invalidation preview").getByText("localComponentLock").waitFor({ state: "visible" });
+  await page.getByLabel("Invalidation preview").getByText("branchOrFullMvp").waitFor({ state: "visible" });
+  await page.getByRole("button", { name: "New Building" }).click();
+  await page.getByLabel("Generation run state").getByText("complete").waitFor({ state: "visible" });
+  await page
+    .getByLabel("Component lock status")
+    .getByText("recipe.window.tall-arched.frame")
+    .waitFor({ state: "visible" });
   await page.getByRole("heading", { name: "Assembly Hall" }).waitFor({ state: "visible" });
   await page.getByRole("combobox", { name: "Reveal through stage" }).selectOption("facade");
   await page.getByLabel("Assembly stage visibility").getByText("openings").waitFor({ state: "visible" });

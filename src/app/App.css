@@ -813,6 +813,55 @@ h1 {
   accent-color: #50775d;
 }
 
+.component-forge__lock-controls {
+  display: grid;
+  grid-template-columns: minmax(140px, auto) minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+}
+
+.component-forge__lock-controls button {
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid rgba(24, 32, 28, 0.16);
+  border-radius: 6px;
+  color: #f9fbf6;
+  background: #263c31;
+  cursor: pointer;
+  font-size: 0.84rem;
+  font-weight: 800;
+  transition-duration: 140ms;
+  transition-property: opacity, transform;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
+.component-forge__lock-controls button[aria-pressed="true"] {
+  color: #2d241c;
+  background: #e8d0b5;
+}
+
+.component-forge__lock-controls button:disabled {
+  cursor: not-allowed;
+  opacity: 0.54;
+}
+
+.component-forge__lock-controls button:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.component-forge__lock-controls button:focus-visible {
+  outline: 3px solid rgba(70, 118, 86, 0.28);
+  outline-offset: 2px;
+}
+
+.component-forge__lock-controls p {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: #526159;
+  font-size: 0.8rem;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
 .component-forge__grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -840,6 +889,11 @@ h1 {
   box-shadow:
     0 16px 36px rgba(54, 83, 64, 0.14),
     inset 0 0 0 1px rgba(80, 119, 93, 0.22);
+}
+
+.component-forge__tile[data-locked="true"] {
+  border-color: rgba(114, 83, 50, 0.42);
+  background: #f7f1e9;
 }
 
 .component-forge__tile span {
@@ -1359,6 +1413,7 @@ h1 {
 
   .component-forge__grid,
   .component-forge__toggles,
+  .component-forge__lock-controls,
   .run-panel__timeline {
     grid-template-columns: 1fr;
   }

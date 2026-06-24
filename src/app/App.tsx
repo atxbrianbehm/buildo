@@ -55,7 +55,8 @@ function promptWithPatch(
     seeds: {
       ...promptControls.seeds,
       ...(patch.seeds ?? {})
-    }
+    },
+    lockedComponentKeys: [...(patch.lockedComponentKeys ?? promptControls.lockedComponentKeys)]
   };
 }
 
@@ -110,6 +111,15 @@ export function App() {
     const nextPrompt = promptWithPatch(promptControls, patch);
     updatePromptControls(patch);
     startRun(nextPrompt);
+  }
+
+  function toggleComponentLock(componentKey: string): void {
+    const isLocked = promptControls.lockedComponentKeys.includes(componentKey);
+    updatePromptControls({
+      lockedComponentKeys: isLocked
+        ? promptControls.lockedComponentKeys.filter((lockedKey) => lockedKey !== componentKey)
+        : [...promptControls.lockedComponentKeys, componentKey].sort()
+    });
   }
 
   return (
@@ -380,7 +390,13 @@ export function App() {
           </div>
         )}
       </section>
-      {fixture ? <ComponentForge fixture={fixture} /> : null}
+      {fixture ? (
+        <ComponentForge
+          fixture={fixture}
+          lockedComponentKeys={promptControls.lockedComponentKeys}
+          onToggleComponentLock={toggleComponentLock}
+        />
+      ) : null}
       {fixture ? <AssemblyHall fixture={fixture} /> : null}
     </main>
   );

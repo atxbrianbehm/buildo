@@ -1,6 +1,6 @@
 # Dynamic Building Family Integration Map
 
-**Status:** Milestone 5H expanded prompt controls foundation
+**Status:** Milestone 5I local component lock foundation
 **Plan source:** `docs/plans/dynamic-building-family.md`
 **Workspace:** `C:\Users\behmb\Documents\Cascade Projects\buildo`
 **Date:** 2026-06-24
@@ -46,7 +46,7 @@ docs/
     dynamic-building-family.md
 ```
 
-The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, the Milestone 3B pure compiler IR foundation, the Milestone 3C compiler worker boundary, the Milestone 3D component gallery data foundation, the Milestone 4A renderer adapter foundation, the Milestone 4B atlas texture/material sampling foundation, the Milestone 4C shared family runtime foundation, the Milestone 4D Assembly Hall rendered fixture foundation, the Milestone 4E renderer resource disposal foundation, the Milestone 4F Assembly Hall semantic selection foundation, the Milestone 4G WebGPU renderer activation foundation, the Milestone 5A run controller / Zustand state foundation, the Milestone 5B control invalidation foundation, the Milestone 5C committed rerun control/artifact-lineage foundation, the Milestone 5D cancellation UI/stale-run preservation foundation, the Milestone 5E Component Forge UI foundation, the Milestone 5F stage-driven Assembly Hall reveal foundation, the Milestone 5G artifact trace/provenance foundation, and the Milestone 5H expanded prompt controls foundation. No router, lock/unlock controls, per-provider cancellation diagnostics, 16-variant stress view, or complete four-room flow has been implemented.
+The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, the Milestone 3B pure compiler IR foundation, the Milestone 3C compiler worker boundary, the Milestone 3D component gallery data foundation, the Milestone 4A renderer adapter foundation, the Milestone 4B atlas texture/material sampling foundation, the Milestone 4C shared family runtime foundation, the Milestone 4D Assembly Hall rendered fixture foundation, the Milestone 4E renderer resource disposal foundation, the Milestone 4F Assembly Hall semantic selection foundation, the Milestone 4G WebGPU renderer activation foundation, the Milestone 5A run controller / Zustand state foundation, the Milestone 5B control invalidation foundation, the Milestone 5C committed rerun control/artifact-lineage foundation, the Milestone 5D cancellation UI/stale-run preservation foundation, the Milestone 5E Component Forge UI foundation, the Milestone 5F stage-driven Assembly Hall reveal foundation, the Milestone 5G artifact trace/provenance foundation, the Milestone 5H expanded prompt controls foundation, and the Milestone 5I local component lock foundation. No router, per-provider cancellation diagnostics, 16-variant stress view, or complete four-room flow has been implemented.
 
 ## 2. Active Instructions
 
@@ -708,6 +708,35 @@ The app-shell focused test verifies roof, trim-density, material-seed, and trim-
 
 This is still a compact root-shell control surface rather than the finished routed Prompt Lab room. PSG preset selection, richer prompt interpretation diagnostics, lock/unlock controls, provider progress, and the 16-variant family stress view remain future Milestone 5 slices.
 
+## 6.22 Local Component Lock Foundation
+
+Actual Milestone 5I lock-control paths:
+
+```text
+src/features/building-family/state/buildingStore.ts
+src/features/building-family/psg/psgBuildingIntentAdapter.ts
+src/features/building-family/ui/assemblyHallFixture.ts
+src/features/building-family/ui/ComponentForge.tsx
+src/features/building-family/tests/buildingState.test.ts
+src/features/building-family/tests/assemblyHallFixture.test.ts
+src/features/building-family/tests/ComponentForge.test.tsx
+src/app/App.tsx
+src/app/App.css
+src/app/App.test.tsx
+scripts/e2e-smoke.mjs
+docs/architecture/dynamic-building-family-integration.md
+```
+
+`BuildingPromptControls` now carries `lockedComponentKeys` as serializable prompt state. The existing invalidation matrix consumes those keys through `lockedComponentKeys` and reports `localComponentLock` with partial component-catalog impact, branch graph impact, and MVP branch/full runtime-IR impact.
+
+`ComponentForge` now exposes a selected-recipe lock/unlock button and a component lock status readout. The root app wires this to prompt-control updates, so locking the selected generated recipe immediately updates the Control Invalidation preview and is preserved across committed reruns such as `New Building`.
+
+The fixture pipeline maps locked component keys into building-scoped semantic locks on the generated `BuildingFamilySpec`. This records the lock in the inspected artifact without claiming the compiler can yet apply lock-aware variant regeneration.
+
+Focused tests now cover store invalidation for local locks, Component Forge lock/unlock callbacks and readout, app-shell lock persistence through a new-building rerun, and generated spec lock metadata. The e2e smoke locks the Window frame recipe, verifies the invalidation preview, runs `New Building`, and verifies the lock remains visible before continuing through Assembly Hall.
+
+This is the local lock foundation, not full lock-aware regeneration. The compiler does not yet preserve a locked component variant while rerolling all surrounding elements, and Assembly Hall semantic element locking remains future Milestone 5 work.
+
 ## 7. App Shell, Renderer, State, Workers, And Routing
 
 Actual React shell:
@@ -722,7 +751,7 @@ src/features/building-family/ui/ComponentForge.tsx
 src/features/building-family/ui/AssemblyHall.tsx
 ```
 
-Actual feature routing: root route only. No router dependency exists yet. The root app shell currently shows the expanded Control Invalidation prompt-control surface, committed rerun buttons, a Cancel Run action, controller-backed Generation Run timeline with artifact cache-hit badges, Artifact Trace provenance tables, Atlas Lab, Component Forge, and Assembly Hall fixture surfaces with manual stage reveal.
+Actual feature routing: root route only. No router dependency exists yet. The root app shell currently shows the expanded Control Invalidation prompt-control surface, committed rerun buttons, a Cancel Run action, controller-backed Generation Run timeline with artifact cache-hit badges, Artifact Trace provenance tables, Atlas Lab, Component Forge with local recipe lock controls, and Assembly Hall fixture surfaces with manual stage reveal.
 
 Actual Three.js renderer setup:
 
@@ -1114,14 +1143,15 @@ Latest validation results:
 
 ```text
 typecheck: passed
-unit tests: passed, 96 tests across 32 files
+unit tests: passed, 100 tests across 32 files
 lint: passed
 build: passed
-e2e smoke: passed, including expanded prompt-control edits and committed Run Current rerun, Artifact Trace registered-artifact and run-lineage assertions, Component Forge selector/atlas-slot assertion, Assembly Hall stage reveal selection, active renderer backend assertion, Assembly Hall semantic selection, and backend-specific canvas pixel probe
+e2e smoke: passed, including expanded prompt-control edits and committed Run Current rerun, Artifact Trace registered-artifact and run-lineage assertions, Component Forge selector/atlas-slot assertion, local component lock plus new-building lock persistence, Assembly Hall stage reveal selection, active renderer backend assertion, Assembly Hall semantic selection, and backend-specific canvas pixel probe
 Building state/controller focused tests: passed
 Assembly Hall fixture focused tests: passed
 App committed-rerun/cancel focused test: passed
 Expanded prompt controls focused test: passed
+Local component lock focused tests: passed
 Artifact Trace focused test: passed
 Component Forge focused test: passed
 Assembly Hall stage reveal focused test: passed
@@ -1219,6 +1249,13 @@ Rendered QA for Milestone 5H:
 ```text
 Playwright desktop screenshot: 1280x720 viewport, Control Invalidation panel visible with prompt, floors, bays, gable roof type, moderate trim density, material-seed and trim-seed edits, material-source/atlas/catalog refresh preview, no console errors, screenshot C:\tmp\buildo-expanded-controls-qa\desktop.png.
 Playwright mobile screenshot: 390x844 viewport, expanded controls visible in a single-column layout with prompt, roof type, trim density, family/building/material/trim seed fields, no console errors, no horizontal overflow, screenshot C:\tmp\buildo-expanded-controls-qa\mobile.png.
+```
+
+Rendered QA for Milestone 5I:
+
+```text
+Playwright desktop screenshot: 1280x720 viewport, Component Forge selected Window frame with Unlock selected component visible, recipe lock key shown, selected tile marked locked, invalidation preview contained localComponentLock and branchOrFullMvp, no console errors, screenshot C:\tmp\buildo-component-lock-qa\desktop.png.
+Playwright mobile screenshot: 390x844 viewport, Component Forge lock controls visible in a single-column layout with the locked Window frame recipe key readable, no console errors, no horizontal overflow, screenshot C:\tmp\buildo-component-lock-qa\mobile.png.
 ```
 
 ## 13. Current Implemented Surface
@@ -1494,6 +1531,23 @@ scripts/e2e-smoke.mjs
 docs/architecture/dynamic-building-family-integration.md
 ```
 
+Milestone 5I introduced:
+
+```text
+src/features/building-family/state/buildingStore.ts
+src/features/building-family/psg/psgBuildingIntentAdapter.ts
+src/features/building-family/ui/assemblyHallFixture.ts
+src/features/building-family/ui/ComponentForge.tsx
+src/features/building-family/tests/buildingState.test.ts
+src/features/building-family/tests/assemblyHallFixture.test.ts
+src/features/building-family/tests/ComponentForge.test.tsx
+src/app/App.tsx
+src/app/App.css
+src/app/App.test.tsx
+scripts/e2e-smoke.mjs
+docs/architecture/dynamic-building-family-integration.md
+```
+
 Generated and ignored directories:
 
 ```text
@@ -1502,7 +1556,7 @@ dist/
 test-results/
 ```
 
-No preassembled meshes, provider routes, router-backed room navigation, lock/unlock controls, per-provider cancellation diagnostics, 16-variant stress view, or complete four-room flow has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers through the pure TypeScript compiler path, can deliver them across the compiler worker boundary with transferable buffers, can summarize catalog/IR component data for a Component Forge inspection surface, can convert that IR into Three.js scene objects under `renderer-three/*`, can convert packed atlas channels into texture-backed slot materials at the renderer boundary, can host multiple per-building scene runtimes against one shared family atlas/material runtime, can centralize idempotent renderer resource disposal across standalone and shared-family ownership modes, renders one deterministic fixture building in a WebGPU-first browser Assembly Hall canvas with WebGL fallback from those generated artifacts, surfaces semantic renderer lookup entries in a selectable Assembly Hall inspector, drives the root app through a Zustand-backed run controller with serializable run events plus an out-of-store runtime artifact registry, previews roadmap invalidation impacts for prompt, floor, bay, roof, trim-density, and seed controls, can commit `Run Current`, `New Building`, and `New Family` reruns with cache-hit artifact lineage for structural vs family-chain changes, exposes `Cancel Run` while preserving the last completed scene during pending and cancelled runs, shows a dedicated Component Forge with real generated component entries, selector/toggles, dimensions, anchors, recipe JSON, and selected atlas-slot highlighting, drives Assembly Hall stage group visibility from a real stage reveal control backed by generated scene groups and semantic path counts, and shows a read-only Artifact Trace panel with run event lineage, registered artifact metadata, cache labels, dependencies, and active fixture provenance.
+No preassembled meshes, provider routes, router-backed room navigation, per-provider cancellation diagnostics, 16-variant stress view, or complete four-room flow has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers through the pure TypeScript compiler path, can deliver them across the compiler worker boundary with transferable buffers, can summarize catalog/IR component data for a Component Forge inspection surface, can convert that IR into Three.js scene objects under `renderer-three/*`, can convert packed atlas channels into texture-backed slot materials at the renderer boundary, can host multiple per-building scene runtimes against one shared family atlas/material runtime, can centralize idempotent renderer resource disposal across standalone and shared-family ownership modes, renders one deterministic fixture building in a WebGPU-first browser Assembly Hall canvas with WebGL fallback from those generated artifacts, surfaces semantic renderer lookup entries in a selectable Assembly Hall inspector, drives the root app through a Zustand-backed run controller with serializable run events plus an out-of-store runtime artifact registry, previews roadmap invalidation impacts for prompt, floor, bay, roof, trim-density, seed, and local component lock controls, can commit `Run Current`, `New Building`, and `New Family` reruns with cache-hit artifact lineage for structural vs family-chain changes, exposes `Cancel Run` while preserving the last completed scene during pending and cancelled runs, shows a dedicated Component Forge with real generated component entries, selector/toggles, dimensions, anchors, recipe JSON, selected atlas-slot highlighting, and selected-recipe lock/unlock controls, records locked component keys as semantic locks in the generated spec, drives Assembly Hall stage group visibility from a real stage reveal control backed by generated scene groups and semantic path counts, and shows a read-only Artifact Trace panel with run event lineage, registered artifact metadata, cache labels, dependencies, and active fixture provenance.
 
 ## 14. Milestone 0 And Setup Exit Criteria
 

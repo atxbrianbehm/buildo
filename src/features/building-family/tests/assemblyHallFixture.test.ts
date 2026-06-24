@@ -17,6 +17,7 @@ const createFixtureWithOptions = createAssemblyHallFixture as (input?: {
     bayCount: number;
     roofType: "flat";
     trimDensity: "ornate";
+    lockedComponentKeys: string[];
   };
   reusableArtifacts?: Pick<AssemblyHallFixture, "catalog" | "debugExport" | "packedAtlas">;
   materialProvider?: MaterialGenerationProvider;
@@ -35,7 +36,8 @@ const explicitPromptControls = {
   floorCount: 6,
   bayCount: 5,
   roofType: "flat" as const,
-  trimDensity: "ornate" as const
+  trimDensity: "ornate" as const,
+  lockedComponentKeys: []
 };
 
 describe("assembly hall fixture", () => {
@@ -71,6 +73,27 @@ describe("assembly hall fixture", () => {
     expect(fixture.spec.massing.floorCount).toBe(6);
     expect(fixture.spec.facade.frontBayCount).toBe(5);
     expect(fixture.ir.metrics.instanceCount).toBeGreaterThan(6 * 5);
+
+    fixture.familyRuntime.dispose();
+  });
+
+  it("records local component locks in the generated building spec", async () => {
+    const fixture = await createFixtureWithOptions({
+      promptControls: {
+        ...explicitPromptControls,
+        lockedComponentKeys: ["recipe.window.tall-arched.frame"]
+      }
+    });
+
+    expect(fixture.spec.locks).toEqual([
+      expect.objectContaining({
+        semanticPath: "component/recipe.window.tall-arched.frame",
+        scope: "building",
+        lockedValue: {
+          componentKey: "recipe.window.tall-arched.frame"
+        }
+      })
+    ]);
 
     fixture.familyRuntime.dispose();
   });

@@ -41,6 +41,7 @@ const defaultFixturePromptControls: BuildingPromptControls = {
   bayCount: 7,
   roofType: "flat",
   trimDensity: "ornate",
+  lockedComponentKeys: [],
   seeds: {
     family: "family-seed",
     building: "building-seed",
@@ -122,6 +123,14 @@ export async function createAssemblyHallFixture(
     prompt: controls.prompt,
     seeds: controls.seeds,
     evaluation,
+    locks: controls.lockedComponentKeys.map((componentKey) => ({
+      semanticPath: `component/${componentKey}`,
+      scope: "building",
+      lockedValue: {
+        componentKey
+      },
+      reason: "Component Forge local lock"
+    })),
     promptOverrides: {
       ...promptResult.overrides,
       stylePackId: controls.stylePackId,

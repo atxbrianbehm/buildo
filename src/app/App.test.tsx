@@ -73,4 +73,26 @@ describe("App", () => {
     await waitFor(() => expect(screen.getByLabelText("Generation run state")).toHaveTextContent("complete"));
     expect(screen.getByLabelText("Generation run timeline")).toHaveTextContent("cache miss");
   });
+
+  it("locks a Component Forge recipe and keeps the lock through a new-building rerun", async () => {
+    render(<App />);
+
+    expect(await screen.findByRole("heading", { name: "Component Forge" })).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByLabelText("Generation run state")).toHaveTextContent("complete"));
+    fireEvent.change(screen.getByRole("combobox", { name: "Component selector" }), {
+      target: { value: "component-gallery.recipe.window.tall-arched.frame" }
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Lock selected component" }));
+
+    expect(screen.getByLabelText("Component lock status")).toHaveTextContent("recipe.window.tall-arched.frame");
+    expect(screen.getByLabelText("Invalidation preview")).toHaveTextContent("localComponentLock");
+    expect(screen.getByLabelText("Invalidation preview")).toHaveTextContent("componentCatalog");
+    expect(screen.getByLabelText("Invalidation preview")).toHaveTextContent("partial");
+
+    fireEvent.click(screen.getByRole("button", { name: "New Building" }));
+    await waitFor(() => expect(screen.getByLabelText("Generation run state")).toHaveTextContent("complete"));
+    expect(screen.getByLabelText("Component lock status")).toHaveTextContent("recipe.window.tall-arched.frame");
+    expect(screen.getByLabelText("Invalidation preview")).not.toHaveTextContent("localComponentLock");
+  });
 });

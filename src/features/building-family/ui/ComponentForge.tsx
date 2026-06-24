@@ -6,6 +6,8 @@ import type { AssemblyHallFixture } from "./assemblyHallFixture";
 
 export interface ComponentForgeProps {
   fixture: AssemblyHallFixture;
+  lockedComponentKeys?: string[];
+  onToggleComponentLock?: (componentKey: string) => void;
 }
 
 function formatMeters(value: number): string {
@@ -37,7 +39,11 @@ function atlasSlotsForEntry(entry: ComponentGalleryEntry | undefined, slots: Atl
   return slots.filter((slot) => selectedSlotIds.has(slot.id));
 }
 
-export function ComponentForge({ fixture }: ComponentForgeProps) {
+export function ComponentForge({
+  fixture,
+  lockedComponentKeys = [],
+  onToggleComponentLock
+}: ComponentForgeProps) {
   const selectorId = useId();
   const [selectedEntryId, setSelectedEntryId] = useState(fixture.componentGallery.entries[0]?.id ?? "");
   const [showWireframe, setShowWireframe] = useState(false);
@@ -54,6 +60,9 @@ export function ComponentForge({ fixture }: ComponentForgeProps) {
     [fixture.packedAtlas.manifest.slots, selectedEntry]
   );
   const recipeJson = selectedRecipe ? JSON.stringify(selectedRecipe, null, 2) : "{}";
+  const selectedComponentKey = selectedRecipe?.id ?? selectedEntry?.recipeId;
+  const selectedIsLocked = selectedComponentKey ? lockedComponentKeys.includes(selectedComponentKey) : false;
+  const lockedLabel = lockedComponentKeys.length ? lockedComponentKeys.join(", ") : "none";
 
   return (
     <section className="component-forge" aria-labelledby="component-forge-heading">
@@ -106,6 +115,22 @@ export function ComponentForge({ fixture }: ComponentForgeProps) {
               <span>Semantic Anchors</span>
             </label>
           </div>
+
+          <div className="component-forge__lock-controls" aria-label="Component lock controls">
+            <button
+              type="button"
+              disabled={!selectedComponentKey || !onToggleComponentLock}
+              aria-pressed={selectedIsLocked}
+              onClick={() => {
+                if (selectedComponentKey) {
+                  onToggleComponentLock?.(selectedComponentKey);
+                }
+              }}
+            >
+              {selectedIsLocked ? "Unlock selected component" : "Lock selected component"}
+            </button>
+            <p aria-label="Component lock status">{lockedLabel}</p>
+          </div>
         </div>
       </div>
 
@@ -116,6 +141,7 @@ export function ComponentForge({ fixture }: ComponentForgeProps) {
             data-selected={entry.id === selectedEntry?.id ? "true" : "false"}
             key={entry.id}
             type="button"
+            data-locked={lockedComponentKeys.includes(entry.recipeId) ? "true" : "false"}
             onClick={() => setSelectedEntryId(entry.id)}
           >
             <span>{entry.label}</span>
@@ -169,6 +195,10 @@ export function ComponentForge({ fixture }: ComponentForgeProps) {
                   {showUvOverlay ? "UV overlay on" : "UV overlay off"} /{" "}
                   {showSemanticAnchors ? "Semantic anchors on" : "Semantic anchors off"}
                 </dd>
+              </div>
+              <div>
+                <dt>Lock</dt>
+                <dd>{selectedIsLocked ? "Locked" : "Unlocked"}</dd>
               </div>
             </dl>
           </section>
