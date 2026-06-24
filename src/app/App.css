@@ -158,8 +158,13 @@ h1 {
 
 .control-panel__fields {
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   margin-top: 18px;
+}
+
+.control-panel__field-wide {
+  grid-column: 1 / -1;
 }
 
 .control-panel__fields label {
@@ -175,7 +180,9 @@ h1 {
   text-transform: uppercase;
 }
 
-.control-panel__fields input {
+.control-panel__fields input,
+.control-panel__fields select,
+.control-panel__fields textarea {
   min-height: 40px;
   width: 100%;
   min-width: 0;
@@ -186,7 +193,19 @@ h1 {
   background: rgba(255, 255, 255, 0.74);
 }
 
-.control-panel__fields input:focus-visible {
+.control-panel__fields textarea {
+  min-height: 76px;
+  resize: vertical;
+  line-height: 1.35;
+}
+
+.control-panel__fields select {
+  cursor: pointer;
+}
+
+.control-panel__fields input:focus-visible,
+.control-panel__fields select:focus-visible,
+.control-panel__fields textarea:focus-visible {
   outline: 3px solid rgba(70, 118, 86, 0.28);
   outline-offset: 2px;
 }
@@ -209,6 +228,9 @@ h1 {
   cursor: pointer;
   font-size: 0.84rem;
   font-weight: 700;
+  transition-duration: 140ms;
+  transition-property: opacity, transform;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
 }
 
 .control-panel__actions button:nth-child(2) {
@@ -227,6 +249,10 @@ h1 {
 .control-panel__actions button:disabled {
   cursor: wait;
   opacity: 0.58;
+}
+
+.control-panel__actions button:active:not(:disabled) {
+  transform: scale(0.96);
 }
 
 .control-panel__actions button:focus-visible {
@@ -1339,6 +1365,7 @@ h1 {
 
   .control-panel__metrics,
   .control-panel__stages,
+  .control-panel__fields,
   .artifact-trace__summary,
   .artifact-trace__active {
     grid-template-columns: 1fr;

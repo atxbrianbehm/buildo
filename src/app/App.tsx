@@ -12,6 +12,7 @@ import {
   createBuildingStore,
   type BuildingPromptControlPatch,
   type BuildingPromptControls,
+  type BuildingRoofType,
   type BuildingStoreApi
 } from "../features/building-family/state/buildingStore";
 
@@ -31,6 +32,17 @@ const setupCards = [
     body: "React, TypeScript, and Vite are ready for the first feature milestone.",
     status: "ready"
   }
+];
+
+const roofTypeOptions: Array<{ label: string; value: BuildingRoofType }> = [
+  { label: "Flat", value: "flat" },
+  { label: "Gable", value: "gable" }
+];
+
+const trimDensityOptions: Array<{ label: string; value: BuildingPromptControls["trimDensity"] }> = [
+  { label: "Restrained", value: "restrained" },
+  { label: "Moderate", value: "moderate" },
+  { label: "Ornate", value: "ornate" }
 ];
 
 function promptWithPatch(
@@ -128,6 +140,14 @@ export function App() {
           <p className="project-label">Control Surface</p>
           <h2 id="control-invalidation-heading">Control Invalidation</h2>
           <div className="control-panel__fields" aria-label="Building controls">
+            <label className="control-panel__field-wide">
+              <span>Prompt</span>
+              <textarea
+                aria-label="Prompt"
+                value={promptControls.prompt}
+                onChange={(event) => updatePromptControls({ prompt: event.currentTarget.value })}
+              />
+            </label>
             <label>
               <span>Floors</span>
               <input
@@ -149,11 +169,67 @@ export function App() {
               />
             </label>
             <label>
+              <span>Roof Type</span>
+              <select
+                aria-label="Roof Type"
+                value={promptControls.roofType}
+                onChange={(event) => updatePromptControls({ roofType: event.currentTarget.value as BuildingRoofType })}
+              >
+                {roofTypeOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span>Trim Density</span>
+              <select
+                aria-label="Trim Density"
+                value={promptControls.trimDensity}
+                onChange={(event) =>
+                  updatePromptControls({
+                    trimDensity: event.currentTarget.value as BuildingPromptControls["trimDensity"]
+                  })
+                }
+              >
+                {trimDensityOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span>Family Seed</span>
+              <input
+                aria-label="Family Seed"
+                value={promptControls.seeds.family}
+                onChange={(event) => updatePromptControls({ seeds: { family: event.currentTarget.value } })}
+              />
+            </label>
+            <label>
               <span>Building Seed</span>
               <input
                 aria-label="Building Seed"
                 value={promptControls.seeds.building}
                 onChange={(event) => updatePromptControls({ seeds: { building: event.currentTarget.value } })}
+              />
+            </label>
+            <label>
+              <span>Material Seed</span>
+              <input
+                aria-label="Material Seed"
+                value={promptControls.seeds.material}
+                onChange={(event) => updatePromptControls({ seeds: { material: event.currentTarget.value } })}
+              />
+            </label>
+            <label>
+              <span>Trim Seed</span>
+              <input
+                aria-label="Trim Seed"
+                value={promptControls.seeds.trim}
+                onChange={(event) => updatePromptControls({ seeds: { trim: event.currentTarget.value } })}
               />
             </label>
           </div>

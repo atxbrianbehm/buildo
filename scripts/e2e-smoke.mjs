@@ -150,11 +150,25 @@ try {
   await page.goto(url);
   await page.getByRole("heading", { name: "Buildo" }).waitFor({ state: "visible" });
   await page.getByLabel("Project setup status").waitFor({ state: "visible" });
+  await page.getByLabel("Generation run state").getByText("complete").waitFor({ state: "visible" });
+  await page.getByLabel("Roof Type").selectOption("gable");
+  await page.getByLabel("Invalidation preview").getByText("roofType").waitFor({ state: "visible" });
+  await page.getByLabel("Invalidation preview").getByText("Material sources reusable").waitFor({ state: "visible" });
+  await page.getByLabel("Trim Density").selectOption("moderate");
+  await page.getByLabel("Material Seed").fill("material-seed-smoke");
+  await page.getByLabel("Trim Seed").fill("trim-seed-smoke");
+  await page.getByLabel("Invalidation preview").getByText("trimDensity").waitFor({ state: "visible" });
+  await page.getByLabel("Invalidation preview").getByText("materialSeed").waitFor({ state: "visible" });
+  await page.getByLabel("Invalidation preview").getByText("trimSeed").waitFor({ state: "visible" });
+  await page.getByLabel("Invalidation preview").getByText("Material sources regenerate").waitFor({ state: "visible" });
+  await page.getByRole("button", { name: "Run Current" }).click();
+  await page.getByLabel("Generation run state").getByText("complete").waitFor({ state: "visible" });
   await page.getByRole("heading", { name: "Atlas Lab" }).waitFor({ state: "visible" });
   await page.getByRole("heading", { name: "Artifact Trace" }).waitFor({ state: "visible" });
   await page
     .getByRole("table", { name: "Registered artifacts" })
     .getByRole("cell", { name: "runtime-building-ir", exact: true })
+    .first()
     .waitFor({ state: "visible" });
   await page
     .getByRole("table", { name: "Run event artifact trace" })

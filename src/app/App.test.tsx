@@ -43,4 +43,34 @@ describe("App", () => {
     expect(screen.getByRole("img", { name: "Rendered generated building fixture" })).toBeInTheDocument();
     expect(screen.getByLabelText("Assembly Hall renderer metrics")).toHaveTextContent("Draw calls");
   });
+
+  it("exposes committed roof, trim, and seed controls with invalidation feedback", async () => {
+    render(<App />);
+
+    expect(await screen.findByRole("heading", { name: "Control Invalidation" })).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByLabelText("Generation run state")).toHaveTextContent("complete"));
+
+    expect(screen.getByLabelText("Family Seed")).toHaveValue("family-seed");
+    expect(screen.getByLabelText("Material Seed")).toHaveValue("material-seed");
+    expect(screen.getByLabelText("Trim Seed")).toHaveValue("trim-seed");
+    expect(screen.getByLabelText("Roof Type")).toHaveValue("flat");
+    expect(screen.getByLabelText("Trim Density")).toHaveValue("ornate");
+
+    fireEvent.change(screen.getByLabelText("Roof Type"), { target: { value: "gable" } });
+    expect(screen.getByLabelText("Invalidation preview")).toHaveTextContent("roofType");
+    expect(screen.getByLabelText("Invalidation preview")).toHaveTextContent("Material sources reusable");
+
+    fireEvent.change(screen.getByLabelText("Trim Density"), { target: { value: "moderate" } });
+    expect(screen.getByLabelText("Invalidation preview")).toHaveTextContent("trimDensity");
+    expect(screen.getByLabelText("Invalidation preview")).toHaveTextContent("Material sources regenerate");
+
+    fireEvent.change(screen.getByLabelText("Material Seed"), { target: { value: "material-seed-2" } });
+    fireEvent.change(screen.getByLabelText("Trim Seed"), { target: { value: "trim-seed-2" } });
+    expect(screen.getByLabelText("Invalidation preview")).toHaveTextContent("materialSeed");
+    expect(screen.getByLabelText("Invalidation preview")).toHaveTextContent("trimSeed");
+
+    fireEvent.click(screen.getByRole("button", { name: "Run Current" }));
+    await waitFor(() => expect(screen.getByLabelText("Generation run state")).toHaveTextContent("complete"));
+    expect(screen.getByLabelText("Generation run timeline")).toHaveTextContent("cache miss");
+  });
 });

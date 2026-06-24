@@ -10,6 +10,8 @@ import {
 import type { BuildingArtifactMetadata, BuildingArtifactType } from "./artifactRegistry";
 
 export type BuildingRoom = "promptLab" | "atlasLab" | "componentForge" | "assemblyHall";
+export type BuildingRoofType = "flat" | "gable";
+export type BuildingTrimDensity = "restrained" | "moderate" | "ornate";
 
 export interface BuildingPromptControls {
   prompt: string;
@@ -18,8 +20,8 @@ export interface BuildingPromptControls {
   seeds: Seeds;
   floorCount: number;
   bayCount: number;
-  roofType: "flat";
-  trimDensity: "ornate";
+  roofType: BuildingRoofType;
+  trimDensity: BuildingTrimDensity;
 }
 
 export type BuildingPromptControlPatch = Partial<Omit<BuildingPromptControls, "seeds">> & {
