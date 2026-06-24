@@ -1,6 +1,11 @@
 import { z } from "zod";
 import { hashCanonicalJson } from "../../src/features/building-family/core/contentHash";
 import type { Diagnostic } from "../../src/features/building-family/core/diagnostics";
+import {
+  OpenAIImageMaterialProvider,
+  type OpenAIImageTransport,
+  type RemoteMaterialSourceArtifact
+} from "./openAIImageMaterialProvider";
 
 const maxRemoteRequestCount = 4;
 const maxRemoteSourceDimensionPx = 1024;
@@ -47,6 +52,7 @@ type MaterialProviderRouteEnv = Record<string, string | undefined>;
 
 export interface MaterialProviderRouteOptions {
   env?: MaterialProviderRouteEnv;
+  openAITransport?: OpenAIImageTransport;
 }
 
 export const approvedRemoteMaterialSourceRoles = {
@@ -80,7 +86,20 @@ interface FallbackRouteBody {
   diagnostics: Diagnostic[];
 }
 
-function jsonResponse(status: number, body: RejectedRouteBody | FallbackRouteBody): Response {
+interface GeneratedRouteBody {
+  schemaVersion: "0.1.0";
+  status: "generated";
+  providerId: "openai-image";
+  requestHash: string;
+  acceptedRequestCount: number;
+  cacheStatus: "not-checked";
+  artifacts: RemoteMaterialSourceArtifact[];
+  diagnostics: [];
+}
+
+type MaterialProviderRouteBody = RejectedRouteBody | FallbackRouteBody | GeneratedRouteBody;
+
+function jsonResponse(status: number, body: MaterialProviderRouteBody): Response {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
@@ -191,8 +210,8 @@ function fallbackDiagnostic(env: MaterialProviderRouteEnv): Diagnostic {
   }
 
   return {
-    code: "remoteMaterialProvider.openaiNotImplemented",
-    message: "OpenAI material provider configuration is present, but the provider implementation is not wired yet.",
+    code: "remoteMaterialProvider.openaiFailed",
+    message: "OpenAI material provider failed; procedural material generation should be used.",
     severity: "warning"
   };
 }
@@ -209,6 +228,22 @@ function rejected(status: number, diagnostics: Diagnostic[]): Response {
   return jsonResponse(status, {
     schemaVersion: "0.1.0",
     status: "rejected",
+    diagnostics
+  });
+}
+
+function fallbackResponse(
+  requestHash: string,
+  acceptedRequestCount: number,
+  diagnostics: Diagnostic[]
+): Response {
+  return jsonResponse(200, {
+    schemaVersion: "0.1.0",
+    status: "fallback",
+    providerId: "procedural",
+    requestHash,
+    acceptedRequestCount,
+    cacheStatus: "not-checked",
     diagnostics
   });
 }
@@ -240,13 +275,36 @@ export async function handleMaterialProviderRequest(
     requests: payloadResult.data.requests
   });
 
-  return jsonResponse(200, {
-    schemaVersion: "0.1.0",
-    status: "fallback",
-    providerId: "procedural",
-    requestHash,
-    acceptedRequestCount: payloadResult.data.requests.length,
-    cacheStatus: "not-checked",
-    diagnostics: [fallbackDiagnostic(env)]
+  if (
+    env.BUILDING_MATERIAL_PROVIDER !== "openai" ||
+    !env.OPENAI_API_KEY ||
+    !env.OPENAI_IMAGE_MODEL
+  ) {
+    return fallbackResponse(requestHash, payloadResult.data.requests.length, [fallbackDiagnostic(env)]);
+  }
+
+  const provider = new OpenAIImageMaterialProvider({
+    apiKey: env.OPENAI_API_KEY,
+    model: env.OPENAI_IMAGE_MODEL,
+    transport: options.openAITransport
   });
+
+  try {
+    const artifacts = await Promise.all(
+      payloadResult.data.requests.map((sourceRequest) => provider.generate(sourceRequest, request.signal))
+    );
+
+    return jsonResponse(200, {
+      schemaVersion: "0.1.0",
+      status: "generated",
+      providerId: "openai-image",
+      requestHash,
+      acceptedRequestCount: payloadResult.data.requests.length,
+      cacheStatus: "not-checked",
+      artifacts,
+      diagnostics: []
+    });
+  } catch {
+    return fallbackResponse(requestHash, payloadResult.data.requests.length, [fallbackDiagnostic(env)]);
+  }
 }
