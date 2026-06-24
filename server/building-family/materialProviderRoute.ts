@@ -7,6 +7,7 @@ import {
   type RemoteMaterialSourceArtifact
 } from "./openAIImageMaterialProvider";
 import {
+  createDurableRemoteMaterialArtifactCache,
   defaultRemoteMaterialArtifactCache,
   type RemoteMaterialArtifactCache
 } from "./remoteMaterialArtifactCache";
@@ -17,6 +18,7 @@ const maxPromptVocabularyChars = 640;
 const defaultRemoteMaterialTimeoutMs = 30_000;
 const defaultRemoteMaterialConcurrencyLimit = 2;
 const defaultRemoteMaterialRetryCount = 1;
+const durableRemoteMaterialCachesByPath = new Map<string, RemoteMaterialArtifactCache>();
 
 const AtlasMaterialRoleSchema = z.enum([
   "wall",
@@ -299,6 +301,29 @@ function configuredRemoteMaterialRetryCount(options: MaterialProviderRouteOption
   return defaultRemoteMaterialRetryCount;
 }
 
+function configuredRemoteMaterialCache(
+  env: MaterialProviderRouteEnv,
+  options: MaterialProviderRouteOptions
+): RemoteMaterialArtifactCache {
+  if (options.remoteMaterialCache) {
+    return options.remoteMaterialCache;
+  }
+
+  const cacheFilePath = env.BUILDING_REMOTE_MATERIAL_CACHE_FILE?.trim();
+  if (!cacheFilePath) {
+    return defaultRemoteMaterialArtifactCache;
+  }
+
+  const existingCache = durableRemoteMaterialCachesByPath.get(cacheFilePath);
+  if (existingCache) {
+    return existingCache;
+  }
+
+  const cache = createDurableRemoteMaterialArtifactCache({ filePath: cacheFilePath });
+  durableRemoteMaterialCachesByPath.set(cacheFilePath, cache);
+  return cache;
+}
+
 async function runWithConcurrencyLimit<T>(
   items: T[],
   concurrencyLimit: number,
@@ -409,7 +434,7 @@ export async function handleMaterialProviderRequest(
     model: env.OPENAI_IMAGE_MODEL,
     transport: options.openAITransport
   });
-  const remoteMaterialCache = options.remoteMaterialCache ?? defaultRemoteMaterialArtifactCache;
+  const remoteMaterialCache = configuredRemoteMaterialCache(env, options);
   const remoteMaterialTimeoutMs = configuredRemoteMaterialTimeoutMs(options);
   const remoteMaterialConcurrencyLimit = configuredRemoteMaterialConcurrencyLimit(options);
   const remoteMaterialRetryCount = configuredRemoteMaterialRetryCount(options);

@@ -1,4 +1,7 @@
 // @vitest-environment node
+import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import type { OpenAIImageTransportRequest } from "./openAIImageMaterialProvider";
 import { approvedRemoteMaterialSourceIds, handleMaterialProviderRequest } from "./materialProviderRoute";
@@ -346,6 +349,64 @@ describe("material provider route", () => {
     );
     expect(secondBody.artifacts[0].requestHash).toBe(firstBody.artifacts[0].requestHash);
     expect(secondBody.artifacts[0].contentHash).toBe(firstBody.artifacts[0].contentHash);
+  });
+
+  it("uses the configured durable remote cache path across route instances", async () => {
+    const cacheDir = mkdtempSync(join(tmpdir(), "buildo-route-remote-cache-"));
+    const cacheFile = join(cacheDir, "remote-material-cache.json");
+    const env = {
+      BUILDING_MATERIAL_PROVIDER: "openai",
+      BUILDING_REMOTE_MATERIAL_CACHE_FILE: cacheFile,
+      OPENAI_API_KEY: "sk-buildo-secret-test-key",
+      OPENAI_IMAGE_MODEL: "gpt-image-test"
+    };
+    let transportCallCount = 0;
+
+    try {
+      const firstResponse = await routeRequest(validPayload, env, {
+        openAITransport: async () => {
+          transportCallCount += 1;
+          return {
+            data: [
+              {
+                b64_json: encodedPng("durable-wall"),
+                revised_prompt: "durable cached prompt"
+              }
+            ]
+          };
+        }
+      });
+      const secondResponse = await routeRequest(validPayload, env, {
+        openAITransport: async () => {
+          transportCallCount += 1;
+          return {
+            data: [
+              {
+                b64_json: encodedPng("unexpected-durable-wall"),
+                revised_prompt: "unexpected durable prompt"
+              }
+            ]
+          };
+        }
+      });
+      const firstBody = (await readJson(firstResponse)) as {
+        artifacts: Array<{ requestHash: string; contentHash: string }>;
+      };
+      const secondBody = (await readJson(secondResponse)) as {
+        cacheStatus: string;
+        artifacts: Array<{ requestHash: string; contentHash: string; revisedPrompt?: string }>;
+      };
+
+      expect(transportCallCount).toBe(1);
+      expect(existsSync(cacheFile)).toBe(true);
+      expect(firstBody).toEqual(expect.objectContaining({ status: "generated", cacheStatus: "miss" }));
+      expect(secondBody).toEqual(expect.objectContaining({ status: "generated", cacheStatus: "hit" }));
+      expect(secondBody.artifacts[0].requestHash).toBe(firstBody.artifacts[0].requestHash);
+      expect(secondBody.artifacts[0].contentHash).toBe(firstBody.artifacts[0].contentHash);
+      expect(secondBody.artifacts[0].revisedPrompt).toBe("durable cached prompt");
+    } finally {
+      rmSync(cacheDir, { recursive: true, force: true });
+    }
   });
 
   it("falls back and aborts provider work when OpenAI material generation times out", async () => {
