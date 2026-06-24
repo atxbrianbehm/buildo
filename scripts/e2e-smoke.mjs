@@ -145,6 +145,38 @@ try {
   await server.listen();
   const url = server.resolvedUrls?.local[0] ?? "http://127.0.0.1:5173/";
 
+  const materialProviderResponse = await fetch(new URL("/api/building-material-provider", url), {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      schemaVersion: "0.1.0",
+      runId: "e2e-material-provider-route-smoke",
+      outputFormat: "rgba8-layer-set",
+      requests: [
+        {
+          sourceId: "source.wall.primary",
+          role: "wall",
+          selectedFamily: "running-bond-brick",
+          periodicity: "xy",
+          physicalSizeM: { width: 18, height: 14 },
+          seedPath: "atlas/source/wall.primary/running-bond-brick",
+          promptVocabulary: ["running-bond-brick", "primary wall material"],
+          widthPx: 256,
+          heightPx: 256
+        }
+      ]
+    })
+  });
+  const materialProviderBody = await materialProviderResponse.json();
+  if (
+    materialProviderResponse.status !== 200 ||
+    materialProviderBody.status !== "fallback" ||
+    materialProviderBody.providerId !== "procedural" ||
+    materialProviderBody.acceptedRequestCount !== 1
+  ) {
+    throw new Error(`Material provider route smoke failed: ${JSON.stringify(materialProviderBody)}`);
+  }
+
   browser = await chromium.launch();
 
   const deepLinkPage = await browser.newPage();
