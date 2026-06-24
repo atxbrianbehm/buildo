@@ -1,10 +1,12 @@
 import type { PackedAtlas } from "../materials/atlasPacker";
 import type { AtlasDebugExport } from "../materials/atlasDebugExport";
+import type { AssemblyHallRemoteMaterialApplication } from "./assemblyHallFixture";
 
 export interface AtlasLabProps {
   packedAtlas: PackedAtlas;
   debugExport: AtlasDebugExport;
   materialSourceCacheHit?: boolean;
+  remoteMaterialApplication?: AssemblyHallRemoteMaterialApplication;
 }
 
 function cacheStatusLabel(cacheStatus: AtlasDebugExport["providerDiagnostics"][number]["cacheStatus"]): string {
@@ -28,7 +30,11 @@ function firstHash(hashes: string[]): string {
   return hashes[0] ?? "none";
 }
 
-export function AtlasLab({ packedAtlas, debugExport, materialSourceCacheHit }: AtlasLabProps) {
+function optionalLabel(value: string | number | undefined): string {
+  return value === undefined ? "none" : String(value);
+}
+
+export function AtlasLab({ packedAtlas, debugExport, materialSourceCacheHit, remoteMaterialApplication }: AtlasLabProps) {
   return (
     <section className="atlas-lab" aria-labelledby="atlas-lab-heading">
       <header className="atlas-lab__header">
@@ -65,6 +71,78 @@ export function AtlasLab({ packedAtlas, debugExport, materialSourceCacheHit }: A
           </figure>
         ))}
       </div>
+
+      {remoteMaterialApplication ? (
+        <section className="atlas-lab__remote" aria-labelledby="atlas-lab-remote-heading">
+          <h3 id="atlas-lab-remote-heading">Remote Material Details</h3>
+          <dl className="atlas-lab__remote-summary" aria-label="Remote material route summary">
+            <div>
+              <dt>Status</dt>
+              <dd>{remoteMaterialApplication.route.status}</dd>
+            </div>
+            <div>
+              <dt>Provider</dt>
+              <dd>{optionalLabel(remoteMaterialApplication.route.providerId)}</dd>
+            </div>
+            <div>
+              <dt>Cache</dt>
+              <dd>{optionalLabel(remoteMaterialApplication.route.cacheStatus)}</dd>
+            </div>
+            <div>
+              <dt>Accepted</dt>
+              <dd>{optionalLabel(remoteMaterialApplication.route.acceptedRequestCount)}</dd>
+            </div>
+            <div>
+              <dt>Request</dt>
+              <dd>{optionalLabel(remoteMaterialApplication.route.requestHash)}</dd>
+            </div>
+          </dl>
+          {remoteMaterialApplication.remoteSources.length ? (
+            <table className="atlas-lab__remote-table">
+              <caption>Remote Revised Prompts</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Source</th>
+                  <th scope="col">Provider</th>
+                  <th scope="col">Content</th>
+                  <th scope="col">Revised Prompt</th>
+                </tr>
+              </thead>
+              <tbody>
+                {remoteMaterialApplication.remoteSources.map((source) => (
+                  <tr key={`${source.sourceId}-${source.requestHash}`}>
+                    <td>{source.sourceId}</td>
+                    <td>{source.providerId}</td>
+                    <td>{source.contentHash}</td>
+                    <td>{source.revisedPrompt ?? "none"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : null}
+          {remoteMaterialApplication.diagnostics.length ? (
+            <table className="atlas-lab__remote-table">
+              <caption>Remote Material Diagnostics</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Severity</th>
+                  <th scope="col">Code</th>
+                  <th scope="col">Message</th>
+                </tr>
+              </thead>
+              <tbody>
+                {remoteMaterialApplication.diagnostics.map((diagnostic, index) => (
+                  <tr key={`${diagnostic.code}-${index}`}>
+                    <td>{diagnostic.severity}</td>
+                    <td>{diagnostic.code}</td>
+                    <td>{diagnostic.message}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : null}
+        </section>
+      ) : null}
 
       <table className="atlas-lab__providers">
         <caption>Provider Diagnostics</caption>

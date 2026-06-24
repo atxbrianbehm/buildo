@@ -5,6 +5,7 @@ import { createAtlasDebugExport } from "../materials/atlasDebugExport";
 import { FixtureMaterialProvider } from "../materials/providers/fixtureMaterialProvider";
 import type { MaterialSourceArtifact, MaterialSourceRequest } from "../materials/providers/proceduralMaterialProvider";
 import { AtlasLab } from "../ui/AtlasLab";
+import type { AssemblyHallRemoteMaterialApplication } from "../ui/assemblyHallFixture";
 import { normalizeBuildingSpec } from "../core/specNormalizer";
 import { adaptPsgEvaluationToBuildingIntent } from "../psg/psgBuildingIntentAdapter";
 import { LocalRulePromptInterpreter } from "../psg/localRulePromptInterpreter";
@@ -128,5 +129,60 @@ describe("atlas debug export", () => {
     expect(providerTable).toHaveTextContent("cache miss");
     expect(providerTable).toHaveTextContent("12 slots");
     expect(providerTable).toHaveTextContent("0 errors / 0 warnings");
+  });
+
+  it("surfaces remote material revised prompts and route diagnostics when present", async () => {
+    const packed = await packedFixture();
+    const debugExport = await createAtlasDebugExport(packed);
+    const remoteMaterialApplication: AssemblyHallRemoteMaterialApplication = {
+      schemaVersion: "0.1.0",
+      route: {
+        schemaVersion: "0.1.0",
+        status: "generated",
+        providerId: "openai-image",
+        requestHash: "route-request-hash",
+        acceptedRequestCount: 1,
+        cacheStatus: "miss"
+      },
+      remoteSources: [
+        {
+          sourceId: "source.wall.primary",
+          providerId: "openai-image",
+          requestHash: "remote-request-hash",
+          contentHash: "remote-content-hash",
+          revisedPrompt: "revised masonry prompt with patina and mortar detail"
+        }
+      ],
+      diagnostics: [
+        {
+          code: "remoteMaterialApplicationCoordinator.missingRemoteArtifact",
+          message: "Remote route omitted a requested cornice source.",
+          severity: "warning",
+          path: "sources.source.cornice.primary"
+        }
+      ]
+    };
+
+    render(
+      <AtlasLab
+        packedAtlas={packed}
+        debugExport={debugExport}
+        materialSourceCacheHit={false}
+        remoteMaterialApplication={remoteMaterialApplication}
+      />
+    );
+
+    expect(screen.getByRole("heading", { name: "Remote Material Details" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Remote material route summary")).toHaveTextContent("generated");
+    expect(screen.getByLabelText("Remote material route summary")).toHaveTextContent("openai-image");
+    expect(screen.getByLabelText("Remote material route summary")).toHaveTextContent("miss");
+    expect(screen.getByRole("table", { name: "Remote Revised Prompts" })).toHaveTextContent("source.wall.primary");
+    expect(screen.getByRole("table", { name: "Remote Revised Prompts" })).toHaveTextContent(
+      "revised masonry prompt with patina and mortar detail"
+    );
+    expect(screen.getByRole("table", { name: "Remote Material Diagnostics" })).toHaveTextContent("warning");
+    expect(screen.getByRole("table", { name: "Remote Material Diagnostics" })).toHaveTextContent(
+      "remoteMaterialApplicationCoordinator.missingRemoteArtifact"
+    );
   });
 });

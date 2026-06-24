@@ -491,6 +491,7 @@ export function App() {
                 packedAtlas={fixture.packedAtlas}
                 debugExport={fixture.debugExport}
                 materialSourceCacheHit={materialSourceCacheHit}
+                remoteMaterialApplication={fixture.remoteMaterialApplication}
               />
             ) : (
               <div className="atlas-fixture__loading" role={runState.error ? "alert" : "status"}>
