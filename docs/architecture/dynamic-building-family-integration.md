@@ -1,6 +1,6 @@
 # Dynamic Building Family Integration Map
 
-**Status:** Milestone 4B atlas texture/material sampling foundation
+**Status:** Milestone 4C shared family runtime foundation
 **Plan source:** `docs/plans/dynamic-building-family.md`
 **Workspace:** `C:\Users\behmb\Documents\Cascade Projects\buildo`
 **Date:** 2026-06-24
@@ -46,7 +46,7 @@ docs/
     dynamic-building-family.md
 ```
 
-The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, the Milestone 3B pure compiler IR foundation, the Milestone 3C compiler worker boundary, the Milestone 3D component gallery data foundation, the Milestone 4A renderer adapter foundation, and the Milestone 4B atlas texture/material sampling foundation. No canvas route, state slice, Component Forge UI, or rendered building asset has been implemented.
+The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, the Milestone 3B pure compiler IR foundation, the Milestone 3C compiler worker boundary, the Milestone 3D component gallery data foundation, the Milestone 4A renderer adapter foundation, the Milestone 4B atlas texture/material sampling foundation, and the Milestone 4C shared family runtime foundation. No canvas route, state slice, Component Forge UI, or rendered building asset has been implemented.
 
 ## 2. Active Instructions
 
@@ -456,10 +456,24 @@ src/features/building-family/tests/buildingAtlasTextureFactory.test.ts
 
 When a texture set is provided, `createAtlasMaterialRegistry` now wires the packed atlas into `MeshStandardMaterial` instances: base color map, normal map, roughness/metalness maps from the ORM channel, opacity alpha map, transparent mode, slot UV metadata, and channel hashes. Registry disposal remains idempotent and now releases atlas channel textures through the texture set.
 
-The next roadmap slice should continue Milestone 4 with a renderer runtime or rendered fixture route:
+## 6.9 Shared Family Runtime Foundation
+
+Actual Milestone 4C renderer paths:
 
 ```text
 src/features/building-family/renderer-three/familyRuntime.ts
+src/features/building-family/tests/buildingFamilyRuntime.test.ts
+```
+
+`createBuildingFamilyRuntime` owns the shared renderer-side resources for one generated family: atlas `DataTexture` channels, the texture-backed atlas material registry, a root Three.js `Group`, optional backend support metadata, and aggregate draw/resource metrics.
+
+The family runtime can create or replace per-building scene runtimes from `RuntimeBuildingIR` while reusing the same atlas textures and slot materials. Replacing a building disposes the old building geometries and scene graph nodes without disposing the shared atlas or materials, which keeps geometry invalidation separate from material-family invalidation.
+
+The focused runtime and renderer adapter tests cover the current Milestone 4 requirements that can be verified without opening a browser canvas: one shared family runtime can support 16 building runtimes, repeated components remain instanced through the existing scene adapter, geometry replacement disposes old resources, and final family disposal releases building geometries plus shared atlas materials/textures exactly once.
+
+The next roadmap slice should continue Milestone 4 with a rendered fixture route:
+
+```text
 src/features/building-family/ui/AssemblyHall.tsx
 ```
 
@@ -481,12 +495,12 @@ Actual Three.js renderer setup:
 src/features/building-family/renderer-three/buildingSceneAdapter.ts
 src/features/building-family/renderer-three/buildingAtlasMaterialFactory.ts
 src/features/building-family/renderer-three/buildingAtlasTextureFactory.ts
+src/features/building-family/renderer-three/familyRuntime.ts
 ```
 
 Recommended renderer paths:
 
 ```text
-src/features/building-family/renderer-three/familyRuntime.ts
 src/features/building-family/renderer-three/instanceRuntime.ts
 src/features/building-family/renderer-three/resourceDisposal.ts
 ```
@@ -771,6 +785,13 @@ src/features/building-family/renderer-three/buildingAtlasMaterialFactory.ts
 src/features/building-family/tests/buildingAtlasTextureFactory.test.ts
 ```
 
+Milestone 4C introduced:
+
+```text
+src/features/building-family/renderer-three/familyRuntime.ts
+src/features/building-family/tests/buildingFamilyRuntime.test.ts
+```
+
 ## 12. Verification Report
 
 Commands run during reconnaissance:
@@ -811,7 +832,7 @@ Latest validation results:
 
 ```text
 typecheck: passed
-unit tests: passed, 60 tests across 23 files
+unit tests: passed, 64 tests across 24 files
 lint: passed
 build: passed
 e2e smoke: passed at http://127.0.0.1:5173/
@@ -955,6 +976,13 @@ src/features/building-family/renderer-three/buildingAtlasMaterialFactory.ts
 src/features/building-family/tests/buildingAtlasTextureFactory.test.ts
 ```
 
+Milestone 4C introduced:
+
+```text
+src/features/building-family/renderer-three/familyRuntime.ts
+src/features/building-family/tests/buildingFamilyRuntime.test.ts
+```
+
 Generated and ignored directories:
 
 ```text
@@ -963,7 +991,7 @@ dist/
 test-results/
 ```
 
-No preassembled meshes, provider routes, canvas route, Component Forge UI, or Zustand state slice has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers through the pure TypeScript compiler path, can deliver them across the compiler worker boundary with transferable buffers, can summarize catalog/IR component data for a future Component Forge gallery, can convert that IR into Three.js scene objects under `renderer-three/*`, and can convert packed atlas channels into texture-backed slot materials at the renderer boundary.
+No preassembled meshes, provider routes, canvas route, Component Forge UI, or Zustand state slice has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers through the pure TypeScript compiler path, can deliver them across the compiler worker boundary with transferable buffers, can summarize catalog/IR component data for a future Component Forge gallery, can convert that IR into Three.js scene objects under `renderer-three/*`, can convert packed atlas channels into texture-backed slot materials at the renderer boundary, and can host multiple per-building scene runtimes against one shared family atlas/material runtime.
 
 ## 14. Milestone 0 And Setup Exit Criteria
 
