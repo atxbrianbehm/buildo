@@ -66,6 +66,34 @@ export interface AssemblyHallMetrics {
   textureCount: number;
 }
 
+export interface AssemblyHallVariantStressVariant {
+  index: number;
+  buildingSeed: string;
+  buildingId: string;
+  sourceGraphHash: string;
+  drawCallCount: number;
+  instanceCount: number;
+  triangleCount: number;
+  semanticPathCount: number;
+}
+
+export interface AssemblyHallVariantStress {
+  schemaVersion: "0.1.0";
+  variantCount: number;
+  sharedFamilyId: string;
+  sharedAtlasId: string;
+  sharedAtlasContentHash: string;
+  sharedCatalogId: string;
+  sharedSourceGraphHash: string;
+  aggregate: {
+    drawCallCount: number;
+    instanceCount: number;
+    triangleCount: number;
+    semanticPathCount: number;
+  };
+  variants: AssemblyHallVariantStressVariant[];
+}
+
 export interface AssemblyHallPromptTrace {
   schemaVersion: "0.1.0";
   interpreterProvider: PromptInterpretationResult["provider"];
@@ -104,6 +132,7 @@ export interface AssemblyHallFixture {
   packedAtlas: PackedAtlas;
   debugExport: AtlasDebugExport;
   componentGallery: ComponentGallery;
+  variantStress: AssemblyHallVariantStress;
   backendSupport: RendererBackendSupport;
   familyRuntime: BuildingFamilyRuntime;
   buildingRuntime: BuildingSceneRuntime;
@@ -132,13 +161,84 @@ function throwIfAborted(signal: AbortSignal): void {
 }
 
 async function buildingIdFor(spec: BuildingFamilySpec, controls: BuildingPromptControls): Promise<string> {
+  return buildingIdForSeed(spec, controls.seeds.building);
+}
+
+async function buildingIdForSeed(spec: BuildingFamilySpec, buildingSeed: string): Promise<string> {
   const hash = await hashCanonicalJson({
     familyId: spec.familyId,
-    buildingSeed: controls.seeds.building,
+    buildingSeed,
     floorCount: spec.massing.floorCount,
     bayCount: spec.facade.frontBayCount
   });
   return `${spec.familyId}.building-${hash.slice(0, 12)}`;
+}
+
+function variantBuildingSeed(baseSeed: string, index: number): string {
+  return index === 0 ? baseSeed : `${baseSeed}-variant-${index.toString().padStart(2, "0")}`;
+}
+
+function stressVariantForIr(
+  index: number,
+  buildingSeed: string,
+  ir: RuntimeBuildingIR
+): AssemblyHallVariantStressVariant {
+  return {
+    index,
+    buildingSeed,
+    buildingId: ir.buildingId,
+    sourceGraphHash: ir.sourceGraphHash,
+    drawCallCount: ir.meshBatches.length + ir.instanceBatches.length,
+    instanceCount: ir.metrics.instanceCount,
+    triangleCount: ir.metrics.triangleCount,
+    semanticPathCount: ir.semanticIndex.length
+  };
+}
+
+async function createVariantStressSummary(input: {
+  catalog: ComponentCatalog;
+  controls: BuildingPromptControls;
+  graph: BuildingGraph;
+  ir: RuntimeBuildingIR;
+  packedAtlas: PackedAtlas;
+  signal: AbortSignal;
+  spec: BuildingFamilySpec;
+}): Promise<AssemblyHallVariantStress> {
+  const variants = await Promise.all(
+    Array.from({ length: 16 }, async (_, index) => {
+      throwIfAborted(input.signal);
+      const buildingSeed = variantBuildingSeed(input.controls.seeds.building, index);
+      if (index === 0) {
+        return stressVariantForIr(index, buildingSeed, input.ir);
+      }
+
+      const variantIr = await compileBuilding({
+        spec: input.spec,
+        catalog: input.catalog,
+        graph: input.graph,
+        buildingId: await buildingIdForSeed(input.spec, buildingSeed)
+      });
+      return stressVariantForIr(index, buildingSeed, variantIr);
+    })
+  );
+  throwIfAborted(input.signal);
+
+  return {
+    schemaVersion: "0.1.0",
+    variantCount: variants.length,
+    sharedFamilyId: input.spec.familyId,
+    sharedAtlasId: input.packedAtlas.atlasId,
+    sharedAtlasContentHash: input.packedAtlas.contentHash,
+    sharedCatalogId: input.catalog.catalogId,
+    sharedSourceGraphHash: input.ir.sourceGraphHash,
+    aggregate: {
+      drawCallCount: variants.reduce((total, variant) => total + variant.drawCallCount, 0),
+      instanceCount: variants.reduce((total, variant) => total + variant.instanceCount, 0),
+      triangleCount: variants.reduce((total, variant) => total + variant.triangleCount, 0),
+      semanticPathCount: variants.reduce((total, variant) => total + variant.semanticPathCount, 0)
+    },
+    variants
+  };
 }
 
 function promptTraceFor(input: {
@@ -244,6 +344,15 @@ export async function createAssemblyHallFixture(
   }
   const debugExport = input.reusableArtifacts?.debugExport ?? (await createAtlasDebugExport(packedAtlas));
   const componentGallery = await buildComponentGallery({ catalog, ir });
+  const variantStress = await createVariantStressSummary({
+    catalog,
+    controls,
+    graph,
+    ir,
+    packedAtlas,
+    signal,
+    spec
+  });
   throwIfAborted(signal);
   const backendSupport = await detectRendererBackendSupport();
   const familyRuntime = createBuildingFamilyRuntime({
@@ -269,6 +378,7 @@ export async function createAssemblyHallFixture(
     packedAtlas,
     debugExport,
     componentGallery,
+    variantStress,
     backendSupport,
     familyRuntime,
     buildingRuntime,

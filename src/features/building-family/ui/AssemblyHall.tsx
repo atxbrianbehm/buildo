@@ -137,6 +137,10 @@ function galleryRows(fixture: AssemblyHallFixture) {
   return fixture.componentGallery.entries.slice(0, 6);
 }
 
+function stressRows(fixture: AssemblyHallFixture) {
+  return fixture.variantStress.variants;
+}
+
 function applyStageReveal(fixture: AssemblyHallFixture, revealThroughStage: AssemblyStage): void {
   for (const stageGroup of fixture.buildingRuntime.stageGroups) {
     stageGroup.group.visible = isStageVisible(stageGroup.stage, revealThroughStage);
@@ -170,6 +174,7 @@ export function AssemblyHall({ fixture, rendererFactory = createAssemblyRenderer
   const [revealThroughStage, setRevealThroughStage] = useState<AssemblyStage>("roof");
   const revealThroughStageRef = useRef<AssemblyStage>(revealThroughStage);
   const rows = useMemo(() => galleryRows(fixture), [fixture]);
+  const variants = useMemo(() => stressRows(fixture), [fixture]);
   const selectionOptions = useMemo(() => semanticSelectionOptions(fixture), [fixture]);
   const revealSummaries = useMemo(
     () => stageRevealSummaries(fixture, revealThroughStage),
@@ -430,6 +435,77 @@ export function AssemblyHall({ fixture, rendererFactory = createAssemblyRenderer
             ))}
           </tbody>
         </table>
+
+        <section className="assembly-hall__stress" aria-label="16-variant family stress view">
+          <div className="assembly-hall__stress-header">
+            <div>
+              <p className="project-label">Shared Family</p>
+              <h3>16-Variant Stress</h3>
+            </div>
+            <dl className="assembly-hall__stress-metrics" aria-label="16-variant stress metrics">
+              <div>
+                <dt>Variants</dt>
+                <dd>{formatNumber(fixture.variantStress.variantCount)} variants</dd>
+              </div>
+              <div>
+                <dt>Draw calls</dt>
+                <dd>{formatNumber(fixture.variantStress.aggregate.drawCallCount)}</dd>
+              </div>
+              <div>
+                <dt>Instances</dt>
+                <dd>{formatNumber(fixture.variantStress.aggregate.instanceCount)}</dd>
+              </div>
+              <div>
+                <dt>Triangles</dt>
+                <dd>{formatNumber(fixture.variantStress.aggregate.triangleCount)}</dd>
+              </div>
+            </dl>
+          </div>
+
+          <dl className="assembly-hall__stress-lineage" aria-label="16-variant shared lineage">
+            <div>
+              <dt>Atlas content</dt>
+              <dd>{fixture.variantStress.sharedAtlasContentHash}</dd>
+            </div>
+            <div>
+              <dt>Catalog</dt>
+              <dd>{fixture.variantStress.sharedCatalogId}</dd>
+            </div>
+            <div>
+              <dt>Graph</dt>
+              <dd>{fixture.variantStress.sharedSourceGraphHash}</dd>
+            </div>
+          </dl>
+
+          <div className="assembly-hall__stress-table-scroll">
+            <table className="assembly-hall__stress-table" aria-label="16-variant family stress variants">
+              <thead>
+                <tr>
+                  <th scope="col">Variant</th>
+                  <th scope="col">Building seed</th>
+                  <th scope="col">Building id</th>
+                  <th scope="col">Draw</th>
+                  <th scope="col">Instances</th>
+                  <th scope="col">Triangles</th>
+                  <th scope="col">Paths</th>
+                </tr>
+              </thead>
+              <tbody>
+                {variants.map((variant) => (
+                  <tr key={variant.buildingId}>
+                    <td>{variant.index + 1}</td>
+                    <td>{variant.buildingSeed}</td>
+                    <td>{variant.buildingId}</td>
+                    <td>{formatNumber(variant.drawCallCount)}</td>
+                    <td>{formatNumber(variant.instanceCount)}</td>
+                    <td>{formatNumber(variant.triangleCount)}</td>
+                    <td>{formatNumber(variant.semanticPathCount)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
       </div>
     </section>
   );

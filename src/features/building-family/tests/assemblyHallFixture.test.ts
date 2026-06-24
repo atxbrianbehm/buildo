@@ -124,6 +124,38 @@ describe("assembly hall fixture", () => {
     fixture.familyRuntime.dispose();
   });
 
+  it("summarizes sixteen family variants that share atlas and catalog lineage", async () => {
+    const fixture = await createAssemblyHallFixture();
+
+    expect(fixture.variantStress).toMatchObject({
+      schemaVersion: "0.1.0",
+      variantCount: 16,
+      sharedFamilyId: fixture.spec.familyId,
+      sharedAtlasId: fixture.packedAtlas.atlasId,
+      sharedAtlasContentHash: fixture.packedAtlas.contentHash,
+      sharedCatalogId: fixture.catalog.catalogId,
+      sharedSourceGraphHash: fixture.ir.sourceGraphHash
+    });
+    expect(fixture.variantStress.variants).toHaveLength(16);
+    expect(new Set(fixture.variantStress.variants.map((variant) => variant.buildingId)).size).toBe(16);
+    expect(new Set(fixture.variantStress.variants.map((variant) => variant.buildingSeed)).size).toBe(16);
+    expect(new Set(fixture.variantStress.variants.map((variant) => variant.sourceGraphHash))).toEqual(
+      new Set([fixture.ir.sourceGraphHash])
+    );
+    expect(fixture.variantStress.variants[0]).toMatchObject({
+      index: 0,
+      buildingId: fixture.ir.buildingId,
+      buildingSeed: fixture.spec.seeds.building,
+      triangleCount: fixture.ir.metrics.triangleCount,
+      instanceCount: fixture.ir.metrics.instanceCount,
+      semanticPathCount: fixture.ir.semanticIndex.length
+    });
+    expect(fixture.variantStress.aggregate.triangleCount).toBe(fixture.ir.metrics.triangleCount * 16);
+    expect(fixture.variantStress.aggregate.instanceCount).toBe(fixture.ir.metrics.instanceCount * 16);
+
+    fixture.familyRuntime.dispose();
+  });
+
   it("records local component locks in the generated building spec", async () => {
     const fixture = await createFixtureWithOptions({
       promptControls: {

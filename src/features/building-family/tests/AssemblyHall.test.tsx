@@ -50,6 +50,23 @@ describe("AssemblyHall", () => {
     );
   });
 
+  it("exposes the sixteen-variant shared-family stress summary", async () => {
+    const fixture = await createAssemblyHallFixture();
+
+    render(<AssemblyHall fixture={fixture} rendererFactory={fakeRendererFactory()} />);
+
+    const stressView = screen.getByLabelText("16-variant family stress view");
+    expect(stressView).toHaveTextContent("16 variants");
+    expect(stressView).toHaveTextContent(fixture.packedAtlas.contentHash);
+    expect(stressView).toHaveTextContent(fixture.catalog.catalogId);
+    expect(screen.getByRole("table", { name: "16-variant family stress variants" })).toHaveTextContent(
+      fixture.ir.buildingId
+    );
+    expect(screen.getByRole("table", { name: "16-variant family stress variants" })).toHaveTextContent(
+      fixture.variantStress.variants[15].buildingSeed
+    );
+  });
+
   it("exposes semantic renderer lookup entries as a selectable Assembly Hall inspector", async () => {
     const fixture = await createAssemblyHallFixture();
     const windowPath = `building/${fixture.ir.familyId}/facade/front/floor/0/bay/0/window/frame`;

@@ -221,6 +221,15 @@ try {
     .waitFor({ state: "visible" });
   await page.getByRole("tab", { name: "Assembly Hall" }).click();
   await page.getByRole("heading", { name: "Assembly Hall" }).waitFor({ state: "visible" });
+  await page.getByLabel("16-variant family stress view").getByText("16 variants").waitFor({ state: "visible" });
+  await page
+    .getByRole("table", { name: "16-variant family stress variants" })
+    .getByRole("cell", { name: "building-seed-2", exact: true })
+    .waitFor({ state: "visible" });
+  await page
+    .getByRole("table", { name: "16-variant family stress variants" })
+    .getByRole("cell", { name: "building-seed-2-variant-15", exact: true })
+    .waitFor({ state: "visible" });
   await page.getByRole("combobox", { name: "Reveal through stage" }).selectOption("facade");
   await page.getByLabel("Assembly stage visibility").getByText("openings").waitFor({ state: "visible" });
   await page.getByLabel("Assembly stage visibility").getByText("hidden").first().waitFor({ state: "visible" });
