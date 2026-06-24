@@ -176,6 +176,17 @@ try {
     .getByRole("cell", { name: /^packed-atlas:/ })
     .first()
     .waitFor({ state: "visible" });
+  await page.getByRole("heading", { name: "Prompt Trace" }).waitFor({ state: "visible" });
+  await page.getByLabel("Prompt trace summary").getByText("local-rule").waitFor({ state: "visible" });
+  await page
+    .getByRole("table", { name: "Evaluated PSG variables" })
+    .getByRole("cell", { name: "building.stylePack", exact: true })
+    .waitFor({ state: "visible" });
+  await page
+    .getByRole("table", { name: "PSG evaluation trace" })
+    .getByRole("cell", { name: "windowFamily", exact: true })
+    .first()
+    .waitFor({ state: "visible" });
   await page.getByRole("tab", { name: "Atlas Lab" }).click();
   await page.getByRole("heading", { name: "Atlas Lab" }).waitFor({ state: "visible" });
   await page.getByRole("img", { name: "baseColor channel" }).waitFor({ state: "visible" });

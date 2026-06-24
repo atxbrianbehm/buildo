@@ -5,6 +5,7 @@ import { AtlasLab } from "../features/building-family/ui/AtlasLab";
 import { ArtifactTracePanel } from "../features/building-family/ui/ArtifactTracePanel";
 import { AssemblyHall } from "../features/building-family/ui/AssemblyHall";
 import { ComponentForge } from "../features/building-family/ui/ComponentForge";
+import { PromptTracePanel } from "../features/building-family/ui/PromptTracePanel";
 import type { AssemblyHallFixture } from "../features/building-family/ui/assemblyHallFixture";
 import { BuildingArtifactRegistry } from "../features/building-family/state/artifactRegistry";
 import { BuildingRunController } from "../features/building-family/state/buildingRunController";
@@ -402,6 +403,7 @@ export function App() {
             </ol>
           </section>
           <ArtifactTracePanel activeArtifactId={activeFixtureArtifactId} artifacts={artifacts} run={currentRun} />
+          {fixture ? <PromptTracePanel trace={fixture.promptTrace} /> : null}
         </section>
       ) : null}
       {activeRoom === "atlasLab" ? (

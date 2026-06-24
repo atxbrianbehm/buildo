@@ -1,6 +1,6 @@
 # Dynamic Building Family Integration Map
 
-**Status:** Milestone 5J four-room navigation foundation
+**Status:** Milestone 5K Prompt Lab trace foundation
 **Plan source:** `docs/plans/dynamic-building-family.md`
 **Workspace:** `C:\Users\behmb\Documents\Cascade Projects\buildo`
 **Date:** 2026-06-24
@@ -46,7 +46,7 @@ docs/
     dynamic-building-family.md
 ```
 
-The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, the Milestone 3B pure compiler IR foundation, the Milestone 3C compiler worker boundary, the Milestone 3D component gallery data foundation, the Milestone 4A renderer adapter foundation, the Milestone 4B atlas texture/material sampling foundation, the Milestone 4C shared family runtime foundation, the Milestone 4D Assembly Hall rendered fixture foundation, the Milestone 4E renderer resource disposal foundation, the Milestone 4F Assembly Hall semantic selection foundation, the Milestone 4G WebGPU renderer activation foundation, the Milestone 5A run controller / Zustand state foundation, the Milestone 5B control invalidation foundation, the Milestone 5C committed rerun control/artifact-lineage foundation, the Milestone 5D cancellation UI/stale-run preservation foundation, the Milestone 5E Component Forge UI foundation, the Milestone 5F stage-driven Assembly Hall reveal foundation, the Milestone 5G artifact trace/provenance foundation, the Milestone 5H expanded prompt controls foundation, the Milestone 5I local component lock foundation, and the Milestone 5J four-room navigation foundation. No URL router/deep-linking, per-provider cancellation diagnostics, 16-variant stress view, or complete provider-aware four-room flow has been implemented.
+The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, the Milestone 3B pure compiler IR foundation, the Milestone 3C compiler worker boundary, the Milestone 3D component gallery data foundation, the Milestone 4A renderer adapter foundation, the Milestone 4B atlas texture/material sampling foundation, the Milestone 4C shared family runtime foundation, the Milestone 4D Assembly Hall rendered fixture foundation, the Milestone 4E renderer resource disposal foundation, the Milestone 4F Assembly Hall semantic selection foundation, the Milestone 4G WebGPU renderer activation foundation, the Milestone 5A run controller / Zustand state foundation, the Milestone 5B control invalidation foundation, the Milestone 5C committed rerun control/artifact-lineage foundation, the Milestone 5D cancellation UI/stale-run preservation foundation, the Milestone 5E Component Forge UI foundation, the Milestone 5F stage-driven Assembly Hall reveal foundation, the Milestone 5G artifact trace/provenance foundation, the Milestone 5H expanded prompt controls foundation, the Milestone 5I local component lock foundation, the Milestone 5J four-room navigation foundation, and the Milestone 5K Prompt Lab trace foundation. No URL router/deep-linking, per-provider cancellation diagnostics, 16-variant stress view, or complete provider-aware four-room flow has been implemented.
 
 ## 2. Active Instructions
 
@@ -685,7 +685,7 @@ The root app renders the panel directly after the Generation Run timeline, so At
 
 The focused React test covers registered artifacts, event artifact lineage, cache labels, dependencies, and active-artifact provenance. The app-shell test and e2e smoke now require the Artifact Trace heading plus the `runtime-building-ir` and `packed-atlas:` lineage before continuing to atlas/component/assembly checks.
 
-This is the provenance-panel foundation, not the final trace room. Provider-level diagnostics, prompt/PSG trace display, lock-aware element lineage, artifact export, and timeline-linked reveal remain future roadmap slices.
+This is the provenance-panel foundation, not the final trace room. Provider-level diagnostics, lock-aware element lineage, artifact export, and timeline-linked reveal remain future roadmap slices.
 
 ## 6.21 Expanded Prompt Controls Foundation
 
@@ -757,6 +757,29 @@ The app-shell test now verifies the four-room workflow: Prompt Lab is the initia
 
 This is a store-backed room navigation foundation, not URL routing. Deep links, browser history integration, richer Prompt Lab PSG diagnostics, provider-level progress/cancellation diagnostics, and 16-variant stress view remain future roadmap slices.
 
+## 6.24 Prompt Lab Trace Foundation
+
+Actual Milestone 5K Prompt Lab trace paths:
+
+```text
+src/features/building-family/ui/assemblyHallFixture.ts
+src/features/building-family/ui/PromptTracePanel.tsx
+src/features/building-family/tests/assemblyHallFixture.test.ts
+src/app/App.tsx
+src/app/App.css
+src/app/App.test.tsx
+scripts/e2e-smoke.mjs
+docs/architecture/dynamic-building-family-integration.md
+```
+
+`AssemblyHallFixture` now includes a serializable `promptTrace` artifact assembled from the real PSG evaluation, local rule prompt interpreter, PSG-to-building-intent adapter, and normalized spec. It records the interpreter provider, PSG preset id, style pack id, adapter trace id, PSG outputs, evaluated PSG variables, interpreter overrides, committed Prompt Lab controls, PSG node trace entries, and diagnostics.
+
+Prompt Lab now renders `PromptTracePanel` after Artifact Trace. The panel exposes the prompt/PSG chain as compact trace tables: requested controls, evaluated PSG variables, PSG evaluation trace, and interpreter overrides. This makes the prompt-to-spec path inspectable from the four-room app shell without adding provider or server behavior.
+
+Focused tests cover serializable fixture trace contents from the actual `late19cCommercialDemo` preset and Prompt Lab rendering of the trace summary, evaluated variables, PSG node trace, and requested controls. The e2e smoke now verifies Prompt Trace in Prompt Lab before switching to Atlas Lab.
+
+This is a local/procedural trace foundation. It does not add multiple PSG presets, URL routing, provider-level prompt revision diagnostics, remote material provider diagnostics, or 16-variant stress view.
+
 ## 7. App Shell, Renderer, State, Workers, And Routing
 
 Actual React shell:
@@ -771,7 +794,7 @@ src/features/building-family/ui/ComponentForge.tsx
 src/features/building-family/ui/AssemblyHall.tsx
 ```
 
-Actual feature routing: root route only. No router dependency exists yet. The root app shell now exposes a store-backed `Building rooms` tablist. Prompt Lab contains the expanded Control Invalidation prompt-control surface, committed rerun buttons, a Cancel Run action, controller-backed Generation Run timeline with artifact cache-hit badges, and Artifact Trace provenance tables. Atlas Lab, Component Forge with local recipe lock controls, and Assembly Hall with manual stage reveal are separate active room panels backed by the same completed fixture artifact.
+Actual feature routing: root route only. No router dependency exists yet. The root app shell now exposes a store-backed `Building rooms` tablist. Prompt Lab contains the expanded Control Invalidation prompt-control surface, committed rerun buttons, a Cancel Run action, controller-backed Generation Run timeline with artifact cache-hit badges, Artifact Trace provenance tables, and Prompt Trace PSG/interpreter diagnostics. Atlas Lab, Component Forge with local recipe lock controls, and Assembly Hall with manual stage reveal are separate active room panels backed by the same completed fixture artifact.
 
 Actual Three.js renderer setup:
 
@@ -1166,7 +1189,7 @@ typecheck: passed
 unit tests: passed, 100 tests across 32 files
 lint: passed
 build: passed
-e2e smoke: passed, including four-room tab navigation, expanded prompt-control edits and committed Run Current rerun, Artifact Trace registered-artifact and run-lineage assertions in Prompt Lab, Atlas Lab channel/slot assertions, Component Forge selector/atlas-slot assertion, local component lock plus Prompt Lab invalidation and new-building lock persistence, Assembly Hall stage reveal selection, active renderer backend assertion, Assembly Hall semantic selection, and backend-specific canvas pixel probe
+e2e smoke: passed, including four-room tab navigation, expanded prompt-control edits and committed Run Current rerun, Artifact Trace registered-artifact and run-lineage assertions in Prompt Lab, Prompt Trace PSG/interpreter diagnostics, Atlas Lab channel/slot assertions, Component Forge selector/atlas-slot assertion, local component lock plus Prompt Lab invalidation and new-building lock persistence, Assembly Hall stage reveal selection, active renderer backend assertion, Assembly Hall semantic selection, and backend-specific canvas pixel probe
 Building state/controller focused tests: passed
 Assembly Hall fixture focused tests: passed
 App committed-rerun/cancel focused test: passed
@@ -1283,6 +1306,13 @@ Rendered QA for Milestone 5J:
 ```text
 Playwright desktop screenshot: 1280x720 viewport, switched through Prompt Lab, Atlas Lab, Component Forge, and Assembly Hall tabs, left Component Forge active with the selected tab and component selector visible, no console errors, no horizontal overflow, screenshot C:\tmp\buildo-four-room-nav-qa\desktop.png.
 Playwright mobile screenshot: 390x844 viewport, switched through all four tabs, left Assembly Hall active with the vertical room tablist and Assembly Hall heading visible, no console errors, no horizontal overflow, screenshot C:\tmp\buildo-four-room-nav-qa\mobile.png.
+```
+
+Rendered QA for Milestone 5K:
+
+```text
+Playwright desktop screenshot: 1280x720 viewport, Prompt Trace visible in Prompt Lab with local-rule summary, late19cCommercialDemo preset, requested controls, and evaluated PSG variables, no console errors, no horizontal overflow, screenshot C:\tmp\buildo-prompt-trace-qa\desktop.png.
+Playwright mobile screenshot: 390x844 viewport, Prompt Trace summary stacked cleanly above scroll-contained trace tables, local-rule / preset / style-pack / trace id readable, no console errors, no horizontal overflow, screenshot C:\tmp\buildo-prompt-trace-qa\mobile.png.
 ```
 
 ## 13. Current Implemented Surface
@@ -1585,6 +1615,19 @@ scripts/e2e-smoke.mjs
 docs/architecture/dynamic-building-family-integration.md
 ```
 
+Milestone 5K introduced:
+
+```text
+src/features/building-family/ui/assemblyHallFixture.ts
+src/features/building-family/ui/PromptTracePanel.tsx
+src/features/building-family/tests/assemblyHallFixture.test.ts
+src/app/App.tsx
+src/app/App.css
+src/app/App.test.tsx
+scripts/e2e-smoke.mjs
+docs/architecture/dynamic-building-family-integration.md
+```
+
 Generated and ignored directories:
 
 ```text
@@ -1593,7 +1636,7 @@ dist/
 test-results/
 ```
 
-No preassembled meshes, provider routes, URL router/deep links, per-provider cancellation diagnostics, 16-variant stress view, or complete provider-aware four-room flow has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers through the pure TypeScript compiler path, can deliver them across the compiler worker boundary with transferable buffers, can summarize catalog/IR component data for a Component Forge inspection surface, can convert that IR into Three.js scene objects under `renderer-three/*`, can convert packed atlas channels into texture-backed slot materials at the renderer boundary, can host multiple per-building scene runtimes against one shared family atlas/material runtime, can centralize idempotent renderer resource disposal across standalone and shared-family ownership modes, renders one deterministic fixture building in a WebGPU-first browser Assembly Hall canvas with WebGL fallback from those generated artifacts, surfaces semantic renderer lookup entries in a selectable Assembly Hall inspector, drives the root app through a Zustand-backed run controller with serializable run events plus an out-of-store runtime artifact registry, exposes a store-backed four-room tablist for Prompt Lab, Atlas Lab, Component Forge, and Assembly Hall, previews roadmap invalidation impacts for prompt, floor, bay, roof, trim-density, seed, and local component lock controls, can commit `Run Current`, `New Building`, and `New Family` reruns with cache-hit artifact lineage for structural vs family-chain changes, exposes `Cancel Run` while preserving the last completed scene during pending and cancelled runs, shows a dedicated Component Forge with real generated component entries, selector/toggles, dimensions, anchors, recipe JSON, selected atlas-slot highlighting, and selected-recipe lock/unlock controls, records locked component keys as semantic locks in the generated spec, drives Assembly Hall stage group visibility from a real stage reveal control backed by generated scene groups and semantic path counts, and shows a read-only Artifact Trace panel with run event lineage, registered artifact metadata, cache labels, dependencies, and active fixture provenance in Prompt Lab.
+No preassembled meshes, provider routes, URL router/deep links, per-provider cancellation diagnostics, 16-variant stress view, or complete provider-aware four-room flow has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers through the pure TypeScript compiler path, can deliver them across the compiler worker boundary with transferable buffers, can summarize catalog/IR component data for a Component Forge inspection surface, can convert that IR into Three.js scene objects under `renderer-three/*`, can convert packed atlas channels into texture-backed slot materials at the renderer boundary, can host multiple per-building scene runtimes against one shared family atlas/material runtime, can centralize idempotent renderer resource disposal across standalone and shared-family ownership modes, renders one deterministic fixture building in a WebGPU-first browser Assembly Hall canvas with WebGL fallback from those generated artifacts, surfaces semantic renderer lookup entries in a selectable Assembly Hall inspector, drives the root app through a Zustand-backed run controller with serializable run events plus an out-of-store runtime artifact registry, exposes a store-backed four-room tablist for Prompt Lab, Atlas Lab, Component Forge, and Assembly Hall, previews roadmap invalidation impacts for prompt, floor, bay, roof, trim-density, seed, and local component lock controls, can commit `Run Current`, `New Building`, and `New Family` reruns with cache-hit artifact lineage for structural vs family-chain changes, exposes `Cancel Run` while preserving the last completed scene during pending and cancelled runs, shows a dedicated Component Forge with real generated component entries, selector/toggles, dimensions, anchors, recipe JSON, selected atlas-slot highlighting, and selected-recipe lock/unlock controls, records locked component keys as semantic locks in the generated spec, drives Assembly Hall stage group visibility from a real stage reveal control backed by generated scene groups and semantic path counts, and shows read-only Artifact Trace plus Prompt Trace panels with run lineage, registered artifact metadata, active fixture provenance, evaluated PSG variables, local interpreter overrides, requested controls, and PSG node trace entries in Prompt Lab.
 
 ## 14. Milestone 0 And Setup Exit Criteria
 

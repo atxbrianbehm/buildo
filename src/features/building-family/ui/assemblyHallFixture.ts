@@ -32,6 +32,9 @@ import buildingFixture from "../psg/fixtures/late19cCommercialPrompt.psg.json";
 import stylePack from "../style-packs/late-19c-commercial-demo.json";
 import { evaluatePsg } from "../../prompt-spaghetti/core/evaluatePsg";
 import { parsePsgDocument } from "../../prompt-spaghetti/io/importPsg";
+import type { PsgEvaluationResult } from "../../prompt-spaghetti/contracts/psgDocument";
+import type { PromptInterpretationResult } from "../psg/localRulePromptInterpreter";
+import type { AdaptPsgEvaluationResult } from "../psg/psgBuildingIntentAdapter";
 
 const defaultFixturePromptControls: BuildingPromptControls = {
   prompt: "four floors, 7 bays, brick, flat roof, ornate trim",
@@ -63,9 +66,37 @@ export interface AssemblyHallMetrics {
   textureCount: number;
 }
 
+export interface AssemblyHallPromptTrace {
+  schemaVersion: "0.1.0";
+  interpreterProvider: PromptInterpretationResult["provider"];
+  psgPresetId: BuildingPromptControls["psgPresetId"];
+  stylePackId: string;
+  traceId: string;
+  psgOutputs: PsgEvaluationResult["outputs"];
+  evaluatedVariables: Array<{
+    name: string;
+    value: string | number | boolean | null;
+  }>;
+  interpreterOverrides: Array<{
+    name: string;
+    value: string | number;
+  }>;
+  requestedControls: Array<{
+    name: string;
+    value: string | number;
+  }>;
+  psgTrace: PsgEvaluationResult["trace"];
+  diagnostics: Array<{
+    code: string;
+    message: string;
+    severity: "info" | "warning" | "error";
+  }>;
+}
+
 export interface AssemblyHallFixture {
   schemaVersion: "0.1.0";
   prompt: string;
+  promptTrace: AssemblyHallPromptTrace;
   spec: BuildingFamilySpec;
   catalog: ComponentCatalog;
   graph: BuildingGraph;
@@ -110,6 +141,55 @@ async function buildingIdFor(spec: BuildingFamilySpec, controls: BuildingPromptC
   return `${spec.familyId}.building-${hash.slice(0, 12)}`;
 }
 
+function promptTraceFor(input: {
+  adapted: AdaptPsgEvaluationResult;
+  controls: BuildingPromptControls;
+  evaluation: PsgEvaluationResult;
+  promptResult: PromptInterpretationResult;
+  spec: BuildingFamilySpec;
+}): AssemblyHallPromptTrace {
+  return {
+    schemaVersion: "0.1.0",
+    interpreterProvider: input.promptResult.provider,
+    psgPresetId: input.controls.psgPresetId,
+    stylePackId: input.spec.stylePackId,
+    traceId: input.adapted.intent.psg.traceId,
+    psgOutputs: input.evaluation.outputs,
+    evaluatedVariables: Object.entries(input.evaluation.variables)
+      .map(([name, value]) => ({ name, value }))
+      .sort((left, right) => left.name.localeCompare(right.name)),
+    interpreterOverrides: Object.entries(input.promptResult.overrides)
+      .filter((entry): entry is [string, string | number] => entry[1] !== undefined)
+      .map(([name, value]) => ({ name, value }))
+      .sort((left, right) => left.name.localeCompare(right.name)),
+    requestedControls: [
+      { name: "floorCount", value: input.controls.floorCount },
+      { name: "bayCount", value: input.controls.bayCount },
+      { name: "roofType", value: input.controls.roofType },
+      { name: "trimDensity", value: input.controls.trimDensity },
+      { name: "stylePackId", value: input.controls.stylePackId },
+      { name: "familySeed", value: input.controls.seeds.family },
+      { name: "buildingSeed", value: input.controls.seeds.building },
+      { name: "materialSeed", value: input.controls.seeds.material },
+      { name: "trimSeed", value: input.controls.seeds.trim }
+    ],
+    psgTrace: input.evaluation.trace,
+    diagnostics: [
+      ...input.promptResult.diagnostics,
+      ...input.adapted.diagnostics.map((diagnostic) => ({
+        code: diagnostic.code,
+        message: diagnostic.message,
+        severity: diagnostic.severity
+      })),
+      ...input.spec.diagnostics.map((diagnostic) => ({
+        code: diagnostic.code,
+        message: diagnostic.message,
+        severity: diagnostic.severity
+      }))
+    ]
+  };
+}
+
 export async function createAssemblyHallFixture(
   input: CreateAssemblyHallFixtureInput = {}
 ): Promise<AssemblyHallFixture> {
@@ -141,6 +221,7 @@ export async function createAssemblyHallFixture(
     }
   });
   const spec = (await normalizeBuildingSpec(adapted.intent, stylePack)).spec;
+  const promptTrace = promptTraceFor({ adapted, controls, evaluation, promptResult, spec });
   throwIfAborted(signal);
   const atlasPlan = await planAtlas(spec, { widthPx: 128, heightPx: 128, paddingPx: 4 });
   const catalog = input.reusableArtifacts?.catalog ?? (await buildComponentCatalog(spec, atlasPlan.manifest));
@@ -180,6 +261,7 @@ export async function createAssemblyHallFixture(
   return {
     schemaVersion: "0.1.0",
     prompt: controls.prompt,
+    promptTrace,
     spec,
     catalog,
     graph,

@@ -77,6 +77,53 @@ describe("assembly hall fixture", () => {
     fixture.familyRuntime.dispose();
   });
 
+  it("records a serializable prompt and PSG trace for Prompt Lab inspection", async () => {
+    const fixture = await createAssemblyHallFixture();
+    const promptTrace = (
+      fixture as AssemblyHallFixture & {
+        promptTrace?: {
+          interpreterProvider: string;
+          psgPresetId: string;
+          traceId: string;
+          evaluatedVariables: Array<{ name: string; value: string | number | boolean | null }>;
+          psgTrace: Array<{ nodeId: string; nodeType: string; semanticPath: string; seed: string }>;
+          requestedControls: Array<{ name: string; value: string | number }>;
+        };
+      }
+    ).promptTrace;
+
+    expect(promptTrace).toMatchObject({
+      interpreterProvider: "local-rule",
+      psgPresetId: "late19cCommercialDemo",
+      traceId: expect.stringMatching(/^trace-/),
+      requestedControls: expect.arrayContaining([
+        { name: "floorCount", value: 4 },
+        { name: "bayCount", value: 7 },
+        { name: "roofType", value: "flat" },
+        { name: "trimDensity", value: "ornate" }
+      ])
+    });
+    expect(promptTrace?.evaluatedVariables).toEqual(
+      expect.arrayContaining([
+        { name: "building.stylePack", value: "late-19c-commercial-demo" },
+        { name: "building.windowFamily", value: "tall-arched" },
+        { name: "building.corniceFamily", value: "bracketed-metal" }
+      ])
+    );
+    expect(promptTrace?.psgTrace).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          nodeId: "windowFamily",
+          nodeType: "SetVariable",
+          semanticPath: "windowFamily",
+          seed: "psg-seed/windowFamily"
+        })
+      ])
+    );
+
+    fixture.familyRuntime.dispose();
+  });
+
   it("records local component locks in the generated building spec", async () => {
     const fixture = await createFixtureWithOptions({
       promptControls: {

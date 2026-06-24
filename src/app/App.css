@@ -622,6 +622,130 @@ h1 {
   background: #f4f7ef;
 }
 
+.prompt-trace {
+  display: grid;
+  gap: 16px;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 24px 0 30px;
+  border-bottom: 1px solid rgba(24, 32, 28, 0.14);
+}
+
+.prompt-trace__header {
+  display: grid;
+  grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.prompt-trace__header h2 {
+  margin: 0;
+  color: #121816;
+  font-size: 1.6rem;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.prompt-trace__summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.prompt-trace__summary div {
+  min-width: 0;
+  padding: 11px 12px;
+  border-left: 3px solid rgba(72, 113, 82, 0.48);
+  background: rgba(255, 255, 255, 0.48);
+}
+
+.prompt-trace dt {
+  color: #5f6d66;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.prompt-trace dd {
+  margin: 6px 0 0;
+  overflow-wrap: anywhere;
+  color: #18201c;
+  font-size: 0.82rem;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.prompt-trace__tables {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  min-width: 0;
+}
+
+.prompt-trace__table-scroll {
+  min-width: 0;
+  max-height: 300px;
+  overflow: auto;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.64);
+  box-shadow: inset 0 0 0 1px rgba(24, 32, 28, 0.12);
+}
+
+.prompt-trace__table-wide {
+  grid-column: 1 / -1;
+}
+
+.prompt-trace table {
+  width: 100%;
+  min-width: 520px;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.prompt-trace__table-wide table {
+  min-width: 860px;
+}
+
+.prompt-trace caption {
+  padding: 12px 12px 8px;
+  color: #33413b;
+  font-weight: 700;
+  text-align: left;
+}
+
+.prompt-trace th,
+.prompt-trace td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(24, 32, 28, 0.1);
+  color: #33413b;
+  text-align: left;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.prompt-trace th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  color: #5f6d66;
+  background: #f7f8f4;
+  font-size: 0.72rem;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.prompt-trace td {
+  overflow-wrap: anywhere;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.prompt-trace td:nth-child(3),
+.prompt-trace td:nth-child(4),
+.prompt-trace td:nth-child(5) {
+  white-space: normal;
+}
+
 .atlas-fixture {
   display: grid;
   grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
@@ -1438,6 +1562,8 @@ h1 {
   .component-forge__header,
   .component-forge__detail,
   .control-panel,
+  .prompt-trace__header,
+  .prompt-trace__tables,
   .run-panel,
   .assembly-hall__stage,
   .atlas-lab__header {
@@ -1503,7 +1629,8 @@ h1 {
   .control-panel__stages,
   .control-panel__fields,
   .artifact-trace__summary,
-  .artifact-trace__active {
+  .artifact-trace__active,
+  .prompt-trace__summary {
     grid-template-columns: 1fr;
   }
 

@@ -40,6 +40,13 @@ describe("App", () => {
     expect(await screen.findByRole("heading", { name: "Artifact Trace" })).toBeInTheDocument();
     expect(screen.getByRole("table", { name: "Registered artifacts" })).toHaveTextContent("runtime-building-ir");
     expect(screen.getByRole("table", { name: "Run event artifact trace" })).toHaveTextContent("packed-atlas:");
+    expect(await screen.findByRole("heading", { name: "Prompt Trace" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Prompt trace summary")).toHaveTextContent("local-rule");
+    expect(screen.getByLabelText("Prompt trace summary")).toHaveTextContent("late19cCommercialDemo");
+    expect(screen.getByRole("table", { name: "Evaluated PSG variables" })).toHaveTextContent("building.stylePack");
+    expect(screen.getByRole("table", { name: "Evaluated PSG variables" })).toHaveTextContent("tall-arched");
+    expect(screen.getByRole("table", { name: "PSG evaluation trace" })).toHaveTextContent("windowFamily");
+    expect(screen.getByRole("table", { name: "Requested controls" })).toHaveTextContent("trimDensity");
 
     selectRoom("Atlas Lab");
     expect(screen.getByRole("tab", { name: "Atlas Lab" })).toHaveAttribute("aria-selected", "true");
