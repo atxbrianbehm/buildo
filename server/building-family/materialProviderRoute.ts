@@ -16,6 +16,7 @@ const maxRemoteSourceDimensionPx = 1024;
 const maxPromptVocabularyChars = 640;
 const defaultRemoteMaterialTimeoutMs = 30_000;
 const defaultRemoteMaterialConcurrencyLimit = 2;
+const defaultRemoteMaterialRetryCount = 1;
 
 const AtlasMaterialRoleSchema = z.enum([
   "wall",
@@ -62,6 +63,7 @@ export interface MaterialProviderRouteOptions {
   remoteMaterialCache?: RemoteMaterialArtifactCache;
   remoteMaterialTimeoutMs?: number;
   remoteMaterialConcurrencyLimit?: number;
+  remoteMaterialRetryCount?: number;
 }
 
 export const approvedRemoteMaterialSourceRoles = {
@@ -289,6 +291,14 @@ function configuredRemoteMaterialConcurrencyLimit(options: MaterialProviderRoute
   return defaultRemoteMaterialConcurrencyLimit;
 }
 
+function configuredRemoteMaterialRetryCount(options: MaterialProviderRouteOptions): number {
+  if (typeof options.remoteMaterialRetryCount === "number") {
+    return Math.max(0, Math.floor(options.remoteMaterialRetryCount));
+  }
+
+  return defaultRemoteMaterialRetryCount;
+}
+
 async function runWithConcurrencyLimit<T>(
   items: T[],
   concurrencyLimit: number,
@@ -339,6 +349,26 @@ async function generateWithTimeout(
   }
 }
 
+async function generateWithRetry(
+  provider: OpenAIImageMaterialProvider,
+  sourceRequest: MaterialSourceRequest,
+  requestSignal: AbortSignal,
+  timeoutMs: number,
+  retryCount: number
+): Promise<RemoteMaterialSourceArtifact> {
+  let attempt = 0;
+  while (true) {
+    try {
+      return await generateWithTimeout(provider, sourceRequest, requestSignal, timeoutMs);
+    } catch (error) {
+      if (error instanceof RemoteMaterialProviderTimeoutError || attempt >= retryCount) {
+        throw error;
+      }
+      attempt += 1;
+    }
+  }
+}
+
 export async function handleMaterialProviderRequest(
   request: Request,
   options: MaterialProviderRouteOptions = {}
@@ -382,6 +412,7 @@ export async function handleMaterialProviderRequest(
   const remoteMaterialCache = options.remoteMaterialCache ?? defaultRemoteMaterialArtifactCache;
   const remoteMaterialTimeoutMs = configuredRemoteMaterialTimeoutMs(options);
   const remoteMaterialConcurrencyLimit = configuredRemoteMaterialConcurrencyLimit(options);
+  const remoteMaterialRetryCount = configuredRemoteMaterialRetryCount(options);
 
   try {
     const artifacts: Array<RemoteMaterialSourceArtifact | undefined> = [];
@@ -401,7 +432,13 @@ export async function handleMaterialProviderRequest(
     }
 
     await runWithConcurrencyLimit(cacheMisses, remoteMaterialConcurrencyLimit, async ({ index, sourceRequest }) => {
-      const artifact = await generateWithTimeout(provider, sourceRequest, request.signal, remoteMaterialTimeoutMs);
+      const artifact = await generateWithRetry(
+        provider,
+        sourceRequest,
+        request.signal,
+        remoteMaterialTimeoutMs,
+        remoteMaterialRetryCount
+      );
       remoteMaterialCache.set(artifact);
       artifacts[index] = artifact;
     });

@@ -35,6 +35,7 @@ function routeRequest(
     remoteMaterialCache?: RemoteMaterialArtifactCache;
     remoteMaterialTimeoutMs?: number;
     remoteMaterialConcurrencyLimit?: number;
+    remoteMaterialRetryCount?: number;
   } = {}
 ): Promise<Response> {
   return handleMaterialProviderRequest(
@@ -494,6 +495,60 @@ describe("material provider route", () => {
     );
     expect(body.artifacts.map((artifact) => artifact.sourceId)).toEqual(
       payload.requests.map((request) => request.sourceId)
+    );
+  });
+
+  it("retries a transient OpenAI material failure before falling back", async () => {
+    const cache = createInMemoryRemoteMaterialArtifactCache();
+    let transportCallCount = 0;
+
+    const response = await routeRequest(
+      validPayload,
+      {
+        BUILDING_MATERIAL_PROVIDER: "openai",
+        OPENAI_API_KEY: "sk-buildo-secret-test-key",
+        OPENAI_IMAGE_MODEL: "gpt-image-test"
+      },
+      {
+        remoteMaterialCache: cache,
+        remoteMaterialRetryCount: 1,
+        openAITransport: async () => {
+          transportCallCount += 1;
+          if (transportCallCount === 1) {
+            throw new Error("temporary failure for sk-buildo-secret-test-key");
+          }
+          return {
+            data: [
+              {
+                b64_json: encodedPng("retried-wall"),
+                revised_prompt: "retried remote prompt"
+              }
+            ]
+          };
+        }
+      }
+    );
+    const bodyText = await response.text();
+
+    expect(transportCallCount).toBe(2);
+    expect(bodyText).not.toContain("sk-buildo-secret-test-key");
+    expect(response.status).toBe(200);
+    expect(JSON.parse(bodyText)).toEqual(
+      expect.objectContaining({
+        status: "generated",
+        providerId: "openai-image",
+        cacheStatus: "miss",
+        diagnostics: [],
+        artifacts: [
+          expect.objectContaining({
+            image: {
+              format: "png",
+              b64Json: encodedPng("retried-wall")
+            },
+            revisedPrompt: "retried remote prompt"
+          })
+        ]
+      })
     );
   });
 
