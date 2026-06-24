@@ -1,18 +1,26 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { vi } from "vitest";
-import { AssemblyHall, type AssemblyRendererFactory } from "../ui/AssemblyHall";
+import type { AssemblyRendererActivation } from "../renderer-three/assemblyRendererFactory";
+import { AssemblyHall } from "../ui/AssemblyHall";
 import { createAssemblyHallFixture } from "../ui/assemblyHallFixture";
 
-function fakeRendererFactory(): AssemblyRendererFactory {
-  return () => {
+function fakeRendererFactory(
+  activeBackend: AssemblyRendererActivation["activeBackend"] = "webgl",
+  fallbackReason?: string
+) {
+  return async (): Promise<AssemblyRendererActivation> => {
     const canvas = document.createElement("canvas");
     canvas.setAttribute("data-testid", "assembly-renderer-canvas");
     return {
-      domElement: canvas,
-      dispose: vi.fn(),
-      render: vi.fn(),
-      setPixelRatio: vi.fn(),
-      setSize: vi.fn()
+      activeBackend,
+      fallbackReason,
+      renderer: {
+        domElement: canvas,
+        dispose: vi.fn(),
+        render: vi.fn(),
+        setPixelRatio: vi.fn(),
+        setSize: vi.fn()
+      }
     };
   };
 }
@@ -25,7 +33,7 @@ describe("AssemblyHall", () => {
 
     expect(screen.getByRole("heading", { name: "Assembly Hall" })).toBeInTheDocument();
     const viewport = screen.getByRole("img", { name: "Rendered generated building fixture" });
-    expect(within(viewport).getByTestId("assembly-renderer-canvas")).toBeInTheDocument();
+    expect(await within(viewport).findByTestId("assembly-renderer-canvas")).toBeInTheDocument();
     expect(screen.getByText(fixture.prompt)).toBeInTheDocument();
     expect(screen.getByLabelText("Assembly Hall renderer metrics")).toHaveTextContent(
       String(fixture.metrics.drawCallCount)
@@ -59,5 +67,21 @@ describe("AssemblyHall", () => {
     expect(inspector).toHaveTextContent("glass.primary");
     expect(inspector).toHaveTextContent("InstancedMesh");
     expect(inspector).toHaveTextContent("Window frame");
+  });
+
+  it("shows the activated renderer backend and fallback reason from the renderer factory", async () => {
+    const fixture = await createAssemblyHallFixture();
+
+    render(
+      <AssemblyHall
+        fixture={fixture}
+        rendererFactory={fakeRendererFactory("webgl", "WebGPU renderer activation failed: adapter unavailable. Using WebGL fallback.")}
+      />
+    );
+
+    const metrics = screen.getByLabelText("Assembly Hall renderer metrics");
+    expect(await within(screen.getByRole("img", { name: "Rendered generated building fixture" })).findByTestId("assembly-renderer-canvas")).toBeInTheDocument();
+    expect(metrics).toHaveTextContent("webgl active / webgpu preferred");
+    expect(screen.getByRole("status")).toHaveTextContent("adapter unavailable");
   });
 });

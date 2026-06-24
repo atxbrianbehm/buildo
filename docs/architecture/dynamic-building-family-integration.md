@@ -1,6 +1,6 @@
 # Dynamic Building Family Integration Map
 
-**Status:** Milestone 4F Assembly Hall semantic selection foundation
+**Status:** Milestone 4G WebGPU renderer activation foundation
 **Plan source:** `docs/plans/dynamic-building-family.md`
 **Workspace:** `C:\Users\behmb\Documents\Cascade Projects\buildo`
 **Date:** 2026-06-24
@@ -46,7 +46,7 @@ docs/
     dynamic-building-family.md
 ```
 
-The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, the Milestone 3B pure compiler IR foundation, the Milestone 3C compiler worker boundary, the Milestone 3D component gallery data foundation, the Milestone 4A renderer adapter foundation, the Milestone 4B atlas texture/material sampling foundation, the Milestone 4C shared family runtime foundation, the Milestone 4D Assembly Hall rendered fixture foundation, the Milestone 4E renderer resource disposal foundation, and the Milestone 4F Assembly Hall semantic selection foundation. No router, Zustand state slice, Component Forge UI, control surface, or four-room flow has been implemented.
+The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, the Milestone 3B pure compiler IR foundation, the Milestone 3C compiler worker boundary, the Milestone 3D component gallery data foundation, the Milestone 4A renderer adapter foundation, the Milestone 4B atlas texture/material sampling foundation, the Milestone 4C shared family runtime foundation, the Milestone 4D Assembly Hall rendered fixture foundation, the Milestone 4E renderer resource disposal foundation, the Milestone 4F Assembly Hall semantic selection foundation, and the Milestone 4G WebGPU renderer activation foundation. No router, Zustand state slice, Component Forge UI, control surface, or four-room flow has been implemented.
 
 ## 2. Active Instructions
 
@@ -487,9 +487,9 @@ scripts/e2e-smoke.mjs
 
 `createAssemblyHallFixture` composes the real fixture pipeline from PSG evaluation through normalized spec, atlas plan/packing/debug export, component catalog, building graph, compiler IR, component gallery, backend support detection, shared family runtime, and one per-building scene runtime. The same packed atlas artifacts feed both Atlas Lab and the rendered Assembly Hall fixture in the root app shell.
 
-`AssemblyHall` mounts a Three.js WebGL canvas for the fixture building, using the shared family runtime root and atlas-backed slot materials. The surface shows active/preferred backend, draw calls, instance count, triangle count, atlas content hash, texture count, and a compact component-gallery summary. In non-WebGL unit-test environments it renders an accessible fallback while keeping the real browser path canvas-backed.
+`AssemblyHall` mounts a Three.js canvas for the fixture building, using the shared family runtime root and atlas-backed slot materials. The surface now activates WebGPU first when the browser exposes `navigator.gpu` and the detected support prefers WebGPU, then falls back to WebGL when WebGPU is unavailable or initialization fails. The surface shows active/preferred backend, draw calls, instance count, triangle count, atlas content hash, texture count, and a compact component-gallery summary. In non-renderer unit-test environments it renders an accessible fallback while keeping the real browser path canvas-backed.
 
-The e2e smoke now waits for the Assembly Hall canvas, verifies the canvas marked a rendered frame, and performs a WebGL pixel probe so a blank canvas cannot satisfy the smoke. Additional Playwright QA captured desktop and mobile screenshots and verified varied canvas pixels at both viewports. The Browser/IAB path was attempted first but failed to attach to the in-app browser webview, so Playwright was used as the documented fallback.
+The e2e smoke now waits for the Assembly Hall canvas, verifies the canvas marked a rendered frame, verifies the active backend metric, and performs a backend-specific pixel probe so a blank canvas cannot satisfy the smoke. Browser/IAB verified the live WebGPU canvas DOM state and console cleanliness; Playwright captured desktop and mobile screenshots because the in-app browser screenshot path timed out on the WebGPU tab.
 
 ## 6.11 Renderer Resource Disposal Foundation
 
@@ -523,7 +523,26 @@ scripts/e2e-smoke.mjs
 
 The focused React test selects a real generated window semantic path and verifies it traces to `instances.window`, `openings`, `glass.primary`, `InstancedMesh`, and the Window frame gallery entry. The e2e smoke also selects the window entry in the browser before probing the canvas, so the visible Assembly Hall path covers both selection data and rendered output.
 
-The next roadmap slice should continue Milestone 4 with explicit WebGPU renderer activation or begin Milestone 5 orchestration with state/run-controller work.
+## 6.13 WebGPU Renderer Activation Foundation
+
+Actual Milestone 4G renderer/UI paths:
+
+```text
+src/features/building-family/renderer-three/assemblyRendererFactory.ts
+src/features/building-family/ui/AssemblyHall.tsx
+src/features/building-family/ui/assemblyHallFixture.ts
+src/features/building-family/tests/assemblyRendererFactory.test.ts
+src/features/building-family/tests/AssemblyHall.test.tsx
+scripts/e2e-smoke.mjs
+```
+
+`createAssemblyRenderer` is the Assembly Hall renderer activation boundary. It uses `three/webgpu` only through an async dynamic import, gates WebGPU construction on `navigator.gpu`, awaits `WebGPURenderer.init()`, and falls back to WebGL with an explicit fallback reason when WebGPU activation fails. `createWebGlAssemblyRenderer` preserves the WebGL `preserveDrawingBuffer` path used by direct canvas probes and fails early in non-WebGL environments instead of touching unsupported canvas APIs.
+
+`AssemblyHall` now awaits renderer activation, writes `data-renderer-backend` to the canvas, updates the visible active backend metric from the activation result, and shows the fallback reason when WebGPU falls back to WebGL. Fixture metrics now start as `pending` until the UI activates a real backend.
+
+The focused renderer-factory tests cover WebGPU-first activation, WebGPU-to-WebGL fallback, and direct WebGL selection when WebGPU is unavailable. The e2e smoke waits for the active backend attribute, checks the visible active-backend metric, keeps the direct WebGL `readPixels` probe for WebGL fallback, and uses a dependency-free screenshot PNG probe for WebGPU presentation because WebGPU canvas export/readback can be transparent even when the presented canvas draws correctly.
+
+The next roadmap slice should begin Milestone 5 orchestration with state/run-controller work unless a smaller Milestone 4 hardening pass is needed.
 
 ## 7. App Shell, Renderer, State, Workers, And Routing
 
@@ -546,6 +565,7 @@ src/features/building-family/renderer-three/buildingSceneAdapter.ts
 src/features/building-family/renderer-three/buildingAtlasMaterialFactory.ts
 src/features/building-family/renderer-three/buildingAtlasTextureFactory.ts
 src/features/building-family/renderer-three/resourceDisposal.ts
+src/features/building-family/renderer-three/assemblyRendererFactory.ts
 src/features/building-family/renderer-three/familyRuntime.ts
 src/features/building-family/ui/AssemblyHall.tsx
 ```
@@ -871,6 +891,16 @@ src/app/App.css
 scripts/e2e-smoke.mjs
 ```
 
+Milestone 4G introduced:
+
+```text
+src/features/building-family/renderer-three/assemblyRendererFactory.ts
+src/features/building-family/tests/assemblyRendererFactory.test.ts
+src/features/building-family/ui/AssemblyHall.tsx
+src/features/building-family/ui/assemblyHallFixture.ts
+scripts/e2e-smoke.mjs
+```
+
 ## 12. Verification Report
 
 Commands run during reconnaissance:
@@ -911,10 +941,11 @@ Latest validation results:
 
 ```text
 typecheck: passed
-unit tests: passed, 69 tests across 27 files
+unit tests: passed, 73 tests across 28 files
 lint: passed
 build: passed
-e2e smoke: passed, including Assembly Hall semantic selection and canvas pixel probe
+e2e smoke: passed, including active renderer backend assertion, Assembly Hall semantic selection, and backend-specific canvas pixel probe
+Assembly renderer factory focused tests: passed
 Assembly Hall focused tests: passed
 resource disposal focused tests: passed
 contracts/core/materials/components/compiler renderer-import scan: no matches
@@ -937,6 +968,15 @@ Rendered QA for Milestone 4F:
 Browser/IAB desktop viewport: app loaded at http://127.0.0.1:5173/, no framework overlay, no console errors, selected the Window frame semantic element, and verified instances.window / glass.primary / InstancedMesh / Window frame in the inspector.
 Browser/IAB mobile viewport: 390x844, no framework overlay, no console errors, selected the same Window frame semantic element, and verified the semantic inspector stayed readable in the one-column layout.
 E2E smoke: selected the Window frame semantic element before the Assembly Hall canvas pixel probe.
+```
+
+Rendered QA for Milestone 4G:
+
+```text
+Browser/IAB desktop DOM pass: app loaded at http://127.0.0.1:5173/, canvas data-rendered=true, data-renderer-backend=webgpu, visible metric webgpu active / webgpu preferred, semantic path present, and no console errors.
+Playwright desktop screenshot: 1280x720 viewport, WebGPU Assembly Hall canvas visible, backend metric present, no console errors, screenshot C:\tmp\buildo-renderer-qa\desktop.png.
+Playwright mobile screenshot: 390x844 viewport, WebGPU Assembly Hall canvas visible at 358x340, backend metric present, semantic selection present, no console errors, no horizontal overflow, screenshot C:\tmp\buildo-renderer-qa\mobile.png.
+E2E smoke: active backend assertion plus WebGPU screenshot PNG probe or WebGL readPixels fallback.
 ```
 
 ## 13. Current Implemented Surface
@@ -1110,6 +1150,16 @@ src/app/App.css
 scripts/e2e-smoke.mjs
 ```
 
+Milestone 4G introduced:
+
+```text
+src/features/building-family/renderer-three/assemblyRendererFactory.ts
+src/features/building-family/tests/assemblyRendererFactory.test.ts
+src/features/building-family/ui/AssemblyHall.tsx
+src/features/building-family/ui/assemblyHallFixture.ts
+scripts/e2e-smoke.mjs
+```
+
 Generated and ignored directories:
 
 ```text
@@ -1118,7 +1168,7 @@ dist/
 test-results/
 ```
 
-No preassembled meshes, provider routes, router-backed room navigation, Component Forge UI, or Zustand state slice has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers through the pure TypeScript compiler path, can deliver them across the compiler worker boundary with transferable buffers, can summarize catalog/IR component data for a future Component Forge gallery, can convert that IR into Three.js scene objects under `renderer-three/*`, can convert packed atlas channels into texture-backed slot materials at the renderer boundary, can host multiple per-building scene runtimes against one shared family atlas/material runtime, can centralize idempotent renderer resource disposal across standalone and shared-family ownership modes, renders one deterministic fixture building in a browser Assembly Hall canvas from those generated artifacts, and surfaces semantic renderer lookup entries in a selectable Assembly Hall inspector.
+No preassembled meshes, provider routes, router-backed room navigation, Component Forge UI, or Zustand state slice has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers through the pure TypeScript compiler path, can deliver them across the compiler worker boundary with transferable buffers, can summarize catalog/IR component data for a future Component Forge gallery, can convert that IR into Three.js scene objects under `renderer-three/*`, can convert packed atlas channels into texture-backed slot materials at the renderer boundary, can host multiple per-building scene runtimes against one shared family atlas/material runtime, can centralize idempotent renderer resource disposal across standalone and shared-family ownership modes, renders one deterministic fixture building in a WebGPU-first browser Assembly Hall canvas with WebGL fallback from those generated artifacts, and surfaces semantic renderer lookup entries in a selectable Assembly Hall inspector.
 
 ## 14. Milestone 0 And Setup Exit Criteria
 

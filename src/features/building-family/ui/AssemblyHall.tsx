@@ -7,35 +7,22 @@ import {
   PerspectiveCamera,
   Scene,
   Vector3,
-  WebGLRenderer,
-  type Camera,
   type Object3D
 } from "three";
 import type { ComponentGalleryEntry } from "../compiler/componentGalleryBuilder";
 import type { AssemblyStage } from "../contracts/shared";
+import {
+  createAssemblyRenderer,
+  type AssemblyRenderer,
+  type AssemblyRendererBackend,
+  type AssemblyRendererFactory
+} from "../renderer-three/assemblyRendererFactory";
 import type { AssemblyHallFixture } from "./assemblyHallFixture";
-
-export interface AssemblyRenderer {
-  domElement: HTMLCanvasElement;
-  dispose(): void;
-  render(scene: Scene, camera: Camera): void;
-  setPixelRatio(value: number): void;
-  setSize(width: number, height: number, updateStyle?: boolean): void;
-}
-
-export type AssemblyRendererFactory = () => AssemblyRenderer;
 
 export interface AssemblyHallProps {
   fixture: AssemblyHallFixture;
   rendererFactory?: AssemblyRendererFactory;
 }
-
-const defaultRendererFactory: AssemblyRendererFactory = () =>
-  new WebGLRenderer({
-    alpha: true,
-    antialias: true,
-    preserveDrawingBuffer: true
-  });
 
 const selectionStageOrder: AssemblyStage[] = ["massing", "facade", "openings", "trim", "roof"];
 
@@ -131,16 +118,19 @@ function galleryRows(fixture: AssemblyHallFixture) {
   return fixture.componentGallery.entries.slice(0, 6);
 }
 
-export function AssemblyHall({ fixture, rendererFactory = defaultRendererFactory }: AssemblyHallProps) {
+export function AssemblyHall({ fixture, rendererFactory = createAssemblyRenderer }: AssemblyHallProps) {
   const selectionId = useId();
   const mountRef = useRef<HTMLDivElement | null>(null);
   const [renderError, setRenderError] = useState<string | null>(null);
+  const [activeBackend, setActiveBackend] = useState<AssemblyRendererBackend | "pending">(
+    fixture.metrics.activeBackend
+  );
+  const [backendFallbackReason, setBackendFallbackReason] = useState<string | null>(null);
   const rows = useMemo(() => galleryRows(fixture), [fixture]);
   const selectionOptions = useMemo(() => semanticSelectionOptions(fixture), [fixture]);
   const [selectedSemanticPath, setSelectedSemanticPath] = useState("");
   const selectedOption =
     selectionOptions.find((option) => option.semanticPath === selectedSemanticPath) ?? selectionOptions[0];
-  const webglUnavailable = rendererFactory === defaultRendererFactory && !("WebGLRenderingContext" in window);
 
   useEffect(() => {
     const mount = mountRef.current;
@@ -154,10 +144,6 @@ export function AssemblyHall({ fixture, rendererFactory = defaultRendererFactory
     let scene: Scene | null = null;
     let camera: PerspectiveCamera | null = null;
     let cancelled = false;
-
-    if (webglUnavailable) {
-      return undefined;
-    }
 
     const renderFrame = () => {
       if (!renderer || !scene || !camera) {
@@ -173,30 +159,45 @@ export function AssemblyHall({ fixture, rendererFactory = defaultRendererFactory
       renderer.domElement.dataset.rendered = "true";
     };
 
-    try {
-      const prepared = prepareScene(fixture.familyRuntime.root);
-      scene = prepared.scene;
-      camera = prepared.camera;
-      renderer = rendererFactory();
-      renderer.domElement.setAttribute("aria-label", "Assembly Hall Three.js canvas");
-      renderer.domElement.className = "assembly-hall__canvas";
-      mount.appendChild(renderer.domElement);
-      renderFrame();
-      if ("ResizeObserver" in window) {
-        resizeObserver = new ResizeObserver(() => {
-          cancelAnimationFrame(animationFrame);
-          animationFrame = requestAnimationFrame(renderFrame);
-        });
-        resizeObserver.observe(mount);
-      }
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Unable to initialize Assembly Hall renderer";
-      queueMicrotask(() => {
+    const activateRenderer = async () => {
+      try {
+        const prepared = prepareScene(fixture.familyRuntime.root);
+        scene = prepared.scene;
+        camera = prepared.camera;
+        const activation = await rendererFactory({ backendSupport: fixture.backendSupport });
+        if (cancelled) {
+          prepared.scene.remove(fixture.familyRuntime.root);
+          activation.renderer.dispose();
+          return;
+        }
+
+        renderer = activation.renderer;
+        setActiveBackend(activation.activeBackend);
+        setBackendFallbackReason(activation.fallbackReason ?? null);
+        renderer.domElement.dataset.rendererBackend = activation.activeBackend;
+        if (activation.fallbackReason) {
+          renderer.domElement.dataset.rendererFallback = activation.fallbackReason;
+        }
+        renderer.domElement.setAttribute("aria-label", "Assembly Hall Three.js canvas");
+        renderer.domElement.className = "assembly-hall__canvas";
+        mount.appendChild(renderer.domElement);
+        renderFrame();
+        if ("ResizeObserver" in window) {
+          resizeObserver = new ResizeObserver(() => {
+            cancelAnimationFrame(animationFrame);
+            animationFrame = requestAnimationFrame(renderFrame);
+          });
+          resizeObserver.observe(mount);
+        }
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Unable to initialize Assembly Hall renderer";
         if (!cancelled) {
           setRenderError(message);
         }
-      });
-    }
+      }
+    };
+
+    void activateRenderer();
 
     return () => {
       cancelled = true;
@@ -206,7 +207,7 @@ export function AssemblyHall({ fixture, rendererFactory = defaultRendererFactory
       renderer?.domElement.remove();
       renderer?.dispose();
     };
-  }, [fixture, rendererFactory, webglUnavailable]);
+  }, [fixture, rendererFactory]);
 
   return (
     <section className="assembly-hall" aria-labelledby="assembly-hall-heading">
@@ -223,13 +224,13 @@ export function AssemblyHall({ fixture, rendererFactory = defaultRendererFactory
           role="img"
           aria-label="Rendered generated building fixture"
         >
-          {webglUnavailable ? (
-            <p className="assembly-hall__render-error" role="status">
-              Renderer fallback: WebGL renderer unavailable in this environment
-            </p>
-          ) : renderError ? (
+          {renderError ? (
             <p className="assembly-hall__render-error" role="status">
               Renderer fallback: {renderError}
+            </p>
+          ) : backendFallbackReason ? (
+            <p className="assembly-hall__render-error" role="status">
+              Renderer fallback: {backendFallbackReason}
             </p>
           ) : null}
         </div>
@@ -239,7 +240,7 @@ export function AssemblyHall({ fixture, rendererFactory = defaultRendererFactory
             <div>
               <dt>Backend</dt>
               <dd>
-                {fixture.metrics.activeBackend} active / {fixture.metrics.preferredBackend} preferred
+                {activeBackend} active / {fixture.metrics.preferredBackend} preferred
               </dd>
             </div>
             <div>

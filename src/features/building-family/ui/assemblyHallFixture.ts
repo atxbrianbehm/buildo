@@ -16,6 +16,7 @@ import {
   createBuildingFamilyRuntime,
   type BuildingFamilyRuntime
 } from "../renderer-three/familyRuntime";
+import type { AssemblyRendererBackend } from "../renderer-three/assemblyRendererFactory";
 import {
   detectRendererBackendSupport,
   type BuildingSceneRuntime,
@@ -35,7 +36,7 @@ const seeds = {
 };
 
 export interface AssemblyHallMetrics {
-  activeBackend: "webgl";
+  activeBackend: AssemblyRendererBackend | "pending";
   preferredBackend: RendererBackendSupport["preferredBackend"];
   atlasContentHash: string;
   atlasChannelCount: number;
@@ -119,7 +120,7 @@ export async function createAssemblyHallFixture(): Promise<AssemblyHallFixture> 
     familyRuntime,
     buildingRuntime,
     metrics: {
-      activeBackend: "webgl",
+      activeBackend: "pending",
       preferredBackend: backendSupport.preferredBackend,
       atlasContentHash: packedAtlas.contentHash,
       atlasChannelCount: debugExport.channels.length,
