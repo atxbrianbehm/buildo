@@ -1,6 +1,6 @@
 # Dynamic Building Family Integration Map
 
-**Status:** Milestone 3A component catalog and graph planning foundation
+**Status:** Milestone 3B pure compiler IR foundation
 **Plan source:** `docs/plans/dynamic-building-family.md`
 **Workspace:** `C:\Users\behmb\Documents\Cascade Projects\buildo`
 **Date:** 2026-06-24
@@ -46,7 +46,7 @@ docs/
     dynamic-building-family.md
 ```
 
-The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, and the Milestone 3A component catalog / graph planning foundation. No mesh compiler, worker runtime, renderer, state slice, or generated building asset has been implemented.
+The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, and the Milestone 3B pure compiler IR foundation. No compiler worker runtime, renderer, state slice, or generated building asset has been implemented.
 
 ## 2. Active Instructions
 
@@ -363,14 +363,39 @@ EmitRoof
 OutputBuilding
 ```
 
-`validateBuildingGraph` currently checks graph schema, duplicate node ids, missing output node, missing upstream node references, and upstream dependency cycles. The graph does not yet emit mesh or instance buffers; that belongs to the next Milestone 3 slice.
+`validateBuildingGraph` currently checks graph schema, duplicate node ids, missing output node, missing upstream node references, and upstream dependency cycles.
 
-The next roadmap slice should continue with pure compiler IR emission and component gallery data:
+## 6.4 Pure Compiler IR Foundation
+
+Actual Milestone 3B compiler paths:
 
 ```text
 src/features/building-family/compiler/buildingCompiler.ts
 src/features/building-family/compiler/primitiveGeometry.ts
 src/features/building-family/tests/buildingCompiler.test.ts
+```
+
+`compileBuilding` consumes a normalized `BuildingFamilySpec`, schema-versioned component catalog, and validated building graph, then emits a schema-validated `RuntimeBuildingIR` with typed-array mesh and instance buffers.
+
+The current pure compiler emits:
+
+```text
+mesh.wall-panels for front, rear, left, and right facade wall panels
+mesh.cornice for the front cornice sweep placeholder primitive
+mesh.roof for the roof/parapet primitive
+instances.window for repeated front-facade windows
+instances.door for the storefront door
+instances.vertical-trim for repeated front-facade vertical trim
+```
+
+Compiler output includes a source graph hash, bounds, vertex / triangle / instance metrics, and a semantic index for emitted elements. Geometry helpers currently generate primitive box buffers only; no Three.js, React, Zustand, DOM, worker, or renderer dependency is present.
+
+The next roadmap slice should continue with the compiler worker and component gallery data:
+
+```text
+src/features/building-family/compiler/compiler.worker.ts
+src/features/building-family/compiler/compilerClient.ts
+src/features/building-family/tests/buildingCompilerWorker.test.ts
 ```
 
 ## 7. App Shell, Renderer, State, Workers, And Routing
@@ -627,7 +652,7 @@ src/features/building-family/tests/componentCatalogBuilder.test.ts
 src/features/building-family/tests/buildingGraphBuilder.test.ts
 ```
 
-The next Milestone 3 slice should continue with:
+Milestone 3B introduced:
 
 ```text
 src/features/building-family/compiler/buildingCompiler.ts
@@ -674,7 +699,7 @@ Latest validation results:
 
 ```text
 typecheck: passed
-unit tests: passed, 38 tests across 18 files
+unit tests: passed, 42 tests across 19 files
 lint: passed
 build: passed
 e2e smoke: passed at http://127.0.0.1:5173/
@@ -777,6 +802,14 @@ src/features/building-family/tests/componentCatalogBuilder.test.ts
 src/features/building-family/tests/buildingGraphBuilder.test.ts
 ```
 
+Milestone 3B introduced:
+
+```text
+src/features/building-family/compiler/buildingCompiler.ts
+src/features/building-family/compiler/primitiveGeometry.ts
+src/features/building-family/tests/buildingCompiler.test.ts
+```
+
 Generated and ignored directories:
 
 ```text
@@ -785,7 +818,7 @@ dist/
 test-results/
 ```
 
-No generated meshes, provider routes, renderer adapter, worker runtime, or Zustand state slice has been added yet.
+No preassembled meshes, provider routes, renderer adapter, worker runtime, or Zustand state slice has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers only inside the pure TypeScript compiler path.
 
 ## 14. Milestone 0 And Setup Exit Criteria
 
