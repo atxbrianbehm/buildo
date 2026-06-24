@@ -25,6 +25,9 @@ describe("App", () => {
     expect(screen.getByLabelText("Generation run timeline")).toHaveTextContent("cache hit");
     expect(screen.getByLabelText("Generation run timeline")).toHaveTextContent("uploadingGpuResources");
     expect(screen.getByLabelText("Generation run artifact")).toHaveTextContent("assembly-hall-fixture:");
+    expect(await screen.findByRole("heading", { name: "Artifact Trace" })).toBeInTheDocument();
+    expect(screen.getByRole("table", { name: "Registered artifacts" })).toHaveTextContent("runtime-building-ir");
+    expect(screen.getByRole("table", { name: "Run event artifact trace" })).toHaveTextContent("packed-atlas:");
     expect(await screen.findByRole("heading", { name: "Atlas Lab" })).toBeInTheDocument();
     expect(screen.getByRole("img", { name: "baseColor channel" })).toBeInTheDocument();
     expect(within(screen.getByRole("table", { name: "Semantic Slots" })).getByText("wall.primary")).toBeInTheDocument();

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useStore } from "zustand";
 import "./App.css";
 import { AtlasLab } from "../features/building-family/ui/AtlasLab";
+import { ArtifactTracePanel } from "../features/building-family/ui/ArtifactTracePanel";
 import { AssemblyHall } from "../features/building-family/ui/AssemblyHall";
 import { ComponentForge } from "../features/building-family/ui/ComponentForge";
 import type { AssemblyHallFixture } from "../features/building-family/ui/assemblyHallFixture";
@@ -69,6 +70,7 @@ export function App() {
     };
   });
   const runState = useStore(store, (state) => state.runs);
+  const artifacts = useStore(store, (state) => state.artifacts);
   const promptControls = useStore(store, (state) => state.prompt);
   const controlState = useStore(store, (state) => state.controls);
   const updatePromptControls = useStore(store, (state) => state.updatePromptControls);
@@ -267,6 +269,7 @@ export function App() {
           )}
         </ol>
       </section>
+      <ArtifactTracePanel activeArtifactId={activeFixtureArtifactId} artifacts={artifacts} run={currentRun} />
       <section className="atlas-fixture" aria-labelledby="atlas-fixture-heading">
         <div className="atlas-fixture__intro">
           <p className="project-label">Material Atlas</p>

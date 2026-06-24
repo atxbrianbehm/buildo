@@ -392,6 +392,134 @@ h1 {
   background: rgba(239, 211, 190, 0.86);
 }
 
+.artifact-trace {
+  display: grid;
+  gap: 16px;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 24px 0 30px;
+  border-bottom: 1px solid rgba(24, 32, 28, 0.14);
+}
+
+.artifact-trace__header {
+  display: grid;
+  grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.artifact-trace__header h2 {
+  margin: 0;
+  color: #121816;
+  font-size: 1.6rem;
+  line-height: 1.08;
+}
+
+.artifact-trace__summary,
+.artifact-trace__active {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.artifact-trace__summary div,
+.artifact-trace__active div {
+  min-width: 0;
+  padding: 11px 12px;
+  border-left: 3px solid rgba(72, 113, 82, 0.48);
+  background: rgba(255, 255, 255, 0.48);
+}
+
+.artifact-trace__active {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.artifact-trace dt {
+  color: #5f6d66;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.artifact-trace dd {
+  margin: 6px 0 0;
+  overflow-wrap: anywhere;
+  color: #18201c;
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.artifact-trace__tables {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.9fr) minmax(0, 1.1fr);
+  gap: 14px;
+  min-width: 0;
+}
+
+.artifact-trace__table-scroll {
+  min-width: 0;
+  max-height: 320px;
+  overflow: auto;
+  border: 1px solid rgba(24, 32, 28, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.64);
+}
+
+.artifact-trace table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.artifact-trace__registered {
+  min-width: 720px;
+}
+
+.artifact-trace caption {
+  padding: 12px 12px 8px;
+  color: #33413b;
+  font-weight: 700;
+  text-align: left;
+}
+
+.artifact-trace th,
+.artifact-trace td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(24, 32, 28, 0.1);
+  color: #33413b;
+  text-align: left;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.artifact-trace th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  color: #5f6d66;
+  background: #f7f8f4;
+  font-size: 0.72rem;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.artifact-trace td:nth-child(2),
+.artifact-trace td:nth-child(3),
+.artifact-trace td:nth-child(4) {
+  overflow-wrap: anywhere;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  white-space: normal;
+}
+
+.artifact-trace tr[data-active="true"] td {
+  color: #284b36;
+  background: #f4f7ef;
+}
+
 .atlas-fixture {
   display: grid;
   grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
@@ -1149,6 +1277,8 @@ h1 {
   }
 
   .atlas-fixture,
+  .artifact-trace__header,
+  .artifact-trace__tables,
   .component-forge__header,
   .component-forge__detail,
   .control-panel,
@@ -1208,7 +1338,9 @@ h1 {
   }
 
   .control-panel__metrics,
-  .control-panel__stages {
+  .control-panel__stages,
+  .artifact-trace__summary,
+  .artifact-trace__active {
     grid-template-columns: 1fr;
   }
 

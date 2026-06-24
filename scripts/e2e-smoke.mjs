@@ -151,6 +151,16 @@ try {
   await page.getByRole("heading", { name: "Buildo" }).waitFor({ state: "visible" });
   await page.getByLabel("Project setup status").waitFor({ state: "visible" });
   await page.getByRole("heading", { name: "Atlas Lab" }).waitFor({ state: "visible" });
+  await page.getByRole("heading", { name: "Artifact Trace" }).waitFor({ state: "visible" });
+  await page
+    .getByRole("table", { name: "Registered artifacts" })
+    .getByRole("cell", { name: "runtime-building-ir", exact: true })
+    .waitFor({ state: "visible" });
+  await page
+    .getByRole("table", { name: "Run event artifact trace" })
+    .getByRole("cell", { name: /^packed-atlas:/ })
+    .first()
+    .waitFor({ state: "visible" });
   await page.getByRole("img", { name: "baseColor channel" }).waitFor({ state: "visible" });
   await page
     .getByRole("table", { name: "Semantic Slots" })
