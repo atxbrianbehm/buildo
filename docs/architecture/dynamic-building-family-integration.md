@@ -1,6 +1,6 @@
 # Dynamic Building Family Integration Map
 
-**Status:** Milestone 2B procedural material source foundation
+**Status:** Milestone 2C atlas packing and channel utility foundation
 **Plan source:** `docs/plans/dynamic-building-family.md`
 **Workspace:** `C:\Users\behmb\Documents\Cascade Projects\buildo`
 **Date:** 2026-06-24
@@ -46,7 +46,7 @@ docs/
     dynamic-building-family.md
 ```
 
-The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, and the Milestone 2B procedural material-source layer. No renderer, compiler, state slice, atlas packer/compositor, packed atlas image output, or generated building asset has been implemented.
+The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, and the Milestone 2C atlas channel packer. No renderer, compiler, state slice, atlas inspector UI, PNG debug export, or generated building asset has been implemented.
 
 ## 2. Active Instructions
 
@@ -191,8 +191,13 @@ Actual Milestone 2 material planning and source-generation paths:
 
 ```text
 src/features/building-family/materials/atlasPlanner.ts
+src/features/building-family/materials/atlasPacker.ts
+src/features/building-family/materials/normalFromHeight.ts
+src/features/building-family/materials/periodicBlend.ts
+src/features/building-family/materials/providers/fixtureMaterialProvider.ts
 src/features/building-family/materials/providers/proceduralMaterialProvider.ts
 src/features/building-family/tests/atlasPlanner.test.ts
+src/features/building-family/tests/atlasPacker.test.ts
 src/features/building-family/tests/proceduralMaterialProvider.test.ts
 ```
 
@@ -264,14 +269,29 @@ ornament / utility alpha and height masks
 
 The provider uses seeded deterministic sampling through `SeedTree`; it does not use `Math.random()`. Periodic `x` and `xy` sources are edge-matched at the generated layer boundary so the later packer can repeat them.
 
-The next Milestone 2 material slice should continue with channel utilities, fixture-backed generation, and atlas packing:
+`AtlasPacker` composites named material-source artifacts into full-manifest atlas channels. It owns slot placement and currently emits:
 
 ```text
-src/features/building-family/materials/providers/fixtureMaterialProvider.ts
-src/features/building-family/materials/normalFromHeight.ts
-src/features/building-family/materials/periodicBlend.ts
-src/features/building-family/materials/atlasPacker.ts
-src/features/building-family/tests/atlasPacker.test.ts
+baseColor
+normal derived from height
+ORM packed from occlusion / roughness / metalness
+height
+opacity
+slot provenance
+packed content hash
+diagnostics
+```
+
+Packing uses fixture-backed tests, derives normals from source height, blends periodic source edges before scaling into slots, and dilates slot edges into padding to reduce mip bleeding. Missing source artifacts are reported as diagnostics instead of being silently ignored.
+
+The next Milestone 2 material slice should continue with cache, inspection, and debug export:
+
+```text
+src/features/building-family/materials/artifactCache.ts
+src/features/building-family/materials/atlasDebugExport.ts
+src/features/building-family/ui/AtlasLab.tsx
+src/features/building-family/tests/atlasArtifactCache.test.ts
+src/features/building-family/tests/atlasDebugExport.test.ts
 ```
 
 ## 7. App Shell, Renderer, State, Workers, And Routing
@@ -484,7 +504,7 @@ src/features/building-family/materials/providers/proceduralMaterialProvider.ts
 src/features/building-family/tests/proceduralMaterialProvider.test.ts
 ```
 
-The next Milestone 2 material slice should continue with:
+Milestone 2C introduced:
 
 ```text
 src/features/building-family/materials/atlasPacker.ts
@@ -492,6 +512,16 @@ src/features/building-family/materials/normalFromHeight.ts
 src/features/building-family/materials/periodicBlend.ts
 src/features/building-family/materials/providers/fixtureMaterialProvider.ts
 src/features/building-family/tests/atlasPacker.test.ts
+```
+
+The next Milestone 2 material slice should continue with:
+
+```text
+src/features/building-family/materials/artifactCache.ts
+src/features/building-family/materials/atlasDebugExport.ts
+src/features/building-family/ui/AtlasLab.tsx
+src/features/building-family/tests/atlasArtifactCache.test.ts
+src/features/building-family/tests/atlasDebugExport.test.ts
 ```
 
 ## 12. Verification Report
@@ -533,7 +563,7 @@ Latest validation results:
 
 ```text
 typecheck: passed
-unit tests: passed, 20 tests across 12 files
+unit tests: passed, 24 tests across 13 files
 lint: passed
 build: passed
 e2e smoke: passed at http://127.0.0.1:5173/
@@ -591,6 +621,16 @@ src/features/building-family/materials/providers/proceduralMaterialProvider.ts
 src/features/building-family/tests/proceduralMaterialProvider.test.ts
 ```
 
+Milestone 2C introduced:
+
+```text
+src/features/building-family/materials/atlasPacker.ts
+src/features/building-family/materials/normalFromHeight.ts
+src/features/building-family/materials/periodicBlend.ts
+src/features/building-family/materials/providers/fixtureMaterialProvider.ts
+src/features/building-family/tests/atlasPacker.test.ts
+```
+
 Generated and ignored directories:
 
 ```text
@@ -599,7 +639,7 @@ dist/
 test-results/
 ```
 
-No generated meshes, provider routes, packed atlas image output, renderer adapter, compiler, or Zustand state slice has been added yet.
+No generated meshes, provider routes, atlas inspector UI, PNG debug export, renderer adapter, compiler, or Zustand state slice has been added yet.
 
 ## 14. Milestone 0 And Setup Exit Criteria
 
