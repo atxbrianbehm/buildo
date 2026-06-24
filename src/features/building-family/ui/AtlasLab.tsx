@@ -8,10 +8,10 @@ export interface AtlasLabProps {
 
 export function AtlasLab({ packedAtlas, debugExport }: AtlasLabProps) {
   return (
-    <section aria-labelledby="atlas-lab-heading">
-      <header>
+    <section className="atlas-lab" aria-labelledby="atlas-lab-heading">
+      <header className="atlas-lab__header">
         <h2 id="atlas-lab-heading">Atlas Lab</h2>
-        <dl>
+        <dl className="atlas-lab__metrics">
           <div>
             <dt>Atlas</dt>
             <dd>{packedAtlas.atlasId}</dd>
@@ -27,9 +27,9 @@ export function AtlasLab({ packedAtlas, debugExport }: AtlasLabProps) {
         </dl>
       </header>
 
-      <div aria-label="Atlas channels">
+      <div className="atlas-lab__channels" aria-label="Atlas channels">
         {debugExport.channels.map((channel) => (
-          <figure key={channel.name}>
+          <figure className="atlas-lab__channel" key={channel.name}>
             <img
               alt={`${channel.name} channel`}
               src={channel.pngDataUrl}
@@ -44,7 +44,7 @@ export function AtlasLab({ packedAtlas, debugExport }: AtlasLabProps) {
         ))}
       </div>
 
-      <table>
+      <table className="atlas-lab__slots">
         <caption>Semantic Slots</caption>
         <thead>
           <tr>

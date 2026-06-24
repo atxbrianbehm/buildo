@@ -1,6 +1,6 @@
 # Dynamic Building Family Integration Map
 
-**Status:** Milestone 2D atlas artifact cache and debug export foundation
+**Status:** Milestone 2E visible Atlas Lab fixture
 **Plan source:** `docs/plans/dynamic-building-family.md`
 **Workspace:** `C:\Users\behmb\Documents\Cascade Projects\buildo`
 **Date:** 2026-06-24
@@ -46,7 +46,7 @@ docs/
     dynamic-building-family.md
 ```
 
-The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, and the Milestone 2D in-memory atlas artifact/debug-export foundation. No renderer, compiler, state slice, app-routed atlas inspector, or generated building asset has been implemented.
+The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, and the Milestone 2E visible Atlas Lab fixture. No renderer, compiler, state slice, or generated building asset has been implemented.
 
 ## 2. Active Instructions
 
@@ -194,6 +194,7 @@ src/features/building-family/materials/atlasPlanner.ts
 src/features/building-family/materials/atlasPacker.ts
 src/features/building-family/materials/artifactCache.ts
 src/features/building-family/materials/atlasDebugExport.ts
+src/features/building-family/materials/atlasLabFixture.ts
 src/features/building-family/materials/normalFromHeight.ts
 src/features/building-family/materials/periodicBlend.ts
 src/features/building-family/materials/providers/fixtureMaterialProvider.ts
@@ -201,6 +202,7 @@ src/features/building-family/materials/providers/proceduralMaterialProvider.ts
 src/features/building-family/ui/AtlasLab.tsx
 src/features/building-family/tests/atlasArtifactCache.test.ts
 src/features/building-family/tests/atlasDebugExport.test.tsx
+src/features/building-family/tests/atlasLabFixture.test.ts
 src/features/building-family/tests/atlasPlanner.test.ts
 src/features/building-family/tests/atlasPacker.test.ts
 src/features/building-family/tests/proceduralMaterialProvider.test.ts
@@ -293,17 +295,24 @@ Packing uses fixture-backed tests, derives normals from source height, blends pe
 
 `createAtlasDebugExport` converts each packed channel into a real PNG data URL without adding an image dependency. The debug export includes channel hashes, semantic slot overlays, source provenance, diagnostics, and a stable export hash.
 
-`AtlasLab` is a development inspector component that renders the packed atlas identity, channel PNGs, and semantic slot overlays from the same `PackedAtlas` and debug export artifacts. It is not yet wired into the app shell or a route.
+`AtlasLab` is a development inspector component that renders the packed atlas identity, channel PNGs, and semantic slot overlays from the same `PackedAtlas` and debug export artifacts.
 
-The next Milestone 2 material slice should continue with app-shell wiring and fixture generation for a visible developer Atlas Lab:
+`createAtlasLabFixture` now drives the visible app-shell fixture from the real local pipeline:
 
 ```text
-src/features/building-family/materials/atlasLabFixture.ts
-src/features/building-family/ui/AtlasLab.tsx
-src/app/App.tsx
-src/app/App.test.tsx
-tests/e2e/smoke.spec.ts
+PSG fixture + prompt
+BuildingIntent
+BuildingFamilySpec
+AtlasPlan
+ProceduralMaterialProvider
+PackedAtlas
+AtlasDebugExport
+AtlasLab
 ```
+
+The root app shell renders this fixture as a development Atlas Lab with visible multi-channel PNGs, semantic slot overlays, and provenance counts. The smoke harness now waits for the visible Atlas Lab, base-color channel, and `wall.primary` slot.
+
+Milestone 2 exit status: the fixture spec produces a visible generated multi-channel atlas with semantic slot overlays and provenance. The next roadmap slice should begin Milestone 3 component catalog, building graph, and pure compiler work.
 
 ## 7. App Shell, Renderer, State, Workers, And Routing
 
@@ -535,7 +544,7 @@ src/features/building-family/tests/atlasArtifactCache.test.ts
 src/features/building-family/tests/atlasDebugExport.test.tsx
 ```
 
-The next Milestone 2 material slice should continue with:
+Milestone 2E wired:
 
 ```text
 src/features/building-family/materials/atlasLabFixture.ts
@@ -543,6 +552,21 @@ src/features/building-family/ui/AtlasLab.tsx
 src/app/App.tsx
 src/app/App.test.tsx
 tests/e2e/smoke.spec.ts
+scripts/e2e-smoke.mjs
+```
+
+The next roadmap slice should begin Milestone 3 with:
+
+```text
+src/features/building-family/components/componentCatalogBuilder.ts
+src/features/building-family/components/primitiveBuilders.ts
+src/features/building-family/components/frameBuilder.ts
+src/features/building-family/components/profileSweepBuilder.ts
+src/features/building-family/components/roofBuilder.ts
+src/features/building-family/compiler/buildingGraphBuilder.ts
+src/features/building-family/compiler/buildingCompiler.ts
+src/features/building-family/tests/componentCatalogBuilder.test.ts
+src/features/building-family/tests/buildingGraphBuilder.test.ts
 ```
 
 ## 12. Verification Report
@@ -584,7 +608,7 @@ Latest validation results:
 
 ```text
 typecheck: passed
-unit tests: passed, 30 tests across 15 files
+unit tests: passed, 32 tests across 16 files
 lint: passed
 build: passed
 e2e smoke: passed at http://127.0.0.1:5173/
@@ -662,6 +686,18 @@ src/features/building-family/tests/atlasArtifactCache.test.ts
 src/features/building-family/tests/atlasDebugExport.test.tsx
 ```
 
+Milestone 2E wired:
+
+```text
+src/features/building-family/materials/atlasLabFixture.ts
+src/features/building-family/tests/atlasLabFixture.test.ts
+src/app/App.tsx
+src/app/App.css
+src/app/App.test.tsx
+scripts/e2e-smoke.mjs
+tests/e2e/smoke.spec.ts
+```
+
 Generated and ignored directories:
 
 ```text
@@ -670,7 +706,7 @@ dist/
 test-results/
 ```
 
-No generated meshes, provider routes, app-routed atlas inspector, renderer adapter, compiler, or Zustand state slice has been added yet.
+No generated meshes, provider routes, renderer adapter, compiler, or Zustand state slice has been added yet.
 
 ## 14. Milestone 0 And Setup Exit Criteria
 

@@ -22,6 +22,9 @@ try {
   await page.goto(url);
   await page.getByRole("heading", { name: "Buildo" }).waitFor({ state: "visible" });
   await page.getByLabel("Project setup status").waitFor({ state: "visible" });
+  await page.getByRole("heading", { name: "Atlas Lab" }).waitFor({ state: "visible" });
+  await page.getByRole("img", { name: "baseColor channel" }).waitFor({ state: "visible" });
+  await page.getByRole("cell", { name: "wall.primary", exact: true }).waitFor({ state: "visible" });
 
   console.log(`E2E smoke passed at ${url}`);
 } catch (error) {
