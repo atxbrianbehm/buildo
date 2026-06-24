@@ -28,5 +28,14 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }]
     }
+  },
+  {
+    files: ["server/**/*.ts"],
+    languageOptions: {
+      globals: globals.node
+    },
+    rules: {
+      "react-refresh/only-export-components": "off"
+    }
   }
 );
