@@ -38,6 +38,7 @@ export const ComponentRecipeSchema = z.object({
   attachmentPlane: z.string().optional(),
   subcomponentRecipeIds: z.array(z.string()).optional(),
   atlasSlotIds: z.array(z.string()),
+  profileRecipeId: z.string().optional(),
   uvBehavior: z.enum(["repeat", "repeat-x", "cap-repeat-cap", "nine-slice", "stretch"]),
   variationScope: VariationScopeSchema,
   lowDetailRecipeId: z.string()
@@ -45,4 +46,3 @@ export const ComponentRecipeSchema = z.object({
 
 export type ComponentRecipeKind = z.infer<typeof ComponentRecipeKindSchema>;
 export type ComponentRecipe = z.infer<typeof ComponentRecipeSchema>;
-

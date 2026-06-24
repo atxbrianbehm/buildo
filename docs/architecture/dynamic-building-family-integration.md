@@ -1,6 +1,6 @@
 # Dynamic Building Family Integration Map
 
-**Status:** Milestone 2E visible Atlas Lab fixture
+**Status:** Milestone 3A component catalog and graph planning foundation
 **Plan source:** `docs/plans/dynamic-building-family.md`
 **Workspace:** `C:\Users\behmb\Documents\Cascade Projects\buildo`
 **Date:** 2026-06-24
@@ -46,7 +46,7 @@ docs/
     dynamic-building-family.md
 ```
 
-The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, and the Milestone 2E visible Atlas Lab fixture. No renderer, compiler, state slice, or generated building asset has been implemented.
+The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, and the Milestone 3A component catalog / graph planning foundation. No mesh compiler, worker runtime, renderer, state slice, or generated building asset has been implemented.
 
 ## 2. Active Instructions
 
@@ -314,6 +314,65 @@ The root app shell renders this fixture as a development Atlas Lab with visible 
 
 Milestone 2 exit status: the fixture spec produces a visible generated multi-channel atlas with semantic slot overlays and provenance. The next roadmap slice should begin Milestone 3 component catalog, building graph, and pure compiler work.
 
+## 6.3 Component Catalog And Building Graph Foundation
+
+Actual Milestone 3A component and graph paths:
+
+```text
+src/features/building-family/components/componentCatalogBuilder.ts
+src/features/building-family/components/primitiveBuilders.ts
+src/features/building-family/components/frameBuilder.ts
+src/features/building-family/components/profileSweepBuilder.ts
+src/features/building-family/components/roofBuilder.ts
+src/features/building-family/compiler/buildingGraphBuilder.ts
+src/features/building-family/tests/componentCatalogBuilder.test.ts
+src/features/building-family/tests/buildingGraphBuilder.test.ts
+```
+
+`buildComponentCatalog` consumes a normalized `BuildingFamilySpec` and `AtlasManifest` and emits a schema-versioned component catalog with deterministic recipe ids, atlas slot references, variation scopes, dimensions, anchors, and low-detail fallback ids.
+
+The current catalog includes:
+
+```text
+wall panel
+window frame
+window opening recess
+storefront door
+horizontal trim
+vertical trim
+cornice profile sweep
+roof
+```
+
+The cornice recipe now carries both `atlasSlotIds: ["cornice.primary"]` and `profileRecipeId: "profile.cornice.<family>.primary"` so vector profile identity remains separate from atlas pixels.
+
+`buildBuildingGraph` consumes the normalized spec and component catalog and emits a deterministic serializable graph with the initial staged node sequence:
+
+```text
+CreateRectFootprint
+ExtrudeMassing
+ForEachFacade
+SplitFloors
+SplitBays
+EmitWallPanel
+PlaceOpening
+InstanceComponent (windows)
+InstanceComponent (vertical trim)
+SweepProfile (cornice)
+EmitRoof
+OutputBuilding
+```
+
+`validateBuildingGraph` currently checks graph schema, duplicate node ids, missing output node, missing upstream node references, and upstream dependency cycles. The graph does not yet emit mesh or instance buffers; that belongs to the next Milestone 3 slice.
+
+The next roadmap slice should continue with pure compiler IR emission and component gallery data:
+
+```text
+src/features/building-family/compiler/buildingCompiler.ts
+src/features/building-family/compiler/primitiveGeometry.ts
+src/features/building-family/tests/buildingCompiler.test.ts
+```
+
 ## 7. App Shell, Renderer, State, Workers, And Routing
 
 Actual React shell:
@@ -555,7 +614,7 @@ tests/e2e/smoke.spec.ts
 scripts/e2e-smoke.mjs
 ```
 
-The next roadmap slice should begin Milestone 3 with:
+Milestone 3A introduced:
 
 ```text
 src/features/building-family/components/componentCatalogBuilder.ts
@@ -564,9 +623,16 @@ src/features/building-family/components/frameBuilder.ts
 src/features/building-family/components/profileSweepBuilder.ts
 src/features/building-family/components/roofBuilder.ts
 src/features/building-family/compiler/buildingGraphBuilder.ts
-src/features/building-family/compiler/buildingCompiler.ts
 src/features/building-family/tests/componentCatalogBuilder.test.ts
 src/features/building-family/tests/buildingGraphBuilder.test.ts
+```
+
+The next Milestone 3 slice should continue with:
+
+```text
+src/features/building-family/compiler/buildingCompiler.ts
+src/features/building-family/compiler/primitiveGeometry.ts
+src/features/building-family/tests/buildingCompiler.test.ts
 ```
 
 ## 12. Verification Report
@@ -600,7 +666,7 @@ npm run test
 npm run lint
 npm run build
 npm run test:e2e
-rg -n 'react|three|zustand' src\features\building-family\contracts src\features\building-family\core src\features\building-family\materials
+rg -n 'react|three|zustand' src\features\building-family\contracts src\features\building-family\core src\features\building-family\materials src\features\building-family\components src\features\building-family\compiler
 rg -n "Math\.random" src\features\building-family src\features\prompt-spaghetti
 ```
 
@@ -608,11 +674,11 @@ Latest validation results:
 
 ```text
 typecheck: passed
-unit tests: passed, 32 tests across 16 files
+unit tests: passed, 38 tests across 18 files
 lint: passed
 build: passed
 e2e smoke: passed at http://127.0.0.1:5173/
-contracts/core/materials renderer-import scan: no matches
+contracts/core/materials/components/compiler renderer-import scan: no matches
 Math.random scan: no matches
 ```
 
@@ -698,6 +764,19 @@ scripts/e2e-smoke.mjs
 tests/e2e/smoke.spec.ts
 ```
 
+Milestone 3A introduced:
+
+```text
+src/features/building-family/components/componentCatalogBuilder.ts
+src/features/building-family/components/primitiveBuilders.ts
+src/features/building-family/components/frameBuilder.ts
+src/features/building-family/components/profileSweepBuilder.ts
+src/features/building-family/components/roofBuilder.ts
+src/features/building-family/compiler/buildingGraphBuilder.ts
+src/features/building-family/tests/componentCatalogBuilder.test.ts
+src/features/building-family/tests/buildingGraphBuilder.test.ts
+```
+
 Generated and ignored directories:
 
 ```text
@@ -706,7 +785,7 @@ dist/
 test-results/
 ```
 
-No generated meshes, provider routes, renderer adapter, compiler, or Zustand state slice has been added yet.
+No generated meshes, provider routes, renderer adapter, worker runtime, or Zustand state slice has been added yet.
 
 ## 14. Milestone 0 And Setup Exit Criteria
 
