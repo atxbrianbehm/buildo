@@ -455,11 +455,15 @@ export function App() {
                 <li key={`${event.stage}-${index}`}>
                   <span>{event.stage}</span>
                   {event.outputArtifactId ? <small>{event.outputArtifactId}</small> : null}
+                  {event.provider ? <small className="run-panel__provider">provider {event.provider}</small> : null}
                   {event.cacheHit === undefined ? null : (
                     <em className={event.cacheHit ? "run-panel__cache-hit" : "run-panel__cache-miss"}>
                       {event.cacheHit ? "cache hit" : "cache miss"}
                     </em>
                   )}
+                  {event.error ? (
+                    <small className="run-panel__error">{event.error.code ?? event.error.message}</small>
+                  ) : null}
                 </li>
               )) ?? (
                 <li>

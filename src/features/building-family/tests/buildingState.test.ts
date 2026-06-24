@@ -1,5 +1,6 @@
 import { vi } from "vitest";
 import type { AssemblyHallFixture, CreateAssemblyHallFixtureInput } from "../ui/assemblyHallFixture";
+import type { MaterialSourceRequest } from "../materials/providers/proceduralMaterialProvider";
 import { BuildingArtifactRegistry } from "../state/artifactRegistry";
 import { BuildingRunController } from "../state/buildingRunController";
 import { defaultBuildingPromptControls, createBuildingStore } from "../state/buildingStore";
@@ -383,14 +384,24 @@ describe("building run controller", () => {
     const baselineInput = createFixture.mock.calls[0][0] as CreateAssemblyHallFixtureInput;
     const floorRerunInput = createFixture.mock.calls[1][0] as CreateAssemblyHallFixtureInput;
     const newFamilyInput = createFixture.mock.calls[2][0] as CreateAssemblyHallFixtureInput;
-    expect(baselineInput.remoteMaterial).toBe(remoteMaterial);
+    expect(baselineInput.remoteMaterial).toEqual(
+      expect.objectContaining({
+        decodePngLayer: remoteMaterial.decodePngLayer,
+        requestRemoteImages: expect.any(Function)
+      })
+    );
     expect(floorRerunInput.reusableArtifacts).toMatchObject({
       packedAtlas: baselineFixture.packedAtlas,
       debugExport: baselineFixture.debugExport
     });
     expect(floorRerunInput.remoteMaterial).toBeUndefined();
     expect(newFamilyInput.reusableArtifacts).toEqual({});
-    expect(newFamilyInput.remoteMaterial).toBe(remoteMaterial);
+    expect(newFamilyInput.remoteMaterial).toEqual(
+      expect.objectContaining({
+        decodePngLayer: remoteMaterial.decodePngLayer,
+        requestRemoteImages: expect.any(Function)
+      })
+    );
   });
 
   it("keeps the remote material lane disabled until the prompt feature flag is enabled", async () => {
@@ -429,7 +440,94 @@ describe("building run controller", () => {
     });
 
     expect((createFixture.mock.calls[0][0] as CreateAssemblyHallFixtureInput).remoteMaterial).toBeUndefined();
-    expect((createFixture.mock.calls[1][0] as CreateAssemblyHallFixtureInput).remoteMaterial).toBe(remoteMaterial);
+    expect((createFixture.mock.calls[1][0] as CreateAssemblyHallFixtureInput).remoteMaterial).toEqual(
+      expect.objectContaining({
+        decodePngLayer: remoteMaterial.decodePngLayer,
+        requestRemoteImages: expect.any(Function)
+      })
+    );
+  });
+
+  it("records remote material provider progress in the run event stream", async () => {
+    const store = createBuildingStore();
+    const registry = new BuildingArtifactRegistry();
+    const remoteRequest: MaterialSourceRequest = {
+      sourceId: "source.wall.primary",
+      role: "wall",
+      selectedFamily: "running-bond-brick",
+      periodicity: "xy",
+      physicalSizeM: { width: 18, height: 14 },
+      seedPath: "atlas/source/wall.primary/running-bond-brick",
+      promptVocabulary: ["running-bond-brick"],
+      widthPx: 32,
+      heightPx: 32
+    };
+    const remoteMaterial: NonNullable<CreateAssemblyHallFixtureInput["remoteMaterial"]> = {
+      decodePngLayer: vi.fn(async (input) => ({
+        widthPx: input.widthPx,
+        heightPx: input.heightPx,
+        channels: "rgba8" as const,
+        data: new Uint8ClampedArray(input.widthPx * input.heightPx * 4)
+      })),
+      requestRemoteImages: vi.fn(async () => ({
+        schemaVersion: "0.1.0" as const,
+        status: "generated" as const,
+        providerId: "openai-image" as const,
+        requestHash: "route-request-hash",
+        acceptedRequestCount: 1,
+        cacheStatus: "miss" as const,
+        artifacts: [],
+        diagnostics: []
+      }))
+    };
+    const createFixture = vi.fn(async (input: CreateAssemblyHallFixtureInput & { runId: string; signal: AbortSignal }) => {
+      await input.remoteMaterial?.requestRemoteImages?.({
+        runId: input.runId,
+        requests: [remoteRequest],
+        signal: input.signal
+      });
+      return fakeAssemblyFixture("remote-progress");
+    });
+    const controller = new BuildingRunController({
+      store,
+      registry,
+      createRunId: vi.fn().mockReturnValue("run-remote-progress"),
+      createFixture,
+      nowMs: (() => {
+        let value = 2000;
+        return () => {
+          value += 5;
+          return value;
+        };
+      })(),
+      remoteMaterial
+    });
+
+    await controller.startDemoRun({
+      ...defaultBuildingPromptControls,
+      remoteMaterialEnabled: true
+    });
+
+    const providerEvents = store
+      .getState()
+      .runs.currentRun?.events.filter((event) => event.stage === "generatingMaterialSources" && event.provider);
+    expect(providerEvents?.[0]).toEqual(
+      expect.objectContaining({
+        provider: "remote-material-route"
+      })
+    );
+    expect(providerEvents?.[0].endedAtMs).toBeUndefined();
+    expect(providerEvents?.[1]).toEqual(
+      expect.objectContaining({
+        provider: "openai-image",
+        cacheHit: false
+      })
+    );
+    expect(remoteMaterial.requestRemoteImages).toHaveBeenCalledWith({
+      runId: "run-remote-progress",
+      requests: [remoteRequest],
+      signal: expect.any(AbortSignal)
+    });
   });
 
   it("cancels a pending run, disposes its stale fixture, and keeps the prior completed scene active", async () => {

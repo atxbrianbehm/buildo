@@ -502,6 +502,14 @@ h1 {
   text-transform: uppercase;
 }
 
+.run-panel__provider {
+  color: #3b4d45;
+}
+
+.run-panel__error {
+  color: #6c322e;
+}
+
 .run-panel__cache-hit {
   color: #28553a;
   background: rgba(200, 230, 204, 0.86);

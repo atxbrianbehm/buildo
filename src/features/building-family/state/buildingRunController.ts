@@ -9,6 +9,10 @@ import {
 } from "../ui/assemblyHallFixture";
 import type { BuildingArtifactRegistry } from "./artifactRegistry";
 import { defaultBuildingPromptControls, type BuildingPromptControls, type BuildingStoreApi } from "./buildingStore";
+import {
+  requestRemoteMaterialImages,
+  type RemoteMaterialRouteResult
+} from "./remoteMaterialRouteClient";
 
 export interface BuildingRunControllerOptions {
   store: BuildingStoreApi;
@@ -103,7 +107,10 @@ export class BuildingRunController {
     });
 
     try {
-      const remoteMaterial = reusableArtifacts.packedAtlas || !prompt.remoteMaterialEnabled ? undefined : this.remoteMaterial;
+      const remoteMaterial =
+        reusableArtifacts.packedAtlas || !prompt.remoteMaterialEnabled
+          ? undefined
+          : this.remoteMaterialForRun(runId);
       const fixturePromise = this.createFixture({
         runId,
         signal: abortController.signal,
@@ -204,6 +211,58 @@ export class BuildingRunController {
       endedAtMs: this.nowMs(),
       ...details
     });
+  }
+
+  private remoteMaterialForRun(runId: string): CreateAssemblyHallFixtureInput["remoteMaterial"] {
+    if (!this.remoteMaterial) {
+      return undefined;
+    }
+
+    const requestRemoteImages = this.remoteMaterial.requestRemoteImages ?? requestRemoteMaterialImages;
+    return {
+      ...this.remoteMaterial,
+      requestRemoteImages: async (input) => {
+        const startedAtMs = this.nowMs();
+        this.store.getState().appendRunEvent(runId, {
+          stage: "generatingMaterialSources",
+          startedAtMs,
+          provider: "remote-material-route"
+        });
+
+        try {
+          const result = await requestRemoteImages(input);
+          const diagnostic = result.diagnostics[0];
+          this.store.getState().appendRunEvent(runId, {
+            stage: "generatingMaterialSources",
+            startedAtMs,
+            endedAtMs: this.nowMs(),
+            provider: remoteMaterialProviderLabel(result),
+            cacheHit: remoteMaterialCacheHit(result),
+            ...(diagnostic
+              ? {
+                  error: {
+                    message: diagnostic.message,
+                    code: diagnostic.code
+                  }
+                }
+              : {})
+          });
+          return result;
+        } catch (error) {
+          const message = error instanceof Error ? error.message : "Remote material provider failed.";
+          this.store.getState().appendRunEvent(runId, {
+            stage: "generatingMaterialSources",
+            startedAtMs,
+            endedAtMs: this.nowMs(),
+            provider: "remote-material-route",
+            error: {
+              message
+            }
+          });
+          throw error;
+        }
+      }
+    };
   }
 
   private reusableArtifactsFor(invalidation: BuildingInvalidation): ReusableAssemblyHallArtifacts {
@@ -373,4 +432,16 @@ function runtimeIrArtifactId(fixture: AssemblyHallFixture): string {
 
 function gpuSceneArtifactId(fixture: AssemblyHallFixture): string {
   return `gpu-scene:${fixture.ir.buildingId}:${fixture.packedAtlas.contentHash}`;
+}
+
+function remoteMaterialProviderLabel(result: RemoteMaterialRouteResult): string {
+  return result.status === "rejected" ? "remote-material-route" : result.providerId;
+}
+
+function remoteMaterialCacheHit(result: RemoteMaterialRouteResult): boolean | undefined {
+  if (result.status !== "generated") {
+    return undefined;
+  }
+
+  return result.cacheStatus === "hit";
 }

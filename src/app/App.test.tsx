@@ -152,6 +152,24 @@ describe("App", () => {
     expect(screen.getByLabelText("Invalidation preview")).toHaveTextContent("packedAtlas");
   });
 
+  it("surfaces remote material provider progress in the generation timeline", async () => {
+    render(<App />);
+
+    expect(await screen.findByRole("heading", { name: "Control Invalidation" })).toBeInTheDocument();
+    await waitForInitialRun();
+
+    fireEvent.click(screen.getByRole("checkbox", { name: "Remote Detail Provider" }));
+    fireEvent.click(screen.getByRole("button", { name: "Run Current" }));
+
+    await waitFor(() =>
+      expect(screen.getByLabelText("Generation run timeline")).toHaveTextContent("remote-material-route")
+    );
+    expect(screen.getByLabelText("Generation run timeline")).toHaveTextContent("procedural");
+    expect(screen.getByLabelText("Generation run timeline")).toHaveTextContent(
+      "remoteMaterialRouteClient.requestFailed"
+    );
+  });
+
   it("locks a Component Forge recipe and keeps the lock through a new-building rerun", async () => {
     render(<App />);
 
