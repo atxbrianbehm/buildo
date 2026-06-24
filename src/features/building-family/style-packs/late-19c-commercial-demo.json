@@ -1,0 +1,128 @@
+{
+  "schemaVersion": "0.1.0",
+  "id": "late-19c-commercial-demo",
+  "label": "Late 19th Century Commercial Demo",
+  "region": "North American downtown demo",
+  "dateRange": {
+    "startYear": 1870,
+    "endYear": 1905
+  },
+  "typologies": ["commercial block", "main street storefront"],
+  "curation": {
+    "status": "demo",
+    "author": "Buildo scaffold",
+    "reviewer": null,
+    "notes": "Demo-only proportions and compatibility rules. Not historically authoritative.",
+    "references": []
+  },
+  "massing": {
+    "floorCount": { "min": 2, "max": 8 },
+    "floorHeightM": {
+      "ground": 4.4,
+      "typical": { "min": 3.6, "max": 4.0 }
+    },
+    "widthM": { "min": 12, "max": 42 },
+    "depthM": { "min": 12, "max": 28 },
+    "parapetHeightM": { "min": 0.8, "max": 1.4 },
+    "roofTypes": ["flat", "gable"]
+  },
+  "facade": {
+    "frontBayCount": { "min": 3, "max": 10 },
+    "sideBaySpacingM": { "min": 3.6, "max": 4.8 },
+    "groundFloorRatio": { "min": 0.22, "max": 0.32 },
+    "corniceHeightM": { "min": 0.8, "max": 1.6 },
+    "symmetry": { "min": 0.6, "max": 1 }
+  },
+  "componentFamilies": {
+    "windows": ["tall-arched", "tall-rectangular"],
+    "doors": ["recessed-storefront"],
+    "trims": ["pressed-metal", "simple-stone"],
+    "roofs": ["flat-membrane", "simple-gable"],
+    "pilasters": ["brick-pilaster"],
+    "cornices": ["bracketed-metal", "simple-stepped"],
+    "walls": ["brick-red", "painted-stucco"],
+    "ornaments": ["shallow-floral-mask"]
+  },
+  "compatibility": {
+    "forbidden": [
+      {
+        "when": {
+          "wallMaterial": "painted-stucco",
+          "roofType": "gable"
+        },
+        "reason": "The demo pack keeps painted stucco storefronts on flat roof massing for the MVP."
+      }
+    ]
+  },
+  "materialPalette": {
+    "wall": [
+      { "id": "brick-red", "weight": 4 },
+      { "id": "painted-stucco", "weight": 1 }
+    ],
+    "roof": [
+      { "id": "flat-membrane", "weight": 4 },
+      { "id": "simple-gable", "weight": 1 }
+    ],
+    "frame": [
+      { "id": "painted-metal-dark", "weight": 3 },
+      { "id": "painted-wood-cream", "weight": 1 }
+    ],
+    "glass": [
+      { "id": "slightly-wavy-green", "weight": 1 }
+    ],
+    "door": [
+      { "id": "painted-wood-door", "weight": 1 }
+    ]
+  },
+  "distributions": {
+    "trimDensity": [
+      { "id": "restrained", "weight": 1 },
+      { "id": "moderate", "weight": 3 },
+      { "id": "ornate", "weight": 2 }
+    ],
+    "windowFamily": [
+      { "id": "tall-arched", "weight": 3 },
+      { "id": "tall-rectangular", "weight": 2 }
+    ]
+  },
+  "materialPromptVocabulary": {
+    "brick-red": ["running bond red brick", "aged mortar", "subtle soot"],
+    "painted-stucco": ["painted stucco", "hairline cracks", "weathered surface"],
+    "flat-membrane": ["dark flat roof membrane", "patched tar"],
+    "simple-gable": ["simple roof tile", "muted roof ridge"]
+  },
+  "componentParameterRanges": {
+    "tall-arched": {
+      "widthM": { "min": 1.1, "max": 1.6 },
+      "heightM": { "min": 2.1, "max": 2.8 }
+    },
+    "pressed-metal": {
+      "depthM": { "min": 0.08, "max": 0.24 }
+    }
+  },
+  "variationPolicy": {
+    "wall": "family",
+    "roof": "family",
+    "window": "building",
+    "door": "building",
+    "cornice": "family",
+    "trim": "family",
+    "pilaster": "building",
+    "ornament": "element"
+  },
+  "defaults": {
+    "floorCount": 4,
+    "bayCount": 7,
+    "wallMaterial": "brick-red",
+    "roofType": "flat",
+    "windowFamily": "tall-arched",
+    "doorFamily": "recessed-storefront",
+    "corniceFamily": "bracketed-metal",
+    "trimFamily": "pressed-metal",
+    "pilasterFamily": "brick-pilaster",
+    "ornamentFamily": "shallow-floral-mask",
+    "trimDensity": "moderate",
+    "weathering": 0.25,
+    "symmetry": 0.9
+  }
+}

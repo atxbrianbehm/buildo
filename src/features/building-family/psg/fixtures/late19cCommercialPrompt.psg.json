@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "building-family-late19c-demo",
+  "nodes": [
+    {
+      "id": "style",
+      "type": "SetVariable",
+      "variableName": "building.stylePack",
+      "value": "late-19c-commercial-demo"
+    },
+    {
+      "id": "windowFamily",
+      "type": "SetVariable",
+      "variableName": "building.windowFamily",
+      "value": "tall-arched"
+    },
+    {
+      "id": "corniceFamily",
+      "type": "SetVariable",
+      "variableName": "building.corniceFamily",
+      "value": "bracketed-metal"
+    },
+    {
+      "id": "weathering",
+      "type": "SetVariable",
+      "variableName": "building.weathering",
+      "value": 0.35
+    },
+    {
+      "id": "summary",
+      "type": "TextBlock",
+      "value": "Late nineteenth century commercial family"
+    },
+    {
+      "id": "output",
+      "type": "Output",
+      "inputIds": ["summary"],
+      "outputKind": "buildingIntent"
+    }
+  ]
+}
+

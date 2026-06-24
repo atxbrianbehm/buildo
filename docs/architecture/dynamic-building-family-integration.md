@@ -1,0 +1,498 @@
+# Dynamic Building Family Integration Map
+
+**Status:** Milestone 0 reconnaissance plus greenfield project setup
+**Plan source:** `docs/plans/dynamic-building-family.md`
+**Workspace:** `C:\Users\behmb\Documents\Cascade Projects\buildo`
+**Date:** 2026-06-23
+
+## 1. Repository State
+
+`buildo` is now an initialized Git repository with a Vite + React + TypeScript scaffold, npm lockfile, unit-test setup, lint setup, and a programmatic Playwright Chromium smoke check.
+
+Current high-level layout:
+
+```text
+AGENTS.md
+README.md
+package.json
+package-lock.json
+index.html
+vite.config.ts
+vitest.config.ts
+playwright.config.ts
+eslint.config.js
+tsconfig.json
+tsconfig.app.json
+tsconfig.node.json
+scripts/
+  dev-server.mjs
+  e2e-smoke.mjs
+src/
+  app/
+    App.css
+    App.test.tsx
+    App.tsx
+    main.tsx
+  test/
+    setup.ts
+  vite-env.d.ts
+tests/
+  e2e/
+    smoke.spec.ts
+docs/
+  architecture/
+    dynamic-building-family-integration.md
+  plans/
+    dynamic-building-family.md
+```
+
+The app currently contains a setup shell plus the Milestone 1 deterministic domain foundation. No renderer, compiler, state slice, material pipeline, atlas output, or generated building asset has been implemented.
+
+## 2. Active Instructions
+
+Repository instructions now live at `AGENTS.md`.
+
+Key active project rules:
+
+- read the plan and this integration map before feature changes;
+- work in small milestones;
+- preserve the React + Three.js + Zustand direction;
+- keep contracts/core/compiler renderer-independent;
+- do not use `Math.random()` for structural or material decisions once generation code exists;
+- do not add preassembled building/component meshes;
+- keep provider secrets out of client code;
+- schema-version serialized artifacts and runtime-validate them;
+- run relevant checks before finishing.
+
+## 3. Package And Workspace Layout
+
+Actual package manager: npm.
+
+Actual scaffold: single Vite application with React and TypeScript.
+
+Actual app entry:
+
+```text
+index.html
+src/app/main.tsx
+src/app/App.tsx
+```
+
+Recommended project shape remains a single application with strict feature boundaries under `src/features`. Split contracts/core/compiler into separate packages only after the first browser vertical slice proves package-level enforcement is worth the added workspace complexity.
+
+## 4. Commands
+
+Actual commands:
+
+```text
+npm install
+npm run dev
+npm run dev:server
+npm run build
+npm run typecheck
+npm run test
+npm run test:watch
+npm run test:e2e
+npm run lint
+```
+
+`npm run dev:server` starts Vite through the Vite JS API.
+
+`npm run test:e2e` uses `scripts/e2e-smoke.mjs`, which starts Vite through the Vite JS API, launches Playwright Chromium, verifies the app shell, and closes resources explicitly. This avoids a Windows harness issue where `playwright test` with a managed web server passed the assertion but did not exit before the command timeout.
+
+`playwright.config.ts` is present for future Playwright test-runner work. If using `npx playwright test` directly, start the dev server separately or set `PLAYWRIGHT_BASE_URL`.
+
+## 5. Installed Versions
+
+Resolved top-level package versions:
+
+```text
+@eslint/js@10.0.1
+@playwright/test@1.61.1
+@testing-library/jest-dom@6.9.1
+@testing-library/react@16.3.2
+@types/node@26.0.0
+@types/react-dom@19.2.3
+@types/react@19.2.17
+@vitejs/plugin-react@6.0.3
+eslint-plugin-react-hooks@7.1.1
+eslint-plugin-react-refresh@0.5.3
+eslint@10.5.0
+globals@17.7.0
+jsdom@29.1.1
+react-dom@19.2.7
+react@19.2.7
+three@0.184.0
+typescript-eslint@8.62.0
+typescript@6.0.3
+vite@8.1.0
+vitest@4.1.9
+zod@4.4.3
+zustand@5.0.14
+```
+
+Three.js WebGPU support still needs API inspection before Milestone 4 uses `WebGPURenderer` or TSL imports.
+
+## 6. PSG Surface
+
+Actual PSG schema, evaluator, import/export paths, fixtures, and tests:
+
+```text
+src/features/prompt-spaghetti/contracts/psgDocument.ts
+src/features/prompt-spaghetti/core/evaluatePsg.ts
+src/features/prompt-spaghetti/core/evaluationTrace.ts
+src/features/prompt-spaghetti/io/importPsg.ts
+src/features/prompt-spaghetti/io/exportPsg.ts
+src/features/prompt-spaghetti/fixtures/legacy-v2.psg.json
+src/features/prompt-spaghetti/tests/evaluatePsg.test.ts
+src/features/prompt-spaghetti/tests/legacyV2Compatibility.test.ts
+```
+
+Actual building adapter paths:
+
+```text
+src/features/building-family/psg/psgBuildingIntentAdapter.ts
+src/features/building-family/psg/localRulePromptInterpreter.ts
+src/features/building-family/psg/fixtures/late19cCommercialPrompt.psg.json
+```
+
+The evaluator intentionally supports the first needed PSG v2 node subset: `TextBlock`, `WeightedChoice`, `Concat`, `Output`, `SetVariable`, and `GetVariable`. The Output node accepts optional `outputKind` without changing the PSG schema version.
+
+## 6.1 Building Family Domain Foundation
+
+Actual Milestone 1 contract and deterministic core paths:
+
+```text
+src/features/building-family/contracts/atlasManifest.ts
+src/features/building-family/contracts/buildingFamilySpec.ts
+src/features/building-family/contracts/buildingGraph.ts
+src/features/building-family/contracts/buildingIntent.ts
+src/features/building-family/contracts/componentRecipe.ts
+src/features/building-family/contracts/generationRun.ts
+src/features/building-family/contracts/historicalStylePack.ts
+src/features/building-family/contracts/index.ts
+src/features/building-family/contracts/runtimeBuildingIR.ts
+src/features/building-family/contracts/shared.ts
+src/features/building-family/core/canonicalJson.ts
+src/features/building-family/core/contentHash.ts
+src/features/building-family/core/diagnostics.ts
+src/features/building-family/core/invalidation.ts
+src/features/building-family/core/seedTree.ts
+src/features/building-family/core/semanticPaths.ts
+src/features/building-family/core/specNormalizer.ts
+src/features/building-family/style-packs/late-19c-commercial-demo.json
+```
+
+The style pack is explicitly demo-curated and does not claim historical authority. The normalizer clamps floor and bay ranges, emits diagnostics for invalid selections and forbidden combinations, and returns a validated `BuildingFamilySpec`.
+
+## 7. App Shell, Renderer, State, Workers, And Routing
+
+Actual React shell:
+
+```text
+src/app/main.tsx
+src/app/App.tsx
+src/app/App.css
+```
+
+Actual feature routing: root route only. No router dependency exists yet.
+
+Actual Three.js renderer setup: not present.
+
+Recommended renderer paths:
+
+```text
+src/features/building-family/renderer-three/buildingSceneAdapter.ts
+src/features/building-family/renderer-three/buildingAtlasMaterialFactory.ts
+src/features/building-family/renderer-three/familyRuntime.ts
+src/features/building-family/renderer-three/instanceRuntime.ts
+src/features/building-family/renderer-three/resourceDisposal.ts
+```
+
+Actual Zustand state: not present.
+
+Recommended state paths:
+
+```text
+src/features/building-family/state/buildingStore.ts
+src/features/building-family/state/slices/runSlice.ts
+src/features/building-family/state/slices/artifactSlice.ts
+src/features/building-family/state/slices/selectionSlice.ts
+```
+
+Actual worker patterns: not present.
+
+Recommended worker paths:
+
+```text
+src/features/building-family/compiler/compiler.worker.ts
+src/features/building-family/compiler/compilerClient.ts
+```
+
+Actual server/API routes: not present.
+
+Recommended resolution: keep Milestones 1-5 client/procedural. Before Milestone 6, choose a small Node server under `server/` or move to a framework with server routes. A pure Vite client cannot safely own provider API keys.
+
+## 8. Logical Module Path Mapping
+
+The implementation plan's logical modules map into the single-app feature boundary as follows:
+
+```text
+building-family/contracts/*      -> src/features/building-family/contracts/*
+building-family/core/*           -> src/features/building-family/core/*
+building-family/psg/*            -> src/features/building-family/psg/*
+building-family/style-packs/*    -> src/features/building-family/style-packs/*
+building-family/materials/*      -> src/features/building-family/materials/*
+building-family/components/*     -> src/features/building-family/components/*
+building-family/compiler/*       -> src/features/building-family/compiler/*
+building-family/renderer-three/* -> src/features/building-family/renderer-three/*
+building-family/state/*          -> src/features/building-family/state/*
+building-family/ui/*             -> src/features/building-family/ui/*
+building-family/tests/*          -> src/features/building-family/tests/*
+```
+
+Generic Prompt Spaghetti modules should live outside the building feature:
+
+```text
+src/features/prompt-spaghetti/contracts/*
+src/features/prompt-spaghetti/core/*
+src/features/prompt-spaghetti/io/*
+src/features/prompt-spaghetti/fixtures/*
+src/features/prompt-spaghetti/tests/*
+```
+
+Test placement:
+
+```text
+src/features/building-family/**/*.test.ts
+src/features/prompt-spaghetti/**/*.test.ts
+tests/e2e/*.spec.ts
+```
+
+## 9. Dependency Decisions
+
+Installed runtime dependencies:
+
+```text
+react
+react-dom
+three
+zustand
+zod
+```
+
+Installed development dependencies:
+
+```text
+typescript
+vite
+@vitejs/plugin-react
+vitest
+jsdom
+@testing-library/react
+@testing-library/jest-dom
+@playwright/test
+eslint
+@eslint/js
+globals
+typescript-eslint
+eslint-plugin-react-hooks
+eslint-plugin-react-refresh
+@types/node
+@types/react
+@types/react-dom
+```
+
+Justification:
+
+- React, Three.js, and Zustand are fixed decisions in the implementation plan.
+- Zod is the runtime schema library because no repository schema library existed.
+- Vitest fits the Vite TypeScript scaffold and deterministic core testing needs.
+- Playwright Chromium is installed for browser smoke checks.
+- ESLint is installed with TypeScript, React hooks, and React refresh rules.
+
+## 10. Conflicts, Ambiguities, And Resolutions
+
+| Item | Finding | Resolution |
+|---|---|---|
+| Existing Wild Construct app | None existed in this workspace. | Treat `buildo` as the new Dynamic Building Family project. |
+| Existing package manager | None existed. | npm selected and locked. |
+| Existing PSG v2 implementation | None existed. | Minimal backward-compatible PSG v2 schema/evaluator implemented in Milestone 1. |
+| Existing schema library | None existed. | Zod selected and installed. |
+| Existing server route convention | None exists. | Defer provider-secret server choice until Milestone 6. |
+| Three.js WebGPU support | Dependency installed, API not yet inspected. | Inspect exact `three@0.184.0` exports before Milestone 4 renderer work. |
+| Git branch requirement | Workspace was not a Git repository. | Git initialized and initial branch set to `main`; no commit created yet. |
+| Playwright runner lifecycle | `playwright test` with a managed web server passed but did not exit before tool timeout. | Official `npm run test:e2e` uses an explicit Vite + Chromium smoke script that closes resources. |
+
+## 11. Milestone 1 Files
+
+Implemented Prompt Spaghetti files:
+
+```text
+src/features/prompt-spaghetti/contracts/psgDocument.ts
+src/features/prompt-spaghetti/core/evaluatePsg.ts
+src/features/prompt-spaghetti/core/evaluationTrace.ts
+src/features/prompt-spaghetti/io/importPsg.ts
+src/features/prompt-spaghetti/io/exportPsg.ts
+src/features/prompt-spaghetti/fixtures/legacy-v2.psg.json
+src/features/prompt-spaghetti/tests/evaluatePsg.test.ts
+src/features/prompt-spaghetti/tests/legacyV2Compatibility.test.ts
+```
+
+Implemented Building Family contract and core files:
+
+```text
+src/features/building-family/contracts/buildingIntent.ts
+src/features/building-family/contracts/historicalStylePack.ts
+src/features/building-family/contracts/buildingFamilySpec.ts
+src/features/building-family/contracts/atlasManifest.ts
+src/features/building-family/contracts/componentRecipe.ts
+src/features/building-family/contracts/buildingGraph.ts
+src/features/building-family/contracts/runtimeBuildingIR.ts
+src/features/building-family/contracts/generationRun.ts
+src/features/building-family/contracts/index.ts
+src/features/building-family/core/canonicalJson.ts
+src/features/building-family/core/contentHash.ts
+src/features/building-family/core/diagnostics.ts
+src/features/building-family/core/seedTree.ts
+src/features/building-family/core/semanticPaths.ts
+src/features/building-family/core/specNormalizer.ts
+src/features/building-family/core/invalidation.ts
+```
+
+Building Family PSG and style-pack files:
+
+```text
+src/features/building-family/psg/psgBuildingIntentAdapter.ts
+src/features/building-family/psg/localRulePromptInterpreter.ts
+src/features/building-family/psg/fixtures/late19cCommercialPrompt.psg.json
+src/features/building-family/style-packs/late-19c-commercial-demo.json
+```
+
+Implemented Milestone 1 tests:
+
+```text
+src/features/building-family/tests/contracts.test.ts
+src/features/building-family/tests/canonicalJson.test.ts
+src/features/building-family/tests/seedTree.test.ts
+src/features/building-family/tests/psgBuildingIntentAdapter.test.ts
+src/features/building-family/tests/localRulePromptInterpreter.test.ts
+src/features/building-family/tests/specNormalizer.test.ts
+src/features/building-family/tests/psgToSpec.integration.test.ts
+```
+
+Milestone 2 should start with:
+
+```text
+src/features/building-family/materials/atlasPlanner.ts
+src/features/building-family/materials/atlasPacker.ts
+src/features/building-family/materials/normalFromHeight.ts
+src/features/building-family/materials/periodicBlend.ts
+src/features/building-family/materials/providers/proceduralMaterialProvider.ts
+src/features/building-family/materials/providers/fixtureMaterialProvider.ts
+src/features/building-family/tests/atlasPlanner.test.ts
+src/features/building-family/tests/proceduralMaterialProvider.test.ts
+```
+
+## 12. Verification Report
+
+Commands run during reconnaissance:
+
+```text
+rg --files -uu
+Get-ChildItem -Force -Recurse
+Get-ChildItem -Force -Filter AGENTS.md -Recurse
+git status --short
+```
+
+Results: no files or `AGENTS.md` existed initially; `git status` failed because the workspace was not yet a Git repository.
+
+Setup commands run:
+
+```text
+npm install react react-dom three zustand zod
+npm install -D typescript vite @vitejs/plugin-react vitest jsdom @testing-library/react @testing-library/jest-dom @playwright/test eslint @eslint/js globals typescript-eslint eslint-plugin-react-hooks eslint-plugin-react-refresh @types/node @types/react @types/react-dom
+git init
+git symbolic-ref HEAD refs/heads/main
+npx playwright install chromium
+```
+
+Final verification commands:
+
+```text
+npm run typecheck
+npm run test
+npm run lint
+npm run build
+npm run test:e2e
+rg -n 'react|three|zustand' src\features\building-family\contracts src\features\building-family\core
+rg -n "Math\.random" src\features\building-family src\features\prompt-spaghetti
+```
+
+Final results:
+
+```text
+typecheck: passed
+unit tests: passed, 1 test
+lint: passed
+build: passed
+e2e smoke: passed at http://127.0.0.1:5173/
+contracts/core renderer-import scan: no matches
+Math.random scan: no matches
+```
+
+## 13. Diff Review
+
+Expected setup changes:
+
+```text
+.gitignore
+AGENTS.md
+README.md
+package.json
+package-lock.json
+index.html
+tsconfig.json
+tsconfig.app.json
+tsconfig.node.json
+vite.config.ts
+vitest.config.ts
+playwright.config.ts
+eslint.config.js
+scripts/e2e-smoke.mjs
+scripts/dev-server.mjs
+src/app/App.css
+src/app/App.test.tsx
+src/app/App.tsx
+src/app/main.tsx
+src/test/setup.ts
+src/vite-env.d.ts
+tests/e2e/smoke.spec.ts
+docs/plans/dynamic-building-family.md
+docs/architecture/dynamic-building-family-integration.md
+```
+
+Generated and ignored:
+
+```text
+node_modules/
+dist/
+test-results/
+```
+
+No building-family production logic, generated meshes, material assets, provider routes, or PSG implementation were added.
+
+## 14. Milestone 0 And Setup Exit Criteria
+
+- [x] Source plan preserved in `docs/plans/dynamic-building-family.md`.
+- [x] Repository-specific integration map created and updated after setup.
+- [x] Git repository initialized on `main`.
+- [x] npm package and lockfile created.
+- [x] React + Vite + TypeScript app shell created.
+- [x] Runtime dependencies installed: React, Three.js, Zustand, Zod.
+- [x] Unit, lint, build, and browser smoke tooling installed.
+- [x] Actual commands documented.
+- [x] Every conceptual module in the plan has an intended repository location.
+- [x] PSG, renderer, state, worker, server, and routing surfaces are identified as absent or scaffold-only with concrete proposed paths.
+- [x] Proposed Milestone 1 files are listed.
+- [x] Final checks passed.

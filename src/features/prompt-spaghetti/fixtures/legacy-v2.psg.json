@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "2.0.0",
+  "id": "legacy-v2-commercial-demo",
+  "nodes": [
+    {
+      "id": "style",
+      "type": "SetVariable",
+      "variableName": "building.stylePack",
+      "value": "late-19c-commercial-demo"
+    },
+    {
+      "id": "floors",
+      "type": "SetVariable",
+      "variableName": "building.floorCount",
+      "value": 4
+    },
+    {
+      "id": "bays",
+      "type": "SetVariable",
+      "variableName": "building.bayCount",
+      "value": 7
+    },
+    {
+      "id": "trim",
+      "type": "SetVariable",
+      "variableName": "building.trimDensity",
+      "value": "ornate"
+    },
+    {
+      "id": "wallChoice",
+      "type": "WeightedChoice",
+      "semanticPath": "building/wall-material",
+      "choices": [
+        { "value": "brick-red", "weight": 3 },
+        { "value": "painted-stucco", "weight": 1 }
+      ]
+    },
+    {
+      "id": "wall",
+      "type": "SetVariable",
+      "variableName": "building.wallMaterial",
+      "inputIds": ["wallChoice"]
+    },
+    {
+      "id": "roof",
+      "type": "SetVariable",
+      "variableName": "building.roofType",
+      "value": "flat"
+    },
+    {
+      "id": "label",
+      "type": "Concat",
+      "inputIds": ["wallChoice"],
+      "parts": ["Commercial demo with ", "$0", " walls"]
+    },
+    {
+      "id": "output",
+      "type": "Output",
+      "inputIds": ["label"],
+      "outputKind": "buildingIntent"
+    }
+  ]
+}
+
