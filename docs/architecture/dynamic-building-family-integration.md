@@ -1,6 +1,6 @@
 # Dynamic Building Family Integration Map
 
-**Status:** Milestone 3D component gallery data foundation
+**Status:** Milestone 4A renderer adapter foundation
 **Plan source:** `docs/plans/dynamic-building-family.md`
 **Workspace:** `C:\Users\behmb\Documents\Cascade Projects\buildo`
 **Date:** 2026-06-24
@@ -46,7 +46,7 @@ docs/
     dynamic-building-family.md
 ```
 
-The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, the Milestone 3B pure compiler IR foundation, the Milestone 3C compiler worker boundary, and the Milestone 3D component gallery data foundation. No renderer, state slice, Component Forge UI, or generated building asset has been implemented.
+The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, the Milestone 3B pure compiler IR foundation, the Milestone 3C compiler worker boundary, the Milestone 3D component gallery data foundation, and the Milestone 4A renderer adapter foundation. No canvas route, state slice, Component Forge UI, or rendered building asset has been implemented.
 
 ## 2. Active Instructions
 
@@ -114,6 +114,7 @@ Resolved top-level package versions:
 @types/node@26.0.0
 @types/react-dom@19.2.3
 @types/react@19.2.17
+@types/three@0.184.1
 @vitejs/plugin-react@6.0.3
 eslint-plugin-react-hooks@7.1.1
 eslint-plugin-react-refresh@0.5.3
@@ -131,7 +132,7 @@ zod@4.4.3
 zustand@5.0.14
 ```
 
-Three.js WebGPU support still needs API inspection before Milestone 4 uses `WebGPURenderer` or TSL imports.
+Three.js API inspection for Milestone 4 found that `three@0.184.0` does not export `WebGPURenderer` from the main `three` entrypoint. It does expose `WebGPURenderer` from `three/webgpu`, while `WebGLRenderer`, `BufferGeometry`, `Mesh`, `InstancedMesh`, `DataTexture`, `MeshStandardMaterial`, `Group`, `Matrix4`, and `Box3` are available from `three`.
 
 ## 6. PSG Surface
 
@@ -423,7 +424,9 @@ The gallery records one entry per component recipe, preserving recipe id, kind, 
 
 Current compiler coverage leaves `opening` and `horizontalTrim` as recipe-only gallery entries. The gallery keeps those entries visible and emits warning diagnostics so Component Forge can distinguish implemented generated components from catalog recipes that still need compiler emission.
 
-The next roadmap slice should begin Milestone 4 renderer-adapter prep:
+## 6.7 Renderer Adapter Foundation
+
+Actual Milestone 4A renderer paths:
 
 ```text
 src/features/building-family/renderer-three/buildingSceneAdapter.ts
@@ -431,7 +434,20 @@ src/features/building-family/renderer-three/buildingAtlasMaterialFactory.ts
 src/features/building-family/tests/buildingSceneAdapter.test.ts
 ```
 
-Before renderer edits, inspect the installed `three@0.184.0` WebGPU/WebGL exports and keep all Three.js imports in `renderer-three/*` only.
+`detectRendererBackendSupport` reports WebGL fallback availability from the main `three` entrypoint and WebGPU availability from `three/webgpu`. It does not instantiate a browser renderer yet.
+
+`createAtlasMaterialRegistry` creates slot-keyed `MeshStandardMaterial` instances with atlas id, atlas content hash, and slot metadata attached in `userData`. It does not upload textures yet; this keeps the first renderer slice testable without a canvas while preserving the exact atlas artifact identity that later runtime code must use.
+
+`createBuildingSceneRuntime` converts compiled `RuntimeBuildingIR` mesh batches into `BufferGeometry` + `Mesh` objects, converts instance batches into `InstancedMesh` objects using catalog recipe dimensions, applies compiler transforms, groups objects by assembly stage, builds semantic-path lookup entries, links component gallery entries to renderer objects, and exposes disposal for geometries and materials.
+
+The next roadmap slice should continue Milestone 4 with actual atlas texture/material sampling and a rendered fixture route:
+
+```text
+src/features/building-family/renderer-three/buildingAtlasTextureFactory.ts
+src/features/building-family/renderer-three/familyRuntime.ts
+src/features/building-family/ui/AssemblyHall.tsx
+src/features/building-family/tests/buildingAtlasTextureFactory.test.ts
+```
 
 ## 7. App Shell, Renderer, State, Workers, And Routing
 
@@ -445,13 +461,16 @@ src/app/App.css
 
 Actual feature routing: root route only. No router dependency exists yet.
 
-Actual Three.js renderer setup: not present.
-
-Recommended renderer paths:
+Actual Three.js renderer setup:
 
 ```text
 src/features/building-family/renderer-three/buildingSceneAdapter.ts
 src/features/building-family/renderer-three/buildingAtlasMaterialFactory.ts
+```
+
+Recommended renderer paths:
+
+```text
 src/features/building-family/renderer-three/familyRuntime.ts
 src/features/building-family/renderer-three/instanceRuntime.ts
 src/features/building-family/renderer-three/resourceDisposal.ts
@@ -556,6 +575,7 @@ eslint-plugin-react-refresh
 @types/node
 @types/react
 @types/react-dom
+@types/three
 ```
 
 Justification:
@@ -565,6 +585,7 @@ Justification:
 - Vitest fits the Vite TypeScript scaffold and deterministic core testing needs.
 - Playwright Chromium is installed for browser smoke checks.
 - ESLint is installed with TypeScript, React hooks, and React refresh rules.
+- `@types/three` is installed because the first renderer adapter imports Three.js types directly.
 
 ## 10. Conflicts, Ambiguities, And Resolutions
 
@@ -575,7 +596,7 @@ Justification:
 | Existing PSG v2 implementation | None existed. | Minimal backward-compatible PSG v2 schema/evaluator implemented in Milestone 1. |
 | Existing schema library | None existed. | Zod selected and installed. |
 | Existing server route convention | None exists. | Defer provider-secret server choice until Milestone 6. |
-| Three.js WebGPU support | Dependency installed, API not yet inspected. | Inspect exact `three@0.184.0` exports before Milestone 4 renderer work. |
+| Three.js WebGPU support | `three@0.184.0` main entry lacks `WebGPURenderer`; `three/webgpu` exposes it. | Renderer capability detection uses `three/webgpu` for WebGPU and keeps WebGL fallback via the main `three` entrypoint. |
 | Git branch requirement | Workspace was not a Git repository. | Git initialized and initial branch set to `main`; no commit created yet. |
 | Playwright runner lifecycle | `playwright test` with a managed web server passed but did not exit before tool timeout. | Official `npm run test:e2e` uses an explicit Vite + Chromium smoke script that closes resources. |
 
@@ -719,6 +740,14 @@ src/features/building-family/compiler/componentGalleryBuilder.ts
 src/features/building-family/tests/componentGalleryBuilder.test.ts
 ```
 
+Milestone 4A introduced:
+
+```text
+src/features/building-family/renderer-three/buildingAtlasMaterialFactory.ts
+src/features/building-family/renderer-three/buildingSceneAdapter.ts
+src/features/building-family/tests/buildingSceneAdapter.test.ts
+```
+
 ## 12. Verification Report
 
 Commands run during reconnaissance:
@@ -737,6 +766,7 @@ Setup commands run:
 ```text
 npm install react react-dom three zustand zod
 npm install -D typescript vite @vitejs/plugin-react vitest jsdom @testing-library/react @testing-library/jest-dom @playwright/test eslint @eslint/js globals typescript-eslint eslint-plugin-react-hooks eslint-plugin-react-refresh @types/node @types/react @types/react-dom
+npm install -D @types/three
 git init
 git symbolic-ref HEAD refs/heads/main
 npx playwright install chromium
@@ -758,7 +788,7 @@ Latest validation results:
 
 ```text
 typecheck: passed
-unit tests: passed, 50 tests across 21 files
+unit tests: passed, 56 tests across 22 files
 lint: passed
 build: passed
 e2e smoke: passed at http://127.0.0.1:5173/
@@ -886,6 +916,14 @@ src/features/building-family/compiler/componentGalleryBuilder.ts
 src/features/building-family/tests/componentGalleryBuilder.test.ts
 ```
 
+Milestone 4A introduced:
+
+```text
+src/features/building-family/renderer-three/buildingAtlasMaterialFactory.ts
+src/features/building-family/renderer-three/buildingSceneAdapter.ts
+src/features/building-family/tests/buildingSceneAdapter.test.ts
+```
+
 Generated and ignored directories:
 
 ```text
@@ -894,7 +932,7 @@ dist/
 test-results/
 ```
 
-No preassembled meshes, provider routes, renderer adapter, Component Forge UI, or Zustand state slice has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers through the pure TypeScript compiler path, can deliver them across the compiler worker boundary with transferable buffers, and can summarize catalog/IR component data for a future Component Forge gallery.
+No preassembled meshes, provider routes, canvas route, Component Forge UI, or Zustand state slice has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers through the pure TypeScript compiler path, can deliver them across the compiler worker boundary with transferable buffers, can summarize catalog/IR component data for a future Component Forge gallery, and can convert that IR into Three.js scene objects under `renderer-three/*`.
 
 ## 14. Milestone 0 And Setup Exit Criteria
 
