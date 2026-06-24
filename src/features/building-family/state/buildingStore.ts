@@ -159,8 +159,9 @@ export function createBuildingStore(
       showSemanticPaths: true
     },
     beginRun: ({ runId, event }) =>
-      set(() => ({
+      set((state) => ({
         runs: {
+          activeFixtureArtifactId: state.runs.activeFixtureArtifactId,
           activeRunId: runId,
           currentRun: runWithEvent(runId, event),
           error: undefined,

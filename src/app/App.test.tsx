@@ -15,6 +15,7 @@ describe("App", () => {
     expect(screen.getByLabelText("Invalidation preview")).toHaveTextContent("runtimeBuildingIr");
     expect(await screen.findByRole("heading", { name: "Generation Run" })).toBeInTheDocument();
     await waitFor(() => expect(screen.getByLabelText("Generation run state")).toHaveTextContent("complete"));
+    expect(screen.getByRole("button", { name: "Cancel Run" })).toBeDisabled();
     const firstArtifactId = screen.getByLabelText("Generation run artifact").textContent ?? "";
     fireEvent.click(screen.getByRole("button", { name: "New Building" }));
     await waitFor(() => expect(screen.getByLabelText("Generation run state")).toHaveTextContent("complete"));

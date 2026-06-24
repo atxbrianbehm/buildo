@@ -219,6 +219,11 @@ h1 {
   background: #4c586a;
 }
 
+.control-panel__actions button:nth-child(4) {
+  color: #fbf8f4;
+  background: #7b3131;
+}
+
 .control-panel__actions button:disabled {
   cursor: wait;
   opacity: 0.58;

@@ -185,6 +185,9 @@ export function App() {
             >
               New Family
             </button>
+            <button type="button" disabled={!runDisabled} onClick={() => controller.cancelActiveRun()}>
+              Cancel Run
+            </button>
           </div>
         </div>
         <div className="control-panel__preview" aria-label="Invalidation preview">

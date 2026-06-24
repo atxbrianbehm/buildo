@@ -319,6 +319,59 @@ describe("building run controller", () => {
       outputArtifactId: "component-catalog:catalog-regenerated"
     });
   });
+
+  it("cancels a pending run, disposes its stale fixture, and keeps the prior completed scene active", async () => {
+    const store = createBuildingStore();
+    const registry = new BuildingArtifactRegistry();
+    const pendingFixtures: Array<(fixture: AssemblyHallFixture) => void> = [];
+    const completedFixture = fakeAssemblyFixture("completed", {
+      buildingId: "completed-building",
+      atlasContentHash: "completed-atlas-hash"
+    });
+    const createFixture = vi
+      .fn()
+      .mockResolvedValueOnce(completedFixture)
+      .mockImplementation(
+        () =>
+          new Promise<AssemblyHallFixture>((resolve) => {
+            pendingFixtures.push(resolve);
+          })
+      );
+    const controller = new BuildingRunController({
+      store,
+      registry,
+      createRunId: vi.fn().mockReturnValueOnce("run-001").mockReturnValueOnce("run-002"),
+      createFixture
+    });
+
+    const completed = await controller.startDemoRun(defaultBuildingPromptControls);
+    const pendingRun = controller.startDemoRun({
+      ...defaultBuildingPromptControls,
+      seeds: {
+        ...defaultBuildingPromptControls.seeds,
+        building: "building-seed-pending"
+      }
+    });
+
+    expect(store.getState().runs.status).toBe("running");
+    expect(store.getState().runs.activeFixtureArtifactId).toBe(completed.artifactId);
+
+    controller.cancelActiveRun();
+    const staleFixture = fakeAssemblyFixture("cancelled", {
+      buildingId: "cancelled-building",
+      atlasContentHash: "cancelled-atlas-hash"
+    });
+    pendingFixtures[0](staleFixture);
+    const pendingResult = await pendingRun;
+
+    expect(pendingResult).toMatchObject({ runId: "run-002", stale: true });
+    expect(store.getState().runs.status).toBe("cancelled");
+    expect(store.getState().runs.activeFixtureArtifactId).toBe(completed.artifactId);
+    expect(staleFixture.familyRuntime.dispose).toHaveBeenCalledTimes(1);
+    expect(registry.listMetadata().map((artifact) => artifact.artifactId)).not.toContain(
+      "assembly-hall-fixture:cancelled-building:cancelled-atlas-hash"
+    );
+  });
 });
 
 describe("building control invalidation state", () => {
