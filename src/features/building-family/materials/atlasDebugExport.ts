@@ -33,6 +33,21 @@ export interface AtlasDebugSlotOverlay {
   contentHash: string;
 }
 
+export type AtlasProviderCacheStatus = "generated" | "cache-hit" | "cache-miss";
+
+export interface AtlasDebugProviderDiagnostic {
+  schemaVersion: "0.1.0";
+  providerId: string;
+  cacheStatus: AtlasProviderCacheStatus;
+  sourceCount: number;
+  slotCount: number;
+  requestHashes: string[];
+  contentHashes: string[];
+  warningCount: number;
+  errorCount: number;
+  diagnostics: PackedAtlas["diagnostics"];
+}
+
 export interface AtlasDebugExport {
   schemaVersion: "0.1.0";
   atlasId: string;
@@ -40,6 +55,7 @@ export interface AtlasDebugExport {
   exportHash: string;
   channels: AtlasDebugChannelExport[];
   slotOverlays: AtlasDebugSlotOverlay[];
+  providerDiagnostics: AtlasDebugProviderDiagnostic[];
   diagnostics: PackedAtlas["diagnostics"];
 }
 
@@ -175,6 +191,73 @@ function overlayFor(packedAtlas: PackedAtlas): AtlasDebugSlotOverlay[] {
   });
 }
 
+interface ProviderDiagnosticBucket {
+  providerId: string;
+  slotIds: Set<string>;
+  sourceIds: Set<string>;
+  requestHashes: Set<string>;
+  contentHashes: Set<string>;
+}
+
+function sortedValues(values: Set<string>): string[] {
+  return Array.from(values).sort((left, right) => left.localeCompare(right));
+}
+
+function diagnosticsForProvider(
+  diagnostics: PackedAtlas["diagnostics"],
+  bucket: ProviderDiagnosticBucket
+): PackedAtlas["diagnostics"] {
+  const slotIds = sortedValues(bucket.slotIds);
+  const sourceIds = sortedValues(bucket.sourceIds);
+  return diagnostics.filter((diagnostic) => {
+    const diagnosticText = `${diagnostic.code} ${diagnostic.message} ${diagnostic.path ?? ""} ${
+      diagnostic.received === undefined ? "" : String(diagnostic.received)
+    }`;
+    return (
+      diagnosticText.includes(bucket.providerId) ||
+      slotIds.some((slotId) => diagnosticText.includes(slotId)) ||
+      sourceIds.some((sourceId) => diagnosticText.includes(sourceId))
+    );
+  });
+}
+
+function providerDiagnosticsFor(packedAtlas: PackedAtlas): AtlasDebugProviderDiagnostic[] {
+  const buckets = new Map<string, ProviderDiagnosticBucket>();
+
+  for (const provenance of packedAtlas.slotProvenance) {
+    const bucket = buckets.get(provenance.providerId) ?? {
+      providerId: provenance.providerId,
+      slotIds: new Set<string>(),
+      sourceIds: new Set<string>(),
+      requestHashes: new Set<string>(),
+      contentHashes: new Set<string>()
+    };
+    bucket.slotIds.add(provenance.slotId);
+    bucket.sourceIds.add(provenance.sourceId);
+    bucket.requestHashes.add(provenance.requestHash);
+    bucket.contentHashes.add(provenance.contentHash);
+    buckets.set(provenance.providerId, bucket);
+  }
+
+  return Array.from(buckets.values())
+    .sort((left, right) => left.providerId.localeCompare(right.providerId))
+    .map((bucket): AtlasDebugProviderDiagnostic => {
+      const diagnostics = diagnosticsForProvider(packedAtlas.diagnostics, bucket);
+      return {
+        schemaVersion: "0.1.0",
+        providerId: bucket.providerId,
+        cacheStatus: "generated",
+        sourceCount: bucket.sourceIds.size,
+        slotCount: bucket.slotIds.size,
+        requestHashes: sortedValues(bucket.requestHashes),
+        contentHashes: sortedValues(bucket.contentHashes),
+        warningCount: diagnostics.filter((diagnostic) => diagnostic.severity === "warning").length,
+        errorCount: diagnostics.filter((diagnostic) => diagnostic.severity === "error").length,
+        diagnostics
+      };
+    });
+}
+
 export async function createAtlasDebugExport(packedAtlas: PackedAtlas): Promise<AtlasDebugExport> {
   const channels = await Promise.all(
     channelOrder.map(async (name): Promise<AtlasDebugChannelExport> => {
@@ -191,6 +274,7 @@ export async function createAtlasDebugExport(packedAtlas: PackedAtlas): Promise<
     })
   );
   const slotOverlays = overlayFor(packedAtlas);
+  const providerDiagnostics = providerDiagnosticsFor(packedAtlas);
   const exportHash = await sha256Hex(
     canonicalJson({
       schemaVersion: "0.1.0",
@@ -198,6 +282,7 @@ export async function createAtlasDebugExport(packedAtlas: PackedAtlas): Promise<
       sourceContentHash: packedAtlas.contentHash,
       channelHashes: channels.map((channel) => [channel.name, channel.channelHash]),
       slotOverlays,
+      providerDiagnostics,
       diagnostics: packedAtlas.diagnostics
     })
   );
@@ -209,6 +294,7 @@ export async function createAtlasDebugExport(packedAtlas: PackedAtlas): Promise<
     exportHash,
     channels,
     slotOverlays,
+    providerDiagnostics,
     diagnostics: packedAtlas.diagnostics
   };
 }

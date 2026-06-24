@@ -886,16 +886,25 @@ h1 {
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
+.atlas-lab__providers,
 .atlas-lab__slots {
   display: block;
   width: 100%;
-  max-height: 360px;
   margin-top: 18px;
   overflow: auto;
   border-collapse: collapse;
   font-size: 0.84rem;
 }
 
+.atlas-lab__providers {
+  max-height: 240px;
+}
+
+.atlas-lab__slots {
+  max-height: 360px;
+}
+
+.atlas-lab__providers caption,
 .atlas-lab__slots caption {
   padding: 0 0 10px;
   color: #33413b;
@@ -903,6 +912,8 @@ h1 {
   text-align: left;
 }
 
+.atlas-lab__providers th,
+.atlas-lab__providers td,
 .atlas-lab__slots th,
 .atlas-lab__slots td {
   padding: 10px 12px;
@@ -912,6 +923,7 @@ h1 {
   white-space: nowrap;
 }
 
+.atlas-lab__providers th,
 .atlas-lab__slots th {
   position: sticky;
   top: 0;
@@ -923,10 +935,23 @@ h1 {
   text-transform: uppercase;
 }
 
+.atlas-lab__providers td:first-child,
+.atlas-lab__providers td:nth-child(4) small,
+.atlas-lab__providers td:nth-child(6) small,
 .atlas-lab__slots td:last-child {
   min-width: 22ch;
   white-space: normal;
   overflow-wrap: anywhere;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.atlas-lab__providers td small {
+  display: block;
+  max-width: 34ch;
+  margin-top: 4px;
+  color: #66736b;
+  overflow-wrap: anywhere;
+  font-size: 0.72rem;
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 

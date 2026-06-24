@@ -57,6 +57,8 @@ describe("App", () => {
     expect(screen.queryByRole("heading", { name: "Prompt Lab" })).not.toBeInTheDocument();
     expect(await screen.findByRole("heading", { name: "Atlas Lab" })).toBeInTheDocument();
     expect(screen.getByRole("img", { name: "baseColor channel" })).toBeInTheDocument();
+    expect(screen.getByRole("table", { name: "Provider Diagnostics" })).toHaveTextContent("procedural");
+    expect(screen.getByRole("table", { name: "Provider Diagnostics" })).toHaveTextContent("cache hit");
     expect(within(screen.getByRole("table", { name: "Semantic Slots" })).getByText("wall.primary")).toBeInTheDocument();
     expect(screen.getByLabelText("Atlas fixture provenance")).toHaveTextContent("30 entries");
 

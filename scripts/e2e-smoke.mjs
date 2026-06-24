@@ -204,6 +204,10 @@ try {
     .waitFor({ state: "visible" });
   await page.getByRole("tab", { name: "Atlas Lab" }).click();
   await page.getByRole("heading", { name: "Atlas Lab" }).waitFor({ state: "visible" });
+  const providerDiagnostics = page.getByRole("table", { name: "Provider Diagnostics" });
+  await providerDiagnostics.getByRole("cell", { name: "procedural", exact: true }).waitFor({ state: "visible" });
+  await providerDiagnostics.getByRole("cell", { name: "cache miss", exact: true }).waitFor({ state: "visible" });
+  await providerDiagnostics.getByRole("cell", { name: "0 errors / 0 warnings", exact: true }).waitFor({ state: "visible" });
   await page.getByRole("img", { name: "baseColor channel" }).waitFor({ state: "visible" });
   await page
     .getByRole("table", { name: "Semantic Slots" })

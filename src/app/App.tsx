@@ -133,6 +133,9 @@ export function App() {
   const fixture = activeFixtureArtifactId
     ? registry.get<AssemblyHallFixture>(activeFixtureArtifactId) ?? null
     : null;
+  const materialSourceCacheHit = currentRun?.events.find(
+    (event) => event.stage === "generatingMaterialSources"
+  )?.cacheHit;
 
   useEffect(() => {
     void controller.startDemoRun().catch(() => undefined);
@@ -484,7 +487,11 @@ export function App() {
               ) : null}
             </div>
             {fixture ? (
-              <AtlasLab packedAtlas={fixture.packedAtlas} debugExport={fixture.debugExport} />
+              <AtlasLab
+                packedAtlas={fixture.packedAtlas}
+                debugExport={fixture.debugExport}
+                materialSourceCacheHit={materialSourceCacheHit}
+              />
             ) : (
               <div className="atlas-fixture__loading" role={runState.error ? "alert" : "status"}>
                 {runState.error ?? "Preparing atlas channels"}

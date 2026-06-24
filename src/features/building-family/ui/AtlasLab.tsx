@@ -4,9 +4,31 @@ import type { AtlasDebugExport } from "../materials/atlasDebugExport";
 export interface AtlasLabProps {
   packedAtlas: PackedAtlas;
   debugExport: AtlasDebugExport;
+  materialSourceCacheHit?: boolean;
 }
 
-export function AtlasLab({ packedAtlas, debugExport }: AtlasLabProps) {
+function cacheStatusLabel(cacheStatus: AtlasDebugExport["providerDiagnostics"][number]["cacheStatus"]): string {
+  return cacheStatus.replace("-", " ");
+}
+
+function providerCacheLabel(
+  cacheStatus: AtlasDebugExport["providerDiagnostics"][number]["cacheStatus"],
+  materialSourceCacheHit: boolean | undefined
+): string {
+  if (materialSourceCacheHit === true) {
+    return "cache hit";
+  }
+  if (materialSourceCacheHit === false) {
+    return "cache miss";
+  }
+  return cacheStatusLabel(cacheStatus);
+}
+
+function firstHash(hashes: string[]): string {
+  return hashes[0] ?? "none";
+}
+
+export function AtlasLab({ packedAtlas, debugExport, materialSourceCacheHit }: AtlasLabProps) {
   return (
     <section className="atlas-lab" aria-labelledby="atlas-lab-heading">
       <header className="atlas-lab__header">
@@ -43,6 +65,43 @@ export function AtlasLab({ packedAtlas, debugExport }: AtlasLabProps) {
           </figure>
         ))}
       </div>
+
+      <table className="atlas-lab__providers">
+        <caption>Provider Diagnostics</caption>
+        <thead>
+          <tr>
+            <th scope="col">Provider</th>
+            <th scope="col">Cache</th>
+            <th scope="col">Coverage</th>
+            <th scope="col">Requests</th>
+            <th scope="col">Diagnostics</th>
+            <th scope="col">Content</th>
+          </tr>
+        </thead>
+        <tbody>
+          {debugExport.providerDiagnostics.map((provider) => (
+            <tr key={provider.providerId}>
+              <td>{provider.providerId}</td>
+              <td>{providerCacheLabel(provider.cacheStatus, materialSourceCacheHit)}</td>
+              <td>
+                <span>{provider.sourceCount} sources</span>
+                <small>{provider.slotCount} slots</small>
+              </td>
+              <td>
+                <span>{provider.requestHashes.length} requests</span>
+                <small>{firstHash(provider.requestHashes)}</small>
+              </td>
+              <td>
+                {provider.errorCount} errors / {provider.warningCount} warnings
+              </td>
+              <td>
+                <span>{provider.contentHashes.length} hashes</span>
+                <small>{firstHash(provider.contentHashes)}</small>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
       <table className="atlas-lab__slots">
         <caption>Semantic Slots</caption>

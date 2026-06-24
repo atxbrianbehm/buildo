@@ -62,6 +62,7 @@ describe("atlas debug export", () => {
     const packed = await packedFixture();
     const first = await createAtlasDebugExport(packed);
     const second = await createAtlasDebugExport(packed);
+    const uniqueSources = new Set(packed.slotProvenance.map((entry) => entry.sourceId));
 
     expect(first.schemaVersion).toBe("0.1.0");
     expect(first.atlasId).toBe(packed.atlasId);
@@ -74,6 +75,19 @@ describe("atlas debug export", () => {
     const signature = Array.from(dataUrlBytes(first.channels[0].pngDataUrl).slice(0, 8));
     expect(signature).toEqual([137, 80, 78, 71, 13, 10, 26, 10]);
     expect(new Set(first.channels.map((channel) => channel.channelHash)).size).toBe(5);
+    expect(first.providerDiagnostics).toEqual([
+      expect.objectContaining({
+        schemaVersion: "0.1.0",
+        providerId: "fixture",
+        cacheStatus: "generated",
+        sourceCount: uniqueSources.size,
+        slotCount: packed.slotProvenance.length,
+        warningCount: 0,
+        errorCount: 0
+      })
+    ]);
+    expect(first.providerDiagnostics[0].requestHashes).toContain(packed.slotProvenance[0].requestHash);
+    expect(first.providerDiagnostics[0].contentHashes).toContain(packed.slotProvenance[0].contentHash);
   });
 
   it("includes semantic slot overlays tied to packed slot provenance", async () => {
@@ -96,7 +110,7 @@ describe("atlas debug export", () => {
     const packed = await packedFixture();
     const debugExport = await createAtlasDebugExport(packed);
 
-    render(<AtlasLab packedAtlas={packed} debugExport={debugExport} />);
+    render(<AtlasLab packedAtlas={packed} debugExport={debugExport} materialSourceCacheHit={false} />);
 
     expect(screen.getByRole("heading", { name: "Atlas Lab" })).toBeInTheDocument();
     expect(screen.getByText(packed.atlasId)).toBeInTheDocument();
@@ -106,6 +120,13 @@ describe("atlas debug export", () => {
       debugExport.channels[0].pngDataUrl
     );
     expect(screen.getByText(packed.manifest.slots[0].id)).toBeInTheDocument();
-    expect(screen.getByText(packed.slotProvenance[0].contentHash)).toBeInTheDocument();
+    expect(screen.getByRole("table", { name: "Semantic Slots" })).toHaveTextContent(
+      packed.slotProvenance[0].contentHash
+    );
+    const providerTable = screen.getByRole("table", { name: "Provider Diagnostics" });
+    expect(providerTable).toHaveTextContent("fixture");
+    expect(providerTable).toHaveTextContent("cache miss");
+    expect(providerTable).toHaveTextContent("12 slots");
+    expect(providerTable).toHaveTextContent("0 errors / 0 warnings");
   });
 });
