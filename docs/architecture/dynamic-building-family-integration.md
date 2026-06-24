@@ -1,6 +1,6 @@
 # Dynamic Building Family Integration Map
 
-**Status:** Milestone 6I browser PNG layer decoder foundation
+**Status:** Milestone 6J remote material route client foundation
 **Plan source:** `docs/plans/dynamic-building-family.md`
 **Workspace:** `C:\Users\behmb\Documents\Cascade Projects\buildo`
 **Date:** 2026-06-24
@@ -53,7 +53,7 @@ docs/
     dynamic-building-family.md
 ```
 
-The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, the Milestone 3B pure compiler IR foundation, the Milestone 3C compiler worker boundary, the Milestone 3D component gallery data foundation, the Milestone 4A renderer adapter foundation, the Milestone 4B atlas texture/material sampling foundation, the Milestone 4C shared family runtime foundation, the Milestone 4D Assembly Hall rendered fixture foundation, the Milestone 4E renderer resource disposal foundation, the Milestone 4F Assembly Hall semantic selection foundation, the Milestone 4G WebGPU renderer activation foundation, the Milestone 5A run controller / Zustand state foundation, the Milestone 5B control invalidation foundation, the Milestone 5C committed rerun control/artifact-lineage foundation, the Milestone 5D cancellation UI/stale-run preservation foundation, the Milestone 5E Component Forge UI foundation, the Milestone 5F stage-driven Assembly Hall reveal foundation, the Milestone 5G artifact trace/provenance foundation, the Milestone 5H expanded prompt controls foundation, the Milestone 5I local component lock foundation, the Milestone 5J four-room navigation foundation, the Milestone 5K Prompt Lab trace foundation, the Milestone 5L 16-variant stress view foundation, the Milestone 5M hash-addressable room routing foundation, the Milestone 5N Atlas Lab provider diagnostics foundation, the Milestone 6A server material-provider route contract foundation, the Milestone 6B OpenAI image provider adapter foundation, the Milestone 6C server remote-material request cache foundation, the Milestone 6D remote material timeout fallback foundation, the Milestone 6E remote material concurrency limit foundation, the Milestone 6F remote material retry policy foundation, the Milestone 6G remote overlay compositing foundation, the Milestone 6H remote material image bridge foundation, and the Milestone 6I browser PNG layer decoder foundation. No route-level document ids, Atlas Lab revised-prompt trace, app invocation, durable remote cache persistence, per-provider cancellation diagnostics, complete provider-aware four-room flow, or Milestone 7 interactive 16-building orbit benchmark has been implemented.
+The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, the Milestone 3B pure compiler IR foundation, the Milestone 3C compiler worker boundary, the Milestone 3D component gallery data foundation, the Milestone 4A renderer adapter foundation, the Milestone 4B atlas texture/material sampling foundation, the Milestone 4C shared family runtime foundation, the Milestone 4D Assembly Hall rendered fixture foundation, the Milestone 4E renderer resource disposal foundation, the Milestone 4F Assembly Hall semantic selection foundation, the Milestone 4G WebGPU renderer activation foundation, the Milestone 5A run controller / Zustand state foundation, the Milestone 5B control invalidation foundation, the Milestone 5C committed rerun control/artifact-lineage foundation, the Milestone 5D cancellation UI/stale-run preservation foundation, the Milestone 5E Component Forge UI foundation, the Milestone 5F stage-driven Assembly Hall reveal foundation, the Milestone 5G artifact trace/provenance foundation, the Milestone 5H expanded prompt controls foundation, the Milestone 5I local component lock foundation, the Milestone 5J four-room navigation foundation, the Milestone 5K Prompt Lab trace foundation, the Milestone 5L 16-variant stress view foundation, the Milestone 5M hash-addressable room routing foundation, the Milestone 5N Atlas Lab provider diagnostics foundation, the Milestone 6A server material-provider route contract foundation, the Milestone 6B OpenAI image provider adapter foundation, the Milestone 6C server remote-material request cache foundation, the Milestone 6D remote material timeout fallback foundation, the Milestone 6E remote material concurrency limit foundation, the Milestone 6F remote material retry policy foundation, the Milestone 6G remote overlay compositing foundation, the Milestone 6H remote material image bridge foundation, the Milestone 6I browser PNG layer decoder foundation, and the Milestone 6J remote material route client foundation. No route-level document ids, Atlas Lab revised-prompt trace, run-controller remote-material invocation, durable remote cache persistence, per-provider cancellation diagnostics, complete provider-aware four-room flow, or Milestone 7 interactive 16-building orbit benchmark has been implemented.
 
 ## 2. Active Instructions
 
@@ -850,7 +850,7 @@ docs/architecture/dynamic-building-family-integration.md
 
 Focused tests cover deterministic provider diagnostics in the debug export, the Atlas Lab provider table, and the app-shell Atlas room surfacing the procedural provider cache state. The e2e smoke now checks the procedural provider diagnostics row before continuing through channel, component, and assembly assertions.
 
-At the Milestone 5N boundary this was a local/procedural diagnostics foundation only. The later Milestone 6A/6B/6C/6D/6E/6F/6G/6H/6I slices added the server route contract, OpenAI image adapter foundation, in-memory remote artifact request cache foundation, timeout fallback foundation, remote provider concurrency limit foundation, retry policy foundation, pure decoded-overlay compositing foundation, remote image artifact bridge, and browser PNG layer decoder, while Atlas Lab revised-prompt surfacing, provider-level cancellation progress, durable remote cache persistence, and app invocation remain Milestone 6 work.
+At the Milestone 5N boundary this was a local/procedural diagnostics foundation only. The later Milestone 6A/6B/6C/6D/6E/6F/6G/6H/6I/6J slices added the server route contract, OpenAI image adapter foundation, in-memory remote artifact request cache foundation, timeout fallback foundation, remote provider concurrency limit foundation, retry policy foundation, pure decoded-overlay compositing foundation, remote image artifact bridge, browser PNG layer decoder, and schema-validated route client, while Atlas Lab revised-prompt surfacing, provider-level cancellation progress, durable remote cache persistence, and run-controller invocation remain Milestone 6 work.
 
 ## 6.28 Server Material-Provider Route Contract Foundation
 
@@ -881,7 +881,7 @@ non-POST requests are rejected
 
 Approved remote material sources currently cover masonry, roof, wood/metal trim, door/frame, cornice, and ornament detail overlays. `source.glass.primary` and `source.utility.mask` are intentionally not approved for remote detail generation in this route foundation.
 
-When the remote provider is not configured, the route returns a procedural fallback diagnostic with `providerId: "procedural"` and `cacheStatus: "not-checked"`. Milestone 6B replaced the earlier `remoteMaterialProvider.openaiNotImplemented` placeholder with a server-only OpenAI image provider adapter. Milestone 6C adds the first in-memory request cache for successful remote artifacts. Milestone 6D adds timeout fallback for cache misses. Milestone 6E adds a bounded concurrency scheduler for uncached remote requests. Milestone 6F retries transient uncached provider failures before fallback. Milestone 6G adds pure overlay compositing, Milestone 6H adds the client-safe remote image artifact bridge, and Milestone 6I adds the browser PNG layer decoder. Durable cache persistence, app invocation, and Atlas Lab revised-prompt surfacing remain later Milestone 6 slices.
+When the remote provider is not configured, the route returns a procedural fallback diagnostic with `providerId: "procedural"` and `cacheStatus: "not-checked"`. Milestone 6B replaced the earlier `remoteMaterialProvider.openaiNotImplemented` placeholder with a server-only OpenAI image provider adapter. Milestone 6C adds the first in-memory request cache for successful remote artifacts. Milestone 6D adds timeout fallback for cache misses. Milestone 6E adds a bounded concurrency scheduler for uncached remote requests. Milestone 6F retries transient uncached provider failures before fallback. Milestone 6G adds pure overlay compositing, Milestone 6H adds the client-safe remote image artifact bridge, Milestone 6I adds the browser PNG layer decoder, and Milestone 6J adds the schema-validated route client. Durable cache persistence, run-controller invocation, and Atlas Lab revised-prompt surfacing remain later Milestone 6 slices.
 
 Focused Node-environment Vitest coverage verifies procedural fallback diagnostics, unsupported source rejection, too-many-request rejection, oversized-dimension rejection, output-format rejection, non-POST rejection, and that configured server secrets are not echoed in route responses. `vitest.config.ts`, `tsconfig.node.json`, and `eslint.config.js` now include `server/**/*.ts` so this lane is part of normal validation.
 
@@ -903,7 +903,7 @@ The provider keeps `OPENAI_API_KEY` confined to the transport request header. Ar
 
 `server/building-family/materialProviderRoute.ts` now uses the OpenAI provider when `BUILDING_MATERIAL_PROVIDER=openai`, `OPENAI_API_KEY`, and `OPENAI_IMAGE_MODEL` are present. Successful provider execution returns `status: "generated"`, `providerId: "openai-image"`, route-level request hash, accepted request count, `cacheStatus: "not-checked"`, generated artifacts, and an empty diagnostics array. Provider or transport failure falls back to `providerId: "procedural"` with a sanitized `remoteMaterialProvider.openaiFailed` warning; thrown transport messages are not echoed.
 
-This slice is still adapter foundation, not complete remote-material integration. The later 6C/6D/6E/6F/6G/6H/6I slices add in-memory cache lookup/store, timeout fallback, bounded cache-miss concurrency, transient-failure retry, pure decoded-overlay compositing, a client-safe remote image artifact bridge, and a browser PNG layer decoder, but there is still no live HTTP host/proxy, durable cache persistence, app/UI invocation, or Atlas Lab revised-prompt diagnostics.
+This slice is still adapter foundation, not complete remote-material integration. The later 6C/6D/6E/6F/6G/6H/6I/6J slices add in-memory cache lookup/store, timeout fallback, bounded cache-miss concurrency, transient-failure retry, pure decoded-overlay compositing, a client-safe remote image artifact bridge, a browser PNG layer decoder, and a schema-validated route client, but there is still no live HTTP host/proxy, durable cache persistence, run-controller/UI invocation, or Atlas Lab revised-prompt diagnostics.
 
 ## 6.30 Server Remote-Material Request Cache Foundation
 
@@ -924,7 +924,7 @@ docs/architecture/dynamic-building-family-integration.md
 
 `server/building-family/materialProviderRoute.ts` now checks the remote material cache before transport execution when the OpenAI provider is configured. Cache hits return the cached artifact without calling the OpenAI transport. Cache misses call the provider, store only the successful artifact, and return generated artifacts with route-level `cacheStatus` of `hit`, `miss`, or `partial`.
 
-Focused tests verify that `requestHashFor` matches generated artifact hashes and that repeated route requests reuse the cached artifact without making a second OpenAI transport call. This is still a process-memory cache foundation only; the later 6D/6E/6F/6G/6H/6I slices add timeout fallback, bounded cache-miss concurrency, transient-failure retry, pure overlay compositing, the image artifact bridge, and browser PNG layer decoding, but durable storage, TTL/eviction, in-flight request coalescing, app invocation, and Atlas Lab cache-status UI remain open.
+Focused tests verify that `requestHashFor` matches generated artifact hashes and that repeated route requests reuse the cached artifact without making a second OpenAI transport call. This is still a process-memory cache foundation only; the later 6D/6E/6F/6G/6H/6I/6J slices add timeout fallback, bounded cache-miss concurrency, transient-failure retry, pure overlay compositing, the image artifact bridge, browser PNG layer decoding, and the route client, but durable storage, TTL/eviction, in-flight request coalescing, run-controller invocation, and Atlas Lab cache-status UI remain open.
 
 ## 6.31 Remote Material Timeout Fallback Foundation
 
@@ -940,7 +940,7 @@ docs/architecture/dynamic-building-family-integration.md
 
 Timed-out provider work is not cached. Even if a transport ignores the abort signal and resolves later, the route has already fallen back and does not write the late artifact into the remote material cache. Cache hits still bypass transport and do not run timeout logic.
 
-Focused tests cover the timeout fallback diagnostic, upstream abort signal, secret non-echoing, and the no-cache-after-timeout invariant. The later 6E/6F/6G/6H/6I slices add bounded cache-miss concurrency, transient-failure retry, pure decoded-overlay compositing, the remote image artifact bridge, and browser PNG layer decoding; durable cache persistence, cancellation progress events, app invocation, and Atlas Lab error surfacing remain open.
+Focused tests cover the timeout fallback diagnostic, upstream abort signal, secret non-echoing, and the no-cache-after-timeout invariant. The later 6E/6F/6G/6H/6I/6J slices add bounded cache-miss concurrency, transient-failure retry, pure decoded-overlay compositing, the remote image artifact bridge, browser PNG layer decoding, and the route client; durable cache persistence, cancellation progress events, run-controller invocation, and Atlas Lab error surfacing remain open.
 
 ## 6.32 Remote Material Concurrency Limit Foundation
 
@@ -956,7 +956,7 @@ docs/architecture/dynamic-building-family-integration.md
 
 The scheduler preserves response artifact order by writing each completed remote artifact back to its original request index. Successful cache misses are still stored by request hash, timeout wrapping still applies per uncached request, and generated responses continue to report `cacheStatus` as `hit`, `miss`, or `partial`.
 
-Focused tests verify that three uncached approved source requests run with two active OpenAI transports at a time and still return artifacts in request order. The later 6F/6G/6H/6I slices add transient-failure retry, pure remote overlay compositing, the remote image artifact bridge, and browser PNG layer decoding; durable cache persistence, in-flight request coalescing, app invocation, and Atlas Lab provider-progress surfacing remain open.
+Focused tests verify that three uncached approved source requests run with two active OpenAI transports at a time and still return artifacts in request order. The later 6F/6G/6H/6I/6J slices add transient-failure retry, pure remote overlay compositing, the remote image artifact bridge, browser PNG layer decoding, and the route client; durable cache persistence, in-flight request coalescing, run-controller invocation, and Atlas Lab provider-progress surfacing remain open.
 
 ## 6.33 Remote Material Retry Policy Foundation
 
@@ -972,7 +972,7 @@ docs/architecture/dynamic-building-family-integration.md
 
 Successful retry attempts return normal generated artifacts, are stored in the remote material cache by request hash, and keep provider secrets out of route responses. Permanent failures still return procedural fallback without caching a failed artifact.
 
-Focused tests verify that a first transport failure containing a test secret is retried once, succeeds on the second call, returns generated `openai-image` output, and does not echo the API key. This slice does not add exponential backoff, retry-after parsing, durable cache persistence, in-flight request coalescing, app invocation, Atlas Lab provider-progress surfacing, or remote overlay compositing. Milestone 6G adds the first pure compositing utility after this route-layer retry foundation.
+Focused tests verify that a first transport failure containing a test secret is retried once, succeeds on the second call, returns generated `openai-image` output, and does not echo the API key. This slice does not add exponential backoff, retry-after parsing, durable cache persistence, in-flight request coalescing, run-controller invocation, Atlas Lab provider-progress surfacing, or remote overlay compositing. Milestone 6G adds the first pure compositing utility after this route-layer retry foundation.
 
 ## 6.34 Remote Overlay Compositing Foundation
 
@@ -1021,6 +1021,23 @@ docs/architecture/dynamic-building-family-integration.md
 The decoder is intentionally under `ui/` because it uses browser image and canvas APIs. It exposes an injectable `BrowserPngDecodeRuntime` so tests can verify the decode flow without depending on jsdom canvas support, and it closes image bitmaps after reading. Missing browser primitives, missing canvas context, invalid dimensions, and non-RGBA canvas output throw `BrowserPngLayerDecodeError`, which the existing image bridge reports as a decode warning.
 
 Focused tests cover base64/blob/image-bitmap/canvas invocation order, target-size drawing, RGBA8 copy semantics, bitmap cleanup, missing browser primitive errors, and non-RGBA output errors. This slice does not call the server route from the app, surface remote revised prompts in Atlas Lab, add a Vite/HTTP host, persist the remote cache, or wire remote material generation into the run controller.
+
+## 6.37 Remote Material Route Client Foundation
+
+Actual Milestone 6J route client paths:
+
+```text
+src/features/building-family/state/remoteMaterialRouteClient.ts
+src/features/building-family/tests/remoteMaterialRouteClient.test.ts
+src/features/building-family/materials/remoteMaterialImageBridge.ts
+docs/architecture/dynamic-building-family-integration.md
+```
+
+`src/features/building-family/state/remoteMaterialRouteClient.ts` introduces the client-side boundary for invoking the server material-provider route without importing server modules into `src`. The client posts a schema-versioned `0.1.0` request batch to `/api/building-material-provider`, uses `outputFormat: "rgba8-layer-set"`, accepts an injectable `fetcher` for tests and later hosting, and runtime-validates the response union with Zod.
+
+Generated responses preserve `openai-image` artifacts using the same exported `RemoteMaterialImageArtifactSchema` consumed by the 6H image bridge. Fallback responses preserve the route's procedural provider diagnostics, and rejected responses preserve validation diagnostics for invalid request batches. Transport failures and malformed responses return sanitized procedural fallback diagnostics without echoing arbitrary thrown errors or response details.
+
+Focused tests cover the posted payload contract, generated artifact preservation, fallback diagnostics, rejected diagnostics, fetch failure sanitization, and invalid response sanitization. This slice does not wire the route client into `BuildingRunController`, decode or composite returned images in an app run, surface revised prompts in Atlas Lab, add a Vite/HTTP host, persist the remote cache, or add provider-level cancellation progress.
 
 ## 7. App Shell, Renderer, State, Workers, And Routing
 
@@ -1099,9 +1116,10 @@ server/building-family/remoteMaterialArtifactCache.ts
 src/features/building-family/materials/remoteMaterialOverlay.ts
 src/features/building-family/materials/remoteMaterialImageBridge.ts
 src/features/building-family/ui/browserPngLayerDecoder.ts
+src/features/building-family/state/remoteMaterialRouteClient.ts
 ```
 
-The project has chosen a small Node/server lane under `server/` for Milestone 6 provider-secret work. No HTTP listener or Vite proxy is wired yet; the route is currently a tested Fetch-compatible handler that can be hosted by a later server entrypoint. When fully configured, the handler can invoke the server-only OpenAI image adapter through a default or injected transport and reuse successful generated artifacts through a process-local in-memory cache, but the current app shell still does not call it. The client-side lane now has a pure compositor for decoded remote overlays, a schema-validated bridge from remote image artifacts to overlays, and a browser PNG-to-RGBA decoder adapter. Route invocation and run-controller integration still belong to later Milestone 6 work. A pure Vite client must still not own provider API keys.
+The project has chosen a small Node/server lane under `server/` for Milestone 6 provider-secret work. No HTTP listener or Vite proxy is wired yet; the route is currently a tested Fetch-compatible handler that can be hosted by a later server entrypoint. When fully configured, the handler can invoke the server-only OpenAI image adapter through a default or injected transport and reuse successful generated artifacts through a process-local in-memory cache. The client-side lane now has a pure compositor for decoded remote overlays, a schema-validated bridge from remote image artifacts to overlays, a browser PNG-to-RGBA decoder adapter, and a schema-validated route client that can post material request batches once a host exists. Run-controller integration still belongs to later Milestone 6 work. A pure Vite client must still not own provider API keys.
 
 ## 8. Logical Module Path Mapping
 
@@ -1191,7 +1209,7 @@ Justification:
 | Existing package manager | None existed. | npm selected and locked. |
 | Existing PSG v2 implementation | None existed. | Minimal backward-compatible PSG v2 schema/evaluator implemented in Milestone 1. |
 | Existing schema library | None existed. | Zod selected and installed. |
-| Existing server route convention | Small Node/server route lane now exists under `server/building-family/materialProviderRoute.ts` with `server/building-family/openAIImageMaterialProvider.ts` as the server-only OpenAI adapter, `server/building-family/remoteMaterialArtifactCache.ts` as the process-local cache foundation, `src/features/building-family/materials/remoteMaterialOverlay.ts` as the pure decoded-overlay compositor, `src/features/building-family/materials/remoteMaterialImageBridge.ts` as the client-safe image artifact bridge, and `src/features/building-family/ui/browserPngLayerDecoder.ts` as the browser PNG-to-RGBA adapter. | Keep provider secrets in `server/`; add an HTTP host/proxy, app invocation, and durable cache policy in later Milestone 6 slices. |
+| Existing server route convention | Small Node/server route lane now exists under `server/building-family/materialProviderRoute.ts` with `server/building-family/openAIImageMaterialProvider.ts` as the server-only OpenAI adapter, `server/building-family/remoteMaterialArtifactCache.ts` as the process-local cache foundation, `src/features/building-family/materials/remoteMaterialOverlay.ts` as the pure decoded-overlay compositor, `src/features/building-family/materials/remoteMaterialImageBridge.ts` as the client-safe image artifact bridge, `src/features/building-family/ui/browserPngLayerDecoder.ts` as the browser PNG-to-RGBA adapter, and `src/features/building-family/state/remoteMaterialRouteClient.ts` as the schema-validated app-side route client. | Keep provider secrets in `server/`; add an HTTP host/proxy, run-controller invocation, Atlas Lab revised-prompt surfacing, and durable cache policy in later Milestone 6 slices. |
 | Three.js WebGPU support | `three@0.184.0` main entry lacks `WebGPURenderer`; `three/webgpu` exposes it. | Renderer capability detection uses `three/webgpu` for WebGPU and keeps WebGL fallback via the main `three` entrypoint. |
 | Git branch requirement | Workspace was not a Git repository. | Git initialized and initial branch set to `main`; no commit created yet. |
 | Playwright runner lifecycle | `playwright test` with a managed web server passed but did not exit before tool timeout. | Official `npm run test:e2e` uses an explicit Vite + Chromium smoke script that closes resources. |
@@ -1439,12 +1457,13 @@ Latest validation results:
 
 ```text
 typecheck: passed
-unit tests: passed, 120 tests across 34 files
+unit tests: passed, 134 tests across 38 files
 lint: passed
 build: passed
 e2e smoke: passed, including four-room tab navigation, expanded prompt-control edits and committed Run Current rerun, Artifact Trace registered-artifact and run-lineage assertions in Prompt Lab, Prompt Trace PSG/interpreter diagnostics, Atlas Lab provider/channel/slot assertions, Component Forge selector/atlas-slot assertion, local component lock plus Prompt Lab invalidation and new-building lock persistence, Assembly Hall stage reveal selection, active renderer backend assertion, Assembly Hall semantic selection, and backend-specific canvas pixel probe
 provider-secret client scan: passed, no `OPENAI_API_KEY`, `BUILDING_MATERIAL_PROVIDER`, `OPENAI_IMAGE_MODEL`, server route/provider/cache import, or test secret strings found in `src` or `dist`
 OpenAI image provider/route/cache/timeout/concurrency/retry focused tests: passed, 16 tests across 2 server files with mocked transports and no real OpenAI calls
+Remote route client/bridge/decoder focused tests: passed, 11 tests across 3 files
 Building state/controller focused tests: passed
 Assembly Hall fixture focused tests: passed
 App committed-rerun/cancel focused test: passed
@@ -2021,6 +2040,15 @@ src/features/building-family/tests/browserPngLayerDecoder.test.ts
 docs/architecture/dynamic-building-family-integration.md
 ```
 
+Milestone 6J introduced:
+
+```text
+src/features/building-family/state/remoteMaterialRouteClient.ts
+src/features/building-family/tests/remoteMaterialRouteClient.test.ts
+src/features/building-family/materials/remoteMaterialImageBridge.ts
+docs/architecture/dynamic-building-family-integration.md
+```
+
 Generated and ignored directories:
 
 ```text
@@ -2029,7 +2057,7 @@ dist/
 test-results/
 ```
 
-No preassembled meshes, route-level document ids, app invocation, per-provider cancellation diagnostics, complete provider-aware four-room flow, or Milestone 7 interactive 16-building orbit benchmark has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers through the pure TypeScript compiler path, can deliver them across the compiler worker boundary with transferable buffers, can summarize catalog/IR component data for a Component Forge inspection surface, can convert that IR into Three.js scene objects under `renderer-three/*`, can convert packed atlas channels into texture-backed slot materials at the renderer boundary, can host multiple per-building scene runtimes against one shared family atlas/material runtime, can centralize idempotent renderer resource disposal across standalone and shared-family ownership modes, renders one deterministic fixture building in a WebGPU-first browser Assembly Hall canvas with WebGL fallback from those generated artifacts, surfaces semantic renderer lookup entries in a selectable Assembly Hall inspector, drives the root app through a Zustand-backed run controller with serializable run events plus an out-of-store runtime artifact registry, exposes a store-backed four-room tablist for Prompt Lab, Atlas Lab, Component Forge, and Assembly Hall that can be addressed with `#room=<roomId>` deep links and browser-history navigation, previews roadmap invalidation impacts for prompt, floor, bay, roof, trim-density, seed, and local component lock controls, can commit `Run Current`, `New Building`, and `New Family` reruns with cache-hit artifact lineage for structural vs family-chain changes, exposes `Cancel Run` while preserving the last completed scene during pending and cancelled runs, shows Atlas Lab provider diagnostics derived from packed slot provenance and current material-source cache status, owns a tested server-only material-provider route contract, OpenAI image provider adapter, in-memory request cache, timeout fallback, concurrency limit, retry policy, decoded-overlay compositor, remote image artifact bridge, and browser PNG layer decoder for later remote-provider hosting, shows a dedicated Component Forge with real generated component entries, selector/toggles, dimensions, anchors, recipe JSON, selected atlas-slot highlighting, and selected-recipe lock/unlock controls, records locked component keys as semantic locks in the generated spec, drives Assembly Hall stage group visibility from a real stage reveal control backed by generated scene groups and semantic path counts, shows read-only Artifact Trace plus Prompt Trace panels with run lineage, registered artifact metadata, active fixture provenance, evaluated PSG variables, local interpreter overrides, requested controls, and PSG node trace entries in Prompt Lab, and exposes a 16-variant stress summary with shared atlas/catalog/graph lineage and per-variant compiler metrics.
+No preassembled meshes, route-level document ids, run-controller remote-material invocation, per-provider cancellation diagnostics, complete provider-aware four-room flow, or Milestone 7 interactive 16-building orbit benchmark has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers through the pure TypeScript compiler path, can deliver them across the compiler worker boundary with transferable buffers, can summarize catalog/IR component data for a Component Forge inspection surface, can convert that IR into Three.js scene objects under `renderer-three/*`, can convert packed atlas channels into texture-backed slot materials at the renderer boundary, can host multiple per-building scene runtimes against one shared family atlas/material runtime, can centralize idempotent renderer resource disposal across standalone and shared-family ownership modes, renders one deterministic fixture building in a WebGPU-first browser Assembly Hall canvas with WebGL fallback from those generated artifacts, surfaces semantic renderer lookup entries in a selectable Assembly Hall inspector, drives the root app through a Zustand-backed run controller with serializable run events plus an out-of-store runtime artifact registry, exposes a store-backed four-room tablist for Prompt Lab, Atlas Lab, Component Forge, and Assembly Hall that can be addressed with `#room=<roomId>` deep links and browser-history navigation, previews roadmap invalidation impacts for prompt, floor, bay, roof, trim-density, seed, and local component lock controls, can commit `Run Current`, `New Building`, and `New Family` reruns with cache-hit artifact lineage for structural vs family-chain changes, exposes `Cancel Run` while preserving the last completed scene during pending and cancelled runs, shows Atlas Lab provider diagnostics derived from packed slot provenance and current material-source cache status, owns a tested server-only material-provider route contract, OpenAI image provider adapter, in-memory request cache, timeout fallback, concurrency limit, retry policy, decoded-overlay compositor, remote image artifact bridge, browser PNG layer decoder, and schema-validated route client for later remote-provider hosting, shows a dedicated Component Forge with real generated component entries, selector/toggles, dimensions, anchors, recipe JSON, selected atlas-slot highlighting, and selected-recipe lock/unlock controls, records locked component keys as semantic locks in the generated spec, drives Assembly Hall stage group visibility from a real stage reveal control backed by generated scene groups and semantic path counts, shows read-only Artifact Trace plus Prompt Trace panels with run lineage, registered artifact metadata, active fixture provenance, evaluated PSG variables, local interpreter overrides, requested controls, and PSG node trace entries in Prompt Lab, and exposes a 16-variant stress summary with shared atlas/catalog/graph lineage and per-variant compiler metrics.
 
 ## 14. Milestone 0 And Setup Exit Criteria
 

@@ -3,7 +3,7 @@ import type { Diagnostic } from "../core/diagnostics";
 import type { MaterialSourceRequest, PixelLayer } from "./providers/proceduralMaterialProvider";
 import type { RemoteMaterialOverlay } from "./remoteMaterialOverlay";
 
-const RemoteMaterialImageArtifactSchema = z.object({
+export const RemoteMaterialImageArtifactSchema = z.object({
   schemaVersion: z.literal("0.1.0"),
   sourceId: z.string().min(1),
   providerId: z.literal("openai-image"),
