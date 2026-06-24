@@ -20,6 +20,14 @@ const defaultRemoteMaterialConcurrencyLimit = 2;
 const defaultRemoteMaterialRetryCount = 1;
 const durableRemoteMaterialCachesByPath = new Map<string, RemoteMaterialArtifactCache>();
 
+interface InFlightRemoteMaterialRequest {
+  promise: Promise<RemoteMaterialSourceArtifact>;
+  abortController: AbortController;
+  subscriberSignals: Set<AbortSignal>;
+}
+
+const inFlightRemoteMaterialRequestsByHash = new Map<string, InFlightRemoteMaterialRequest>();
+
 const AtlasMaterialRoleSchema = z.enum([
   "wall",
   "roof",
@@ -431,6 +439,81 @@ async function generateWithRetry(
   }
 }
 
+function waitForInFlightRemoteMaterialRequest(
+  inFlightRequest: InFlightRemoteMaterialRequest,
+  requestSignal: AbortSignal
+): Promise<RemoteMaterialSourceArtifact> {
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    const release = (abortWhenEmpty: boolean) => {
+      if (settled) {
+        return;
+      }
+
+      settled = true;
+      requestSignal.removeEventListener("abort", abortSubscriber);
+      inFlightRequest.subscriberSignals.delete(requestSignal);
+      if (abortWhenEmpty && inFlightRequest.subscriberSignals.size === 0) {
+        inFlightRequest.abortController.abort();
+      }
+    };
+    const abortSubscriber = () => {
+      release(true);
+      reject(new RemoteMaterialProviderCancelledError());
+    };
+
+    inFlightRequest.subscriberSignals.add(requestSignal);
+    if (requestSignal.aborted) {
+      abortSubscriber();
+      return;
+    }
+
+    requestSignal.addEventListener("abort", abortSubscriber, { once: true });
+    inFlightRequest.promise.then(
+      (artifact) => {
+        release(false);
+        resolve(artifact);
+      },
+      (error: unknown) => {
+        release(false);
+        reject(error);
+      }
+    );
+  });
+}
+
+function generateWithInFlightCoalescing(
+  sourceRequestHash: string,
+  provider: OpenAIImageMaterialProvider,
+  sourceRequest: MaterialSourceRequest,
+  requestSignal: AbortSignal,
+  timeoutMs: number,
+  retryCount: number
+): Promise<RemoteMaterialSourceArtifact> {
+  if (requestSignal.aborted) {
+    return Promise.reject(new RemoteMaterialProviderCancelledError());
+  }
+
+  let inFlightRequest = inFlightRemoteMaterialRequestsByHash.get(sourceRequestHash);
+  if (!inFlightRequest) {
+    const abortController = new AbortController();
+    const promise = generateWithRetry(provider, sourceRequest, abortController.signal, timeoutMs, retryCount).finally(
+      () => {
+        inFlightRemoteMaterialRequestsByHash.delete(sourceRequestHash);
+      }
+    );
+    void promise.catch(() => undefined);
+    inFlightRequest = {
+      promise,
+      abortController,
+      subscriberSignals: new Set()
+    };
+    inFlightRemoteMaterialRequestsByHash.set(sourceRequestHash, inFlightRequest);
+  }
+
+  return waitForInFlightRemoteMaterialRequest(inFlightRequest, requestSignal);
+}
+
 export async function handleMaterialProviderRequest(
   request: Request,
   options: MaterialProviderRouteOptions = {}
@@ -478,7 +561,7 @@ export async function handleMaterialProviderRequest(
 
   try {
     const artifacts: Array<RemoteMaterialSourceArtifact | undefined> = [];
-    const cacheMisses: Array<{ index: number; sourceRequest: MaterialSourceRequest }> = [];
+    const cacheMisses: Array<{ index: number; sourceRequest: MaterialSourceRequest; sourceRequestHash: string }> = [];
     let cacheHitCount = 0;
 
     for (const [index, sourceRequest] of payloadResult.data.requests.entries()) {
@@ -490,11 +573,12 @@ export async function handleMaterialProviderRequest(
         continue;
       }
 
-      cacheMisses.push({ index, sourceRequest });
+      cacheMisses.push({ index, sourceRequest, sourceRequestHash });
     }
 
-    await runWithConcurrencyLimit(cacheMisses, remoteMaterialConcurrencyLimit, async ({ index, sourceRequest }) => {
-      const artifact = await generateWithRetry(
+    await runWithConcurrencyLimit(cacheMisses, remoteMaterialConcurrencyLimit, async ({ index, sourceRequest, sourceRequestHash }) => {
+      const artifact = await generateWithInFlightCoalescing(
+        sourceRequestHash,
         provider,
         sourceRequest,
         request.signal,

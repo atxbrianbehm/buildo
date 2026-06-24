@@ -353,6 +353,66 @@ describe("material provider route", () => {
     expect(secondBody.artifacts[0].contentHash).toBe(firstBody.artifacts[0].contentHash);
   });
 
+  it("coalesces concurrent uncached matching source requests into one OpenAI transport call", async () => {
+    const cache = createInMemoryRemoteMaterialArtifactCache();
+    const env = {
+      BUILDING_MATERIAL_PROVIDER: "openai",
+      OPENAI_API_KEY: "sk-buildo-secret-test-key",
+      OPENAI_IMAGE_MODEL: "gpt-image-test"
+    };
+    let transportCallCount = 0;
+    let releaseTransport!: () => void;
+    let resolveTransportStarted!: () => void;
+    const transportStarted = new Promise<void>((resolve) => {
+      resolveTransportStarted = resolve;
+    });
+    const transportRelease = new Promise<void>((resolve) => {
+      releaseTransport = resolve;
+    });
+    const openAITransport = async () => {
+      transportCallCount += 1;
+      resolveTransportStarted();
+      await transportRelease;
+      return {
+        data: [
+          {
+            b64_json: encodedPng("coalesced-wall"),
+            revised_prompt: "coalesced remote prompt"
+          }
+        ]
+      };
+    };
+
+    const firstResponsePromise = routeRequest(validPayload, env, {
+      remoteMaterialCache: cache,
+      openAITransport
+    });
+    await transportStarted;
+    const secondResponsePromise = routeRequest(validPayload, env, {
+      remoteMaterialCache: cache,
+      openAITransport
+    });
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    releaseTransport();
+
+    const [firstResponse, secondResponse] = await Promise.all([firstResponsePromise, secondResponsePromise]);
+    const firstBody = (await readJson(firstResponse)) as {
+      artifacts: Array<{ requestHash: string; contentHash: string; revisedPrompt?: string }>;
+    };
+    const secondBodyText = await secondResponse.text();
+    const secondBody = JSON.parse(secondBodyText) as {
+      artifacts: Array<{ requestHash: string; contentHash: string; revisedPrompt?: string }>;
+    };
+
+    expect(transportCallCount).toBe(1);
+    expect(secondBodyText).not.toContain("sk-buildo-secret-test-key");
+    expect(firstBody).toEqual(expect.objectContaining({ status: "generated", cacheStatus: "miss" }));
+    expect(secondBody).toEqual(expect.objectContaining({ status: "generated", cacheStatus: "miss" }));
+    expect(secondBody.artifacts[0].requestHash).toBe(firstBody.artifacts[0].requestHash);
+    expect(secondBody.artifacts[0].contentHash).toBe(firstBody.artifacts[0].contentHash);
+    expect(secondBody.artifacts[0].revisedPrompt).toBe("coalesced remote prompt");
+  });
+
   it("uses the configured durable remote cache path across route instances", async () => {
     const cacheDir = mkdtempSync(join(tmpdir(), "buildo-route-remote-cache-"));
     const cacheFile = join(cacheDir, "remote-material-cache.json");
