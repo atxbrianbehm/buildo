@@ -1,6 +1,6 @@
 # Dynamic Building Family Integration Map
 
-**Status:** Milestone 4D Assembly Hall rendered fixture foundation
+**Status:** Milestone 4E renderer resource disposal foundation
 **Plan source:** `docs/plans/dynamic-building-family.md`
 **Workspace:** `C:\Users\behmb\Documents\Cascade Projects\buildo`
 **Date:** 2026-06-24
@@ -46,7 +46,7 @@ docs/
     dynamic-building-family.md
 ```
 
-The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, the Milestone 3B pure compiler IR foundation, the Milestone 3C compiler worker boundary, the Milestone 3D component gallery data foundation, the Milestone 4A renderer adapter foundation, the Milestone 4B atlas texture/material sampling foundation, the Milestone 4C shared family runtime foundation, and the Milestone 4D Assembly Hall rendered fixture foundation. No router, Zustand state slice, Component Forge UI, control surface, or four-room flow has been implemented.
+The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, the Milestone 3B pure compiler IR foundation, the Milestone 3C compiler worker boundary, the Milestone 3D component gallery data foundation, the Milestone 4A renderer adapter foundation, the Milestone 4B atlas texture/material sampling foundation, the Milestone 4C shared family runtime foundation, the Milestone 4D Assembly Hall rendered fixture foundation, and the Milestone 4E renderer resource disposal foundation. No router, Zustand state slice, Component Forge UI, control surface, or four-room flow has been implemented.
 
 ## 2. Active Instructions
 
@@ -438,7 +438,7 @@ src/features/building-family/tests/buildingSceneAdapter.test.ts
 
 `createAtlasMaterialRegistry` creates slot-keyed `MeshStandardMaterial` instances with atlas id, atlas content hash, and slot metadata attached in `userData`. Its fallback path can still create deterministic color materials without texture uploads, which keeps the first renderer adapter tests independent of a canvas.
 
-`createBuildingSceneRuntime` converts compiled `RuntimeBuildingIR` mesh batches into `BufferGeometry` + `Mesh` objects, converts instance batches into `InstancedMesh` objects using catalog recipe dimensions, applies compiler transforms, groups objects by assembly stage, builds semantic-path lookup entries, links component gallery entries to renderer objects, and exposes disposal for geometries and materials.
+`createBuildingSceneRuntime` converts compiled `RuntimeBuildingIR` mesh batches into `BufferGeometry` + `Mesh` objects, converts instance batches into `InstancedMesh` objects using catalog recipe dimensions, applies compiler transforms, groups objects by assembly stage, builds semantic-path lookup entries, links component gallery entries to renderer objects, and exposes disposal for geometries and materials through the centralized renderer disposal helper.
 
 ## 6.8 Atlas Texture And Material Sampling Foundation
 
@@ -467,7 +467,7 @@ src/features/building-family/tests/buildingFamilyRuntime.test.ts
 
 `createBuildingFamilyRuntime` owns the shared renderer-side resources for one generated family: atlas `DataTexture` channels, the texture-backed atlas material registry, a root Three.js `Group`, optional backend support metadata, and aggregate draw/resource metrics.
 
-The family runtime can create or replace per-building scene runtimes from `RuntimeBuildingIR` while reusing the same atlas textures and slot materials. Replacing a building disposes the old building geometries and scene graph nodes without disposing the shared atlas or materials, which keeps geometry invalidation separate from material-family invalidation.
+The family runtime can create or replace per-building scene runtimes from `RuntimeBuildingIR` while reusing the same atlas textures and slot materials. Replacing a building disposes the old building geometries and scene graph nodes through the shared disposal helper without disposing the shared atlas or materials, which keeps geometry invalidation separate from material-family invalidation.
 
 The focused runtime and renderer adapter tests cover the current Milestone 4 requirements that can be verified without opening a browser canvas: one shared family runtime can support 16 building runtimes, repeated components remain instanced through the existing scene adapter, geometry replacement disposes old resources, and final family disposal releases building geometries plus shared atlas materials/textures exactly once.
 
@@ -491,7 +491,24 @@ scripts/e2e-smoke.mjs
 
 The e2e smoke now waits for the Assembly Hall canvas, verifies the canvas marked a rendered frame, and performs a WebGL pixel probe so a blank canvas cannot satisfy the smoke. Additional Playwright QA captured desktop and mobile screenshots and verified varied canvas pixels at both viewports. The Browser/IAB path was attempted first but failed to attach to the in-app browser webview, so Playwright was used as the documented fallback.
 
-The next roadmap slice should continue Milestone 4 or begin Milestone 5 orchestration with state/run-controller work. Remaining Milestone 4 gaps include explicit WebGPU renderer activation, richer selection lookup UI, and centralized renderer resource-disposal helpers.
+## 6.11 Renderer Resource Disposal Foundation
+
+Actual Milestone 4E renderer paths:
+
+```text
+src/features/building-family/renderer-three/resourceDisposal.ts
+src/features/building-family/renderer-three/buildingSceneAdapter.ts
+src/features/building-family/renderer-three/familyRuntime.ts
+src/features/building-family/tests/resourceDisposal.test.ts
+```
+
+`disposeBuildingSceneResources` centralizes renderer cleanup for a `BuildingSceneRuntime`: it disposes renderable geometries exactly once, clears the scene root and renderer lookup maps, marks the runtime disposed, and optionally disposes the attached material registry.
+
+`disposeBuildingSceneRuntime` remains the standalone scene-owned API and now delegates to the helper with material disposal enabled. `createBuildingFamilyRuntime` uses the same helper with material disposal disabled for building replacement, building removal, and family teardown so shared atlas materials and textures stay alive until the family runtime itself is disposed.
+
+The focused resource-disposal tests cover both ownership modes: standalone scene disposal releases geometries, materials, and atlas textures exactly once, while shared-family building disposal releases only per-building geometries and leaves atlas resources intact until final family disposal.
+
+The next roadmap slice should continue Milestone 4 or begin Milestone 5 orchestration with state/run-controller work. Remaining Milestone 4 gaps include explicit WebGPU renderer activation and richer selection lookup UI.
 
 ## 7. App Shell, Renderer, State, Workers, And Routing
 
@@ -513,6 +530,7 @@ Actual Three.js renderer setup:
 src/features/building-family/renderer-three/buildingSceneAdapter.ts
 src/features/building-family/renderer-three/buildingAtlasMaterialFactory.ts
 src/features/building-family/renderer-three/buildingAtlasTextureFactory.ts
+src/features/building-family/renderer-three/resourceDisposal.ts
 src/features/building-family/renderer-three/familyRuntime.ts
 src/features/building-family/ui/AssemblyHall.tsx
 ```
@@ -521,7 +539,6 @@ Recommended renderer paths:
 
 ```text
 src/features/building-family/renderer-three/instanceRuntime.ts
-src/features/building-family/renderer-three/resourceDisposal.ts
 ```
 
 Actual Zustand state: not present.
@@ -823,6 +840,13 @@ src/app/App.css
 scripts/e2e-smoke.mjs
 ```
 
+Milestone 4E introduced:
+
+```text
+src/features/building-family/renderer-three/resourceDisposal.ts
+src/features/building-family/tests/resourceDisposal.test.ts
+```
+
 ## 12. Verification Report
 
 Commands run during reconnaissance:
@@ -863,10 +887,11 @@ Latest validation results:
 
 ```text
 typecheck: passed
-unit tests: passed, 66 tests across 26 files
+unit tests: passed, 68 tests across 27 files
 lint: passed
 build: passed
 e2e smoke: passed, including Assembly Hall canvas pixel probe
+resource disposal focused tests: passed
 contracts/core/materials/components/compiler renderer-import scan: no matches
 Math.random scan: no matches
 ```
@@ -1036,6 +1061,13 @@ src/app/App.css
 scripts/e2e-smoke.mjs
 ```
 
+Milestone 4E introduced:
+
+```text
+src/features/building-family/renderer-three/resourceDisposal.ts
+src/features/building-family/tests/resourceDisposal.test.ts
+```
+
 Generated and ignored directories:
 
 ```text
@@ -1044,7 +1076,7 @@ dist/
 test-results/
 ```
 
-No preassembled meshes, provider routes, router-backed room navigation, Component Forge UI, or Zustand state slice has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers through the pure TypeScript compiler path, can deliver them across the compiler worker boundary with transferable buffers, can summarize catalog/IR component data for a future Component Forge gallery, can convert that IR into Three.js scene objects under `renderer-three/*`, can convert packed atlas channels into texture-backed slot materials at the renderer boundary, can host multiple per-building scene runtimes against one shared family atlas/material runtime, and now renders one deterministic fixture building in a browser Assembly Hall canvas from those generated artifacts.
+No preassembled meshes, provider routes, router-backed room navigation, Component Forge UI, or Zustand state slice has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers through the pure TypeScript compiler path, can deliver them across the compiler worker boundary with transferable buffers, can summarize catalog/IR component data for a future Component Forge gallery, can convert that IR into Three.js scene objects under `renderer-three/*`, can convert packed atlas channels into texture-backed slot materials at the renderer boundary, can host multiple per-building scene runtimes against one shared family atlas/material runtime, can centralize idempotent renderer resource disposal across standalone and shared-family ownership modes, and now renders one deterministic fixture building in a browser Assembly Hall canvas from those generated artifacts.
 
 ## 14. Milestone 0 And Setup Exit Criteria
 

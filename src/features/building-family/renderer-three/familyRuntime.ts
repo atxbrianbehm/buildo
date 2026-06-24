@@ -11,6 +11,7 @@ import {
   type BuildingSceneRuntime,
   type RendererBackendSupport
 } from "./buildingSceneAdapter";
+import { disposeBuildingSceneResources } from "./resourceDisposal";
 
 export interface CreateBuildingFamilyRuntimeInput {
   familyId: string;
@@ -104,29 +105,6 @@ function runtimeIrWithBuildingId(ir: RuntimeBuildingIR, buildingId: string | und
   };
 }
 
-function disposeBuildingSceneObjects(runtime: BuildingSceneRuntime): number {
-  if (runtime.disposed) {
-    return 0;
-  }
-
-  let geometriesDisposed = 0;
-  for (const object of runtime.renderables) {
-    if (object.geometry.userData.disposed) {
-      continue;
-    }
-    object.geometry.dispose();
-    object.geometry.userData.disposed = true;
-    geometriesDisposed += 1;
-  }
-
-  runtime.root.clear();
-  runtime.objectsByBatchId.clear();
-  runtime.semanticLookup.clear();
-  runtime.galleryObjects.clear();
-  runtime.disposed = true;
-  return geometriesDisposed;
-}
-
 export function createBuildingFamilyRuntime(input: CreateBuildingFamilyRuntimeInput): BuildingFamilyRuntime {
   const textureSet = createAtlasTextureSet({
     packedAtlas: input.packedAtlas,
@@ -167,7 +145,7 @@ export function createBuildingFamilyRuntime(input: CreateBuildingFamilyRuntimeIn
       const buildingId = ir.buildingId;
       const existing = buildingRuntimes.get(buildingId);
       if (existing) {
-        disposeBuildingSceneObjects(existing);
+        disposeBuildingSceneResources(existing, { disposeMaterials: false });
         root.remove(existing.root);
       }
 
@@ -193,7 +171,7 @@ export function createBuildingFamilyRuntime(input: CreateBuildingFamilyRuntimeIn
         };
       }
 
-      const geometriesDisposed = disposeBuildingSceneObjects(existing);
+      const { geometriesDisposed } = disposeBuildingSceneResources(existing, { disposeMaterials: false });
       root.remove(existing.root);
       buildingRuntimes.delete(buildingId);
       familyRuntime.metrics = liveMetrics(buildingRuntimes, materialRegistry, textureSet, preferredBackend);
@@ -217,7 +195,7 @@ export function createBuildingFamilyRuntime(input: CreateBuildingFamilyRuntimeIn
 
       let geometriesDisposed = 0;
       for (const runtime of buildingRuntimes.values()) {
-        geometriesDisposed += disposeBuildingSceneObjects(runtime);
+        geometriesDisposed += disposeBuildingSceneResources(runtime, { disposeMaterials: false }).geometriesDisposed;
       }
       const buildingRuntimesDisposed = buildingRuntimes.size;
       buildingRuntimes.clear();

@@ -16,6 +16,10 @@ import type { ComponentRecipe } from "../contracts/componentRecipe";
 import type { MeshBatchIR, RuntimeBuildingIR } from "../contracts/runtimeBuildingIR";
 import type { AssemblyStage } from "../contracts/shared";
 import type { AtlasMaterialRegistry } from "./buildingAtlasMaterialFactory";
+import {
+  disposeBuildingSceneResources,
+  type DisposeBuildingSceneResourcesResult
+} from "./resourceDisposal";
 
 const stageOrder: AssemblyStage[] = ["massing", "facade", "openings", "trim", "roof"];
 
@@ -82,10 +86,7 @@ export interface CreateBuildingSceneRuntimeInput {
   componentGallery?: ComponentGallery;
 }
 
-export interface DisposeBuildingSceneRuntimeResult {
-  geometriesDisposed: number;
-  materialsDisposed: number;
-}
+export type DisposeBuildingSceneRuntimeResult = DisposeBuildingSceneResourcesResult;
 
 function recipeById(catalog: ComponentCatalog, recipeId: string): ComponentRecipe {
   const recipe = catalog.recipes.find((candidate) => candidate.id === recipeId);
@@ -288,24 +289,5 @@ export function createBuildingSceneRuntime(input: CreateBuildingSceneRuntimeInpu
 }
 
 export function disposeBuildingSceneRuntime(runtime: BuildingSceneRuntime): DisposeBuildingSceneRuntimeResult {
-  let geometriesDisposed = 0;
-
-  for (const object of runtime.renderables) {
-    object.geometry.dispose();
-    object.geometry.userData.disposed = true;
-    geometriesDisposed += 1;
-  }
-
-  const materialsDisposed = runtime.materialRegistry.listMaterials().length;
-  runtime.materialRegistry.dispose();
-  runtime.root.clear();
-  runtime.objectsByBatchId.clear();
-  runtime.semanticLookup.clear();
-  runtime.galleryObjects.clear();
-  runtime.disposed = true;
-
-  return {
-    geometriesDisposed,
-    materialsDisposed
-  };
+  return disposeBuildingSceneResources(runtime, { disposeMaterials: true });
 }
