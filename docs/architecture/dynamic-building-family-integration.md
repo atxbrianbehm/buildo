@@ -1,6 +1,6 @@
 # Dynamic Building Family Integration Map
 
-**Status:** Milestone 3C compiler worker boundary
+**Status:** Milestone 3D component gallery data foundation
 **Plan source:** `docs/plans/dynamic-building-family.md`
 **Workspace:** `C:\Users\behmb\Documents\Cascade Projects\buildo`
 **Date:** 2026-06-24
@@ -46,7 +46,7 @@ docs/
     dynamic-building-family.md
 ```
 
-The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, the Milestone 3B pure compiler IR foundation, and the Milestone 3C compiler worker boundary. No renderer, state slice, component gallery, or generated building asset has been implemented.
+The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, the Milestone 3B pure compiler IR foundation, the Milestone 3C compiler worker boundary, and the Milestone 3D component gallery data foundation. No renderer, state slice, Component Forge UI, or generated building asset has been implemented.
 
 ## 2. Active Instructions
 
@@ -408,12 +408,30 @@ The worker boundary now has runtime-validated compile/cancel request messages an
 
 `CompilerClient` wraps a structural endpoint interface so later UI/state orchestration can talk to a real worker without importing renderer or app-store code into the compiler layer. Starting a new compile request cancels the prior active request and ignores stale responses that arrive afterward.
 
-The next roadmap slice should produce component gallery data from the generated IR:
+## 6.6 Component Gallery Data Foundation
+
+Actual Milestone 3D gallery paths:
 
 ```text
 src/features/building-family/compiler/componentGalleryBuilder.ts
 src/features/building-family/tests/componentGalleryBuilder.test.ts
 ```
+
+`buildComponentGallery` consumes the schema-versioned component catalog and compiled `RuntimeBuildingIR`, then emits a schema-validated `ComponentGallery` artifact for later Component Forge UI work.
+
+The gallery records one entry per component recipe, preserving recipe id, kind, role, dimensions, anchors, atlas slots, optional profile recipe id, assembly stage, stable grid coordinates, and a sample semantic path when the compiler emitted one. Emitted mesh and instance batches are summarized with vertex, triangle, instance, and semantic element counts without copying typed-array buffers into the gallery data.
+
+Current compiler coverage leaves `opening` and `horizontalTrim` as recipe-only gallery entries. The gallery keeps those entries visible and emits warning diagnostics so Component Forge can distinguish implemented generated components from catalog recipes that still need compiler emission.
+
+The next roadmap slice should begin Milestone 4 renderer-adapter prep:
+
+```text
+src/features/building-family/renderer-three/buildingSceneAdapter.ts
+src/features/building-family/renderer-three/buildingAtlasMaterialFactory.ts
+src/features/building-family/tests/buildingSceneAdapter.test.ts
+```
+
+Before renderer edits, inspect the installed `three@0.184.0` WebGPU/WebGL exports and keep all Three.js imports in `renderer-three/*` only.
 
 ## 7. App Shell, Renderer, State, Workers, And Routing
 
@@ -694,6 +712,13 @@ src/features/building-family/compiler/compilerWorkerRuntime.ts
 src/features/building-family/tests/buildingCompilerWorker.test.ts
 ```
 
+Milestone 3D introduced:
+
+```text
+src/features/building-family/compiler/componentGalleryBuilder.ts
+src/features/building-family/tests/componentGalleryBuilder.test.ts
+```
+
 ## 12. Verification Report
 
 Commands run during reconnaissance:
@@ -733,7 +758,7 @@ Latest validation results:
 
 ```text
 typecheck: passed
-unit tests: passed, 46 tests across 20 files
+unit tests: passed, 50 tests across 21 files
 lint: passed
 build: passed
 e2e smoke: passed at http://127.0.0.1:5173/
@@ -854,6 +879,13 @@ src/features/building-family/compiler/compilerWorkerRuntime.ts
 src/features/building-family/tests/buildingCompilerWorker.test.ts
 ```
 
+Milestone 3D introduced:
+
+```text
+src/features/building-family/compiler/componentGalleryBuilder.ts
+src/features/building-family/tests/componentGalleryBuilder.test.ts
+```
+
 Generated and ignored directories:
 
 ```text
@@ -862,7 +894,7 @@ dist/
 test-results/
 ```
 
-No preassembled meshes, provider routes, renderer adapter, component gallery, or Zustand state slice has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers through the pure TypeScript compiler path and can deliver them across the compiler worker boundary with transferable buffers.
+No preassembled meshes, provider routes, renderer adapter, Component Forge UI, or Zustand state slice has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers through the pure TypeScript compiler path, can deliver them across the compiler worker boundary with transferable buffers, and can summarize catalog/IR component data for a future Component Forge gallery.
 
 ## 14. Milestone 0 And Setup Exit Criteria
 
