@@ -1,6 +1,6 @@
 # Dynamic Building Family Integration Map
 
-**Status:** Milestone 3B pure compiler IR foundation
+**Status:** Milestone 3C compiler worker boundary
 **Plan source:** `docs/plans/dynamic-building-family.md`
 **Workspace:** `C:\Users\behmb\Documents\Cascade Projects\buildo`
 **Date:** 2026-06-24
@@ -46,7 +46,7 @@ docs/
     dynamic-building-family.md
 ```
 
-The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, and the Milestone 3B pure compiler IR foundation. No compiler worker runtime, renderer, state slice, or generated building asset has been implemented.
+The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, the Milestone 3B pure compiler IR foundation, and the Milestone 3C compiler worker boundary. No renderer, state slice, component gallery, or generated building asset has been implemented.
 
 ## 2. Active Instructions
 
@@ -388,14 +388,31 @@ instances.door for the storefront door
 instances.vertical-trim for repeated front-facade vertical trim
 ```
 
-Compiler output includes a source graph hash, bounds, vertex / triangle / instance metrics, and a semantic index for emitted elements. Geometry helpers currently generate primitive box buffers only; no Three.js, React, Zustand, DOM, worker, or renderer dependency is present.
+Compiler output includes a source graph hash, bounds, vertex / triangle / instance metrics, and a semantic index for emitted elements. Geometry helpers currently generate primitive box buffers only; no Three.js, React, Zustand, DOM, or renderer dependency is present.
 
-The next roadmap slice should continue with the compiler worker and component gallery data:
+## 6.5 Compiler Worker Boundary
+
+Actual Milestone 3C worker paths:
 
 ```text
-src/features/building-family/compiler/compiler.worker.ts
 src/features/building-family/compiler/compilerClient.ts
+src/features/building-family/compiler/compiler.worker.ts
+src/features/building-family/compiler/compilerWorkerProtocol.ts
+src/features/building-family/compiler/compilerWorkerRuntime.ts
 src/features/building-family/tests/buildingCompilerWorker.test.ts
+```
+
+The worker boundary now has runtime-validated compile/cancel request messages and progress/complete/error response messages matching the implementation plan. `collectRuntimeIrTransferables` gathers every typed-array buffer from `RuntimeBuildingIR` mesh and instance batches so complete responses can transfer buffers instead of JSON-copying numeric arrays.
+
+`createCompilerWorkerRuntime` accepts compile and cancel messages, delegates to the pure compiler, posts geometry compile progress, transfers buffers on completion, and discards cancelled or stale results when a newer request supersedes an older one.
+
+`CompilerClient` wraps a structural endpoint interface so later UI/state orchestration can talk to a real worker without importing renderer or app-store code into the compiler layer. Starting a new compile request cancels the prior active request and ignores stale responses that arrive afterward.
+
+The next roadmap slice should produce component gallery data from the generated IR:
+
+```text
+src/features/building-family/compiler/componentGalleryBuilder.ts
+src/features/building-family/tests/componentGalleryBuilder.test.ts
 ```
 
 ## 7. App Shell, Renderer, State, Workers, And Routing
@@ -433,13 +450,20 @@ src/features/building-family/state/slices/artifactSlice.ts
 src/features/building-family/state/slices/selectionSlice.ts
 ```
 
-Actual worker patterns: not present.
-
-Recommended worker paths:
+Actual worker patterns:
 
 ```text
 src/features/building-family/compiler/compiler.worker.ts
 src/features/building-family/compiler/compilerClient.ts
+src/features/building-family/compiler/compilerWorkerProtocol.ts
+src/features/building-family/compiler/compilerWorkerRuntime.ts
+```
+
+Remaining worker/orchestration paths for later milestones:
+
+```text
+src/features/building-family/state/buildingRunController.ts
+src/features/building-family/state/slices/runSlice.ts
 ```
 
 Actual server/API routes: not present.
@@ -660,6 +684,16 @@ src/features/building-family/compiler/primitiveGeometry.ts
 src/features/building-family/tests/buildingCompiler.test.ts
 ```
 
+Milestone 3C introduced:
+
+```text
+src/features/building-family/compiler/compilerClient.ts
+src/features/building-family/compiler/compiler.worker.ts
+src/features/building-family/compiler/compilerWorkerProtocol.ts
+src/features/building-family/compiler/compilerWorkerRuntime.ts
+src/features/building-family/tests/buildingCompilerWorker.test.ts
+```
+
 ## 12. Verification Report
 
 Commands run during reconnaissance:
@@ -699,7 +733,7 @@ Latest validation results:
 
 ```text
 typecheck: passed
-unit tests: passed, 42 tests across 19 files
+unit tests: passed, 46 tests across 20 files
 lint: passed
 build: passed
 e2e smoke: passed at http://127.0.0.1:5173/
@@ -810,6 +844,16 @@ src/features/building-family/compiler/primitiveGeometry.ts
 src/features/building-family/tests/buildingCompiler.test.ts
 ```
 
+Milestone 3C introduced:
+
+```text
+src/features/building-family/compiler/compilerClient.ts
+src/features/building-family/compiler/compiler.worker.ts
+src/features/building-family/compiler/compilerWorkerProtocol.ts
+src/features/building-family/compiler/compilerWorkerRuntime.ts
+src/features/building-family/tests/buildingCompilerWorker.test.ts
+```
+
 Generated and ignored directories:
 
 ```text
@@ -818,7 +862,7 @@ dist/
 test-results/
 ```
 
-No preassembled meshes, provider routes, renderer adapter, worker runtime, or Zustand state slice has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers only inside the pure TypeScript compiler path.
+No preassembled meshes, provider routes, renderer adapter, component gallery, or Zustand state slice has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers through the pure TypeScript compiler path and can deliver them across the compiler worker boundary with transferable buffers.
 
 ## 14. Milestone 0 And Setup Exit Criteria
 

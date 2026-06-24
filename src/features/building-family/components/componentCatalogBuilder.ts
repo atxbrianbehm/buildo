@@ -2,7 +2,7 @@ import { z } from "zod";
 import type { AtlasManifest } from "../contracts/atlasManifest";
 import type { BuildingFamilySpec } from "../contracts/buildingFamilySpec";
 import { ComponentRecipeSchema, type ComponentRecipe } from "../contracts/componentRecipe";
-import type { Diagnostic } from "../core/diagnostics";
+import { DiagnosticSchema, type Diagnostic } from "../core/diagnostics";
 import { hashCanonicalJson } from "../core/contentHash";
 import {
   buildDoorRecipe,
@@ -20,7 +20,7 @@ export const ComponentCatalogSchema = z.object({
   familyId: z.string(),
   atlasId: z.string(),
   recipes: z.array(ComponentRecipeSchema),
-  diagnostics: z.array(z.unknown())
+  diagnostics: z.array(DiagnosticSchema)
 });
 
 export interface ComponentCatalog {
