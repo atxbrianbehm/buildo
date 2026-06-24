@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const CachedArtifactEntrySchema = z.object({
+export const CachedArtifactEntrySchema = z.object({
   schemaVersion: z.literal("0.1.0"),
   artifactType: z.string().min(1),
   requestHash: z.string().min(1),
@@ -46,7 +46,7 @@ function cacheKey(artifactType: string, requestHash: string): string {
   return `${artifactType}:${requestHash}`;
 }
 
-function parseEntry<T>(entry: unknown): CachedArtifactEntry<T> {
+export function parseCachedArtifactEntry<T>(entry: unknown): CachedArtifactEntry<T> {
   const result = CachedArtifactEntrySchema.safeParse(entry);
   if (!result.success) {
     throw new Error(`Invalid cached artifact: ${result.error.issues.map((issue) => issue.message).join(", ")}`);
@@ -66,13 +66,13 @@ export class InMemoryArtifactCache<T = unknown> {
   static restore<T = unknown>(entries: unknown[], options: ArtifactCacheOptions = {}): InMemoryArtifactCache<T> {
     const cache = new InMemoryArtifactCache<T>(options);
     for (const entry of entries) {
-      cache.index(parseEntry<T>(entry));
+      cache.index(parseCachedArtifactEntry<T>(entry));
     }
     return cache;
   }
 
   put(input: PutArtifactInput<T>): CachedArtifactEntry<T> {
-    const entry = parseEntry<T>({
+    const entry = parseCachedArtifactEntry<T>({
       schemaVersion: "0.1.0",
       artifactType: input.artifactType,
       requestHash: input.requestHash,
