@@ -33,6 +33,7 @@ function routeRequest(
   options: {
     openAITransport?: (request: OpenAIImageTransportRequest, signal: AbortSignal) => Promise<unknown>;
     remoteMaterialCache?: RemoteMaterialArtifactCache;
+    remoteMaterialTimeoutMs?: number;
   } = {}
 ): Promise<Response> {
   return handleMaterialProviderRequest(
@@ -343,6 +344,86 @@ describe("material provider route", () => {
     );
     expect(secondBody.artifacts[0].requestHash).toBe(firstBody.artifacts[0].requestHash);
     expect(secondBody.artifacts[0].contentHash).toBe(firstBody.artifacts[0].contentHash);
+  });
+
+  it("falls back and aborts provider work when OpenAI material generation times out", async () => {
+    const cache = createInMemoryRemoteMaterialArtifactCache();
+    let receivedSignal: AbortSignal | undefined;
+    const response = await routeRequest(
+      validPayload,
+      {
+        BUILDING_MATERIAL_PROVIDER: "openai",
+        OPENAI_API_KEY: "sk-buildo-secret-test-key",
+        OPENAI_IMAGE_MODEL: "gpt-image-test"
+      },
+      {
+        remoteMaterialCache: cache,
+        remoteMaterialTimeoutMs: 0,
+        openAITransport: async (_request, signal) => {
+          receivedSignal = signal;
+          await new Promise((resolve) => setTimeout(resolve, 20));
+          return { data: [{ b64_json: encodedPng("late-wall") }] };
+        }
+      }
+    );
+    const bodyText = await response.text();
+
+    expect(receivedSignal?.aborted).toBe(true);
+    expect(bodyText).not.toContain("sk-buildo-secret-test-key");
+    expect(response.status).toBe(200);
+    expect(JSON.parse(bodyText)).toEqual(
+      expect.objectContaining({
+        status: "fallback",
+        providerId: "procedural",
+        cacheStatus: "not-checked",
+        diagnostics: expect.arrayContaining([
+          expect.objectContaining({
+            code: "remoteMaterialProvider.openaiTimedOut",
+            severity: "warning"
+          })
+        ])
+      })
+    );
+  });
+
+  it("does not cache a timed-out remote artifact when the upstream transport finishes later", async () => {
+    const cache = createInMemoryRemoteMaterialArtifactCache();
+    const env = {
+      BUILDING_MATERIAL_PROVIDER: "openai",
+      OPENAI_API_KEY: "sk-buildo-secret-test-key",
+      OPENAI_IMAGE_MODEL: "gpt-image-test"
+    };
+
+    await routeRequest(validPayload, env, {
+      remoteMaterialCache: cache,
+      remoteMaterialTimeoutMs: 0,
+      openAITransport: async () => {
+        await new Promise((resolve) => setTimeout(resolve, 20));
+        return { data: [{ b64_json: encodedPng("late-wall") }] };
+      }
+    });
+    await new Promise((resolve) => setTimeout(resolve, 30));
+
+    const response = await routeRequest(validPayload, env, {
+      remoteMaterialCache: cache,
+      openAITransport: async () => ({ data: [{ b64_json: encodedPng("fresh-wall") }] })
+    });
+    const body = await readJson(response);
+
+    expect(body).toEqual(
+      expect.objectContaining({
+        status: "generated",
+        cacheStatus: "miss",
+        artifacts: [
+          expect.objectContaining({
+            image: {
+              format: "png",
+              b64Json: encodedPng("fresh-wall")
+            }
+          })
+        ]
+      })
+    );
   });
 
   it("rejects non-POST requests without reading a provider key", async () => {

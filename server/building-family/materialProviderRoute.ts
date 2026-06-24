@@ -14,6 +14,7 @@ import {
 const maxRemoteRequestCount = 4;
 const maxRemoteSourceDimensionPx = 1024;
 const maxPromptVocabularyChars = 640;
+const defaultRemoteMaterialTimeoutMs = 30_000;
 
 const AtlasMaterialRoleSchema = z.enum([
   "wall",
@@ -58,6 +59,7 @@ export interface MaterialProviderRouteOptions {
   env?: MaterialProviderRouteEnv;
   openAITransport?: OpenAIImageTransport;
   remoteMaterialCache?: RemoteMaterialArtifactCache;
+  remoteMaterialTimeoutMs?: number;
 }
 
 export const approvedRemoteMaterialSourceRoles = {
@@ -221,6 +223,16 @@ function fallbackDiagnostic(env: MaterialProviderRouteEnv): Diagnostic {
   };
 }
 
+function openAITimeoutDiagnostic(timeoutMs: number): Diagnostic {
+  return {
+    code: "remoteMaterialProvider.openaiTimedOut",
+    message: "OpenAI material provider timed out; procedural material generation should be used.",
+    severity: "warning",
+    received: timeoutMs,
+    path: "remoteMaterialTimeoutMs"
+  };
+}
+
 async function parseJsonPayload(request: Request): Promise<unknown> {
   try {
     return await request.json();
@@ -251,6 +263,52 @@ function fallbackResponse(
     cacheStatus: "not-checked",
     diagnostics
   });
+}
+
+class RemoteMaterialProviderTimeoutError extends Error {
+  constructor(readonly timeoutMs: number) {
+    super("Remote material provider timed out.");
+  }
+}
+
+function configuredRemoteMaterialTimeoutMs(options: MaterialProviderRouteOptions): number {
+  if (typeof options.remoteMaterialTimeoutMs === "number") {
+    return Math.max(0, options.remoteMaterialTimeoutMs);
+  }
+
+  return defaultRemoteMaterialTimeoutMs;
+}
+
+async function generateWithTimeout(
+  provider: OpenAIImageMaterialProvider,
+  sourceRequest: MaterialSourceRequest,
+  requestSignal: AbortSignal,
+  timeoutMs: number
+): Promise<RemoteMaterialSourceArtifact> {
+  const providerAbortController = new AbortController();
+  const abortProvider = () => providerAbortController.abort();
+  if (requestSignal.aborted) {
+    abortProvider();
+  } else {
+    requestSignal.addEventListener("abort", abortProvider, { once: true });
+  }
+
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_resolve, reject) => {
+    timeoutId = setTimeout(() => {
+      providerAbortController.abort();
+      reject(new RemoteMaterialProviderTimeoutError(timeoutMs));
+    }, timeoutMs);
+  });
+
+  try {
+    return await Promise.race([provider.generate(sourceRequest, providerAbortController.signal), timeout]);
+  } finally {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    requestSignal.removeEventListener("abort", abortProvider);
+  }
 }
 
 export async function handleMaterialProviderRequest(
@@ -294,6 +352,7 @@ export async function handleMaterialProviderRequest(
     transport: options.openAITransport
   });
   const remoteMaterialCache = options.remoteMaterialCache ?? defaultRemoteMaterialArtifactCache;
+  const remoteMaterialTimeoutMs = configuredRemoteMaterialTimeoutMs(options);
 
   try {
     const artifacts: RemoteMaterialSourceArtifact[] = [];
@@ -308,7 +367,7 @@ export async function handleMaterialProviderRequest(
         continue;
       }
 
-      const artifact = await provider.generate(sourceRequest, request.signal);
+      const artifact = await generateWithTimeout(provider, sourceRequest, request.signal, remoteMaterialTimeoutMs);
       remoteMaterialCache.set(artifact);
       artifacts.push(artifact);
     }
@@ -325,7 +384,13 @@ export async function handleMaterialProviderRequest(
       artifacts,
       diagnostics: []
     });
-  } catch {
+  } catch (error) {
+    if (error instanceof RemoteMaterialProviderTimeoutError) {
+      return fallbackResponse(requestHash, payloadResult.data.requests.length, [
+        openAITimeoutDiagnostic(error.timeoutMs)
+      ]);
+    }
+
     return fallbackResponse(requestHash, payloadResult.data.requests.length, [fallbackDiagnostic(env)]);
   }
 }
