@@ -1,10 +1,12 @@
 import { Color, MeshStandardMaterial } from "three";
 import type { AtlasDebugExport } from "../materials/atlasDebugExport";
+import { slotTextureWindow, type AtlasTextureSet } from "./buildingAtlasTextureFactory";
 
 export interface AtlasMaterialRegistryInput {
   atlasId: string;
   atlasContentHash: string;
   debugExport?: AtlasDebugExport;
+  textureSet?: AtlasTextureSet;
 }
 
 export interface AtlasMaterialRegistry {
@@ -43,11 +45,24 @@ export function createAtlasMaterialRegistry(input: AtlasMaterialRegistryInput): 
       roughness: 0.82,
       metalness: slotId.includes("frame") || slotId.includes("trim") ? 0.12 : 0
     });
+    const atlasSlot = input.textureSet ? slotTextureWindow(input.textureSet, slotId) : undefined;
+    if (input.textureSet) {
+      material.map = input.textureSet.textures.baseColor;
+      material.normalMap = input.textureSet.textures.normal;
+      material.roughnessMap = input.textureSet.textures.orm;
+      material.metalnessMap = input.textureSet.textures.orm;
+      material.alphaMap = input.textureSet.textures.opacity;
+      material.transparent = true;
+      material.needsUpdate = true;
+    }
+
     material.name = `building-atlas.${slotId}`;
     material.userData = {
       atlasId: input.atlasId,
       atlasContentHash: input.atlasContentHash,
       atlasSlotId: slotId,
+      atlasSlot,
+      channelHashes: input.textureSet?.channelHashes,
       rendererBoundary: "building-family"
     };
     materials.set(slotId, material);
@@ -64,6 +79,7 @@ export function createAtlasMaterialRegistry(input: AtlasMaterialRegistryInput): 
         material.userData.disposed = true;
       }
       materials.clear();
+      input.textureSet?.dispose();
     }
   };
 }
