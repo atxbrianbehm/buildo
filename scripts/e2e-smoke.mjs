@@ -152,7 +152,18 @@ try {
   await page.getByLabel("Project setup status").waitFor({ state: "visible" });
   await page.getByRole("heading", { name: "Atlas Lab" }).waitFor({ state: "visible" });
   await page.getByRole("img", { name: "baseColor channel" }).waitFor({ state: "visible" });
-  await page.getByRole("cell", { name: "wall.primary", exact: true }).waitFor({ state: "visible" });
+  await page
+    .getByRole("table", { name: "Semantic Slots" })
+    .getByRole("cell", { name: "wall.primary", exact: true })
+    .waitFor({ state: "visible" });
+  await page.getByRole("heading", { name: "Component Forge" }).waitFor({ state: "visible" });
+  const componentSelector = page.getByRole("combobox", { name: "Component selector" });
+  await componentSelector.selectOption("component-gallery.recipe.window.tall-arched.frame");
+  const forgeRecipe = page.getByLabel("Selected component recipe");
+  await forgeRecipe.getByText("Window frame").waitFor({ state: "visible" });
+  const forgeAtlasSlots = page.getByRole("table", { name: "Selected atlas slots" });
+  await forgeAtlasSlots.getByRole("cell", { name: "glass.primary", exact: true }).waitFor({ state: "visible" });
+  await forgeAtlasSlots.getByRole("cell", { name: "frame.primary", exact: true }).waitFor({ state: "visible" });
   await page.getByRole("heading", { name: "Assembly Hall" }).waitFor({ state: "visible" });
   const semanticElementSelect = page.getByRole("combobox", { name: "Semantic element" });
   await semanticElementSelect.waitFor({ state: "visible" });

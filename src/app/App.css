@@ -576,6 +576,299 @@ h1 {
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
+.component-forge {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 38px 0 16px;
+}
+
+.component-forge__header {
+  display: grid;
+  grid-template-columns: minmax(0, 0.58fr) minmax(340px, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.component-forge__header h2 {
+  margin: 0;
+  color: #121816;
+  font-size: 2rem;
+  line-height: 1.05;
+}
+
+.component-forge__controls {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid rgba(24, 32, 28, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 14px 36px rgba(22, 29, 25, 0.08);
+}
+
+.component-forge__selector {
+  display: grid;
+  gap: 7px;
+  color: #5f6d66;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.component-forge__selector select {
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid rgba(24, 32, 28, 0.18);
+  border-radius: 6px;
+  color: #18201c;
+  background: rgba(247, 248, 244, 0.94);
+  font-size: 0.86rem;
+  text-transform: none;
+}
+
+.component-forge__selector select:focus-visible,
+.component-forge__tile:focus-visible {
+  outline: 3px solid rgba(70, 118, 86, 0.28);
+  outline-offset: 2px;
+}
+
+.component-forge__toggles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.component-forge__toggles label {
+  display: flex;
+  min-height: 40px;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 10px;
+  border: 1px solid rgba(24, 32, 28, 0.12);
+  border-radius: 6px;
+  color: #33413b;
+  background: #eef1eb;
+  font-size: 0.84rem;
+}
+
+.component-forge__toggles input {
+  width: 16px;
+  height: 16px;
+  accent-color: #50775d;
+}
+
+.component-forge__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.component-forge__tile {
+  display: grid;
+  min-height: 112px;
+  gap: 8px;
+  align-content: start;
+  padding: 13px;
+  border: 1px solid rgba(24, 32, 28, 0.13);
+  border-radius: 8px;
+  color: #17201c;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 12px 28px rgba(22, 29, 25, 0.07);
+  text-align: left;
+}
+
+.component-forge__tile[data-selected="true"] {
+  border-color: rgba(80, 119, 93, 0.54);
+  background: #f4f7ef;
+  box-shadow:
+    0 16px 36px rgba(54, 83, 64, 0.14),
+    inset 0 0 0 1px rgba(80, 119, 93, 0.22);
+}
+
+.component-forge__tile span {
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.component-forge__tile small,
+.component-forge__tile em {
+  color: #5f6d66;
+  font-size: 0.78rem;
+  font-style: normal;
+  line-height: 1.25;
+}
+
+.component-forge__detail {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  gap: 18px;
+  align-items: start;
+  margin-top: 20px;
+}
+
+.component-forge__recipe,
+.component-forge__anchors,
+.component-forge__json,
+.component-forge__atlas-slots {
+  min-width: 0;
+  border: 1px solid rgba(24, 32, 28, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 14px 36px rgba(22, 29, 25, 0.08);
+}
+
+.component-forge__recipe,
+.component-forge__anchors {
+  padding: 14px;
+}
+
+.component-forge__recipe-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.component-forge__recipe-heading h3,
+.component-forge__anchors h3 {
+  margin: 0;
+  color: #17201c;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.component-forge__recipe-heading span {
+  padding: 5px 8px;
+  border-radius: 6px;
+  color: #375242;
+  background: #dfe8dc;
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.component-forge__definition {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0 0;
+}
+
+.component-forge__definition div {
+  display: grid;
+  grid-template-columns: minmax(92px, 0.42fr) minmax(0, 1fr);
+  gap: 14px;
+  align-items: baseline;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(24, 32, 28, 0.1);
+}
+
+.component-forge__definition dt {
+  color: #5f6d66;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.component-forge__definition dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: #18201c;
+  font-size: 0.84rem;
+  font-variant-numeric: tabular-nums;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.component-forge__atlas-slots {
+  display: block;
+  width: 100%;
+  max-height: 320px;
+  overflow: auto;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.component-forge__atlas-slots caption {
+  padding: 14px 14px 6px;
+  color: #33413b;
+  font-weight: 700;
+  text-align: left;
+}
+
+.component-forge__atlas-slots th,
+.component-forge__atlas-slots td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(24, 32, 28, 0.1);
+  color: #33413b;
+  text-align: left;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.component-forge__atlas-slots th {
+  position: sticky;
+  top: 0;
+  color: #5f6d66;
+  background: #f7f8f4;
+  font-size: 0.72rem;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.component-forge__atlas-slots tr[data-highlighted="true"] td:first-child {
+  color: #284b36;
+  font-weight: 800;
+}
+
+.component-forge__atlas-slots td:last-child {
+  min-width: 24ch;
+  max-width: 34ch;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.component-forge__anchors ol {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.component-forge__anchors li {
+  display: grid;
+  grid-template-columns: minmax(0, 0.6fr) minmax(0, 1fr);
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(24, 32, 28, 0.1);
+}
+
+.component-forge__anchors span {
+  color: #18201c;
+  font-weight: 800;
+}
+
+.component-forge__anchors small {
+  overflow-wrap: anywhere;
+  color: #5f6d66;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.component-forge__json {
+  grid-column: 1 / -1;
+  max-height: 340px;
+  margin: 0;
+  padding: 14px;
+  overflow: auto;
+  color: #1a211e;
+  background: #f7f8f4;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  white-space: pre;
+}
+
 .assembly-hall {
   max-width: 1180px;
   margin: 0 auto;
@@ -793,6 +1086,8 @@ h1 {
   }
 
   .atlas-fixture,
+  .component-forge__header,
+  .component-forge__detail,
   .control-panel,
   .run-panel,
   .assembly-hall__stage,
@@ -806,6 +1101,10 @@ h1 {
   }
 
   .atlas-lab__channels {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .component-forge__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -834,10 +1133,13 @@ h1 {
   .assembly-hall__metrics div,
   .assembly-hall__identity div,
   .run-panel__metrics div,
+  .component-forge__definition div,
   .assembly-hall__selection-details div {
     grid-template-columns: 1fr;
   }
 
+  .component-forge__grid,
+  .component-forge__toggles,
   .run-panel__timeline {
     grid-template-columns: 1fr;
   }
@@ -855,6 +1157,10 @@ h1 {
   .assembly-hall__gallery {
     display: block;
     overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .component-forge__atlas-slots {
     white-space: nowrap;
   }
 }

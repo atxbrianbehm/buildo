@@ -29,6 +29,12 @@ describe("App", () => {
     expect(screen.getByRole("img", { name: "baseColor channel" })).toBeInTheDocument();
     expect(within(screen.getByRole("table", { name: "Semantic Slots" })).getByText("wall.primary")).toBeInTheDocument();
     expect(screen.getByLabelText("Atlas fixture provenance")).toHaveTextContent("30 entries");
+    expect(await screen.findByRole("heading", { name: "Component Forge" })).toBeInTheDocument();
+    fireEvent.change(screen.getByRole("combobox", { name: "Component selector" }), {
+      target: { value: "component-gallery.recipe.window.tall-arched.frame" }
+    });
+    expect(screen.getByLabelText("Selected component recipe")).toHaveTextContent("Window frame");
+    expect(within(screen.getByRole("table", { name: "Selected atlas slots" })).getByText("glass.primary")).toBeInTheDocument();
     expect(await screen.findByRole("heading", { name: "Assembly Hall" })).toBeInTheDocument();
     expect(screen.getByRole("img", { name: "Rendered generated building fixture" })).toBeInTheDocument();
     expect(screen.getByLabelText("Assembly Hall renderer metrics")).toHaveTextContent("Draw calls");

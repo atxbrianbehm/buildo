@@ -3,6 +3,7 @@ import { useStore } from "zustand";
 import "./App.css";
 import { AtlasLab } from "../features/building-family/ui/AtlasLab";
 import { AssemblyHall } from "../features/building-family/ui/AssemblyHall";
+import { ComponentForge } from "../features/building-family/ui/ComponentForge";
 import type { AssemblyHallFixture } from "../features/building-family/ui/assemblyHallFixture";
 import { BuildingArtifactRegistry } from "../features/building-family/state/artifactRegistry";
 import { BuildingRunController } from "../features/building-family/state/buildingRunController";
@@ -300,6 +301,7 @@ export function App() {
           </div>
         )}
       </section>
+      {fixture ? <ComponentForge fixture={fixture} /> : null}
       {fixture ? <AssemblyHall fixture={fixture} /> : null}
     </main>
   );
