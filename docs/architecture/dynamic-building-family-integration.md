@@ -1,9 +1,9 @@
 # Dynamic Building Family Integration Map
 
-**Status:** Milestone 0 reconnaissance plus greenfield project setup
+**Status:** Milestone 2A semantic atlas planning foundation
 **Plan source:** `docs/plans/dynamic-building-family.md`
 **Workspace:** `C:\Users\behmb\Documents\Cascade Projects\buildo`
-**Date:** 2026-06-23
+**Date:** 2026-06-24
 
 ## 1. Repository State
 
@@ -46,7 +46,7 @@ docs/
     dynamic-building-family.md
 ```
 
-The app currently contains a setup shell plus the Milestone 1 deterministic domain foundation. No renderer, compiler, state slice, material pipeline, atlas output, or generated building asset has been implemented.
+The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, and the Milestone 2A semantic atlas planner foundation. No renderer, compiler, state slice, procedural pixel pipeline, packed atlas image output, or generated building asset has been implemented.
 
 ## 2. Active Instructions
 
@@ -184,6 +184,66 @@ src/features/building-family/style-packs/late-19c-commercial-demo.json
 ```
 
 The style pack is explicitly demo-curated and does not claim historical authority. The normalizer clamps floor and bay ranges, emits diagnostics for invalid selections and forbidden combinations, and returns a validated `BuildingFamilySpec`.
+
+## 6.2 Semantic Atlas Planning
+
+Actual Milestone 2A material planning paths:
+
+```text
+src/features/building-family/materials/atlasPlanner.ts
+src/features/building-family/tests/atlasPlanner.test.ts
+```
+
+`planAtlas` consumes a validated `BuildingFamilySpec` and produces an `AtlasPlan` containing:
+
+```text
+manifest: AtlasManifest
+materialSources: planned material-source references
+profileRecipeIds: planned vector profile references
+diagnostics: validation diagnostics
+```
+
+The planner currently emits the required initial semantic slots before any pixel generation:
+
+```text
+wall.primary
+wall.secondary
+roof.primary
+glass.primary
+frame.primary
+door.primary
+trim.horizontal.primary
+trim.horizontal.secondary
+trim.vertical.primary
+cornice.primary
+ornament.primary
+utility.mask
+```
+
+The implementation keeps the `AtlasSlot.role` contract from the plan. Because `utility.mask` is required by the initial slot list but `utility` is not a serialized role, the slot uses role `ornament` with `utility` and `mask` compatibility tags.
+
+`validateAtlasPlan` checks:
+
+```text
+slot rectangles remain within atlas bounds
+slots preserve atlas-edge padding
+slots preserve inter-slot padding
+slots do not overlap
+slots reference known material sources
+slots reference known profile recipes when profileRecipeId is present
+```
+
+Milestone 2B should begin with procedural material-source generation and channel artifacts:
+
+```text
+src/features/building-family/materials/providers/proceduralMaterialProvider.ts
+src/features/building-family/materials/providers/fixtureMaterialProvider.ts
+src/features/building-family/materials/normalFromHeight.ts
+src/features/building-family/materials/periodicBlend.ts
+src/features/building-family/materials/atlasPacker.ts
+src/features/building-family/tests/proceduralMaterialProvider.test.ts
+src/features/building-family/tests/atlasPacker.test.ts
+```
 
 ## 7. App Shell, Renderer, State, Workers, And Routing
 
@@ -385,13 +445,19 @@ Milestone 2 should start with:
 
 ```text
 src/features/building-family/materials/atlasPlanner.ts
+src/features/building-family/tests/atlasPlanner.test.ts
+```
+
+Milestone 2B should continue with:
+
+```text
 src/features/building-family/materials/atlasPacker.ts
 src/features/building-family/materials/normalFromHeight.ts
 src/features/building-family/materials/periodicBlend.ts
 src/features/building-family/materials/providers/proceduralMaterialProvider.ts
 src/features/building-family/materials/providers/fixtureMaterialProvider.ts
-src/features/building-family/tests/atlasPlanner.test.ts
 src/features/building-family/tests/proceduralMaterialProvider.test.ts
+src/features/building-family/tests/atlasPacker.test.ts
 ```
 
 ## 12. Verification Report
@@ -429,11 +495,11 @@ rg -n 'react|three|zustand' src\features\building-family\contracts src\features\
 rg -n "Math\.random" src\features\building-family src\features\prompt-spaghetti
 ```
 
-Final results:
+Latest validation results:
 
 ```text
 typecheck: passed
-unit tests: passed, 1 test
+unit tests: passed, 16 tests across 11 files
 lint: passed
 build: passed
 e2e smoke: passed at http://127.0.0.1:5173/
@@ -441,9 +507,9 @@ contracts/core renderer-import scan: no matches
 Math.random scan: no matches
 ```
 
-## 13. Diff Review
+## 13. Current Implemented Surface
 
-Expected setup changes:
+Foundation and Milestone 1 introduced:
 
 ```text
 .gitignore
@@ -470,9 +536,21 @@ src/vite-env.d.ts
 tests/e2e/smoke.spec.ts
 docs/plans/dynamic-building-family.md
 docs/architecture/dynamic-building-family-integration.md
+src/features/prompt-spaghetti/*
+src/features/building-family/contracts/*
+src/features/building-family/core/*
+src/features/building-family/psg/*
+src/features/building-family/style-packs/late-19c-commercial-demo.json
 ```
 
-Generated and ignored:
+Milestone 2A introduced:
+
+```text
+src/features/building-family/materials/atlasPlanner.ts
+src/features/building-family/tests/atlasPlanner.test.ts
+```
+
+Generated and ignored directories:
 
 ```text
 node_modules/
@@ -480,7 +558,7 @@ dist/
 test-results/
 ```
 
-No building-family production logic, generated meshes, material assets, provider routes, or PSG implementation were added.
+No generated meshes, provider routes, procedural pixel sources, packed atlas image output, renderer adapter, compiler, or Zustand state slice has been added yet.
 
 ## 14. Milestone 0 And Setup Exit Criteria
 
