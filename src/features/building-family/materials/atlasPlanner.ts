@@ -14,6 +14,8 @@ export interface AtlasMaterialSourcePlan {
   sourceId: string;
   role: AtlasSlot["role"];
   selectedFamily: string;
+  periodicity: AtlasSlot["periodicity"];
+  physicalSizeM: AtlasSlot["physicalSizeM"];
   seedPath: string;
   promptVocabulary: string[];
 }
@@ -216,6 +218,8 @@ function buildMaterialSources(spec: BuildingFamilySpec): AtlasMaterialSourcePlan
     sourceId: template.materialSourceId,
     role: template.role,
     selectedFamily: selectedFamily(spec, template.selectedFamily),
+    periodicity: template.periodicity,
+    physicalSizeM: template.physicalSize(spec),
     seedPath: `atlas/source/${template.id}/${selectedFamily(spec, template.selectedFamily)}`,
     promptVocabulary: [selectedFamily(spec, template.selectedFamily), ...template.promptTerms]
   }));

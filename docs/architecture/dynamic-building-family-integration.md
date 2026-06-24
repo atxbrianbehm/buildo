@@ -1,6 +1,6 @@
 # Dynamic Building Family Integration Map
 
-**Status:** Milestone 2A semantic atlas planning foundation
+**Status:** Milestone 2B procedural material source foundation
 **Plan source:** `docs/plans/dynamic-building-family.md`
 **Workspace:** `C:\Users\behmb\Documents\Cascade Projects\buildo`
 **Date:** 2026-06-24
@@ -46,7 +46,7 @@ docs/
     dynamic-building-family.md
 ```
 
-The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, and the Milestone 2A semantic atlas planner foundation. No renderer, compiler, state slice, procedural pixel pipeline, packed atlas image output, or generated building asset has been implemented.
+The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, and the Milestone 2B procedural material-source layer. No renderer, compiler, state slice, atlas packer/compositor, packed atlas image output, or generated building asset has been implemented.
 
 ## 2. Active Instructions
 
@@ -185,13 +185,15 @@ src/features/building-family/style-packs/late-19c-commercial-demo.json
 
 The style pack is explicitly demo-curated and does not claim historical authority. The normalizer clamps floor and bay ranges, emits diagnostics for invalid selections and forbidden combinations, and returns a validated `BuildingFamilySpec`.
 
-## 6.2 Semantic Atlas Planning
+## 6.2 Semantic Atlas Planning And Procedural Sources
 
-Actual Milestone 2A material planning paths:
+Actual Milestone 2 material planning and source-generation paths:
 
 ```text
 src/features/building-family/materials/atlasPlanner.ts
+src/features/building-family/materials/providers/proceduralMaterialProvider.ts
 src/features/building-family/tests/atlasPlanner.test.ts
+src/features/building-family/tests/proceduralMaterialProvider.test.ts
 ```
 
 `planAtlas` consumes a validated `BuildingFamilySpec` and produces an `AtlasPlan` containing:
@@ -203,7 +205,7 @@ profileRecipeIds: planned vector profile references
 diagnostics: validation diagnostics
 ```
 
-The planner currently emits the required initial semantic slots before any pixel generation:
+The planner currently emits the required initial semantic slots and source requests:
 
 ```text
 wall.primary
@@ -222,6 +224,8 @@ utility.mask
 
 The implementation keeps the `AtlasSlot.role` contract from the plan. Because `utility.mask` is required by the initial slot list but `utility` is not a serialized role, the slot uses role `ornament` with `utility` and `mask` compatibility tags.
 
+Material source plans now include the selected source family, seed path, prompt vocabulary, periodicity, and physical size. That lets providers generate deterministic source artifacts without taking ownership of packed-atlas layout.
+
 `validateAtlasPlan` checks:
 
 ```text
@@ -233,15 +237,40 @@ slots reference known material sources
 slots reference known profile recipes when profileRecipeId is present
 ```
 
-Milestone 2B should begin with procedural material-source generation and channel artifacts:
+`ProceduralMaterialProvider` returns named source artifacts, not a complete atlas. Each artifact carries:
 
 ```text
-src/features/building-family/materials/providers/proceduralMaterialProvider.ts
+sourceId
+providerId
+widthPx / heightPx
+baseColor RGBA layer
+optional height / roughness / metalness / opacity RGBA layers
+requestHash
+contentHash
+provenance
+```
+
+Implemented procedural source families cover the current demo atlas needs:
+
+```text
+running-bond brick
+stucco / plaster with cracks and weathering
+painted metal with edge wear
+painted wood grain
+roof membrane / tile patterning
+glass tint and roughness
+ornament / utility alpha and height masks
+```
+
+The provider uses seeded deterministic sampling through `SeedTree`; it does not use `Math.random()`. Periodic `x` and `xy` sources are edge-matched at the generated layer boundary so the later packer can repeat them.
+
+The next Milestone 2 material slice should continue with channel utilities, fixture-backed generation, and atlas packing:
+
+```text
 src/features/building-family/materials/providers/fixtureMaterialProvider.ts
 src/features/building-family/materials/normalFromHeight.ts
 src/features/building-family/materials/periodicBlend.ts
 src/features/building-family/materials/atlasPacker.ts
-src/features/building-family/tests/proceduralMaterialProvider.test.ts
 src/features/building-family/tests/atlasPacker.test.ts
 ```
 
@@ -448,15 +477,20 @@ src/features/building-family/materials/atlasPlanner.ts
 src/features/building-family/tests/atlasPlanner.test.ts
 ```
 
-Milestone 2B should continue with:
+Milestone 2B introduced:
+
+```text
+src/features/building-family/materials/providers/proceduralMaterialProvider.ts
+src/features/building-family/tests/proceduralMaterialProvider.test.ts
+```
+
+The next Milestone 2 material slice should continue with:
 
 ```text
 src/features/building-family/materials/atlasPacker.ts
 src/features/building-family/materials/normalFromHeight.ts
 src/features/building-family/materials/periodicBlend.ts
-src/features/building-family/materials/providers/proceduralMaterialProvider.ts
 src/features/building-family/materials/providers/fixtureMaterialProvider.ts
-src/features/building-family/tests/proceduralMaterialProvider.test.ts
 src/features/building-family/tests/atlasPacker.test.ts
 ```
 
@@ -491,7 +525,7 @@ npm run test
 npm run lint
 npm run build
 npm run test:e2e
-rg -n 'react|three|zustand' src\features\building-family\contracts src\features\building-family\core
+rg -n 'react|three|zustand' src\features\building-family\contracts src\features\building-family\core src\features\building-family\materials
 rg -n "Math\.random" src\features\building-family src\features\prompt-spaghetti
 ```
 
@@ -499,11 +533,11 @@ Latest validation results:
 
 ```text
 typecheck: passed
-unit tests: passed, 16 tests across 11 files
+unit tests: passed, 20 tests across 12 files
 lint: passed
 build: passed
 e2e smoke: passed at http://127.0.0.1:5173/
-contracts/core renderer-import scan: no matches
+contracts/core/materials renderer-import scan: no matches
 Math.random scan: no matches
 ```
 
@@ -550,6 +584,13 @@ src/features/building-family/materials/atlasPlanner.ts
 src/features/building-family/tests/atlasPlanner.test.ts
 ```
 
+Milestone 2B introduced:
+
+```text
+src/features/building-family/materials/providers/proceduralMaterialProvider.ts
+src/features/building-family/tests/proceduralMaterialProvider.test.ts
+```
+
 Generated and ignored directories:
 
 ```text
@@ -558,7 +599,7 @@ dist/
 test-results/
 ```
 
-No generated meshes, provider routes, procedural pixel sources, packed atlas image output, renderer adapter, compiler, or Zustand state slice has been added yet.
+No generated meshes, provider routes, packed atlas image output, renderer adapter, compiler, or Zustand state slice has been added yet.
 
 ## 14. Milestone 0 And Setup Exit Criteria
 
