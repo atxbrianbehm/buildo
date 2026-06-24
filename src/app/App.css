@@ -998,6 +998,7 @@ h1 {
   padding-top: 2px;
 }
 
+.assembly-hall__reveal,
 .assembly-hall__selection {
   display: grid;
   gap: 12px;
@@ -1010,6 +1011,13 @@ h1 {
     inset 0 0 0 1px rgba(24, 32, 28, 0.1);
 }
 
+.assembly-hall__reveal-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+}
+
+.assembly-hall__reveal-header h3,
 .assembly-hall__selection h3 {
   margin: 0;
   color: #17201c;
@@ -1018,6 +1026,7 @@ h1 {
   text-wrap: balance;
 }
 
+.assembly-hall__reveal label,
 .assembly-hall__selection label {
   color: #5f6d66;
   font-size: 0.78rem;
@@ -1026,6 +1035,7 @@ h1 {
   text-transform: uppercase;
 }
 
+.assembly-hall__reveal select,
 .assembly-hall__selection select {
   width: 100%;
   min-height: 40px;
@@ -1037,9 +1047,62 @@ h1 {
   font-size: 0.84rem;
 }
 
+.assembly-hall__reveal select:focus-visible,
 .assembly-hall__selection select:focus-visible {
   outline: 3px solid rgba(70, 118, 86, 0.28);
   outline-offset: 2px;
+}
+
+.assembly-hall__stage-visibility {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.assembly-hall__stage-visibility li {
+  display: grid;
+  grid-template-columns: minmax(70px, 0.72fr) auto;
+  gap: 8px 12px;
+  align-items: center;
+  min-height: 42px;
+  padding: 9px 10px;
+  border-radius: 6px;
+  background: #eef1eb;
+  box-shadow: inset 0 0 0 1px rgba(24, 32, 28, 0.08);
+}
+
+.assembly-hall__stage-visibility li[data-visible="true"] {
+  background: #f4f7ef;
+  box-shadow: inset 0 0 0 1px rgba(80, 119, 93, 0.28);
+}
+
+.assembly-hall__stage-visibility span {
+  color: #18201c;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.assembly-hall__stage-visibility small {
+  justify-self: end;
+  color: #5f6d66;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.assembly-hall__stage-visibility li[data-visible="true"] small {
+  color: #375242;
+}
+
+.assembly-hall__stage-visibility em {
+  grid-column: 1 / -1;
+  color: #5f6d66;
+  font-size: 0.76rem;
+  font-style: normal;
+  font-variant-numeric: tabular-nums;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
 .assembly-hall__gallery caption {

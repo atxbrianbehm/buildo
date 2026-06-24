@@ -1,6 +1,6 @@
 # Dynamic Building Family Integration Map
 
-**Status:** Milestone 5E Component Forge UI foundation
+**Status:** Milestone 5F stage-driven Assembly Hall reveal foundation
 **Plan source:** `docs/plans/dynamic-building-family.md`
 **Workspace:** `C:\Users\behmb\Documents\Cascade Projects\buildo`
 **Date:** 2026-06-24
@@ -46,7 +46,7 @@ docs/
     dynamic-building-family.md
 ```
 
-The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, the Milestone 3B pure compiler IR foundation, the Milestone 3C compiler worker boundary, the Milestone 3D component gallery data foundation, the Milestone 4A renderer adapter foundation, the Milestone 4B atlas texture/material sampling foundation, the Milestone 4C shared family runtime foundation, the Milestone 4D Assembly Hall rendered fixture foundation, the Milestone 4E renderer resource disposal foundation, the Milestone 4F Assembly Hall semantic selection foundation, the Milestone 4G WebGPU renderer activation foundation, the Milestone 5A run controller / Zustand state foundation, the Milestone 5B control invalidation foundation, the Milestone 5C committed rerun control/artifact-lineage foundation, the Milestone 5D cancellation UI/stale-run preservation foundation, and the Milestone 5E Component Forge UI foundation. No router, stage-driven reveal, lock/unlock controls, or complete four-room flow has been implemented.
+The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, the Milestone 3B pure compiler IR foundation, the Milestone 3C compiler worker boundary, the Milestone 3D component gallery data foundation, the Milestone 4A renderer adapter foundation, the Milestone 4B atlas texture/material sampling foundation, the Milestone 4C shared family runtime foundation, the Milestone 4D Assembly Hall rendered fixture foundation, the Milestone 4E renderer resource disposal foundation, the Milestone 4F Assembly Hall semantic selection foundation, the Milestone 4G WebGPU renderer activation foundation, the Milestone 5A run controller / Zustand state foundation, the Milestone 5B control invalidation foundation, the Milestone 5C committed rerun control/artifact-lineage foundation, the Milestone 5D cancellation UI/stale-run preservation foundation, the Milestone 5E Component Forge UI foundation, and the Milestone 5F stage-driven Assembly Hall reveal foundation. No router, lock/unlock controls, or complete four-room flow has been implemented.
 
 ## 2. Active Instructions
 
@@ -643,7 +643,27 @@ The surface provides the first roadmap Room 3 controls: generated component sele
 
 The focused React test selects the generated Window frame entry and verifies selector behavior, mode toggles, dimensions, recipe JSON, semantic anchors, and `glass.primary` / `frame.primary` atlas slot highlighting. The app-shell test verifies the Component Forge surface appears in the controller-backed root flow before Assembly Hall.
 
-This is not the full Component Forge roadmap room yet. True isolated component 3D previews, lock/unlock controls, per-component regeneration, and stage-driven reveal remain future Milestone 5 slices.
+This is not the full Component Forge roadmap room yet. True isolated component 3D previews, lock/unlock controls, per-component regeneration, and timeline-linked stage animation remain future Milestone 5 slices.
+
+## 6.19 Stage-Driven Assembly Hall Reveal Foundation
+
+Actual Milestone 5F stage-reveal paths:
+
+```text
+src/features/building-family/ui/AssemblyHall.tsx
+src/features/building-family/tests/AssemblyHall.test.tsx
+src/app/App.css
+src/app/App.test.tsx
+scripts/e2e-smoke.mjs
+```
+
+`AssemblyHall` now exposes a real stage-driven reveal control backed by the renderer adapter's existing `buildingRuntime.stageGroups`. The `Reveal through stage` selector uses the canonical assembly stage order (`massing`, `facade`, `openings`, `trim`, `roof`) and sets each Three.js stage group visible only when it is at or before the selected stage.
+
+The stage reveal panel also shows a real artifact summary for each stage: visible/hidden state, stage object count from the Three.js group, and semantic path count from `RuntimeBuildingIR.semanticIndex`. The renderer canvas records the active `data-reveal-through-stage` value after re-rendering, so the smoke path can verify that the browser scene received the selected stage state.
+
+The focused React test changes the reveal selector to `facade` and verifies both the visible summary and the underlying stage-group visibility flags. The app-shell test verifies the control appears in the root flow, and the e2e smoke selects `facade` before the Assembly Hall canvas backend/pixel probe.
+
+This is a manual stage reveal foundation, not an animated construction timeline. Tying stage reveal to generation events, adding timeline scrubbing, and preserving per-stage reveal state across reruns remain future Milestone 5 work.
 
 ## 7. App Shell, Renderer, State, Workers, And Routing
 
@@ -658,7 +678,7 @@ src/features/building-family/ui/ComponentForge.tsx
 src/features/building-family/ui/AssemblyHall.tsx
 ```
 
-Actual feature routing: root route only. No router dependency exists yet. The root app shell currently shows the Control Invalidation preview, committed rerun buttons, a Cancel Run action, controller-backed Generation Run timeline with artifact cache-hit badges, Atlas Lab, Component Forge, and Assembly Hall fixture surfaces.
+Actual feature routing: root route only. No router dependency exists yet. The root app shell currently shows the Control Invalidation preview, committed rerun buttons, a Cancel Run action, controller-backed Generation Run timeline with artifact cache-hit badges, Atlas Lab, Component Forge, and Assembly Hall fixture surfaces with manual stage reveal.
 
 Actual Three.js renderer setup:
 
@@ -1050,14 +1070,15 @@ Latest validation results:
 
 ```text
 typecheck: passed
-unit tests: passed, 93 tests across 31 files
+unit tests: passed, 94 tests across 31 files
 lint: passed
 build: passed
-e2e smoke: passed, including controller-backed app shell, Component Forge selector/atlas-slot assertion, active renderer backend assertion, Assembly Hall semantic selection, and backend-specific canvas pixel probe
+e2e smoke: passed, including controller-backed app shell, Component Forge selector/atlas-slot assertion, Assembly Hall stage reveal selection, active renderer backend assertion, Assembly Hall semantic selection, and backend-specific canvas pixel probe
 Building state/controller focused tests: passed
 Assembly Hall fixture focused tests: passed
 App committed-rerun/cancel focused test: passed
 Component Forge focused test: passed
+Assembly Hall stage reveal focused test: passed
 Cancellation stale-run focused test: passed
 Control invalidation focused tests: passed
 Assembly renderer factory focused tests: passed
@@ -1131,6 +1152,13 @@ Rendered QA for Milestone 5E:
 ```text
 Playwright desktop screenshot: 1280x720 viewport, Component Forge selected Window frame, wireframe/UV/semantic-anchor modes on, glass.primary and frame.primary atlas slots highlighted, WebGPU canvas data-rendered=true, no console errors, screenshot C:\tmp\buildo-component-forge-qa\desktop.png.
 Playwright mobile screenshot: 390x844 viewport, Component Forge single-column layout selected Window frame, atlas slot highlight and recipe JSON visible, WebGPU canvas data-rendered=true, no console errors, no horizontal overflow, screenshot C:\tmp\buildo-component-forge-qa\mobile.png.
+```
+
+Rendered QA for Milestone 5F:
+
+```text
+Playwright desktop screenshot: 1280x720 viewport, Assembly Hall reveal set to Facade, massing/facade visible, openings/trim/roof hidden, WebGPU canvas data-rendered=true with data-reveal-through-stage=facade, no console errors, screenshot C:\tmp\buildo-stage-reveal-qa\desktop.png.
+Playwright mobile screenshot: 390x844 viewport, Assembly Hall reveal set to Facade in a single-column layout, stage visibility summary readable, WebGPU canvas data-rendered=true with data-reveal-through-stage=facade, no console errors, no horizontal overflow, screenshot C:\tmp\buildo-stage-reveal-qa\mobile.png.
 ```
 
 ## 13. Current Implemented Surface
@@ -1372,6 +1400,17 @@ src/app/App.test.tsx
 docs/architecture/dynamic-building-family-integration.md
 ```
 
+Milestone 5F introduced:
+
+```text
+src/features/building-family/ui/AssemblyHall.tsx
+src/features/building-family/tests/AssemblyHall.test.tsx
+src/app/App.css
+src/app/App.test.tsx
+scripts/e2e-smoke.mjs
+docs/architecture/dynamic-building-family-integration.md
+```
+
 Generated and ignored directories:
 
 ```text
@@ -1380,7 +1419,7 @@ dist/
 test-results/
 ```
 
-No preassembled meshes, provider routes, router-backed room navigation, lock/unlock controls, per-provider cancellation diagnostics, stage-driven assembly reveal, or complete four-room flow has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers through the pure TypeScript compiler path, can deliver them across the compiler worker boundary with transferable buffers, can summarize catalog/IR component data for a Component Forge inspection surface, can convert that IR into Three.js scene objects under `renderer-three/*`, can convert packed atlas channels into texture-backed slot materials at the renderer boundary, can host multiple per-building scene runtimes against one shared family atlas/material runtime, can centralize idempotent renderer resource disposal across standalone and shared-family ownership modes, renders one deterministic fixture building in a WebGPU-first browser Assembly Hall canvas with WebGL fallback from those generated artifacts, surfaces semantic renderer lookup entries in a selectable Assembly Hall inspector, drives the root app through a Zustand-backed run controller with serializable run events plus an out-of-store runtime artifact registry, previews roadmap invalidation impacts for floor, bay, and building-seed controls, can commit `Run Current`, `New Building`, and `New Family` reruns with cache-hit artifact lineage for structural vs family-chain changes, exposes `Cancel Run` while preserving the last completed scene during pending and cancelled runs, and shows a dedicated Component Forge with real generated component entries, selector/toggles, dimensions, anchors, recipe JSON, and selected atlas-slot highlighting.
+No preassembled meshes, provider routes, router-backed room navigation, lock/unlock controls, per-provider cancellation diagnostics, or complete four-room flow has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers through the pure TypeScript compiler path, can deliver them across the compiler worker boundary with transferable buffers, can summarize catalog/IR component data for a Component Forge inspection surface, can convert that IR into Three.js scene objects under `renderer-three/*`, can convert packed atlas channels into texture-backed slot materials at the renderer boundary, can host multiple per-building scene runtimes against one shared family atlas/material runtime, can centralize idempotent renderer resource disposal across standalone and shared-family ownership modes, renders one deterministic fixture building in a WebGPU-first browser Assembly Hall canvas with WebGL fallback from those generated artifacts, surfaces semantic renderer lookup entries in a selectable Assembly Hall inspector, drives the root app through a Zustand-backed run controller with serializable run events plus an out-of-store runtime artifact registry, previews roadmap invalidation impacts for floor, bay, and building-seed controls, can commit `Run Current`, `New Building`, and `New Family` reruns with cache-hit artifact lineage for structural vs family-chain changes, exposes `Cancel Run` while preserving the last completed scene during pending and cancelled runs, shows a dedicated Component Forge with real generated component entries, selector/toggles, dimensions, anchors, recipe JSON, and selected atlas-slot highlighting, and drives Assembly Hall stage group visibility from a real stage reveal control backed by generated scene groups and semantic path counts.
 
 ## 14. Milestone 0 And Setup Exit Criteria
 

@@ -165,6 +165,9 @@ try {
   await forgeAtlasSlots.getByRole("cell", { name: "glass.primary", exact: true }).waitFor({ state: "visible" });
   await forgeAtlasSlots.getByRole("cell", { name: "frame.primary", exact: true }).waitFor({ state: "visible" });
   await page.getByRole("heading", { name: "Assembly Hall" }).waitFor({ state: "visible" });
+  await page.getByRole("combobox", { name: "Reveal through stage" }).selectOption("facade");
+  await page.getByLabel("Assembly stage visibility").getByText("openings").waitFor({ state: "visible" });
+  await page.getByLabel("Assembly stage visibility").getByText("hidden").first().waitFor({ state: "visible" });
   const semanticElementSelect = page.getByRole("combobox", { name: "Semantic element" });
   await semanticElementSelect.waitFor({ state: "visible" });
   const windowOptionValue = await semanticElementSelect
@@ -183,7 +186,12 @@ try {
   await assemblyCanvas.waitFor({ state: "visible" });
   await page.waitForFunction(() => {
     const canvas = document.querySelector('canvas[aria-label="Assembly Hall Three.js canvas"]');
-    return canvas instanceof HTMLCanvasElement && canvas.dataset.rendered === "true" && !!canvas.dataset.rendererBackend;
+    return (
+      canvas instanceof HTMLCanvasElement &&
+      canvas.dataset.rendered === "true" &&
+      canvas.dataset.revealThroughStage === "facade" &&
+      !!canvas.dataset.rendererBackend
+    );
   });
   const activeBackend = await assemblyCanvas.getAttribute("data-renderer-backend");
   if (activeBackend !== "webgpu" && activeBackend !== "webgl") {

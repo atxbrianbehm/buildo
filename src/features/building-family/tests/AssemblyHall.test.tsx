@@ -84,4 +84,28 @@ describe("AssemblyHall", () => {
     expect(metrics).toHaveTextContent("webgl active / webgpu preferred");
     expect(screen.getByRole("status")).toHaveTextContent("adapter unavailable");
   });
+
+  it("drives stage group visibility from the Assembly Hall reveal controls", async () => {
+    const fixture = await createAssemblyHallFixture();
+
+    render(<AssemblyHall fixture={fixture} rendererFactory={fakeRendererFactory()} />);
+
+    fireEvent.change(screen.getByRole("combobox", { name: "Reveal through stage" }), {
+      target: { value: "facade" }
+    });
+
+    const stageVisibility = screen.getByLabelText("Assembly stage visibility");
+    expect(stageVisibility).toHaveTextContent("massing");
+    expect(stageVisibility).toHaveTextContent("visible");
+    expect(stageVisibility).toHaveTextContent("facade");
+    expect(stageVisibility).toHaveTextContent("openings");
+    expect(stageVisibility).toHaveTextContent("hidden");
+
+    const stageGroups = new Map(fixture.buildingRuntime.stageGroups.map((entry) => [entry.stage, entry.group.visible]));
+    expect(stageGroups.get("massing")).toBe(true);
+    expect(stageGroups.get("facade")).toBe(true);
+    expect(stageGroups.get("openings")).toBe(false);
+    expect(stageGroups.get("trim")).toBe(false);
+    expect(stageGroups.get("roof")).toBe(false);
+  });
 });

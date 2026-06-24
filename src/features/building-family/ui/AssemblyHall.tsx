@@ -37,8 +37,27 @@ interface SemanticSelectionOption {
   elementIndex?: number;
 }
 
+interface StageRevealSummary {
+  stage: AssemblyStage;
+  visible: boolean;
+  objectCount: number;
+  semanticPathCount: number;
+}
+
 function formatNumber(value: number): string {
   return new Intl.NumberFormat("en-US").format(value);
+}
+
+function stageLabel(stage: AssemblyStage): string {
+  return stage.charAt(0).toUpperCase() + stage.slice(1);
+}
+
+function stageIndex(stage: AssemblyStage): number {
+  return selectionStageOrder.indexOf(stage);
+}
+
+function isStageVisible(stage: AssemblyStage, revealThroughStage: AssemblyStage): boolean {
+  return stageIndex(stage) <= stageIndex(revealThroughStage);
 }
 
 function objectTypeFor(option: { isInstancedMesh?: boolean; type: string }): string {
@@ -118,19 +137,53 @@ function galleryRows(fixture: AssemblyHallFixture) {
   return fixture.componentGallery.entries.slice(0, 6);
 }
 
+function applyStageReveal(fixture: AssemblyHallFixture, revealThroughStage: AssemblyStage): void {
+  for (const stageGroup of fixture.buildingRuntime.stageGroups) {
+    stageGroup.group.visible = isStageVisible(stageGroup.stage, revealThroughStage);
+    stageGroup.group.userData.revealState = stageGroup.group.visible ? "visible" : "hidden";
+  }
+  fixture.buildingRuntime.root.userData.revealThroughStage = revealThroughStage;
+}
+
+function stageRevealSummaries(fixture: AssemblyHallFixture, revealThroughStage: AssemblyStage): StageRevealSummary[] {
+  return selectionStageOrder.map((stage) => {
+    const stageGroup = fixture.buildingRuntime.stageGroups.find((entry) => entry.stage === stage);
+    return {
+      stage,
+      visible: isStageVisible(stage, revealThroughStage),
+      objectCount: stageGroup?.group.children.length ?? 0,
+      semanticPathCount: fixture.ir.semanticIndex.filter((entry) => entry.stage === stage).length
+    };
+  });
+}
+
 export function AssemblyHall({ fixture, rendererFactory = createAssemblyRenderer }: AssemblyHallProps) {
   const selectionId = useId();
+  const revealId = useId();
   const mountRef = useRef<HTMLDivElement | null>(null);
+  const renderFrameRef = useRef<(() => void) | null>(null);
   const [renderError, setRenderError] = useState<string | null>(null);
   const [activeBackend, setActiveBackend] = useState<AssemblyRendererBackend | "pending">(
     fixture.metrics.activeBackend
   );
   const [backendFallbackReason, setBackendFallbackReason] = useState<string | null>(null);
+  const [revealThroughStage, setRevealThroughStage] = useState<AssemblyStage>("roof");
+  const revealThroughStageRef = useRef<AssemblyStage>(revealThroughStage);
   const rows = useMemo(() => galleryRows(fixture), [fixture]);
   const selectionOptions = useMemo(() => semanticSelectionOptions(fixture), [fixture]);
+  const revealSummaries = useMemo(
+    () => stageRevealSummaries(fixture, revealThroughStage),
+    [fixture, revealThroughStage]
+  );
   const [selectedSemanticPath, setSelectedSemanticPath] = useState("");
   const selectedOption =
     selectionOptions.find((option) => option.semanticPath === selectedSemanticPath) ?? selectionOptions[0];
+
+  useEffect(() => {
+    revealThroughStageRef.current = revealThroughStage;
+    applyStageReveal(fixture, revealThroughStage);
+    renderFrameRef.current?.();
+  }, [fixture, revealThroughStage]);
 
   useEffect(() => {
     const mount = mountRef.current;
@@ -157,7 +210,9 @@ export function AssemblyHall({ fixture, rendererFactory = createAssemblyRenderer
       camera.updateProjectionMatrix();
       renderer.render(scene, camera);
       renderer.domElement.dataset.rendered = "true";
+      renderer.domElement.dataset.revealThroughStage = revealThroughStageRef.current;
     };
+    renderFrameRef.current = renderFrame;
 
     const activateRenderer = async () => {
       try {
@@ -206,6 +261,9 @@ export function AssemblyHall({ fixture, rendererFactory = createAssemblyRenderer
       scene?.remove(fixture.familyRuntime.root);
       renderer?.domElement.remove();
       renderer?.dispose();
+      if (renderFrameRef.current === renderFrame) {
+        renderFrameRef.current = null;
+      }
     };
   }, [fixture, rendererFactory]);
 
@@ -236,6 +294,37 @@ export function AssemblyHall({ fixture, rendererFactory = createAssemblyRenderer
         </div>
 
         <div className="assembly-hall__data-grid">
+          <section className="assembly-hall__reveal" aria-labelledby="assembly-stage-reveal-heading">
+            <div className="assembly-hall__reveal-header">
+              <h3 id="assembly-stage-reveal-heading">Stage Reveal</h3>
+              <label htmlFor={revealId}>Reveal through stage</label>
+              <select
+                id={revealId}
+                aria-label="Reveal through stage"
+                value={revealThroughStage}
+                onChange={(event) => setRevealThroughStage(event.currentTarget.value as AssemblyStage)}
+              >
+                {selectionStageOrder.map((stage) => (
+                  <option key={stage} value={stage}>
+                    {stageLabel(stage)}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <ol className="assembly-hall__stage-visibility" aria-label="Assembly stage visibility">
+              {revealSummaries.map((summary) => (
+                <li data-visible={summary.visible ? "true" : "false"} key={summary.stage}>
+                  <span>{summary.stage}</span>
+                  <small>{summary.visible ? "visible" : "hidden"}</small>
+                  <em>
+                    {formatNumber(summary.objectCount)} objects / {formatNumber(summary.semanticPathCount)} paths
+                  </em>
+                </li>
+              ))}
+            </ol>
+          </section>
+
           <dl className="assembly-hall__metrics" aria-label="Assembly Hall renderer metrics">
             <div>
               <dt>Backend</dt>

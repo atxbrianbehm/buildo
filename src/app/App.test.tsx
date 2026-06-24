@@ -36,6 +36,7 @@ describe("App", () => {
     expect(screen.getByLabelText("Selected component recipe")).toHaveTextContent("Window frame");
     expect(within(screen.getByRole("table", { name: "Selected atlas slots" })).getByText("glass.primary")).toBeInTheDocument();
     expect(await screen.findByRole("heading", { name: "Assembly Hall" })).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "Reveal through stage" })).toBeInTheDocument();
     expect(screen.getByRole("img", { name: "Rendered generated building fixture" })).toBeInTheDocument();
     expect(screen.getByLabelText("Assembly Hall renderer metrics")).toHaveTextContent("Draw calls");
   });
