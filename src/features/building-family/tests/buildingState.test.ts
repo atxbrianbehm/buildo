@@ -3,6 +3,11 @@ import type { AssemblyHallFixture, CreateAssemblyHallFixtureInput } from "../ui/
 import type { MaterialSourceRequest } from "../materials/providers/proceduralMaterialProvider";
 import { BuildingArtifactRegistry } from "../state/artifactRegistry";
 import { BuildingRunController } from "../state/buildingRunController";
+import {
+  COMPLETED_FAMILY_ARTIFACT_TYPE,
+  type CompletedFamilyPersistenceCacheEntry,
+  type CompletedFamilyPersistencePacket
+} from "../state/completedFamilyPersistence";
 import { defaultBuildingPromptControls, createBuildingStore } from "../state/buildingStore";
 
 function fakeAssemblyFixture(
@@ -68,6 +73,29 @@ function eventByStage(store: ReturnType<typeof createBuildingStore>, stage: stri
     throw new Error(`Missing run event ${stage}`);
   }
   return event;
+}
+
+function fakeCompletedFamilyPacket(
+  requestHash: string,
+  fixture: AssemblyHallFixture
+): CompletedFamilyPersistencePacket {
+  return {
+    schemaVersion: "0.1.0",
+    documentId: "family-doc-alpha",
+    runId: "run-persisted",
+    requestHash,
+    contentHash: "completed-family-content-hash",
+    createdAt: "2026-06-24T00:00:00.000Z",
+    familyId: fixture.spec.familyId,
+    buildingId: fixture.ir.buildingId,
+    artifacts: {
+      atlasManifest: { atlasId: fixture.packedAtlas.atlasId },
+      atlasContentHash: fixture.packedAtlas.contentHash,
+      componentCatalog: { catalogId: fixture.catalog.catalogId },
+      graph: { graphId: fixture.graph.graphId },
+      runtimeIr: { sourceGraphHash: fixture.ir.sourceGraphHash }
+    }
+  } as unknown as CompletedFamilyPersistencePacket;
 }
 
 describe("building artifact registry", () => {
@@ -153,6 +181,99 @@ describe("building run controller", () => {
     ]);
     expect(registry.get<AssemblyHallFixture>(result.artifactId!)).toBe(result.fixture);
     expect(JSON.stringify(store.getState().runs)).not.toContain("familyRuntime");
+  });
+
+  it("persists a completed-family cache entry for successful current runs", async () => {
+    const store = createBuildingStore(defaultBuildingPromptControls, "promptLab", "family-doc-alpha");
+    const registry = new BuildingArtifactRegistry({ now: () => "2026-06-24T00:00:00.000Z" });
+    const fixture = fakeAssemblyFixture("persisted");
+    const persistedEntries: CompletedFamilyPersistenceCacheEntry[] = [];
+    const createCompletedFamilyPersistencePacket = vi.fn(async (input: {
+      documentId: string;
+      runId: string;
+      requestHash: string;
+      fixture: AssemblyHallFixture;
+      createdAt?: string;
+    }) => fakeCompletedFamilyPacket(input.requestHash, input.fixture));
+    const completedFamilyPersistence = {
+      put: vi.fn(async (entry: CompletedFamilyPersistenceCacheEntry) => {
+        persistedEntries.push(entry);
+      })
+    };
+    const controller = new BuildingRunController({
+      store,
+      registry,
+      createRunId: () => "run-persisted",
+      createFixture: async () => fixture,
+      createCompletedFamilyPersistencePacket,
+      completedFamilyPersistence
+    });
+
+    await controller.startDemoRun();
+
+    expect(createCompletedFamilyPersistencePacket).toHaveBeenCalledWith({
+      documentId: "family-doc-alpha",
+      runId: "run-persisted",
+      requestHash: expect.stringMatching(/^[a-f0-9]{64}$/),
+      fixture
+    });
+    expect(completedFamilyPersistence.put).toHaveBeenCalledTimes(1);
+    expect(persistedEntries[0]).toMatchObject({
+      schemaVersion: "0.1.0",
+      artifactType: COMPLETED_FAMILY_ARTIFACT_TYPE,
+      requestHash: createCompletedFamilyPersistencePacket.mock.calls[0][0].requestHash,
+      contentHash: "completed-family-content-hash",
+      artifact: {
+        documentId: "family-doc-alpha",
+        runId: "run-persisted",
+        requestHash: createCompletedFamilyPersistencePacket.mock.calls[0][0].requestHash
+      }
+    });
+    expect(persistedEntries[0].dependencies).toEqual([
+      fixture.spec.familyId,
+      fixture.packedAtlas.atlasId,
+      fixture.packedAtlas.contentHash,
+      fixture.catalog.catalogId,
+      fixture.graph.graphId,
+      fixture.ir.sourceGraphHash,
+      fixture.ir.buildingId
+    ]);
+  });
+
+  it("keeps the run complete when optional completed-family persistence rejects", async () => {
+    const store = createBuildingStore(defaultBuildingPromptControls, "promptLab", "family-doc-alpha");
+    const registry = new BuildingArtifactRegistry();
+    const fixture = fakeAssemblyFixture("persistence-fallback");
+    const createCompletedFamilyPersistencePacket = vi.fn(async (input: {
+      documentId: string;
+      runId: string;
+      requestHash: string;
+      fixture: AssemblyHallFixture;
+    }) => fakeCompletedFamilyPacket(input.requestHash, input.fixture));
+    const completedFamilyPersistence = {
+      put: vi.fn(async () => {
+        throw new Error("IndexedDB write failed");
+      })
+    };
+    const controller = new BuildingRunController({
+      store,
+      registry,
+      createRunId: () => "run-persistence-fallback",
+      createFixture: async () => fixture,
+      createCompletedFamilyPersistencePacket,
+      completedFamilyPersistence
+    });
+
+    const result = await controller.startDemoRun();
+
+    expect(result).toMatchObject({
+      runId: "run-persistence-fallback",
+      artifactId: "assembly-hall-fixture:persistence-fallback-building:persistence-fallback-atlas-hash",
+      stale: false
+    });
+    expect(completedFamilyPersistence.put).toHaveBeenCalledTimes(1);
+    expect(store.getState().runs.status).toBe("complete");
+    expect(registry.get<AssemblyHallFixture>(result.artifactId!)).toBe(fixture);
   });
 
   it("cancels the prior run, disposes stale fixture results, and keeps the latest completed artifact active", async () => {

@@ -13,12 +13,27 @@ import {
   requestRemoteMaterialImages,
   type RemoteMaterialRouteResult
 } from "./remoteMaterialRouteClient";
+import {
+  completedFamilyPersistenceCacheEntry,
+  createCompletedFamilyPersistencePacket as defaultCreateCompletedFamilyPersistencePacket,
+  type CompletedFamilyPersistenceCacheEntry,
+  type CompletedFamilyPersistencePacket,
+  type CreateCompletedFamilyPersistencePacketInput
+} from "./completedFamilyPersistence";
+
+export interface CompletedFamilyPersistenceWriter {
+  put(entry: CompletedFamilyPersistenceCacheEntry): Promise<void>;
+}
 
 export interface BuildingRunControllerOptions {
   store: BuildingStoreApi;
   registry: BuildingArtifactRegistry;
   createFixture?: (input: CreateAssemblyHallFixtureInput & { runId: string; signal: AbortSignal }) => Promise<AssemblyHallFixture>;
+  createCompletedFamilyPersistencePacket?: (
+    input: CreateCompletedFamilyPersistencePacketInput
+  ) => Promise<CompletedFamilyPersistencePacket>;
   createRunId?: () => string;
+  completedFamilyPersistence?: CompletedFamilyPersistenceWriter;
   nowMs?: () => number;
   remoteMaterial?: CreateAssemblyHallFixtureInput["remoteMaterial"];
 }
@@ -66,7 +81,11 @@ export class BuildingRunController {
   private readonly store: BuildingStoreApi;
   private readonly registry: BuildingArtifactRegistry;
   private readonly createFixture: (input: CreateAssemblyHallFixtureInput & { runId: string; signal: AbortSignal }) => Promise<AssemblyHallFixture>;
+  private readonly createCompletedFamilyPersistencePacket: (
+    input: CreateCompletedFamilyPersistencePacketInput
+  ) => Promise<CompletedFamilyPersistencePacket>;
   private readonly createRunId: () => string;
+  private readonly completedFamilyPersistence: CompletedFamilyPersistenceWriter | undefined;
   private readonly nowMs: () => number;
   private readonly remoteMaterial: CreateAssemblyHallFixtureInput["remoteMaterial"];
   private activeRun: ActiveRun | undefined;
@@ -77,7 +96,10 @@ export class BuildingRunController {
     this.store = options.store;
     this.registry = options.registry;
     this.createFixture = options.createFixture ?? createAssemblyHallFixture;
+    this.createCompletedFamilyPersistencePacket =
+      options.createCompletedFamilyPersistencePacket ?? defaultCreateCompletedFamilyPersistencePacket;
     this.createRunId = options.createRunId ?? defaultRunId;
+    this.completedFamilyPersistence = options.completedFamilyPersistence;
     this.nowMs = options.nowMs ?? (() => Date.now());
     this.remoteMaterial = options.remoteMaterial;
   }
@@ -137,6 +159,11 @@ export class BuildingRunController {
         dispose: () => disposeFixture(fixture)
       });
       this.store.getState().registerArtifact(metadata);
+      await this.persistCompletedFamily({
+        fixture,
+        requestHash,
+        runId
+      });
       this.store.getState().completeRun({
         runId,
         artifactId,
@@ -263,6 +290,28 @@ export class BuildingRunController {
         }
       }
     };
+  }
+
+  private async persistCompletedFamily(input: {
+    fixture: AssemblyHallFixture;
+    requestHash: string;
+    runId: string;
+  }): Promise<void> {
+    if (!this.completedFamilyPersistence) {
+      return;
+    }
+
+    try {
+      const packet = await this.createCompletedFamilyPersistencePacket({
+        documentId: this.store.getState().selection.documentId,
+        runId: input.runId,
+        requestHash: input.requestHash,
+        fixture: input.fixture
+      });
+      await this.completedFamilyPersistence.put(completedFamilyPersistenceCacheEntry(packet));
+    } catch {
+      return;
+    }
   }
 
   private reusableArtifactsFor(invalidation: BuildingInvalidation): ReusableAssemblyHallArtifacts {
