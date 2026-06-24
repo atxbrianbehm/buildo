@@ -10,11 +10,14 @@ import { normalizeBuildingSpec } from "../core/specNormalizer";
 import { createAtlasDebugExport, type AtlasDebugExport } from "../materials/atlasDebugExport";
 import { packAtlas, type PackedAtlas } from "../materials/atlasPacker";
 import { planAtlas } from "../materials/atlasPlanner";
+import type { Diagnostic } from "../core/diagnostics";
 import {
   ProceduralMaterialProvider,
   type MaterialGenerationProvider,
   type MaterialSourceRequest
 } from "../materials/providers/proceduralMaterialProvider";
+import type { PngLayerDecoder } from "../materials/remoteMaterialImageBridge";
+import type { RemoteMaterialOverlayOptions } from "../materials/remoteMaterialOverlay";
 import { LocalRulePromptInterpreter } from "../psg/localRulePromptInterpreter";
 import { adaptPsgEvaluationToBuildingIntent } from "../psg/psgBuildingIntentAdapter";
 import {
@@ -27,6 +30,12 @@ import {
   type BuildingSceneRuntime,
   type RendererBackendSupport
 } from "../renderer-three/buildingSceneAdapter";
+import {
+  applyRemoteMaterialRouteOverlays,
+  type AppliedRemoteMaterialSourceSummary,
+  type RemoteMaterialApplicationRouteSummary,
+  type RemoteMaterialImageRequester
+} from "../state/remoteMaterialApplicationCoordinator";
 import type { BuildingPromptControls } from "../state/buildingStore";
 import buildingFixture from "../psg/fixtures/late19cCommercialPrompt.psg.json";
 import stylePack from "../style-packs/late-19c-commercial-demo.json";
@@ -121,6 +130,13 @@ export interface AssemblyHallPromptTrace {
   }>;
 }
 
+export interface AssemblyHallRemoteMaterialApplication {
+  schemaVersion: "0.1.0";
+  route: RemoteMaterialApplicationRouteSummary;
+  remoteSources: AppliedRemoteMaterialSourceSummary[];
+  diagnostics: Diagnostic[];
+}
+
 export interface AssemblyHallFixture {
   schemaVersion: "0.1.0";
   prompt: string;
@@ -133,6 +149,7 @@ export interface AssemblyHallFixture {
   debugExport: AtlasDebugExport;
   componentGallery: ComponentGallery;
   variantStress: AssemblyHallVariantStress;
+  remoteMaterialApplication?: AssemblyHallRemoteMaterialApplication;
   backendSupport: RendererBackendSupport;
   familyRuntime: BuildingFamilyRuntime;
   buildingRuntime: BuildingSceneRuntime;
@@ -152,6 +169,12 @@ export interface CreateAssemblyHallFixtureInput {
   promptControls?: BuildingPromptControls;
   reusableArtifacts?: ReusableAssemblyHallArtifacts;
   materialProvider?: MaterialGenerationProvider;
+  remoteMaterial?: {
+    decodePngLayer: PngLayerDecoder;
+    requestRemoteImages?: RemoteMaterialImageRequester;
+    selectRequests?: (requests: MaterialSourceRequest[]) => MaterialSourceRequest[];
+    overlayOptions?: RemoteMaterialOverlayOptions;
+  };
 }
 
 function throwIfAborted(signal: AbortSignal): void {
@@ -290,6 +313,29 @@ function promptTraceFor(input: {
   };
 }
 
+const defaultRemoteMaterialSourceIds = new Set([
+  "source.wall.primary",
+  "source.wall.secondary",
+  "source.roof.primary",
+  "source.frame.primary",
+  "source.door.primary",
+  "source.trim.horizontal.primary",
+  "source.trim.horizontal.secondary",
+  "source.trim.vertical.primary",
+  "source.cornice.primary",
+  "source.ornament.primary"
+]);
+
+function defaultRemoteMaterialRequests(requests: MaterialSourceRequest[]): MaterialSourceRequest[] {
+  return requests
+    .filter((request) => defaultRemoteMaterialSourceIds.has(request.sourceId))
+    .slice(0, 4);
+}
+
+function routeRunId(inputRunId: string | undefined, spec: BuildingFamilySpec): string {
+  return inputRunId ?? `assembly-hall-fixture:${spec.familyId}`;
+}
+
 export async function createAssemblyHallFixture(
   input: CreateAssemblyHallFixtureInput = {}
 ): Promise<AssemblyHallFixture> {
@@ -329,6 +375,7 @@ export async function createAssemblyHallFixture(
   const ir = await compileBuilding({ spec, catalog, graph, buildingId: await buildingIdFor(spec, controls) });
   let generatedMaterialSourceCount = 0;
   let packedAtlas = input.reusableArtifacts?.packedAtlas;
+  let remoteMaterialApplication: AssemblyHallRemoteMaterialApplication | undefined;
   if (!packedAtlas) {
     const materialRequests = atlasPlan.materialSources.map(
       (source): MaterialSourceRequest => ({
@@ -338,9 +385,35 @@ export async function createAssemblyHallFixture(
       })
     );
     const provider = input.materialProvider ?? new ProceduralMaterialProvider();
-    const materialSources = await Promise.all(materialRequests.map((request) => provider.generate(request, signal)));
+    let materialSources = await Promise.all(materialRequests.map((request) => provider.generate(request, signal)));
     generatedMaterialSourceCount = materialSources.length;
+    if (input.remoteMaterial) {
+      const remoteRequests = (input.remoteMaterial.selectRequests ?? defaultRemoteMaterialRequests)(materialRequests);
+      if (remoteRequests.length > 0) {
+        const application = await applyRemoteMaterialRouteOverlays({
+          runId: routeRunId(input.runId, spec),
+          requests: remoteRequests,
+          proceduralArtifacts: materialSources,
+          decodePngLayer: input.remoteMaterial.decodePngLayer,
+          requestRemoteImages: input.remoteMaterial.requestRemoteImages,
+          overlayOptions: input.remoteMaterial.overlayOptions
+        });
+        materialSources = application.artifacts;
+        remoteMaterialApplication = {
+          schemaVersion: "0.1.0",
+          route: application.route,
+          remoteSources: application.remoteSources,
+          diagnostics: application.diagnostics
+        };
+      }
+    }
     packedAtlas = await packAtlas(atlasPlan, materialSources);
+    if (remoteMaterialApplication?.diagnostics.length) {
+      packedAtlas = {
+        ...packedAtlas,
+        diagnostics: [...packedAtlas.diagnostics, ...remoteMaterialApplication.diagnostics]
+      };
+    }
   }
   const debugExport = input.reusableArtifacts?.debugExport ?? (await createAtlasDebugExport(packedAtlas));
   const componentGallery = await buildComponentGallery({ catalog, ir });
@@ -379,6 +452,7 @@ export async function createAssemblyHallFixture(
     debugExport,
     componentGallery,
     variantStress,
+    remoteMaterialApplication,
     backendSupport,
     familyRuntime,
     buildingRuntime,
@@ -397,6 +471,7 @@ export async function createAssemblyHallFixture(
     provenanceEntryCount:
       (generatedMaterialSourceCount || packedAtlas.slotProvenance.length) +
       packedAtlas.slotProvenance.length +
+      (remoteMaterialApplication?.remoteSources.length ?? 0) +
       debugExport.channels.length +
       1
   };

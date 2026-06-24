@@ -1,5 +1,12 @@
 import { vi } from "vitest";
-import { ProceduralMaterialProvider, type MaterialGenerationProvider } from "../materials/providers/proceduralMaterialProvider";
+import type { PngLayerDecoderInput, RemoteMaterialImageArtifact } from "../materials/remoteMaterialImageBridge";
+import type { RemoteMaterialRouteResult } from "../state/remoteMaterialRouteClient";
+import {
+  ProceduralMaterialProvider,
+  type MaterialGenerationProvider,
+  type MaterialSourceRequest,
+  type PixelLayer
+} from "../materials/providers/proceduralMaterialProvider";
 import { createAssemblyHallFixture, type AssemblyHallFixture } from "../ui/assemblyHallFixture";
 
 const createFixtureWithOptions = createAssemblyHallFixture as (input?: {
@@ -21,6 +28,15 @@ const createFixtureWithOptions = createAssemblyHallFixture as (input?: {
   };
   reusableArtifacts?: Pick<AssemblyHallFixture, "catalog" | "debugExport" | "packedAtlas">;
   materialProvider?: MaterialGenerationProvider;
+  runId?: string;
+  remoteMaterial?: {
+    selectRequests?: (requests: MaterialSourceRequest[]) => MaterialSourceRequest[];
+    requestRemoteImages: (input: {
+      runId: string;
+      requests: MaterialSourceRequest[];
+    }) => Promise<RemoteMaterialRouteResult>;
+    decodePngLayer: (input: PngLayerDecoderInput) => Promise<PixelLayer>;
+  };
 }) => Promise<AssemblyHallFixture>;
 
 const explicitPromptControls = {
@@ -39,6 +55,46 @@ const explicitPromptControls = {
   trimDensity: "ornate" as const,
   lockedComponentKeys: []
 };
+
+function makeLayer(
+  widthPx: number,
+  heightPx: number,
+  rgba: [number, number, number, number]
+): PixelLayer {
+  const data = new Uint8ClampedArray(widthPx * heightPx * 4);
+  for (let index = 0; index < data.length; index += 4) {
+    data[index] = rgba[0];
+    data[index + 1] = rgba[1];
+    data[index + 2] = rgba[2];
+    data[index + 3] = rgba[3];
+  }
+  return { widthPx, heightPx, channels: "rgba8", data };
+}
+
+function remoteArtifactFor(request: MaterialSourceRequest): RemoteMaterialImageArtifact {
+  return {
+    schemaVersion: "0.1.0",
+    sourceId: request.sourceId,
+    providerId: "openai-image",
+    image: {
+      format: "png",
+      b64Json: `remote-png-b64:${request.sourceId}`
+    },
+    revisedPrompt: `revised remote prompt for ${request.sourceId}`,
+    requestHash: `remote-request-hash:${request.sourceId}`,
+    contentHash: `remote-content-hash:${request.sourceId}`,
+    provenance: {
+      providerId: "openai-image",
+      model: "gpt-image-test",
+      endpoint: "https://api.openai.com/v1/images/generations",
+      prompt: `remote prompt for ${request.sourceId}`,
+      promptVocabulary: request.promptVocabulary,
+      seedPath: request.seedPath,
+      outputFormat: "png",
+      quality: "low"
+    }
+  };
+}
 
 describe("assembly hall fixture", () => {
   it("builds a rendered-building fixture from the real atlas, compiler, gallery, and family runtime pipeline", async () => {
@@ -232,5 +288,94 @@ describe("assembly hall fixture", () => {
     expect(provider.generate).toHaveBeenCalledTimes(fixture.packedAtlas.manifest.slots.length);
 
     fixture.familyRuntime.dispose();
+  });
+
+  it("can apply remote material overlays during fixture atlas generation without changing structural geometry", async () => {
+    const baseline = await createFixtureWithOptions({ promptControls: explicitPromptControls });
+    const routeCalls: Array<{ runId: string; requests: MaterialSourceRequest[] }> = [];
+    const decodeCalls: PngLayerDecoderInput[] = [];
+
+    const fixture = await createFixtureWithOptions({
+      runId: "fixture-remote-material-run",
+      promptControls: explicitPromptControls,
+      remoteMaterial: {
+        selectRequests: (requests) => requests.filter((request) => request.sourceId === "source.wall.primary"),
+        requestRemoteImages: async (input) => {
+          routeCalls.push(input);
+          return {
+            schemaVersion: "0.1.0",
+            status: "generated",
+            providerId: "openai-image",
+            requestHash: "fixture-route-request-hash",
+            acceptedRequestCount: input.requests.length,
+            cacheStatus: "miss",
+            artifacts: input.requests.map(remoteArtifactFor),
+            diagnostics: []
+          };
+        },
+        decodePngLayer: async (input) => {
+          decodeCalls.push(input);
+          return makeLayer(input.widthPx, input.heightPx, [200, 50, 0, 128]);
+        }
+      }
+    });
+
+    const remoteSlot = fixture.packedAtlas.slotProvenance.find(
+      (entry) => entry.sourceId === "source.wall.primary"
+    );
+
+    expect(routeCalls).toHaveLength(1);
+    expect(routeCalls[0]).toEqual({
+      runId: "fixture-remote-material-run",
+      requests: [expect.objectContaining({ sourceId: "source.wall.primary" })]
+    });
+    expect(decodeCalls).toEqual([
+      {
+        b64Json: "remote-png-b64:source.wall.primary",
+        widthPx: 32,
+        heightPx: 32
+      }
+    ]);
+    expect(fixture.ir.sourceGraphHash).toBe(baseline.ir.sourceGraphHash);
+    expect(fixture.ir.metrics).toEqual(baseline.ir.metrics);
+    expect(fixture.packedAtlas.contentHash).not.toBe(baseline.packedAtlas.contentHash);
+    expect(remoteSlot).toEqual(
+      expect.objectContaining({
+        providerId: "procedural+remote-overlay",
+        sourceId: "source.wall.primary"
+      })
+    );
+    expect(fixture.debugExport.providerDiagnostics).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          providerId: "procedural+remote-overlay",
+          warningCount: 0,
+          errorCount: 0
+        })
+      ])
+    );
+    expect(fixture.remoteMaterialApplication).toEqual(
+      expect.objectContaining({
+        route: expect.objectContaining({
+          status: "generated",
+          providerId: "openai-image",
+          requestHash: "fixture-route-request-hash",
+          cacheStatus: "miss"
+        }),
+        remoteSources: [
+          {
+            sourceId: "source.wall.primary",
+            providerId: "openai-image",
+            requestHash: "remote-request-hash:source.wall.primary",
+            contentHash: "remote-content-hash:source.wall.primary",
+            revisedPrompt: "revised remote prompt for source.wall.primary"
+          }
+        ],
+        diagnostics: []
+      })
+    );
+
+    fixture.familyRuntime.dispose();
+    baseline.familyRuntime.dispose();
   });
 });
