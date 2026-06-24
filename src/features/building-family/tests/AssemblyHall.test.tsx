@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { vi } from "vitest";
 import { AssemblyHall, type AssemblyRendererFactory } from "../ui/AssemblyHall";
 import { createAssemblyHallFixture } from "../ui/assemblyHallFixture";
@@ -40,5 +40,24 @@ describe("AssemblyHall", () => {
     expect(screen.getByRole("table", { name: "Component gallery summary" })).toHaveTextContent(
       "instanceBatch"
     );
+  });
+
+  it("exposes semantic renderer lookup entries as a selectable Assembly Hall inspector", async () => {
+    const fixture = await createAssemblyHallFixture();
+    const windowPath = `building/${fixture.ir.familyId}/facade/front/floor/0/bay/0/window/frame`;
+
+    render(<AssemblyHall fixture={fixture} rendererFactory={fakeRendererFactory()} />);
+
+    fireEvent.change(screen.getByRole("combobox", { name: "Semantic element" }), {
+      target: { value: windowPath }
+    });
+
+    const inspector = screen.getByLabelText("Selected semantic element");
+    expect(inspector).toHaveTextContent(windowPath);
+    expect(inspector).toHaveTextContent("instances.window");
+    expect(inspector).toHaveTextContent("openings");
+    expect(inspector).toHaveTextContent("glass.primary");
+    expect(inspector).toHaveTextContent("InstancedMesh");
+    expect(inspector).toHaveTextContent("Window frame");
   });
 });

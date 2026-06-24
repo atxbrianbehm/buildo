@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { App } from "./App";
 
 describe("App", () => {
@@ -10,7 +10,7 @@ describe("App", () => {
     expect(screen.getByLabelText("Project setup status")).toBeInTheDocument();
     expect(await screen.findByRole("heading", { name: "Atlas Lab" })).toBeInTheDocument();
     expect(screen.getByRole("img", { name: "baseColor channel" })).toBeInTheDocument();
-    expect(screen.getByText("wall.primary")).toBeInTheDocument();
+    expect(within(screen.getByRole("table", { name: "Semantic Slots" })).getByText("wall.primary")).toBeInTheDocument();
     expect(screen.getByLabelText("Atlas fixture provenance")).toHaveTextContent("30 entries");
     expect(await screen.findByRole("heading", { name: "Assembly Hall" })).toBeInTheDocument();
     expect(screen.getByRole("img", { name: "Rendered generated building fixture" })).toBeInTheDocument();

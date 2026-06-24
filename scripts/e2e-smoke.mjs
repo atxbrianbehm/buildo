@@ -28,6 +28,20 @@ try {
   await page.getByRole("img", { name: "baseColor channel" }).waitFor({ state: "visible" });
   await page.getByRole("cell", { name: "wall.primary", exact: true }).waitFor({ state: "visible" });
   await page.getByRole("heading", { name: "Assembly Hall" }).waitFor({ state: "visible" });
+  const semanticElementSelect = page.getByRole("combobox", { name: "Semantic element" });
+  await semanticElementSelect.waitFor({ state: "visible" });
+  const windowOptionValue = await semanticElementSelect
+    .locator("option", { hasText: "openings / Window frame / #0" })
+    .first()
+    .getAttribute("value");
+  if (!windowOptionValue) {
+    throw new Error("Assembly Hall semantic selection smoke could not find the Window frame option.");
+  }
+  await semanticElementSelect.selectOption(windowOptionValue);
+  const selectedSemanticElement = page.locator('[aria-label="Selected semantic element"]');
+  await selectedSemanticElement.getByText("instances.window").waitFor({ state: "visible" });
+  await selectedSemanticElement.getByText("glass.primary").waitFor({ state: "visible" });
+  await selectedSemanticElement.getByText("InstancedMesh").waitFor({ state: "visible" });
   const assemblyCanvas = page.locator('canvas[aria-label="Assembly Hall Three.js canvas"]');
   await assemblyCanvas.waitFor({ state: "visible" });
   await page.waitForFunction(() => {

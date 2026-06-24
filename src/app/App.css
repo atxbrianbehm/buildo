@@ -338,14 +338,16 @@ h1 {
 }
 
 .assembly-hall__metrics,
-.assembly-hall__identity {
+.assembly-hall__identity,
+.assembly-hall__selection-details {
   display: grid;
   gap: 10px;
   margin: 0;
 }
 
 .assembly-hall__metrics div,
-.assembly-hall__identity div {
+.assembly-hall__identity div,
+.assembly-hall__selection-details div {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 14px;
@@ -355,7 +357,8 @@ h1 {
 }
 
 .assembly-hall__metrics dt,
-.assembly-hall__identity dt {
+.assembly-hall__identity dt,
+.assembly-hall__selection-details dt {
   color: #5f6d66;
   font-size: 0.78rem;
   font-weight: 700;
@@ -364,7 +367,8 @@ h1 {
 }
 
 .assembly-hall__metrics dd,
-.assembly-hall__identity dd {
+.assembly-hall__identity dd,
+.assembly-hall__selection-details dd {
   max-width: 18ch;
   margin: 0;
   overflow-wrap: anywhere;
@@ -433,6 +437,50 @@ h1 {
   gap: 20px;
   min-width: 0;
   padding-top: 2px;
+}
+
+.assembly-hall__selection {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 14px 36px rgba(22, 29, 25, 0.08),
+    inset 0 0 0 1px rgba(24, 32, 28, 0.1);
+}
+
+.assembly-hall__selection h3 {
+  margin: 0;
+  color: #17201c;
+  font-size: 1rem;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+.assembly-hall__selection label {
+  color: #5f6d66;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.assembly-hall__selection select {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid rgba(24, 32, 28, 0.18);
+  border-radius: 6px;
+  color: #18201c;
+  background: rgba(247, 248, 244, 0.94);
+  font-size: 0.84rem;
+}
+
+.assembly-hall__selection select:focus-visible {
+  outline: 3px solid rgba(70, 118, 86, 0.28);
+  outline-offset: 2px;
 }
 
 .assembly-hall__gallery caption {
@@ -516,7 +564,8 @@ h1 {
   }
 
   .assembly-hall__metrics div,
-  .assembly-hall__identity div {
+  .assembly-hall__identity div,
+  .assembly-hall__selection-details div {
     grid-template-columns: 1fr;
   }
 

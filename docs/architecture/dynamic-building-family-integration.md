@@ -1,6 +1,6 @@
 # Dynamic Building Family Integration Map
 
-**Status:** Milestone 4E renderer resource disposal foundation
+**Status:** Milestone 4F Assembly Hall semantic selection foundation
 **Plan source:** `docs/plans/dynamic-building-family.md`
 **Workspace:** `C:\Users\behmb\Documents\Cascade Projects\buildo`
 **Date:** 2026-06-24
@@ -46,7 +46,7 @@ docs/
     dynamic-building-family.md
 ```
 
-The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, the Milestone 3B pure compiler IR foundation, the Milestone 3C compiler worker boundary, the Milestone 3D component gallery data foundation, the Milestone 4A renderer adapter foundation, the Milestone 4B atlas texture/material sampling foundation, the Milestone 4C shared family runtime foundation, the Milestone 4D Assembly Hall rendered fixture foundation, and the Milestone 4E renderer resource disposal foundation. No router, Zustand state slice, Component Forge UI, control surface, or four-room flow has been implemented.
+The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, the Milestone 3B pure compiler IR foundation, the Milestone 3C compiler worker boundary, the Milestone 3D component gallery data foundation, the Milestone 4A renderer adapter foundation, the Milestone 4B atlas texture/material sampling foundation, the Milestone 4C shared family runtime foundation, the Milestone 4D Assembly Hall rendered fixture foundation, the Milestone 4E renderer resource disposal foundation, and the Milestone 4F Assembly Hall semantic selection foundation. No router, Zustand state slice, Component Forge UI, control surface, or four-room flow has been implemented.
 
 ## 2. Active Instructions
 
@@ -508,7 +508,22 @@ src/features/building-family/tests/resourceDisposal.test.ts
 
 The focused resource-disposal tests cover both ownership modes: standalone scene disposal releases geometries, materials, and atlas textures exactly once, while shared-family building disposal releases only per-building geometries and leaves atlas resources intact until final family disposal.
 
-The next roadmap slice should continue Milestone 4 or begin Milestone 5 orchestration with state/run-controller work. Remaining Milestone 4 gaps include explicit WebGPU renderer activation and richer selection lookup UI.
+## 6.12 Assembly Hall Semantic Selection Foundation
+
+Actual Milestone 4F UI paths:
+
+```text
+src/features/building-family/ui/AssemblyHall.tsx
+src/features/building-family/tests/AssemblyHall.test.tsx
+src/app/App.css
+scripts/e2e-smoke.mjs
+```
+
+`AssemblyHall` now exposes the renderer semantic lookup as a selectable inspector. The selector is built from `buildingRuntime.semanticLookup`, and each selected entry shows its semantic path, assembly stage, runtime batch id, material slot id, Three.js object type, and component-gallery label/source where available.
+
+The focused React test selects a real generated window semantic path and verifies it traces to `instances.window`, `openings`, `glass.primary`, `InstancedMesh`, and the Window frame gallery entry. The e2e smoke also selects the window entry in the browser before probing the canvas, so the visible Assembly Hall path covers both selection data and rendered output.
+
+The next roadmap slice should continue Milestone 4 with explicit WebGPU renderer activation or begin Milestone 5 orchestration with state/run-controller work.
 
 ## 7. App Shell, Renderer, State, Workers, And Routing
 
@@ -847,6 +862,15 @@ src/features/building-family/renderer-three/resourceDisposal.ts
 src/features/building-family/tests/resourceDisposal.test.ts
 ```
 
+Milestone 4F introduced:
+
+```text
+src/features/building-family/ui/AssemblyHall.tsx
+src/features/building-family/tests/AssemblyHall.test.tsx
+src/app/App.css
+scripts/e2e-smoke.mjs
+```
+
 ## 12. Verification Report
 
 Commands run during reconnaissance:
@@ -887,10 +911,11 @@ Latest validation results:
 
 ```text
 typecheck: passed
-unit tests: passed, 68 tests across 27 files
+unit tests: passed, 69 tests across 27 files
 lint: passed
 build: passed
-e2e smoke: passed, including Assembly Hall canvas pixel probe
+e2e smoke: passed, including Assembly Hall semantic selection and canvas pixel probe
+Assembly Hall focused tests: passed
 resource disposal focused tests: passed
 contracts/core/materials/components/compiler renderer-import scan: no matches
 Math.random scan: no matches
@@ -904,6 +929,14 @@ Playwright desktop viewport: 1366x900, Assembly Hall canvas visible, varied WebG
 Playwright mobile viewport: 390x844, Assembly Hall canvas visible, varied WebGL pixels sampled.
 Screenshots: C:\tmp\buildo-assembly-hall-desktop.png and C:\tmp\buildo-assembly-hall-mobile.png
 Console: no app runtime errors; WebGL driver performance warnings came from/around readback diagnostics.
+```
+
+Rendered QA for Milestone 4F:
+
+```text
+Browser/IAB desktop viewport: app loaded at http://127.0.0.1:5173/, no framework overlay, no console errors, selected the Window frame semantic element, and verified instances.window / glass.primary / InstancedMesh / Window frame in the inspector.
+Browser/IAB mobile viewport: 390x844, no framework overlay, no console errors, selected the same Window frame semantic element, and verified the semantic inspector stayed readable in the one-column layout.
+E2E smoke: selected the Window frame semantic element before the Assembly Hall canvas pixel probe.
 ```
 
 ## 13. Current Implemented Surface
@@ -1068,6 +1101,15 @@ src/features/building-family/renderer-three/resourceDisposal.ts
 src/features/building-family/tests/resourceDisposal.test.ts
 ```
 
+Milestone 4F introduced:
+
+```text
+src/features/building-family/ui/AssemblyHall.tsx
+src/features/building-family/tests/AssemblyHall.test.tsx
+src/app/App.css
+scripts/e2e-smoke.mjs
+```
+
 Generated and ignored directories:
 
 ```text
@@ -1076,7 +1118,7 @@ dist/
 test-results/
 ```
 
-No preassembled meshes, provider routes, router-backed room navigation, Component Forge UI, or Zustand state slice has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers through the pure TypeScript compiler path, can deliver them across the compiler worker boundary with transferable buffers, can summarize catalog/IR component data for a future Component Forge gallery, can convert that IR into Three.js scene objects under `renderer-three/*`, can convert packed atlas channels into texture-backed slot materials at the renderer boundary, can host multiple per-building scene runtimes against one shared family atlas/material runtime, can centralize idempotent renderer resource disposal across standalone and shared-family ownership modes, and now renders one deterministic fixture building in a browser Assembly Hall canvas from those generated artifacts.
+No preassembled meshes, provider routes, router-backed room navigation, Component Forge UI, or Zustand state slice has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers through the pure TypeScript compiler path, can deliver them across the compiler worker boundary with transferable buffers, can summarize catalog/IR component data for a future Component Forge gallery, can convert that IR into Three.js scene objects under `renderer-three/*`, can convert packed atlas channels into texture-backed slot materials at the renderer boundary, can host multiple per-building scene runtimes against one shared family atlas/material runtime, can centralize idempotent renderer resource disposal across standalone and shared-family ownership modes, renders one deterministic fixture building in a browser Assembly Hall canvas from those generated artifacts, and surfaces semantic renderer lookup entries in a selectable Assembly Hall inspector.
 
 ## 14. Milestone 0 And Setup Exit Criteria
 

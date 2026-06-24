@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import {
   AmbientLight,
   Box3,
@@ -11,6 +11,8 @@ import {
   type Camera,
   type Object3D
 } from "three";
+import type { ComponentGalleryEntry } from "../compiler/componentGalleryBuilder";
+import type { AssemblyStage } from "../contracts/shared";
 import type { AssemblyHallFixture } from "./assemblyHallFixture";
 
 export interface AssemblyRenderer {
@@ -35,8 +37,60 @@ const defaultRendererFactory: AssemblyRendererFactory = () =>
     preserveDrawingBuffer: true
   });
 
+const selectionStageOrder: AssemblyStage[] = ["massing", "facade", "openings", "trim", "roof"];
+
+interface SemanticSelectionOption {
+  semanticPath: string;
+  batchId: string;
+  stage: AssemblyStage;
+  objectType: string;
+  materialSlotId: string;
+  componentLabel: string;
+  componentSource: string;
+  elementIndex?: number;
+}
+
 function formatNumber(value: number): string {
   return new Intl.NumberFormat("en-US").format(value);
+}
+
+function objectTypeFor(option: { isInstancedMesh?: boolean; type: string }): string {
+  return option.isInstancedMesh ? "InstancedMesh" : option.type;
+}
+
+function semanticSelectionOptions(fixture: AssemblyHallFixture): SemanticSelectionOption[] {
+  const galleryByBatchId = new Map(
+    fixture.componentGallery.entries
+      .filter((entry): entry is ComponentGalleryEntry & { batchId: string } => entry.batchId !== undefined)
+      .map((entry) => [entry.batchId, entry])
+  );
+
+  return Array.from(fixture.buildingRuntime.semanticLookup.values())
+    .map((lookup) => {
+      const userData = lookup.object.userData as {
+        materialSlotId?: string;
+      };
+      const galleryEntry = galleryByBatchId.get(lookup.batchId);
+      return {
+        semanticPath: lookup.semanticPath,
+        batchId: lookup.batchId,
+        stage: lookup.stage,
+        objectType: objectTypeFor(lookup.object),
+        materialSlotId: userData.materialSlotId ?? "unassigned",
+        componentLabel: galleryEntry?.label ?? lookup.batchId,
+        componentSource: galleryEntry?.source ?? "runtime",
+        elementIndex: lookup.elementIndex
+      };
+    })
+    .sort((first, second) => {
+      const stageDelta = selectionStageOrder.indexOf(first.stage) - selectionStageOrder.indexOf(second.stage);
+      return stageDelta || first.semanticPath.localeCompare(second.semanticPath);
+    });
+}
+
+function selectionOptionLabel(option: SemanticSelectionOption): string {
+  const elementSuffix = option.elementIndex === undefined ? "batch" : `#${option.elementIndex}`;
+  return `${option.stage} / ${option.componentLabel} / ${elementSuffix}`;
 }
 
 function sceneBounds(root: Object3D): { center: Vector3; size: Vector3; maxDimension: number } {
@@ -78,9 +132,14 @@ function galleryRows(fixture: AssemblyHallFixture) {
 }
 
 export function AssemblyHall({ fixture, rendererFactory = defaultRendererFactory }: AssemblyHallProps) {
+  const selectionId = useId();
   const mountRef = useRef<HTMLDivElement | null>(null);
   const [renderError, setRenderError] = useState<string | null>(null);
   const rows = useMemo(() => galleryRows(fixture), [fixture]);
+  const selectionOptions = useMemo(() => semanticSelectionOptions(fixture), [fixture]);
+  const [selectedSemanticPath, setSelectedSemanticPath] = useState("");
+  const selectedOption =
+    selectionOptions.find((option) => option.semanticPath === selectedSemanticPath) ?? selectionOptions[0];
   const webglUnavailable = rendererFactory === defaultRendererFactory && !("WebGLRenderingContext" in window);
 
   useEffect(() => {
@@ -211,6 +270,53 @@ export function AssemblyHall({ fixture, rendererFactory = defaultRendererFactory
               <dd>{fixture.metrics.componentCount}</dd>
             </div>
           </dl>
+
+          <section className="assembly-hall__selection" aria-labelledby="assembly-hall-selection-heading">
+            <h3 id="assembly-hall-selection-heading">Semantic Selection</h3>
+            <label htmlFor={selectionId}>Semantic element</label>
+            <select
+              id={selectionId}
+              value={selectedOption?.semanticPath ?? ""}
+              onChange={(event) => setSelectedSemanticPath(event.target.value)}
+            >
+              {selectionOptions.map((option) => (
+                <option key={option.semanticPath} value={option.semanticPath}>
+                  {selectionOptionLabel(option)}
+                </option>
+              ))}
+            </select>
+
+            {selectedOption ? (
+              <dl className="assembly-hall__selection-details" aria-label="Selected semantic element">
+                <div>
+                  <dt>Semantic path</dt>
+                  <dd>{selectedOption.semanticPath}</dd>
+                </div>
+                <div>
+                  <dt>Stage</dt>
+                  <dd>{selectedOption.stage}</dd>
+                </div>
+                <div>
+                  <dt>Batch</dt>
+                  <dd>{selectedOption.batchId}</dd>
+                </div>
+                <div>
+                  <dt>Material</dt>
+                  <dd>{selectedOption.materialSlotId}</dd>
+                </div>
+                <div>
+                  <dt>Object</dt>
+                  <dd>{selectedOption.objectType}</dd>
+                </div>
+                <div>
+                  <dt>Component</dt>
+                  <dd>
+                    {selectedOption.componentLabel} / {selectedOption.componentSource}
+                  </dd>
+                </div>
+              </dl>
+            ) : null}
+          </section>
         </div>
 
         <table className="assembly-hall__gallery" aria-label="Component gallery summary">
