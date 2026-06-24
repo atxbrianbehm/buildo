@@ -75,6 +75,18 @@ h1 {
   line-height: 1.45;
 }
 
+.route-identity {
+  display: inline-block;
+  max-width: min(100%, 36rem);
+  margin: 18px 0 0;
+  color: #526259;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  overflow-wrap: anywhere;
+  text-transform: uppercase;
+}
+
 .status-panel {
   display: grid;
   gap: 14px;

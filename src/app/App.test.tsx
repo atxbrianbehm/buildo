@@ -105,6 +105,22 @@ describe("App", () => {
     expect(window.location.hash).toBe("#room=atlasLab");
   });
 
+  it("preserves a route-level document id while navigating rooms", async () => {
+    window.history.replaceState(null, "", "/#document=family-doc-alpha&room=assemblyHall");
+
+    render(<App />);
+
+    await waitFor(() =>
+      expect(screen.getByRole("tab", { name: "Assembly Hall" })).toHaveAttribute("aria-selected", "true")
+    );
+    expect(screen.getByLabelText("Route document identity")).toHaveTextContent("family-doc-alpha");
+
+    selectRoom("Atlas Lab");
+
+    expect(window.location.hash).toBe("#document=family-doc-alpha&room=atlasLab");
+    expect(screen.getByLabelText("Route document identity")).toHaveTextContent("family-doc-alpha");
+  });
+
   it("exposes committed roof, trim, and seed controls with invalidation feedback", async () => {
     render(<App />);
 

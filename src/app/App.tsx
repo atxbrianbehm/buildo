@@ -12,6 +12,7 @@ import { BuildingArtifactRegistry } from "../features/building-family/state/arti
 import { BuildingRunController } from "../features/building-family/state/buildingRunController";
 import {
   createBuildingStore,
+  defaultBuildingDocumentId,
   type BuildingRoom,
   type BuildingPromptControlPatch,
   type BuildingPromptControls,
@@ -57,26 +58,53 @@ const roomOptions: Array<{ label: string; room: BuildingRoom }> = [
 
 const roomKeys = new Set<BuildingRoom>(roomOptions.map((option) => option.room));
 
+interface BuildingRouteSelection {
+  documentId: string;
+  hasDocumentId: boolean;
+  room: BuildingRoom;
+}
+
 function isBuildingRoom(value: string | null): value is BuildingRoom {
   return value !== null && roomKeys.has(value as BuildingRoom);
 }
 
-function roomFromHash(hash: string): BuildingRoom {
+function documentIdFromHashValue(value: string | null): string {
+  const documentId = value?.trim();
+  return documentId ? documentId : defaultBuildingDocumentId;
+}
+
+function routeSelectionFromHash(hash: string): BuildingRouteSelection {
   const params = new URLSearchParams(hash.startsWith("#") ? hash.slice(1) : hash);
   const room = params.get("room");
-  return isBuildingRoom(room) ? room : "promptLab";
+  const documentId = params.get("document");
+  return {
+    documentId: documentIdFromHashValue(documentId),
+    hasDocumentId: documentId !== null,
+    room: isBuildingRoom(room) ? room : "promptLab"
+  };
 }
 
-function currentRouteRoom(): BuildingRoom {
-  return typeof window === "undefined" ? "promptLab" : roomFromHash(window.location.hash);
+function currentRouteSelection(): BuildingRouteSelection {
+  return typeof window === "undefined"
+    ? { documentId: defaultBuildingDocumentId, hasDocumentId: false, room: "promptLab" }
+    : routeSelectionFromHash(window.location.hash);
 }
 
-function pushRoomHash(room: BuildingRoom): void {
+function routeHashFor(selection: BuildingRouteSelection): string {
+  const params = new URLSearchParams();
+  if (selection.hasDocumentId) {
+    params.set("document", selection.documentId);
+  }
+  params.set("room", selection.room);
+  return `#${params.toString()}`;
+}
+
+function pushRoomHash(room: BuildingRoom, documentId: string, hasDocumentId: boolean): void {
   if (typeof window === "undefined") {
     return;
   }
 
-  const nextHash = `#room=${room}`;
+  const nextHash = routeHashFor({ documentId, hasDocumentId, room });
   if (window.location.hash === nextHash) {
     return;
   }
@@ -109,7 +137,12 @@ function advanceSeed(seed: string): string {
 
 export function App() {
   const [{ store, registry, controller }] = useState(() => {
-    const createdStore: BuildingStoreApi = createBuildingStore(undefined, currentRouteRoom());
+    const routeSelection = currentRouteSelection();
+    const createdStore: BuildingStoreApi = createBuildingStore(
+      undefined,
+      routeSelection.room,
+      routeSelection.documentId
+    );
     const createdRegistry = new BuildingArtifactRegistry();
     return {
       store: createdStore,
@@ -127,7 +160,9 @@ export function App() {
   const artifacts = useStore(store, (state) => state.artifacts);
   const promptControls = useStore(store, (state) => state.prompt);
   const controlState = useStore(store, (state) => state.controls);
+  const routeDocumentId = useStore(store, (state) => state.selection.documentId);
   const activeRoom = useStore(store, (state) => state.selection.room);
+  const selectDocument = useStore(store, (state) => state.selectDocument);
   const selectRoom = useStore(store, (state) => state.selectRoom);
   const updatePromptControls = useStore(store, (state) => state.updatePromptControls);
   const currentRun = runState.currentRun;
@@ -151,7 +186,9 @@ export function App() {
 
   useEffect(() => {
     const syncRoomFromRoute = () => {
-      selectRoom(currentRouteRoom());
+      const routeSelection = currentRouteSelection();
+      selectDocument(routeSelection.documentId);
+      selectRoom(routeSelection.room);
     };
 
     window.addEventListener("hashchange", syncRoomFromRoute);
@@ -162,11 +199,11 @@ export function App() {
       window.removeEventListener("hashchange", syncRoomFromRoute);
       window.removeEventListener("popstate", syncRoomFromRoute);
     };
-  }, [selectRoom]);
+  }, [selectDocument, selectRoom]);
 
   function selectRoutedRoom(room: BuildingRoom): void {
     selectRoom(room);
-    pushRoomHash(room);
+    pushRoomHash(room, routeDocumentId, currentRouteSelection().hasDocumentId);
   }
 
   function startRun(nextPrompt: BuildingPromptControls): void {
@@ -197,6 +234,9 @@ export function App() {
           <p className="hero-text">
             A new workspace for deterministic building families, semantic material atlases, and
             inspectable browser assembly.
+          </p>
+          <p className="route-identity" aria-label="Route document identity">
+            {routeDocumentId}
           </p>
         </div>
         <div className="status-panel" aria-label="Project setup status">

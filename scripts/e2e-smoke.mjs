@@ -180,8 +180,9 @@ try {
   browser = await chromium.launch();
 
   const deepLinkPage = await browser.newPage();
-  await deepLinkPage.goto(`${url}#room=assemblyHall`);
+  await deepLinkPage.goto(`${url}#document=e2e-family-doc&room=assemblyHall`);
   await deepLinkPage.getByRole("tab", { name: "Assembly Hall" }).waitFor({ state: "visible" });
+  await deepLinkPage.getByLabel("Route document identity").getByText("e2e-family-doc").waitFor({ state: "visible" });
   await deepLinkPage
     .getByRole("tab", { name: "Assembly Hall" })
     .evaluate((tab) => {

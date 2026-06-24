@@ -12,6 +12,7 @@ import type { BuildingArtifactMetadata, BuildingArtifactType } from "./artifactR
 export type BuildingRoom = "promptLab" | "atlasLab" | "componentForge" | "assemblyHall";
 export type BuildingRoofType = "flat" | "gable";
 export type BuildingTrimDensity = "restrained" | "moderate" | "ornate";
+export const defaultBuildingDocumentId = "buildo-demo-family";
 
 export interface BuildingPromptControls {
   prompt: string;
@@ -49,6 +50,7 @@ export interface BuildingControlSliceState {
 }
 
 export interface BuildingSelectionSliceState {
+  documentId: string;
   room: BuildingRoom;
   selectedSemanticPath?: string;
   selectedComponentRecipeId?: string;
@@ -71,6 +73,7 @@ export interface BuildingStoreState {
   updatePromptControls(patch: BuildingPromptControlPatch): void;
   commitPromptControls(prompt?: BuildingPromptControls): void;
   selectRoom(room: BuildingRoom): void;
+  selectDocument(documentId: string): void;
   selectSemanticPath(semanticPath: string | undefined): void;
 }
 
@@ -146,7 +149,8 @@ function controlSnapshot(controls: BuildingPromptControls): BuildingControlSnaps
 
 export function createBuildingStore(
   initialPrompt: BuildingPromptControls = defaultBuildingPromptControls,
-  initialRoom: BuildingRoom = "promptLab"
+  initialRoom: BuildingRoom = "promptLab",
+  initialDocumentId = defaultBuildingDocumentId
 ): BuildingStoreApi {
   return createStore<BuildingStoreState>()((set) => ({
     prompt: initialPrompt,
@@ -163,6 +167,7 @@ export function createBuildingStore(
       byType: {}
     },
     selection: {
+      documentId: initialDocumentId,
       room: initialRoom,
       showProvenance: false,
       showSemanticPaths: true
@@ -289,6 +294,13 @@ export function createBuildingStore(
         selection: {
           ...state.selection,
           room
+        }
+      })),
+    selectDocument: (documentId) =>
+      set((state) => ({
+        selection: {
+          ...state.selection,
+          documentId
         }
       })),
     selectSemanticPath: (semanticPath) =>
