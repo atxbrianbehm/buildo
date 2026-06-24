@@ -34,6 +34,7 @@ function routeRequest(
     openAITransport?: (request: OpenAIImageTransportRequest, signal: AbortSignal) => Promise<unknown>;
     remoteMaterialCache?: RemoteMaterialArtifactCache;
     remoteMaterialTimeoutMs?: number;
+    remoteMaterialConcurrencyLimit?: number;
   } = {}
 ): Promise<Response> {
   return handleMaterialProviderRequest(
@@ -423,6 +424,76 @@ describe("material provider route", () => {
           })
         ]
       })
+    );
+  });
+
+  it("limits concurrent OpenAI cache misses while preserving artifact order", async () => {
+    const cache = createInMemoryRemoteMaterialArtifactCache();
+    const payload = {
+      ...validPayload,
+      requests: [
+        validPayload.requests[0],
+        {
+          ...validPayload.requests[0],
+          sourceId: "source.roof.primary",
+          role: "roof",
+          selectedFamily: "standing-seam-roof",
+          seedPath: "atlas/source/roof.primary/standing-seam-roof",
+          promptVocabulary: ["standing-seam-roof", "weathered metal roof material"]
+        },
+        {
+          ...validPayload.requests[0],
+          sourceId: "source.frame.primary",
+          role: "frame",
+          selectedFamily: "painted-wood-frame",
+          seedPath: "atlas/source/frame.primary/painted-wood-frame",
+          promptVocabulary: ["painted-wood-frame", "painted storefront frame material"]
+        }
+      ]
+    };
+    let activeTransportCount = 0;
+    let maxActiveTransportCount = 0;
+
+    const response = await routeRequest(
+      payload,
+      {
+        BUILDING_MATERIAL_PROVIDER: "openai",
+        OPENAI_API_KEY: "sk-buildo-secret-test-key",
+        OPENAI_IMAGE_MODEL: "gpt-image-test"
+      },
+      {
+        remoteMaterialCache: cache,
+        remoteMaterialConcurrencyLimit: 2,
+        openAITransport: async (request) => {
+          activeTransportCount += 1;
+          maxActiveTransportCount = Math.max(maxActiveTransportCount, activeTransportCount);
+          await new Promise((resolve) => setTimeout(resolve, 20));
+          activeTransportCount -= 1;
+
+          const prompt = request.body.prompt;
+          const sourceId = prompt.includes("source.roof.primary")
+            ? "source.roof.primary"
+            : prompt.includes("source.frame.primary")
+              ? "source.frame.primary"
+              : "source.wall.primary";
+          return { data: [{ b64_json: encodedPng(sourceId) }] };
+        }
+      }
+    );
+    const body = (await readJson(response)) as {
+      artifacts: Array<{ sourceId: string }>;
+    };
+
+    expect(response.status).toBe(200);
+    expect(maxActiveTransportCount).toBe(2);
+    expect(body).toEqual(
+      expect.objectContaining({
+        status: "generated",
+        cacheStatus: "miss"
+      })
+    );
+    expect(body.artifacts.map((artifact) => artifact.sourceId)).toEqual(
+      payload.requests.map((request) => request.sourceId)
     );
   });
 

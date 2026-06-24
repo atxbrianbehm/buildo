@@ -15,6 +15,7 @@ const maxRemoteRequestCount = 4;
 const maxRemoteSourceDimensionPx = 1024;
 const maxPromptVocabularyChars = 640;
 const defaultRemoteMaterialTimeoutMs = 30_000;
+const defaultRemoteMaterialConcurrencyLimit = 2;
 
 const AtlasMaterialRoleSchema = z.enum([
   "wall",
@@ -60,6 +61,7 @@ export interface MaterialProviderRouteOptions {
   openAITransport?: OpenAIImageTransport;
   remoteMaterialCache?: RemoteMaterialArtifactCache;
   remoteMaterialTimeoutMs?: number;
+  remoteMaterialConcurrencyLimit?: number;
 }
 
 export const approvedRemoteMaterialSourceRoles = {
@@ -279,6 +281,32 @@ function configuredRemoteMaterialTimeoutMs(options: MaterialProviderRouteOptions
   return defaultRemoteMaterialTimeoutMs;
 }
 
+function configuredRemoteMaterialConcurrencyLimit(options: MaterialProviderRouteOptions): number {
+  if (typeof options.remoteMaterialConcurrencyLimit === "number") {
+    return Math.max(1, Math.floor(options.remoteMaterialConcurrencyLimit));
+  }
+
+  return defaultRemoteMaterialConcurrencyLimit;
+}
+
+async function runWithConcurrencyLimit<T>(
+  items: T[],
+  concurrencyLimit: number,
+  worker: (item: T) => Promise<void>
+): Promise<void> {
+  let nextIndex = 0;
+  const workerCount = Math.min(concurrencyLimit, items.length);
+  const workers = Array.from({ length: workerCount }, async () => {
+    while (nextIndex < items.length) {
+      const item = items[nextIndex];
+      nextIndex += 1;
+      await worker(item);
+    }
+  });
+
+  await Promise.all(workers);
+}
+
 async function generateWithTimeout(
   provider: OpenAIImageMaterialProvider,
   sourceRequest: MaterialSourceRequest,
@@ -353,26 +381,39 @@ export async function handleMaterialProviderRequest(
   });
   const remoteMaterialCache = options.remoteMaterialCache ?? defaultRemoteMaterialArtifactCache;
   const remoteMaterialTimeoutMs = configuredRemoteMaterialTimeoutMs(options);
+  const remoteMaterialConcurrencyLimit = configuredRemoteMaterialConcurrencyLimit(options);
 
   try {
-    const artifacts: RemoteMaterialSourceArtifact[] = [];
+    const artifacts: Array<RemoteMaterialSourceArtifact | undefined> = [];
+    const cacheMisses: Array<{ index: number; sourceRequest: MaterialSourceRequest }> = [];
     let cacheHitCount = 0;
 
-    for (const sourceRequest of payloadResult.data.requests) {
+    for (const [index, sourceRequest] of payloadResult.data.requests.entries()) {
       const sourceRequestHash = await provider.requestHashFor(sourceRequest);
       const cachedArtifact = remoteMaterialCache.get(sourceRequestHash);
       if (cachedArtifact) {
-        artifacts.push(cachedArtifact);
+        artifacts[index] = cachedArtifact;
         cacheHitCount += 1;
         continue;
       }
 
+      cacheMisses.push({ index, sourceRequest });
+    }
+
+    await runWithConcurrencyLimit(cacheMisses, remoteMaterialConcurrencyLimit, async ({ index, sourceRequest }) => {
       const artifact = await generateWithTimeout(provider, sourceRequest, request.signal, remoteMaterialTimeoutMs);
       remoteMaterialCache.set(artifact);
-      artifacts.push(artifact);
-    }
+      artifacts[index] = artifact;
+    });
+
+    const generatedArtifacts = artifacts.map((artifact) => {
+      if (!artifact) {
+        throw new Error("Remote material provider did not produce every requested artifact.");
+      }
+      return artifact;
+    });
     const cacheStatus =
-      cacheHitCount === artifacts.length ? "hit" : cacheHitCount > 0 ? "partial" : "miss";
+      cacheHitCount === generatedArtifacts.length ? "hit" : cacheHitCount > 0 ? "partial" : "miss";
 
     return jsonResponse(200, {
       schemaVersion: "0.1.0",
@@ -381,7 +422,7 @@ export async function handleMaterialProviderRequest(
       requestHash,
       acceptedRequestCount: payloadResult.data.requests.length,
       cacheStatus,
-      artifacts,
+      artifacts: generatedArtifacts,
       diagnostics: []
     });
   } catch (error) {
