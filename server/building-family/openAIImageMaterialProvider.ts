@@ -136,27 +136,22 @@ export class OpenAIImageMaterialProvider {
     this.transport = options.transport ?? defaultOpenAIImageTransport;
   }
 
+  async requestHashFor(request: RemoteMaterialSourceRequest): Promise<string> {
+    const transportRequest = this.createTransportRequest(request);
+    return hashCanonicalJson({
+      schemaVersion: "0.1.0",
+      providerId,
+      endpoint: openAIImageEndpoint,
+      source: request,
+      body: transportRequest.body
+    });
+  }
+
   async generate(
     request: RemoteMaterialSourceRequest,
     signal: AbortSignal
   ): Promise<RemoteMaterialSourceArtifact> {
-    const prompt = buildPrompt(request);
-    const transportRequest: OpenAIImageTransportRequest = {
-      url: openAIImageEndpoint,
-      method: "POST",
-      headers: {
-        authorization: `Bearer ${this.apiKey}`,
-        "content-type": "application/json"
-      },
-      body: {
-        model: this.model,
-        prompt,
-        n: 1,
-        size,
-        quality,
-        output_format: outputFormat
-      }
-    };
+    const transportRequest = this.createTransportRequest(request);
 
     let responseBody: unknown;
     try {
@@ -171,13 +166,7 @@ export class OpenAIImageMaterialProvider {
       throw new Error("OpenAI image response did not include base64 image data.");
     }
 
-    const requestHash = await hashCanonicalJson({
-      schemaVersion: "0.1.0",
-      providerId,
-      endpoint: openAIImageEndpoint,
-      source: request,
-      body: transportRequest.body
-    });
+    const requestHash = await this.requestHashFor(request);
     const contentHash = await sha256Hex(Buffer.from(image.b64_json, "base64"));
 
     return {
@@ -195,11 +184,30 @@ export class OpenAIImageMaterialProvider {
         providerId,
         model: this.model,
         endpoint: openAIImageEndpoint,
-        prompt,
+        prompt: transportRequest.body.prompt,
         promptVocabulary: request.promptVocabulary,
         seedPath: request.seedPath,
         outputFormat,
         quality
+      }
+    };
+  }
+
+  private createTransportRequest(request: RemoteMaterialSourceRequest): OpenAIImageTransportRequest {
+    return {
+      url: openAIImageEndpoint,
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${this.apiKey}`,
+        "content-type": "application/json"
+      },
+      body: {
+        model: this.model,
+        prompt: buildPrompt(request),
+        n: 1,
+        size,
+        quality,
+        output_format: outputFormat
       }
     };
   }

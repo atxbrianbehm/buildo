@@ -6,6 +6,10 @@ import {
   type OpenAIImageTransport,
   type RemoteMaterialSourceArtifact
 } from "./openAIImageMaterialProvider";
+import {
+  defaultRemoteMaterialArtifactCache,
+  type RemoteMaterialArtifactCache
+} from "./remoteMaterialArtifactCache";
 
 const maxRemoteRequestCount = 4;
 const maxRemoteSourceDimensionPx = 1024;
@@ -53,6 +57,7 @@ type MaterialProviderRouteEnv = Record<string, string | undefined>;
 export interface MaterialProviderRouteOptions {
   env?: MaterialProviderRouteEnv;
   openAITransport?: OpenAIImageTransport;
+  remoteMaterialCache?: RemoteMaterialArtifactCache;
 }
 
 export const approvedRemoteMaterialSourceRoles = {
@@ -92,7 +97,7 @@ interface GeneratedRouteBody {
   providerId: "openai-image";
   requestHash: string;
   acceptedRequestCount: number;
-  cacheStatus: "not-checked";
+  cacheStatus: "hit" | "miss" | "partial";
   artifacts: RemoteMaterialSourceArtifact[];
   diagnostics: [];
 }
@@ -288,11 +293,27 @@ export async function handleMaterialProviderRequest(
     model: env.OPENAI_IMAGE_MODEL,
     transport: options.openAITransport
   });
+  const remoteMaterialCache = options.remoteMaterialCache ?? defaultRemoteMaterialArtifactCache;
 
   try {
-    const artifacts = await Promise.all(
-      payloadResult.data.requests.map((sourceRequest) => provider.generate(sourceRequest, request.signal))
-    );
+    const artifacts: RemoteMaterialSourceArtifact[] = [];
+    let cacheHitCount = 0;
+
+    for (const sourceRequest of payloadResult.data.requests) {
+      const sourceRequestHash = await provider.requestHashFor(sourceRequest);
+      const cachedArtifact = remoteMaterialCache.get(sourceRequestHash);
+      if (cachedArtifact) {
+        artifacts.push(cachedArtifact);
+        cacheHitCount += 1;
+        continue;
+      }
+
+      const artifact = await provider.generate(sourceRequest, request.signal);
+      remoteMaterialCache.set(artifact);
+      artifacts.push(artifact);
+    }
+    const cacheStatus =
+      cacheHitCount === artifacts.length ? "hit" : cacheHitCount > 0 ? "partial" : "miss";
 
     return jsonResponse(200, {
       schemaVersion: "0.1.0",
@@ -300,7 +321,7 @@ export async function handleMaterialProviderRequest(
       providerId: "openai-image",
       requestHash,
       acceptedRequestCount: payloadResult.data.requests.length,
-      cacheStatus: "not-checked",
+      cacheStatus,
       artifacts,
       diagnostics: []
     });

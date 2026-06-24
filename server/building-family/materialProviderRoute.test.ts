@@ -2,6 +2,7 @@
 import { describe, expect, it } from "vitest";
 import type { OpenAIImageTransportRequest } from "./openAIImageMaterialProvider";
 import { approvedRemoteMaterialSourceIds, handleMaterialProviderRequest } from "./materialProviderRoute";
+import { createInMemoryRemoteMaterialArtifactCache, type RemoteMaterialArtifactCache } from "./remoteMaterialArtifactCache";
 
 const validPayload = {
   schemaVersion: "0.1.0",
@@ -31,6 +32,7 @@ function routeRequest(
   env: Record<string, string | undefined> = {},
   options: {
     openAITransport?: (request: OpenAIImageTransportRequest, signal: AbortSignal) => Promise<unknown>;
+    remoteMaterialCache?: RemoteMaterialArtifactCache;
   } = {}
 ): Promise<Response> {
   return handleMaterialProviderRequest(
@@ -174,6 +176,7 @@ describe("material provider route", () => {
         OPENAI_IMAGE_MODEL: "gpt-image-test"
       },
       {
+        remoteMaterialCache: createInMemoryRemoteMaterialArtifactCache(),
         openAITransport: async (request) => {
           transportRequests.push(request);
           return {
@@ -197,7 +200,7 @@ describe("material provider route", () => {
         status: "generated",
         providerId: "openai-image",
         acceptedRequestCount: 1,
-        cacheStatus: "not-checked",
+        cacheStatus: "miss",
         diagnostics: [],
         artifacts: [
           expect.objectContaining({
@@ -233,6 +236,7 @@ describe("material provider route", () => {
         OPENAI_IMAGE_MODEL: "gpt-image-test"
       },
       {
+        remoteMaterialCache: createInMemoryRemoteMaterialArtifactCache(),
         openAITransport: async () => {
           throw new Error("network denied for sk-buildo-secret-test-key");
         }
@@ -257,6 +261,88 @@ describe("material provider route", () => {
         ])
       })
     );
+  });
+
+  it("returns cached remote artifacts for repeated request hashes without calling OpenAI again", async () => {
+    const cache = createInMemoryRemoteMaterialArtifactCache();
+    const env = {
+      BUILDING_MATERIAL_PROVIDER: "openai",
+      OPENAI_API_KEY: "sk-buildo-secret-test-key",
+      OPENAI_IMAGE_MODEL: "gpt-image-test"
+    };
+    let transportCallCount = 0;
+
+    const firstResponse = await routeRequest(validPayload, env, {
+      remoteMaterialCache: cache,
+      openAITransport: async () => {
+        transportCallCount += 1;
+        return {
+          data: [
+            {
+              b64_json: encodedPng("cached-wall"),
+              revised_prompt: "cached remote prompt"
+            }
+          ]
+        };
+      }
+    });
+    const secondResponse = await routeRequest(validPayload, env, {
+      remoteMaterialCache: cache,
+      openAITransport: async () => {
+        transportCallCount += 1;
+        return {
+          data: [
+            {
+              b64_json: encodedPng("unexpected-second-wall"),
+              revised_prompt: "unexpected second prompt"
+            }
+          ]
+        };
+      }
+    });
+
+    const firstBody = (await readJson(firstResponse)) as {
+      artifacts: Array<{ requestHash: string; contentHash: string }>;
+    };
+    const secondBodyText = await secondResponse.text();
+    const secondBody = JSON.parse(secondBodyText) as {
+      artifacts: Array<{ requestHash: string; contentHash: string }>;
+    };
+
+    expect(transportCallCount).toBe(1);
+    expect(firstBody).toEqual(
+      expect.objectContaining({
+        status: "generated",
+        cacheStatus: "miss",
+        artifacts: [
+          expect.objectContaining({
+            requestHash: expect.any(String),
+            image: {
+              format: "png",
+              b64Json: encodedPng("cached-wall")
+            }
+          })
+        ]
+      })
+    );
+    expect(secondBodyText).not.toContain("sk-buildo-secret-test-key");
+    expect(secondBody).toEqual(
+      expect.objectContaining({
+        status: "generated",
+        cacheStatus: "hit",
+        artifacts: [
+          expect.objectContaining({
+            image: {
+              format: "png",
+              b64Json: encodedPng("cached-wall")
+            },
+            revisedPrompt: "cached remote prompt"
+          })
+        ]
+      })
+    );
+    expect(secondBody.artifacts[0].requestHash).toBe(firstBody.artifacts[0].requestHash);
+    expect(secondBody.artifacts[0].contentHash).toBe(firstBody.artifacts[0].contentHash);
   });
 
   it("rejects non-POST requests without reading a provider key", async () => {

@@ -23,6 +23,19 @@ function encodedPng(label: string): string {
 }
 
 describe("OpenAIImageMaterialProvider", () => {
+  it("computes the request hash before transport so callers can cache by request", async () => {
+    const provider = new OpenAIImageMaterialProvider({
+      apiKey: "sk-buildo-secret-test-key",
+      model: "gpt-image-test",
+      transport: async () => ({ data: [{ b64_json: encodedPng("wall") }] })
+    });
+
+    const requestHash = await provider.requestHashFor(materialRequest);
+    const artifact = await provider.generate(materialRequest, new AbortController().signal);
+
+    expect(requestHash).toBe(artifact.requestHash);
+  });
+
   it("generates a server-side remote material artifact through the Images API transport", async () => {
     const transportRequests: OpenAIImageTransportRequest[] = [];
     const provider = new OpenAIImageMaterialProvider({
