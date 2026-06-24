@@ -210,9 +210,15 @@ try {
   await page.getByLabel("Invalidation preview").getByText("trimDensity").waitFor({ state: "visible" });
   await page.getByLabel("Invalidation preview").getByText("materialSeed").waitFor({ state: "visible" });
   await page.getByLabel("Invalidation preview").getByText("trimSeed").waitFor({ state: "visible" });
+  await page.getByRole("checkbox", { name: "Remote Detail Provider" }).check();
+  await page.getByLabel("Invalidation preview").getByText("remoteMaterial").waitFor({ state: "visible" });
   await page.getByLabel("Invalidation preview").getByText("Material sources regenerate").waitFor({ state: "visible" });
   await page.getByRole("button", { name: "Run Current" }).click();
   await page.getByLabel("Generation run state").getByText("complete").waitFor({ state: "visible" });
+  await page.getByLabel("Generation run timeline").getByText("remote-material-route").waitFor({ state: "visible" });
+  await page.getByLabel("Generation run timeline").getByText("remoteMaterialProvider.disabled").waitFor({
+    state: "visible"
+  });
   await page.getByRole("heading", { name: "Artifact Trace" }).waitFor({ state: "visible" });
   await page
     .getByRole("table", { name: "Registered artifacts" })
@@ -237,10 +243,19 @@ try {
     .waitFor({ state: "visible" });
   await page.getByRole("tab", { name: "Atlas Lab" }).click();
   await page.getByRole("heading", { name: "Atlas Lab" }).waitFor({ state: "visible" });
+  await page.getByRole("heading", { name: "Remote Material Details" }).waitFor({ state: "visible" });
+  const remoteMaterialRouteSummary = page.getByLabel("Remote material route summary");
+  await remoteMaterialRouteSummary.getByText("fallback").waitFor({ state: "visible" });
+  await remoteMaterialRouteSummary.getByText("procedural").waitFor({ state: "visible" });
+  await remoteMaterialRouteSummary.getByText("not-checked").waitFor({ state: "visible" });
+  await page
+    .getByRole("table", { name: "Remote Material Diagnostics" })
+    .getByRole("cell", { name: "remoteMaterialProvider.disabled", exact: true })
+    .waitFor({ state: "visible" });
   const providerDiagnostics = page.getByRole("table", { name: "Provider Diagnostics" });
   await providerDiagnostics.getByRole("cell", { name: "procedural", exact: true }).waitFor({ state: "visible" });
   await providerDiagnostics.getByRole("cell", { name: "cache miss", exact: true }).waitFor({ state: "visible" });
-  await providerDiagnostics.getByRole("cell", { name: "0 errors / 0 warnings", exact: true }).waitFor({ state: "visible" });
+  await providerDiagnostics.getByRole("cell", { name: "0 errors / 1 warnings", exact: true }).waitFor({ state: "visible" });
   await page.getByRole("img", { name: "baseColor channel" }).waitFor({ state: "visible" });
   await page
     .getByRole("table", { name: "Semantic Slots" })

@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { App } from "./App";
+import { latestMaterialSourceCacheHit } from "./runEventSelectors";
 
 async function waitForInitialRun(): Promise<void> {
   await waitFor(() => expect(screen.getByLabelText("Generation run state")).toHaveTextContent("complete"));
@@ -184,6 +185,25 @@ describe("App", () => {
     expect(screen.getByLabelText("Generation run timeline")).toHaveTextContent(
       "remoteMaterialRouteClient.requestFailed"
     );
+  });
+
+  it("keeps the latest concrete material-source cache result after remote provider progress events", () => {
+    expect(
+      latestMaterialSourceCacheHit([
+        {
+          stage: "generatingMaterialSources",
+          startedAtMs: 1,
+          provider: "remote-material-route"
+        },
+        {
+          stage: "generatingMaterialSources",
+          startedAtMs: 2,
+          endedAtMs: 3,
+          provider: "procedural",
+          cacheHit: false
+        }
+      ])
+    ).toBe(false);
   });
 
   it("locks a Component Forge recipe and keeps the lock through a new-building rerun", async () => {

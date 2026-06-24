@@ -19,6 +19,7 @@ import {
   type BuildingRoofType,
   type BuildingStoreApi
 } from "../features/building-family/state/buildingStore";
+import { latestMaterialSourceCacheHit } from "./runEventSelectors";
 
 const setupCards = [
   {
@@ -172,9 +173,7 @@ export function App() {
   const fixture = activeFixtureArtifactId
     ? registry.get<AssemblyHallFixture>(activeFixtureArtifactId) ?? null
     : null;
-  const materialSourceCacheHit = currentRun?.events.find(
-    (event) => event.stage === "generatingMaterialSources"
-  )?.cacheHit;
+  const materialSourceCacheHit = currentRun ? latestMaterialSourceCacheHit(currentRun.events) : undefined;
 
   useEffect(() => {
     void controller.startDemoRun().catch(() => undefined);
