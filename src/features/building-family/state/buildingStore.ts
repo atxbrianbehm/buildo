@@ -40,6 +40,7 @@ export interface BuildingArtifactSliceState {
 }
 
 export interface BuildingControlSliceState {
+  committedPrompt: BuildingPromptControls;
   invalidation: BuildingInvalidation;
 }
 
@@ -64,6 +65,7 @@ export interface BuildingStoreState {
   cancelRun(input: { runId: string; event: GenerationRunEvent }): void;
   registerArtifact(metadata: BuildingArtifactMetadata): void;
   updatePromptControls(patch: BuildingPromptControlPatch): void;
+  commitPromptControls(prompt?: BuildingPromptControls): void;
   selectRoom(room: BuildingRoom): void;
   selectSemanticPath(semanticPath: string | undefined): void;
 }
@@ -85,6 +87,15 @@ export const defaultBuildingPromptControls: BuildingPromptControls = {
   roofType: "flat",
   trimDensity: "ornate"
 };
+
+function clonePromptControls(prompt: BuildingPromptControls): BuildingPromptControls {
+  return {
+    ...prompt,
+    seeds: {
+      ...prompt.seeds
+    }
+  };
+}
 
 function runWithEvent(runId: string, event: GenerationRunEvent): GenerationRun {
   return {
@@ -131,6 +142,7 @@ export function createBuildingStore(
   return createStore<BuildingStoreState>()((set) => ({
     prompt: initialPrompt,
     controls: {
+      committedPrompt: clonePromptControls(initialPrompt),
       invalidation: computeBuildingInvalidation(controlSnapshot(initialPrompt), controlSnapshot(initialPrompt))
     },
     runs: {
@@ -243,7 +255,22 @@ export function createBuildingStore(
           prompt: nextPrompt,
           controls: {
             ...state.controls,
-            invalidation: computeBuildingInvalidation(controlSnapshot(state.prompt), controlSnapshot(nextPrompt))
+            invalidation: computeBuildingInvalidation(
+              controlSnapshot(state.controls.committedPrompt),
+              controlSnapshot(nextPrompt)
+            )
+          }
+        };
+      }),
+    commitPromptControls: (prompt) =>
+      set((state) => {
+        const committedPrompt = clonePromptControls(prompt ?? state.prompt);
+        return {
+          prompt: committedPrompt,
+          controls: {
+            ...state.controls,
+            committedPrompt,
+            invalidation: computeBuildingInvalidation(controlSnapshot(committedPrompt), controlSnapshot(committedPrompt))
           }
         };
       }),

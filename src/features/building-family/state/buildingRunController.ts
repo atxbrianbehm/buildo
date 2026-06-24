@@ -1,13 +1,19 @@
 import type { GenerationStage } from "../contracts/generationRun";
 import { hashCanonicalJson } from "../core/contentHash";
-import { createAssemblyHallFixture, type AssemblyHallFixture } from "../ui/assemblyHallFixture";
+import { computeBuildingInvalidation, type BuildingInvalidation } from "../core/invalidation";
+import {
+  createAssemblyHallFixture,
+  type AssemblyHallFixture,
+  type CreateAssemblyHallFixtureInput,
+  type ReusableAssemblyHallArtifacts
+} from "../ui/assemblyHallFixture";
 import type { BuildingArtifactRegistry } from "./artifactRegistry";
 import { defaultBuildingPromptControls, type BuildingPromptControls, type BuildingStoreApi } from "./buildingStore";
 
 export interface BuildingRunControllerOptions {
   store: BuildingStoreApi;
   registry: BuildingArtifactRegistry;
-  createFixture?: (input: { runId: string; signal: AbortSignal }) => Promise<AssemblyHallFixture>;
+  createFixture?: (input: CreateAssemblyHallFixtureInput & { runId: string; signal: AbortSignal }) => Promise<AssemblyHallFixture>;
   createRunId?: () => string;
   nowMs?: () => number;
 }
@@ -54,10 +60,12 @@ function artifactIdForFixture(fixture: AssemblyHallFixture): string {
 export class BuildingRunController {
   private readonly store: BuildingStoreApi;
   private readonly registry: BuildingArtifactRegistry;
-  private readonly createFixture: (input: { runId: string; signal: AbortSignal }) => Promise<AssemblyHallFixture>;
+  private readonly createFixture: (input: CreateAssemblyHallFixtureInput & { runId: string; signal: AbortSignal }) => Promise<AssemblyHallFixture>;
   private readonly createRunId: () => string;
   private readonly nowMs: () => number;
   private activeRun: ActiveRun | undefined;
+  private lastCompletedFixture: AssemblyHallFixture | undefined;
+  private lastCompletedPrompt: BuildingPromptControls | undefined;
 
   constructor(options: BuildingRunControllerOptions) {
     this.store = options.store;
@@ -73,6 +81,10 @@ export class BuildingRunController {
     const runId = this.createRunId();
     const abortController = new AbortController();
     this.activeRun = { runId, abortController };
+    const invalidation = this.lastCompletedPrompt
+      ? computeBuildingInvalidation(this.lastCompletedPrompt, prompt)
+      : computeBuildingInvalidation(prompt, prompt);
+    const reusableArtifacts = this.reusableArtifactsFor(invalidation);
     const requestHashPromise = hashCanonicalJson({
       schemaVersion: "0.1.0",
       runKind: "late19c-commercial-demo",
@@ -87,19 +99,22 @@ export class BuildingRunController {
       }
     });
 
-    for (const stage of demoStageSequence) {
-      this.appendInstantEvent(runId, stage);
-    }
-
     try {
-      const fixturePromise = this.createFixture({ runId, signal: abortController.signal });
+      const fixturePromise = this.createFixture({
+        runId,
+        signal: abortController.signal,
+        promptControls: prompt,
+        reusableArtifacts
+      });
       const [requestHash, fixture] = await Promise.all([requestHashPromise, fixturePromise]);
       if (abortController.signal.aborted || this.activeRun?.runId !== runId) {
         disposeFixture(fixture);
         return { runId, stale: true };
       }
 
+      this.appendCompletedStageEvents(runId, fixture, invalidation, reusableArtifacts);
       const artifactId = artifactIdForFixture(fixture);
+      this.registerFixtureArtifacts(fixture, requestHash);
       const metadata = this.registry.register({
         artifactId,
         artifactType: "assembly-hall-fixture",
@@ -120,6 +135,12 @@ export class BuildingRunController {
           outputArtifactId: artifactId
         }
       });
+      this.lastCompletedPrompt = clonePrompt(prompt);
+      this.lastCompletedFixture = fixture;
+      this.store.getState().commitPromptControls(prompt);
+      if (this.activeRun?.runId === runId) {
+        this.activeRun = undefined;
+      }
       return { runId, artifactId, fixture, stale: false };
     } catch (error) {
       if (abortController.signal.aborted) {
@@ -166,12 +187,185 @@ export class BuildingRunController {
     this.registry.clear();
   }
 
-  private appendInstantEvent(runId: string, stage: GenerationStage): void {
+  private appendInstantEvent(
+    runId: string,
+    stage: GenerationStage,
+    details: { outputArtifactId?: string; cacheHit?: boolean } = {}
+  ): void {
     const startedAtMs = this.nowMs();
     this.store.getState().appendRunEvent(runId, {
       stage,
       startedAtMs,
-      endedAtMs: this.nowMs()
+      endedAtMs: this.nowMs(),
+      ...details
     });
   }
+
+  private reusableArtifactsFor(invalidation: BuildingInvalidation): ReusableAssemblyHallArtifacts {
+    if (!this.lastCompletedFixture) {
+      return {};
+    }
+
+    return {
+      ...(invalidation.reusableArtifacts.packedAtlas
+        ? {
+            packedAtlas: this.lastCompletedFixture.packedAtlas,
+            debugExport: this.lastCompletedFixture.debugExport
+          }
+        : {}),
+      ...(invalidation.reusableArtifacts.componentCatalog
+        ? {
+            catalog: this.lastCompletedFixture.catalog
+          }
+        : {})
+    };
+  }
+
+  private appendCompletedStageEvents(
+    runId: string,
+    fixture: AssemblyHallFixture,
+    invalidation: BuildingInvalidation,
+    reusableArtifacts: ReusableAssemblyHallArtifacts
+  ): void {
+    const eventDetails: Partial<Record<GenerationStage, { outputArtifactId?: string; cacheHit?: boolean }>> = {
+      normalizingSpec: {
+        outputArtifactId: specArtifactId(fixture),
+        cacheHit: false
+      },
+      planningAtlas: {
+        outputArtifactId: atlasManifestArtifactId(fixture),
+        cacheHit: Boolean(reusableArtifacts.packedAtlas)
+      },
+      generatingMaterialSources: {
+        outputArtifactId: materialSourcesArtifactId(fixture),
+        cacheHit: invalidation.reusableArtifacts.materialSources && Boolean(this.lastCompletedFixture)
+      },
+      compositingChannels: {
+        outputArtifactId: packedAtlasArtifactId(fixture),
+        cacheHit: Boolean(reusableArtifacts.packedAtlas)
+      },
+      packingAtlas: {
+        outputArtifactId: packedAtlasArtifactId(fixture),
+        cacheHit: Boolean(reusableArtifacts.packedAtlas)
+      },
+      buildingComponentCatalog: {
+        outputArtifactId: componentCatalogArtifactId(fixture),
+        cacheHit: Boolean(reusableArtifacts.catalog)
+      },
+      buildingGraph: {
+        outputArtifactId: buildingGraphArtifactId(fixture),
+        cacheHit: false
+      },
+      compilingGeometry: {
+        outputArtifactId: runtimeIrArtifactId(fixture),
+        cacheHit: false
+      },
+      uploadingGpuResources: {
+        outputArtifactId: gpuSceneArtifactId(fixture),
+        cacheHit: false
+      }
+    };
+
+    for (const stage of demoStageSequence) {
+      this.appendInstantEvent(runId, stage, eventDetails[stage]);
+    }
+  }
+
+  private registerFixtureArtifacts(fixture: AssemblyHallFixture, requestHash: string): void {
+    this.registerArtifactIfAbsent({
+      artifactId: specArtifactId(fixture),
+      artifactType: "building-family-spec",
+      requestHash,
+      contentHash: fixture.spec.sourceIntentHash,
+      artifact: fixture.spec
+    });
+    this.registerArtifactIfAbsent({
+      artifactId: atlasManifestArtifactId(fixture),
+      artifactType: "atlas-manifest",
+      requestHash,
+      contentHash: fixture.packedAtlas.manifest.atlasId,
+      artifact: fixture.packedAtlas.manifest
+    });
+    this.registerArtifactIfAbsent({
+      artifactId: materialSourcesArtifactId(fixture),
+      artifactType: "material-source",
+      requestHash,
+      contentHash: fixture.packedAtlas.contentHash,
+      artifact: fixture.packedAtlas.slotProvenance
+    });
+    this.registerArtifactIfAbsent({
+      artifactId: packedAtlasArtifactId(fixture),
+      artifactType: "atlas-channel",
+      requestHash,
+      contentHash: fixture.packedAtlas.contentHash,
+      artifact: fixture.packedAtlas
+    });
+    this.registerArtifactIfAbsent({
+      artifactId: componentCatalogArtifactId(fixture),
+      artifactType: "component-catalog",
+      requestHash,
+      contentHash: fixture.catalog.catalogId,
+      artifact: fixture.catalog
+    });
+    this.registerArtifactIfAbsent({
+      artifactId: buildingGraphArtifactId(fixture),
+      artifactType: "building-graph",
+      requestHash,
+      contentHash: fixture.ir.sourceGraphHash,
+      artifact: fixture.graph
+    });
+    this.registerArtifactIfAbsent({
+      artifactId: runtimeIrArtifactId(fixture),
+      artifactType: "runtime-building-ir",
+      requestHash,
+      contentHash: fixture.ir.sourceGraphHash,
+      artifact: fixture.ir
+    });
+  }
+
+  private registerArtifactIfAbsent(input: Parameters<BuildingArtifactRegistry["register"]>[0]): void {
+    const metadata = this.registry.getMetadata(input.artifactId) ?? this.registry.register(input);
+    this.store.getState().registerArtifact(metadata);
+  }
+}
+
+function clonePrompt(prompt: BuildingPromptControls): BuildingPromptControls {
+  return {
+    ...prompt,
+    seeds: {
+      ...prompt.seeds
+    }
+  };
+}
+
+function specArtifactId(fixture: AssemblyHallFixture): string {
+  return `building-family-spec:${fixture.spec.familyId}:${fixture.spec.sourceIntentHash}`;
+}
+
+function atlasManifestArtifactId(fixture: AssemblyHallFixture): string {
+  return `atlas-manifest:${fixture.packedAtlas.manifest.atlasId}`;
+}
+
+function materialSourcesArtifactId(fixture: AssemblyHallFixture): string {
+  return `material-sources:${fixture.packedAtlas.atlasId}:${fixture.packedAtlas.contentHash}`;
+}
+
+function packedAtlasArtifactId(fixture: AssemblyHallFixture): string {
+  return `packed-atlas:${fixture.packedAtlas.atlasId}:${fixture.packedAtlas.contentHash}`;
+}
+
+function componentCatalogArtifactId(fixture: AssemblyHallFixture): string {
+  return `component-catalog:${fixture.catalog.catalogId}`;
+}
+
+function buildingGraphArtifactId(fixture: AssemblyHallFixture): string {
+  return `building-graph:${fixture.graph.graphId}`;
+}
+
+function runtimeIrArtifactId(fixture: AssemblyHallFixture): string {
+  return `runtime-building-ir:${fixture.ir.buildingId}:${fixture.ir.sourceGraphHash}`;
+}
+
+function gpuSceneArtifactId(fixture: AssemblyHallFixture): string {
+  return `gpu-scene:${fixture.ir.buildingId}:${fixture.packedAtlas.contentHash}`;
 }

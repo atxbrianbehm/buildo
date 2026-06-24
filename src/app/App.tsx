@@ -6,7 +6,12 @@ import { AssemblyHall } from "../features/building-family/ui/AssemblyHall";
 import type { AssemblyHallFixture } from "../features/building-family/ui/assemblyHallFixture";
 import { BuildingArtifactRegistry } from "../features/building-family/state/artifactRegistry";
 import { BuildingRunController } from "../features/building-family/state/buildingRunController";
-import { createBuildingStore, type BuildingStoreApi } from "../features/building-family/state/buildingStore";
+import {
+  createBuildingStore,
+  type BuildingPromptControlPatch,
+  type BuildingPromptControls,
+  type BuildingStoreApi
+} from "../features/building-family/state/buildingStore";
 
 const setupCards = [
   {
@@ -25,6 +30,29 @@ const setupCards = [
     status: "ready"
   }
 ];
+
+function promptWithPatch(
+  promptControls: BuildingPromptControls,
+  patch: BuildingPromptControlPatch
+): BuildingPromptControls {
+  return {
+    ...promptControls,
+    ...patch,
+    seeds: {
+      ...promptControls.seeds,
+      ...(patch.seeds ?? {})
+    }
+  };
+}
+
+function advanceSeed(seed: string): string {
+  const match = /^(.*?)-(\d+)$/.exec(seed);
+  if (!match) {
+    return `${seed}-2`;
+  }
+
+  return `${match[1]}-${Number(match[2]) + 1}`;
+}
 
 export function App() {
   const [{ store, registry, controller }] = useState(() => {
@@ -46,17 +74,28 @@ export function App() {
   const currentRun = runState.currentRun;
   const activeFixtureArtifactId = runState.activeFixtureArtifactId;
   const invalidation = controlState.invalidation;
+  const runDisabled = runState.status === "running";
   const fixture = activeFixtureArtifactId
     ? registry.get<AssemblyHallFixture>(activeFixtureArtifactId) ?? null
     : null;
 
   useEffect(() => {
-    void controller.startDemoRun();
+    void controller.startDemoRun().catch(() => undefined);
 
     return () => {
       controller.dispose();
     };
   }, [controller]);
+
+  function startRun(nextPrompt: BuildingPromptControls): void {
+    void controller.startDemoRun(nextPrompt).catch(() => undefined);
+  }
+
+  function updateAndRun(patch: BuildingPromptControlPatch): void {
+    const nextPrompt = promptWithPatch(promptControls, patch);
+    updatePromptControls(patch);
+    startRun(nextPrompt);
+  }
 
   return (
     <main className="app-shell">
@@ -114,6 +153,38 @@ export function App() {
                 onChange={(event) => updatePromptControls({ seeds: { building: event.currentTarget.value } })}
               />
             </label>
+          </div>
+          <div className="control-panel__actions" aria-label="Committed run controls">
+            <button type="button" disabled={runDisabled} onClick={() => startRun(promptControls)}>
+              Run Current
+            </button>
+            <button
+              type="button"
+              disabled={runDisabled}
+              onClick={() =>
+                updateAndRun({
+                  seeds: {
+                    building: advanceSeed(promptControls.seeds.building)
+                  }
+                })
+              }
+            >
+              New Building
+            </button>
+            <button
+              type="button"
+              disabled={runDisabled}
+              onClick={() =>
+                updateAndRun({
+                  seeds: {
+                    family: advanceSeed(promptControls.seeds.family),
+                    building: "building-seed"
+                  }
+                })
+              }
+            >
+              New Family
+            </button>
           </div>
         </div>
         <div className="control-panel__preview" aria-label="Invalidation preview">
@@ -179,6 +250,11 @@ export function App() {
             <li key={`${event.stage}-${index}`}>
               <span>{event.stage}</span>
               {event.outputArtifactId ? <small>{event.outputArtifactId}</small> : null}
+              {event.cacheHit === undefined ? null : (
+                <em className={event.cacheHit ? "run-panel__cache-hit" : "run-panel__cache-miss"}>
+                  {event.cacheHit ? "cache hit" : "cache miss"}
+                </em>
+              )}
             </li>
           )) ?? (
             <li>

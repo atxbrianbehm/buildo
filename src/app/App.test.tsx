@@ -15,6 +15,13 @@ describe("App", () => {
     expect(screen.getByLabelText("Invalidation preview")).toHaveTextContent("runtimeBuildingIr");
     expect(await screen.findByRole("heading", { name: "Generation Run" })).toBeInTheDocument();
     await waitFor(() => expect(screen.getByLabelText("Generation run state")).toHaveTextContent("complete"));
+    const firstArtifactId = screen.getByLabelText("Generation run artifact").textContent ?? "";
+    fireEvent.click(screen.getByRole("button", { name: "New Building" }));
+    await waitFor(() => expect(screen.getByLabelText("Generation run state")).toHaveTextContent("complete"));
+    await waitFor(() => expect(screen.getByLabelText("Generation run artifact")).not.toHaveTextContent(firstArtifactId));
+    expect(screen.getByLabelText("Generation run timeline")).toHaveTextContent("packed-atlas:");
+    expect(screen.getByLabelText("Generation run timeline")).toHaveTextContent("component-catalog:");
+    expect(screen.getByLabelText("Generation run timeline")).toHaveTextContent("cache hit");
     expect(screen.getByLabelText("Generation run timeline")).toHaveTextContent("uploadingGpuResources");
     expect(screen.getByLabelText("Generation run artifact")).toHaveTextContent("assembly-hall-fixture:");
     expect(await screen.findByRole("heading", { name: "Atlas Lab" })).toBeInTheDocument();

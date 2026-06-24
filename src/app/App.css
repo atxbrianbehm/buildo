@@ -191,6 +191,44 @@ h1 {
   outline-offset: 2px;
 }
 
+.control-panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.control-panel__actions button {
+  min-height: 38px;
+  min-width: 112px;
+  padding: 8px 12px;
+  border: 1px solid rgba(24, 32, 28, 0.16);
+  border-radius: 6px;
+  color: #f9fbf6;
+  background: #263c31;
+  cursor: pointer;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.control-panel__actions button:nth-child(2) {
+  background: #7a4838;
+}
+
+.control-panel__actions button:nth-child(3) {
+  background: #4c586a;
+}
+
+.control-panel__actions button:disabled {
+  cursor: wait;
+  opacity: 0.58;
+}
+
+.control-panel__actions button:focus-visible {
+  outline: 3px solid rgba(70, 118, 86, 0.28);
+  outline-offset: 2px;
+}
+
 .control-panel__preview {
   display: grid;
   gap: 14px;
@@ -326,6 +364,27 @@ h1 {
   color: #24312b;
   font-size: 0.82rem;
   font-weight: 700;
+}
+
+.run-panel__timeline em {
+  justify-self: start;
+  padding: 3px 7px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.run-panel__cache-hit {
+  color: #28553a;
+  background: rgba(200, 230, 204, 0.86);
+}
+
+.run-panel__cache-miss {
+  color: #68422f;
+  background: rgba(239, 211, 190, 0.86);
 }
 
 .atlas-fixture {
