@@ -1,6 +1,6 @@
 # Dynamic Building Family Integration Map
 
-**Status:** Milestone 2C atlas packing and channel utility foundation
+**Status:** Milestone 2D atlas artifact cache and debug export foundation
 **Plan source:** `docs/plans/dynamic-building-family.md`
 **Workspace:** `C:\Users\behmb\Documents\Cascade Projects\buildo`
 **Date:** 2026-06-24
@@ -46,7 +46,7 @@ docs/
     dynamic-building-family.md
 ```
 
-The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, and the Milestone 2C atlas channel packer. No renderer, compiler, state slice, atlas inspector UI, PNG debug export, or generated building asset has been implemented.
+The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, and the Milestone 2D in-memory atlas artifact/debug-export foundation. No renderer, compiler, state slice, app-routed atlas inspector, or generated building asset has been implemented.
 
 ## 2. Active Instructions
 
@@ -192,10 +192,15 @@ Actual Milestone 2 material planning and source-generation paths:
 ```text
 src/features/building-family/materials/atlasPlanner.ts
 src/features/building-family/materials/atlasPacker.ts
+src/features/building-family/materials/artifactCache.ts
+src/features/building-family/materials/atlasDebugExport.ts
 src/features/building-family/materials/normalFromHeight.ts
 src/features/building-family/materials/periodicBlend.ts
 src/features/building-family/materials/providers/fixtureMaterialProvider.ts
 src/features/building-family/materials/providers/proceduralMaterialProvider.ts
+src/features/building-family/ui/AtlasLab.tsx
+src/features/building-family/tests/atlasArtifactCache.test.ts
+src/features/building-family/tests/atlasDebugExport.test.tsx
 src/features/building-family/tests/atlasPlanner.test.ts
 src/features/building-family/tests/atlasPacker.test.ts
 src/features/building-family/tests/proceduralMaterialProvider.test.ts
@@ -284,14 +289,20 @@ diagnostics
 
 Packing uses fixture-backed tests, derives normals from source height, blends periodic source edges before scaling into slots, and dilates slot edges into padding to reduce mip bleeding. Missing source artifacts are reported as diagnostics instead of being silently ignored.
 
-The next Milestone 2 material slice should continue with cache, inspection, and debug export:
+`InMemoryArtifactCache` stores schema-versioned artifacts by artifact type, request hash, content hash, dependency list, and artifact payload. It validates restored serialized entries before accepting them and exposes cache-hit metadata for generation orchestration.
+
+`createAtlasDebugExport` converts each packed channel into a real PNG data URL without adding an image dependency. The debug export includes channel hashes, semantic slot overlays, source provenance, diagnostics, and a stable export hash.
+
+`AtlasLab` is a development inspector component that renders the packed atlas identity, channel PNGs, and semantic slot overlays from the same `PackedAtlas` and debug export artifacts. It is not yet wired into the app shell or a route.
+
+The next Milestone 2 material slice should continue with app-shell wiring and fixture generation for a visible developer Atlas Lab:
 
 ```text
-src/features/building-family/materials/artifactCache.ts
-src/features/building-family/materials/atlasDebugExport.ts
+src/features/building-family/materials/atlasLabFixture.ts
 src/features/building-family/ui/AtlasLab.tsx
-src/features/building-family/tests/atlasArtifactCache.test.ts
-src/features/building-family/tests/atlasDebugExport.test.ts
+src/app/App.tsx
+src/app/App.test.tsx
+tests/e2e/smoke.spec.ts
 ```
 
 ## 7. App Shell, Renderer, State, Workers, And Routing
@@ -514,14 +525,24 @@ src/features/building-family/materials/providers/fixtureMaterialProvider.ts
 src/features/building-family/tests/atlasPacker.test.ts
 ```
 
-The next Milestone 2 material slice should continue with:
+Milestone 2D introduced:
 
 ```text
 src/features/building-family/materials/artifactCache.ts
 src/features/building-family/materials/atlasDebugExport.ts
 src/features/building-family/ui/AtlasLab.tsx
 src/features/building-family/tests/atlasArtifactCache.test.ts
-src/features/building-family/tests/atlasDebugExport.test.ts
+src/features/building-family/tests/atlasDebugExport.test.tsx
+```
+
+The next Milestone 2 material slice should continue with:
+
+```text
+src/features/building-family/materials/atlasLabFixture.ts
+src/features/building-family/ui/AtlasLab.tsx
+src/app/App.tsx
+src/app/App.test.tsx
+tests/e2e/smoke.spec.ts
 ```
 
 ## 12. Verification Report
@@ -563,7 +584,7 @@ Latest validation results:
 
 ```text
 typecheck: passed
-unit tests: passed, 24 tests across 13 files
+unit tests: passed, 30 tests across 15 files
 lint: passed
 build: passed
 e2e smoke: passed at http://127.0.0.1:5173/
@@ -631,6 +652,16 @@ src/features/building-family/materials/providers/fixtureMaterialProvider.ts
 src/features/building-family/tests/atlasPacker.test.ts
 ```
 
+Milestone 2D introduced:
+
+```text
+src/features/building-family/materials/artifactCache.ts
+src/features/building-family/materials/atlasDebugExport.ts
+src/features/building-family/ui/AtlasLab.tsx
+src/features/building-family/tests/atlasArtifactCache.test.ts
+src/features/building-family/tests/atlasDebugExport.test.tsx
+```
+
 Generated and ignored directories:
 
 ```text
@@ -639,7 +670,7 @@ dist/
 test-results/
 ```
 
-No generated meshes, provider routes, atlas inspector UI, PNG debug export, renderer adapter, compiler, or Zustand state slice has been added yet.
+No generated meshes, provider routes, app-routed atlas inspector, renderer adapter, compiler, or Zustand state slice has been added yet.
 
 ## 14. Milestone 0 And Setup Exit Criteria
 
