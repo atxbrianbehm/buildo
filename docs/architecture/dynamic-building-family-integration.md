@@ -2,6 +2,7 @@
 
 **Status:** Milestone 7X sample building gallery cleanup
 **Plan source:** `docs/plans/dynamic-building-family.md`
+**Supplemental art-fidelity plan:** `docs/superpowers/plans/2026-06-25-dynamic-building-family-art-fidelity-bridge.md`
 **Workspace:** `C:\Users\behmb\Documents\Cascade Projects\buildo`
 **Date:** 2026-06-24
 
