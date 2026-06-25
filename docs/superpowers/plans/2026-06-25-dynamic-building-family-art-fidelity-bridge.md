@@ -239,6 +239,8 @@ npm.cmd run typecheck
 
 ### Slice 2: Snap Grid And Facade Module Planner
 
+Implementation plan: `docs/superpowers/plans/2026-06-25-art-kit-snap-grid-facade-planner.md`.
+
 Implement `moduleSnapGrid.ts` and `facadeModulePlanner.ts` so a building graph can place modules using:
 
 - 1 meter grid increments;
