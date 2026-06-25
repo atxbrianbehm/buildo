@@ -387,7 +387,8 @@ export async function compileBuilding(input: CompileBuildingInput): Promise<Runt
     }
   }
 
-  const highDetail = (input.detailLevel ?? "high") === "high";
+  const detailLevel = input.detailLevel ?? "high";
+  const highDetail = detailLevel === "high";
   const meshPlans = [
     createWallMeshPlan(input.spec, input.catalog),
     ...(highDetail ? [createCorniceMeshPlan(input.spec, input.catalog)] : []),
@@ -415,7 +416,10 @@ export async function compileBuilding(input: CompileBuildingInput): Promise<Runt
     schemaVersion: "0.1.0",
     buildingId: input.buildingId ?? input.spec.familyId,
     familyId: input.spec.familyId,
-    sourceGraphHash: await hashCanonicalJson(input.graph),
+    sourceGraphHash:
+      detailLevel === "high"
+        ? await hashCanonicalJson(input.graph)
+        : await hashCanonicalJson({ graph: input.graph, detailLevel }),
     bounds,
     meshBatches,
     instanceBatches,

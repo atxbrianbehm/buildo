@@ -10,6 +10,7 @@ import {
 import type { BuildingArtifactMetadata, BuildingArtifactType } from "./artifactRegistry";
 
 export type BuildingRoom = "promptLab" | "atlasLab" | "componentForge" | "assemblyHall";
+export type BuildingDetailLevel = "high" | "low";
 export type BuildingRoofType = "flat" | "gable";
 export type BuildingTrimDensity = "restrained" | "moderate" | "ornate";
 export const defaultBuildingDocumentId = "buildo-demo-family";
@@ -21,6 +22,7 @@ export interface BuildingPromptControls {
   seeds: Seeds;
   floorCount: number;
   bayCount: number;
+  detailLevel: BuildingDetailLevel;
   roofType: BuildingRoofType;
   trimDensity: BuildingTrimDensity;
   remoteMaterialEnabled: boolean;
@@ -91,6 +93,7 @@ export const defaultBuildingPromptControls: BuildingPromptControls = {
   },
   floorCount: 4,
   bayCount: 7,
+  detailLevel: "high",
   roofType: "flat",
   trimDensity: "ornate",
   remoteMaterialEnabled: false,

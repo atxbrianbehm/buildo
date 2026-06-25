@@ -140,6 +140,7 @@ describe("compileBuilding", () => {
     expect(lowIr.meshBatches.map((batch) => batch.batchId)).toEqual(["mesh.wall-panels", "mesh.roof"]);
     expect(lowIr.instanceBatches.map((batch) => batch.batchId)).toEqual(["instances.window", "instances.door"]);
     expect(lowIr.semanticIndex.some((entry) => entry.stage === "trim")).toBe(false);
+    expect(lowIr.sourceGraphHash).not.toBe(highIr.sourceGraphHash);
     expect(lowIr.metrics.triangleCount).toBeLessThan(highIr.metrics.triangleCount);
     expect(lowIr.metrics.instanceCount).toBeLessThan(highIr.metrics.instanceCount);
   });

@@ -181,7 +181,7 @@ describe("building run controller", () => {
 
     expect(result).toMatchObject({
       runId: "run-001",
-      artifactId: "assembly-hall-fixture:completed-building:completed-atlas-hash",
+      artifactId: "assembly-hall-fixture:completed-building:completed-graph-hash:completed-atlas-hash",
       stale: false
     });
     expect(store.getState().runs.status).toBe("complete");
@@ -289,7 +289,8 @@ describe("building run controller", () => {
 
     expect(result).toMatchObject({
       runId: "run-persistence-fallback",
-      artifactId: "assembly-hall-fixture:persistence-fallback-building:persistence-fallback-atlas-hash",
+      artifactId:
+        "assembly-hall-fixture:persistence-fallback-building:persistence-fallback-graph-hash:persistence-fallback-atlas-hash",
       stale: false
     });
     expect(completedFamilyPersistence.put).toHaveBeenCalledTimes(1);
@@ -353,7 +354,8 @@ describe("building run controller", () => {
 
     expect(result).toMatchObject({
       runId: "run-restored",
-      artifactId: "assembly-hall-fixture:family-doc-alpha.restored-building:restored-atlas-hash",
+      artifactId:
+        "assembly-hall-fixture:family-doc-alpha.restored-building:restored-persisted-graph-hash:restored-atlas-hash",
       stale: false
     });
     expect(completedFamilyPersistence.list).toHaveBeenCalledTimes(1);
@@ -404,7 +406,8 @@ describe("building run controller", () => {
     expect(restored).toMatchObject({ runId: "run-restored", stale: true });
     expect(current).toMatchObject({
       runId: "run-current",
-      artifactId: "assembly-hall-fixture:family-doc-alpha.current-building:current-atlas-hash",
+      artifactId:
+        "assembly-hall-fixture:family-doc-alpha.current-building:current-generated-graph-hash:current-atlas-hash",
       stale: false
     });
     expect(restoredFixture.familyRuntime.dispose).toHaveBeenCalledTimes(1);
@@ -444,13 +447,13 @@ describe("building run controller", () => {
     expect(firstResult).toMatchObject({ runId: "run-001", stale: true });
     expect(secondResult).toMatchObject({
       runId: "run-002",
-      artifactId: "assembly-hall-fixture:current-building:current-atlas-hash",
+      artifactId: "assembly-hall-fixture:current-building:current-graph-hash:current-atlas-hash",
       stale: false
     });
     expect(staleFixture.familyRuntime.dispose).toHaveBeenCalledTimes(1);
     expect(currentFixture.familyRuntime.dispose).not.toHaveBeenCalled();
     expect(registry.listMetadata().map((artifact) => artifact.artifactId)).toContain(
-      "assembly-hall-fixture:current-building:current-atlas-hash"
+      "assembly-hall-fixture:current-building:current-graph-hash:current-atlas-hash"
     );
     expect(store.getState().runs.status).toBe("complete");
     expect(store.getState().runs.activeRunId).toBe("run-002");

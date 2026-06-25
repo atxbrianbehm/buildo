@@ -22,6 +22,7 @@ const createFixtureWithOptions = createAssemblyHallFixture as (input?: {
     };
     floorCount: number;
     bayCount: number;
+    detailLevel?: "high" | "low";
     roofType: "flat";
     trimDensity: "ornate";
     lockedComponentKeys: string[];
@@ -53,6 +54,7 @@ const explicitPromptControls = {
   },
   floorCount: 6,
   bayCount: 5,
+  detailLevel: "high" as const,
   roofType: "flat" as const,
   trimDensity: "ornate" as const,
   lockedComponentKeys: []
@@ -133,6 +135,37 @@ describe("assembly hall fixture", () => {
     expect(fixture.ir.metrics.instanceCount).toBeGreaterThan(6 * 5);
 
     fixture.familyRuntime.dispose();
+  });
+
+  it("passes low detail controls into the runtime fixture and variant stress summary", async () => {
+    const highFixture = await createFixtureWithOptions({ promptControls: explicitPromptControls });
+    const lowFixture = await createFixtureWithOptions({
+      promptControls: {
+        ...explicitPromptControls,
+        detailLevel: "low"
+      },
+      reusableArtifacts: {
+        packedAtlas: highFixture.packedAtlas,
+        debugExport: highFixture.debugExport,
+        catalog: highFixture.catalog
+      }
+    });
+
+    expect(lowFixture.ir.meshBatches.map((batch) => batch.batchId)).toEqual(["mesh.wall-panels", "mesh.roof"]);
+    expect(lowFixture.ir.instanceBatches.map((batch) => batch.batchId)).toEqual(["instances.window", "instances.door"]);
+    expect(lowFixture.ir.semanticIndex.some((entry) => entry.stage === "trim")).toBe(false);
+    expect(lowFixture.metrics.triangleCount).toBeLessThan(highFixture.metrics.triangleCount);
+    expect(lowFixture.metrics.instanceCount).toBeLessThan(highFixture.metrics.instanceCount);
+    expect(lowFixture.variantStress.variants[0]).toMatchObject({
+      triangleCount: lowFixture.ir.metrics.triangleCount,
+      instanceCount: lowFixture.ir.metrics.instanceCount
+    });
+    expect(lowFixture.promptTrace.requestedControls).toEqual(
+      expect.arrayContaining([{ name: "detailLevel", value: "low" }])
+    );
+
+    lowFixture.familyRuntime.dispose();
+    highFixture.familyRuntime.dispose();
   });
 
   it("records a serializable prompt and PSG trace for Prompt Lab inspection", async () => {

@@ -81,7 +81,7 @@ function disposeFixture(fixture: AssemblyHallFixture): void {
 }
 
 function artifactIdForFixture(fixture: AssemblyHallFixture): string {
-  return `assembly-hall-fixture:${fixture.ir.buildingId}:${fixture.packedAtlas.contentHash}`;
+  return `assembly-hall-fixture:${fixture.ir.buildingId}:${fixture.ir.sourceGraphHash}:${fixture.packedAtlas.contentHash}`;
 }
 
 export class BuildingRunController {

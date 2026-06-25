@@ -32,6 +32,7 @@ export type BuildingControlName =
   | "trimSeed"
   | "floorCount"
   | "bayCount"
+  | "detailLevel"
   | "roofType"
   | "trimDensity"
   | "localComponentLock"
@@ -44,6 +45,7 @@ export interface BuildingControlSnapshot {
   seeds: Seeds;
   floorCount: number;
   bayCount: number;
+  detailLevel?: string;
   roofType: string;
   trimDensity: string;
   remoteMaterialEnabled?: boolean;
@@ -138,6 +140,11 @@ const controlImpactMatrix: Record<BuildingControlName, Record<BuildingInvalidati
     runtimeBuildingIr: "full",
     gpuScene: "full"
   },
+  detailLevel: {
+    ...noImpact,
+    runtimeBuildingIr: "full",
+    gpuScene: "full"
+  },
   buildingSeed: {
     ...noImpact,
     normalizedSpec: "partial",
@@ -189,6 +196,7 @@ const controlImpactMatrix: Record<BuildingControlName, Record<BuildingInvalidati
 const legacyArtifactMatrix: Record<string, ArtifactKind[]> = {
   floorCount: ["spec", "graph", "geometry"],
   bayCount: ["spec", "graph", "geometry"],
+  detailLevel: ["geometry"],
   buildingSeed: ["spec", "graph", "geometry"],
   familySeed: ["intent", "spec", "atlas", "componentCatalog", "graph", "geometry"],
   materialSeed: ["atlas"],
@@ -232,6 +240,7 @@ function changedControls(previous: BuildingControlSnapshot, next: BuildingContro
   if (previous.seeds.trim !== next.seeds.trim) changed.push("trimSeed");
   if (previous.floorCount !== next.floorCount) changed.push("floorCount");
   if (previous.bayCount !== next.bayCount) changed.push("bayCount");
+  if ((previous.detailLevel ?? "high") !== (next.detailLevel ?? "high")) changed.push("detailLevel");
   if (previous.roofType !== next.roofType) changed.push("roofType");
   if (previous.trimDensity !== next.trimDensity) changed.push("trimDensity");
   if (Boolean(previous.remoteMaterialEnabled) !== Boolean(next.remoteMaterialEnabled)) {

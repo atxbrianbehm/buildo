@@ -443,6 +443,34 @@ describe("App", () => {
     expect(screen.getByLabelText("Generation run timeline")).toHaveTextContent("cache miss");
   });
 
+  it("runs low-detail building geometry from the Prompt Lab detail selector", async () => {
+    render(<App />);
+
+    expect(await screen.findByRole("heading", { name: "Control Invalidation" })).toBeInTheDocument();
+    await waitForInitialRun();
+
+    selectRoom("Assembly Hall");
+    expect(await screen.findByRole("heading", { name: "Assembly Hall" })).toBeInTheDocument();
+    const highDetailMetrics = screen.getByLabelText("Assembly Hall renderer metrics").textContent ?? "";
+
+    selectRoom("Prompt Lab");
+    expect(screen.getByLabelText("Detail Level")).toHaveValue("high");
+    fireEvent.change(screen.getByLabelText("Detail Level"), { target: { value: "low" } });
+
+    expect(screen.getByLabelText("Invalidation preview")).toHaveTextContent("detailLevel");
+    expect(screen.getByLabelText("Invalidation preview")).toHaveTextContent("Material sources reusable");
+
+    fireEvent.click(screen.getByRole("button", { name: "Run Current" }));
+    await waitForInitialRun();
+
+    selectRoom("Assembly Hall");
+    expect(await screen.findByRole("heading", { name: "Assembly Hall" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Assembly Hall renderer metrics").textContent ?? "").not.toBe(highDetailMetrics);
+    const trimVisibility = within(screen.getByLabelText("Assembly stage visibility")).getByText("trim").closest("li");
+    expect(trimVisibility).not.toBeNull();
+    expect(trimVisibility).toHaveTextContent("0 objects / 0 paths");
+  });
+
   it("keeps the remote material provider behind an explicit Prompt Lab toggle", async () => {
     render(<App />);
 

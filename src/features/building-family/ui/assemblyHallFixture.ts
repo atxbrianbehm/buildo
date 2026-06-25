@@ -52,6 +52,7 @@ const defaultFixturePromptControls: BuildingPromptControls = {
   stylePackId: "late-19c-commercial-demo",
   floorCount: 4,
   bayCount: 7,
+  detailLevel: "high",
   roofType: "flat",
   trimDensity: "ornate",
   remoteMaterialEnabled: false,
@@ -241,7 +242,8 @@ async function createVariantStressSummary(input: {
         spec: input.spec,
         catalog: input.catalog,
         graph: input.graph,
-        buildingId: await buildingIdForSeed(input.spec, buildingSeed)
+        buildingId: await buildingIdForSeed(input.spec, buildingSeed),
+        detailLevel: input.controls.detailLevel ?? "high"
       });
       return stressVariantForIr(index, buildingSeed, variantIr);
     })
@@ -290,6 +292,7 @@ function promptTraceFor(input: {
     requestedControls: [
       { name: "floorCount", value: input.controls.floorCount },
       { name: "bayCount", value: input.controls.bayCount },
+      { name: "detailLevel", value: input.controls.detailLevel ?? "high" },
       { name: "roofType", value: input.controls.roofType },
       { name: "trimDensity", value: input.controls.trimDensity },
       { name: "stylePackId", value: input.controls.stylePackId },
@@ -374,7 +377,13 @@ export async function createAssemblyHallFixture(
   const atlasPlan = await planAtlas(spec, { widthPx: 128, heightPx: 128, paddingPx: 4 });
   const catalog = input.reusableArtifacts?.catalog ?? (await buildComponentCatalog(spec, atlasPlan.manifest));
   const graph = await buildBuildingGraph(spec, catalog);
-  const ir = await compileBuilding({ spec, catalog, graph, buildingId: await buildingIdFor(spec, controls) });
+  const ir = await compileBuilding({
+    spec,
+    catalog,
+    graph,
+    buildingId: await buildingIdFor(spec, controls),
+    detailLevel: controls.detailLevel ?? "high"
+  });
   let generatedMaterialSourceCount = 0;
   let packedAtlas = input.reusableArtifacts?.packedAtlas;
   let remoteMaterialApplication: AssemblyHallRemoteMaterialApplication | undefined;

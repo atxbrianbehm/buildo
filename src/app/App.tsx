@@ -23,6 +23,7 @@ import {
   type BuildingRoom,
   type BuildingPromptControlPatch,
   type BuildingPromptControls,
+  type BuildingDetailLevel,
   type BuildingRoofType,
   type BuildingStoreApi
 } from "../features/building-family/state/buildingStore";
@@ -49,6 +50,11 @@ const setupCards = [
 const roofTypeOptions: Array<{ label: string; value: BuildingRoofType }> = [
   { label: "Flat", value: "flat" },
   { label: "Gable", value: "gable" }
+];
+
+const detailLevelOptions: Array<{ label: string; value: BuildingDetailLevel }> = [
+  { label: "High", value: "high" },
+  { label: "Low", value: "low" }
 ];
 
 const trimDensityOptions: Array<{ label: string; value: BuildingPromptControls["trimDensity"] }> = [
@@ -402,6 +408,22 @@ export function App() {
                     }
                   >
                     {roofTypeOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  <span>Detail Level</span>
+                  <select
+                    aria-label="Detail Level"
+                    value={promptControls.detailLevel}
+                    onChange={(event) =>
+                      updatePromptControls({ detailLevel: event.currentTarget.value as BuildingDetailLevel })
+                    }
+                  >
+                    {detailLevelOptions.map((option) => (
                       <option key={option.value} value={option.value}>
                         {option.label}
                       </option>
