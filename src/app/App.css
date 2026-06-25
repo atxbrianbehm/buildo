@@ -1552,7 +1552,8 @@ h1 {
 }
 
 .assembly-hall__reveal,
-.assembly-hall__selection {
+.assembly-hall__selection,
+.assembly-hall__compatibility {
   display: grid;
   gap: 12px;
   min-width: 0;
@@ -1564,6 +1565,11 @@ h1 {
     inset 0 0 0 1px rgba(24, 32, 28, 0.1);
 }
 
+.assembly-hall__compatibility-header {
+  display: grid;
+  gap: 10px;
+}
+
 .assembly-hall__reveal-header {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -1571,7 +1577,8 @@ h1 {
 }
 
 .assembly-hall__reveal-header h3,
-.assembly-hall__selection h3 {
+.assembly-hall__selection h3,
+.assembly-hall__compatibility h3 {
   margin: 0;
   color: #17201c;
   font-size: 1rem;
@@ -1586,6 +1593,89 @@ h1 {
   font-weight: 700;
   letter-spacing: 0;
   text-transform: uppercase;
+}
+
+.assembly-hall__compatibility-header dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.assembly-hall__compatibility-header dl div {
+  min-width: 0;
+  padding: 9px 10px;
+  border-radius: 6px;
+  background: #eef1eb;
+  box-shadow: inset 0 0 0 1px rgba(24, 32, 28, 0.08);
+}
+
+.assembly-hall__compatibility dt {
+  color: #5f6d66;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.assembly-hall__compatibility dd {
+  margin: 5px 0 0;
+  overflow-wrap: anywhere;
+  color: #18201c;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.assembly-hall__compatibility-table {
+  width: 100%;
+  min-width: 0;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 0.78rem;
+}
+
+.assembly-hall__compatibility-table th,
+.assembly-hall__compatibility-table td {
+  padding: 9px 10px;
+  border-bottom: 1px solid rgba(24, 32, 28, 0.1);
+  color: #33413b;
+  text-align: left;
+  vertical-align: top;
+}
+
+.assembly-hall__compatibility-table th {
+  color: #5f6d66;
+  background: rgba(247, 248, 244, 0.82);
+  font-size: 0.7rem;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.assembly-hall__compatibility-table th:nth-child(1) {
+  width: 24%;
+}
+
+.assembly-hall__compatibility-table th:nth-child(2) {
+  width: 36%;
+}
+
+.assembly-hall__compatibility-table td {
+  overflow-wrap: anywhere;
+}
+
+.assembly-hall__compatibility-table td:nth-child(1),
+.assembly-hall__compatibility-table td:nth-child(2) {
+  font-variant-numeric: tabular-nums;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.assembly-hall__compatibility-table tr[data-severity="warning"] td:first-child {
+  color: #7b551a;
+}
+
+.assembly-hall__compatibility-table tr[data-severity="error"] td:first-child {
+  color: #8a2f23;
 }
 
 .assembly-hall__reveal select,
@@ -2024,7 +2114,8 @@ h1 {
   .assembly-hall__identity div,
   .run-panel__metrics div,
   .component-forge__definition div,
-  .assembly-hall__selection-details div {
+  .assembly-hall__selection-details div,
+  .assembly-hall__compatibility-header dl {
     grid-template-columns: 1fr;
   }
 

@@ -121,6 +121,32 @@ describe("AssemblyHall", () => {
     expect(screen.getByRole("status")).toHaveTextContent("adapter unavailable");
   });
 
+  it("surfaces compatibility diagnostics when WebGPU is unsupported but WebGL fallback is available", async () => {
+    const fixture = await createAssemblyHallFixture();
+    const compatibilityFixture = {
+      ...fixture,
+      backendSupport: {
+        ...fixture.backendSupport,
+        webgpu: {
+          available: false,
+          importPath: "three/webgpu" as const
+        },
+        preferredBackend: "webgl" as const
+      },
+      metrics: {
+        ...fixture.metrics,
+        preferredBackend: "webgl" as const
+      }
+    };
+
+    render(<AssemblyHall fixture={compatibilityFixture} rendererFactory={fakeRendererFactory("webgl")} />);
+
+    const diagnostics = screen.getByRole("table", { name: "Assembly Hall compatibility diagnostics" });
+    expect(diagnostics).toHaveTextContent("renderer.webgpuUnavailable");
+    expect(diagnostics).toHaveTextContent("WebGPU unavailable");
+    expect(diagnostics).toHaveTextContent("WebGL fallback available");
+  });
+
   it("drives stage group visibility from the Assembly Hall reveal controls", async () => {
     const fixture = await createAssemblyHallFixture();
 

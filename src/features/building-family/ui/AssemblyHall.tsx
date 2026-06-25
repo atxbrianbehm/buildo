@@ -10,6 +10,7 @@ import {
   type Object3D
 } from "three";
 import type { ComponentGalleryEntry } from "../compiler/componentGalleryBuilder";
+import type { Diagnostic } from "../core/diagnostics";
 import type { AssemblyStage } from "../contracts/shared";
 import {
   createAssemblyRenderer,
@@ -17,6 +18,7 @@ import {
   type AssemblyRendererBackend,
   type AssemblyRendererFactory
 } from "../renderer-three/assemblyRendererFactory";
+import type { RendererBackendSupport } from "../renderer-three/buildingSceneAdapter";
 import {
   createFamilyBenchmarkScene,
   type FamilyBenchmarkReport,
@@ -58,6 +60,20 @@ interface BenchmarkState {
   error: string | null;
 }
 
+interface RendererCompatibilityReport {
+  schemaVersion: "0.1.0";
+  threeRevision: string;
+  activeBackend: AssemblyRendererBackend | "pending";
+  preferredBackend: RendererBackendSupport["preferredBackend"];
+  checks: {
+    webglAvailable: boolean;
+    webgpuAvailable: boolean;
+    fallbackAvailable: boolean;
+    fallbackUsed: boolean;
+  };
+  diagnostics: Diagnostic[];
+}
+
 function formatNumber(value: number): string {
   return new Intl.NumberFormat("en-US").format(value);
 }
@@ -78,6 +94,81 @@ function formatBytes(value: number): string {
   }
 
   return `${formatNumber(value)} B`;
+}
+
+function createRendererCompatibilityReport(input: {
+  activeBackend: AssemblyRendererBackend | "pending";
+  backendSupport: RendererBackendSupport;
+  fallbackReason: string | null;
+  renderError: string | null;
+}): RendererCompatibilityReport {
+  const diagnostics: Diagnostic[] = [];
+  const webglAvailable = input.backendSupport.webgl.available;
+  const webgpuAvailable = input.backendSupport.webgpu.available;
+
+  if (!webglAvailable && !webgpuAvailable) {
+    diagnostics.push({
+      code: "renderer.noBackendAvailable",
+      message: "No Assembly Hall renderer backend is available.",
+      severity: "error"
+    });
+  } else {
+    if (!webgpuAvailable) {
+      diagnostics.push({
+        code: "renderer.webgpuUnavailable",
+        message: webglAvailable
+          ? "WebGPU unavailable; WebGL fallback available."
+          : "WebGPU unavailable and no WebGL fallback is available.",
+        severity: webglAvailable ? "warning" : "error"
+      });
+    }
+
+    if (!webglAvailable) {
+      diagnostics.push({
+        code: "renderer.webglUnavailable",
+        message: "WebGL fallback unavailable.",
+        severity: webgpuAvailable ? "warning" : "error"
+      });
+    }
+  }
+
+  if (input.fallbackReason) {
+    diagnostics.push({
+      code: "renderer.webgpuFallback",
+      message: input.fallbackReason,
+      severity: "warning"
+    });
+  }
+
+  if (input.renderError) {
+    diagnostics.push({
+      code: "renderer.activationFailed",
+      message: input.renderError,
+      severity: "error"
+    });
+  }
+
+  if (diagnostics.length === 0) {
+    diagnostics.push({
+      code: "renderer.compatibilityReady",
+      message: "Preferred renderer compatibility checks passed.",
+      severity: "info"
+    });
+  }
+
+  return {
+    schemaVersion: "0.1.0",
+    threeRevision: input.backendSupport.threeRevision,
+    activeBackend: input.activeBackend,
+    preferredBackend: input.backendSupport.preferredBackend,
+    checks: {
+      webglAvailable,
+      webgpuAvailable,
+      fallbackAvailable: webglAvailable,
+      fallbackUsed: input.activeBackend === "webgl" && input.fallbackReason !== null
+    },
+    diagnostics
+  };
 }
 
 function stageLabel(stage: AssemblyStage): string {
@@ -228,6 +319,16 @@ export function AssemblyHall({ fixture, rendererFactory = createAssemblyRenderer
   const benchmarkStatus = activeBenchmarkState?.status ?? "idle";
   const benchmarkReport = activeBenchmarkState?.report ?? null;
   const benchmarkError = activeBenchmarkState?.error ?? null;
+  const compatibilityReport = useMemo(
+    () =>
+      createRendererCompatibilityReport({
+        activeBackend,
+        backendSupport: fixture.backendSupport,
+        fallbackReason: backendFallbackReason,
+        renderError
+      }),
+    [activeBackend, backendFallbackReason, fixture.backendSupport, renderError]
+  );
 
   useEffect(() => {
     return () => {
@@ -467,6 +568,49 @@ export function AssemblyHall({ fixture, rendererFactory = createAssemblyRenderer
               <dd>{fixture.metrics.componentCount}</dd>
             </div>
           </dl>
+
+          <section className="assembly-hall__compatibility" aria-labelledby="assembly-compatibility-heading">
+            <div className="assembly-hall__compatibility-header">
+              <h3 id="assembly-compatibility-heading">Compatibility Diagnostics</h3>
+              <dl aria-label="Renderer compatibility summary">
+                <div>
+                  <dt>Report</dt>
+                  <dd>{compatibilityReport.schemaVersion}</dd>
+                </div>
+                <div>
+                  <dt>Three.js</dt>
+                  <dd>{compatibilityReport.threeRevision}</dd>
+                </div>
+                <div>
+                  <dt>WebGL</dt>
+                  <dd>{compatibilityReport.checks.webglAvailable ? "available" : "unavailable"}</dd>
+                </div>
+                <div>
+                  <dt>WebGPU</dt>
+                  <dd>{compatibilityReport.checks.webgpuAvailable ? "available" : "unavailable"}</dd>
+                </div>
+              </dl>
+            </div>
+
+            <table className="assembly-hall__compatibility-table" aria-label="Assembly Hall compatibility diagnostics">
+              <thead>
+                <tr>
+                  <th scope="col">Severity</th>
+                  <th scope="col">Code</th>
+                  <th scope="col">Message</th>
+                </tr>
+              </thead>
+              <tbody>
+                {compatibilityReport.diagnostics.map((diagnostic) => (
+                  <tr key={diagnostic.code} data-severity={diagnostic.severity}>
+                    <td>{diagnostic.severity}</td>
+                    <td>{diagnostic.code}</td>
+                    <td>{diagnostic.message}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
 
           <section className="assembly-hall__selection" aria-labelledby="assembly-hall-selection-heading">
             <h3 id="assembly-hall-selection-heading">Semantic Selection</h3>
