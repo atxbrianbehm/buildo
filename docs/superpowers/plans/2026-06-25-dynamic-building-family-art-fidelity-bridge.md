@@ -266,6 +266,8 @@ npm.cmd run typecheck
 
 ### Slice 3: Profiled Trim And Cornice Geometry
 
+Implementation plan: `docs/superpowers/plans/2026-06-25-profiled-trim-cornice-geometry.md`.
+
 Upgrade component generation with reusable profile geometry:
 
 - profiled belt courses;
