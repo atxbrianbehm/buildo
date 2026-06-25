@@ -1,5 +1,6 @@
 import { createFamilyBenchmarkScene, type FamilyBenchmarkScene } from "../performance/familyBenchmarkScene";
 import { createAssemblyHallFixture } from "../ui/assemblyHallFixture";
+import { vi } from "vitest";
 
 describe("family benchmark scene", () => {
   it("creates a 100-building benchmark scene that shares one family runtime", async () => {
@@ -43,6 +44,50 @@ describe("family benchmark scene", () => {
       expect(benchmark.report.timing.runtimeMountTimeMs).toBe(500);
     } finally {
       benchmark?.familyRuntime.dispose();
+      fixture.familyRuntime.dispose();
+    }
+  });
+
+  it("yields between benchmark compile and mount batches", async () => {
+    const fixture = await createAssemblyHallFixture();
+    let benchmark: FamilyBenchmarkScene | undefined;
+    const yieldToMainThread = vi.fn(async () => undefined);
+
+    try {
+      benchmark = await createFamilyBenchmarkScene({
+        fixture,
+        buildingCount: 5,
+        yieldEvery: 2,
+        yieldToMainThread
+      });
+
+      expect(benchmark.report.buildingCount).toBe(5);
+      expect(yieldToMainThread).toHaveBeenCalledTimes(4);
+    } finally {
+      benchmark?.familyRuntime.dispose();
+      fixture.familyRuntime.dispose();
+    }
+  });
+
+  it("aborts benchmark work before publishing a scene", async () => {
+    const fixture = await createAssemblyHallFixture();
+    const abortController = new AbortController();
+    const yieldToMainThread = vi.fn(async () => {
+      abortController.abort();
+    });
+
+    try {
+      await expect(
+        createFamilyBenchmarkScene({
+          fixture,
+          buildingCount: 5,
+          signal: abortController.signal,
+          yieldEvery: 1,
+          yieldToMainThread
+        })
+      ).rejects.toThrow("Family benchmark generation aborted");
+      expect(yieldToMainThread).toHaveBeenCalledTimes(1);
+    } finally {
       fixture.familyRuntime.dispose();
     }
   });

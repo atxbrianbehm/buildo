@@ -35,6 +35,7 @@ import type { AssemblyHallFixture } from "./assemblyHallFixture";
 export interface AssemblyHallProps {
   fixture: AssemblyHallFixture;
   rendererFactory?: AssemblyRendererFactory;
+  benchmarkSceneFactory?: typeof createFamilyBenchmarkScene;
 }
 
 const selectionStageOrder: AssemblyStage[] = ["massing", "facade", "openings", "trim", "roof"];
@@ -310,12 +311,17 @@ function stageRevealSummaries(fixture: AssemblyHallFixture, revealThroughStage: 
   });
 }
 
-export function AssemblyHall({ fixture, rendererFactory = createAssemblyRenderer }: AssemblyHallProps) {
+export function AssemblyHall({
+  fixture,
+  rendererFactory = createAssemblyRenderer,
+  benchmarkSceneFactory = createFamilyBenchmarkScene
+}: AssemblyHallProps) {
   const selectionId = useId();
   const revealId = useId();
   const mountRef = useRef<HTMLDivElement | null>(null);
   const renderFrameRef = useRef<(() => void) | null>(null);
   const benchmarkRunIdRef = useRef(0);
+  const benchmarkAbortRef = useRef<AbortController | null>(null);
   const mountedRef = useRef(true);
   const latestFixtureRef = useRef(fixture);
   const [renderError, setRenderError] = useState<string | null>(null);
@@ -364,12 +370,16 @@ export function AssemblyHall({ fixture, rendererFactory = createAssemblyRenderer
     return () => {
       mountedRef.current = false;
       benchmarkRunIdRef.current += 1;
+      benchmarkAbortRef.current?.abort();
+      benchmarkAbortRef.current = null;
     };
   }, []);
 
   useEffect(() => {
     latestFixtureRef.current = fixture;
     benchmarkRunIdRef.current += 1;
+    benchmarkAbortRef.current?.abort();
+    benchmarkAbortRef.current = null;
   }, [fixture]);
 
   useEffect(() => {
@@ -382,6 +392,9 @@ export function AssemblyHall({ fixture, rendererFactory = createAssemblyRenderer
     const runId = benchmarkRunIdRef.current + 1;
     const benchmarkFixture = fixture;
     benchmarkRunIdRef.current = runId;
+    benchmarkAbortRef.current?.abort();
+    const benchmarkAbortController = new AbortController();
+    benchmarkAbortRef.current = benchmarkAbortController;
     setBenchmarkState({
       fixture: benchmarkFixture,
       status: "running",
@@ -391,7 +404,10 @@ export function AssemblyHall({ fixture, rendererFactory = createAssemblyRenderer
 
     let benchmark: FamilyBenchmarkScene | undefined;
     try {
-      benchmark = await createFamilyBenchmarkScene({ fixture: benchmarkFixture });
+      benchmark = await benchmarkSceneFactory({
+        fixture: benchmarkFixture,
+        signal: benchmarkAbortController.signal
+      });
       if (
         mountedRef.current &&
         benchmarkRunIdRef.current === runId &&
@@ -406,6 +422,13 @@ export function AssemblyHall({ fixture, rendererFactory = createAssemblyRenderer
       }
     } catch (error: unknown) {
       if (
+        benchmarkAbortController.signal.aborted &&
+        (!mountedRef.current || benchmarkRunIdRef.current !== runId || latestFixtureRef.current !== benchmarkFixture)
+      ) {
+        return;
+      }
+
+      if (
         mountedRef.current &&
         benchmarkRunIdRef.current === runId &&
         latestFixtureRef.current === benchmarkFixture
@@ -419,6 +442,9 @@ export function AssemblyHall({ fixture, rendererFactory = createAssemblyRenderer
         });
       }
     } finally {
+      if (benchmarkAbortRef.current === benchmarkAbortController) {
+        benchmarkAbortRef.current = null;
+      }
       benchmark?.familyRuntime.dispose();
     }
   };

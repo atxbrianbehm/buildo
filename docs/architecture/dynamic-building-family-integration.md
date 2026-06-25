@@ -1,6 +1,6 @@
 # Dynamic Building Family Integration Map
 
-**Status:** Milestone 7R benchmark documentation surface
+**Status:** Milestone 7S cooperative benchmark hardening
 **Plan source:** `docs/plans/dynamic-building-family.md`
 **Workspace:** `C:\Users\behmb\Documents\Cascade Projects\buildo`
 **Date:** 2026-06-24
@@ -56,7 +56,7 @@ docs/
     dynamic-building-family.md
 ```
 
-The app currently contains the deterministic domain, atlas, component, compiler, renderer, state, four-room UI, remote-material, route document id, provider-aware smoke, and Milestone 7A-7R persistence/export/performance foundations. Browser-side serialized artifact persistence now has a tested IndexedDB boundary, a schema-versioned completed-family packet/cache-entry adapter, a run-controller handoff to an injected completed-family persistence writer, default app wiring that writes completed-family records to IndexedDB when available, a controller read-restore seam that can select the latest cached completed family for a route document id, a packet-to-runtime fixture restore adapter that can inflate persisted packets into live Assembly Hall fixtures, app startup wiring that tries cached restore before fresh generation, a portable completed-family export bundle builder, an app download action that exports the active completed-family bundle as JSON, a pure export verifier that decodes bundle atlas PNGs and recompiles the exported building graph, an import adapter that turns portable export JSON back into a runtime-restorable completed-family packet, an app import action that restores a downloaded bundle into the live four-room runtime, a pure 100-building shared-family benchmark scene/report builder, compiler-level high/low detail switching that can omit decorative trim/cornice batches while preserving default high-detail output, a Prompt Lab detail-level selector that runs low-detail geometry without regenerating material artifacts, an Assembly Hall benchmark report action that surfaces the 100-building report in the app, Assembly Hall renderer compatibility diagnostics for unsupported WebGPU/WebGL paths, and a benchmark documentation artifact that labels measured, estimated, and not-captured profile fields plus known limitations; configured live-provider proof and the Milestone 7 interactive 16-building orbit benchmark remain later work.
+The app currently contains the deterministic domain, atlas, component, compiler, renderer, state, four-room UI, remote-material, route document id, provider-aware smoke, and Milestone 7A-7S persistence/export/performance foundations. Browser-side serialized artifact persistence now has a tested IndexedDB boundary, a schema-versioned completed-family packet/cache-entry adapter, a run-controller handoff to an injected completed-family persistence writer, default app wiring that writes completed-family records to IndexedDB when available, a controller read-restore seam that can select the latest cached completed family for a route document id, a packet-to-runtime fixture restore adapter that can inflate persisted packets into live Assembly Hall fixtures, app startup wiring that tries cached restore before fresh generation, a portable completed-family export bundle builder, an app download action that exports the active completed-family bundle as JSON, a pure export verifier that decodes bundle atlas PNGs and recompiles the exported building graph, an import adapter that turns portable export JSON back into a runtime-restorable completed-family packet, an app import action that restores a downloaded bundle into the live four-room runtime, a pure 100-building shared-family benchmark scene/report builder, compiler-level high/low detail switching that can omit decorative trim/cornice batches while preserving default high-detail output, a Prompt Lab detail-level selector that runs low-detail geometry without regenerating material artifacts, an Assembly Hall benchmark report action that surfaces the 100-building report in the app, Assembly Hall renderer compatibility diagnostics for unsupported WebGPU/WebGL paths, a benchmark documentation artifact that labels measured, estimated, and not-captured profile fields plus known limitations, and cooperative benchmark yielding/cancellation so the 100-building benchmark can pause between batches and abort stale work; configured live-provider proof and the Milestone 7 interactive 16-building orbit benchmark remain later work.
 
 ## 2. Active Instructions
 
@@ -1534,6 +1534,22 @@ docs/architecture/dynamic-building-family-integration.md
 
 Assembly Hall now renders this documentation after a benchmark run as a `100-building benchmark profile coverage` table plus a `100-building benchmark known limitations` list. Focused coverage first failed on the missing module and UI surface, then verifies measured CPU compile time, estimated worker transfer bytes, not-captured GPU memory/frame time, draw-call coverage, and limitation text for GPU memory plus live frame-time/orbit proof. Performance hardening and the interactive 16-building orbit proof remain later Milestone 7 work.
 
+## 6.68 Cooperative Benchmark Hardening
+
+Actual Milestone 7S cooperative-benchmark-hardening paths:
+
+```text
+src/features/building-family/performance/familyBenchmarkScene.ts
+src/features/building-family/tests/familyBenchmarkScene.test.ts
+src/features/building-family/ui/AssemblyHall.tsx
+src/features/building-family/tests/AssemblyHall.test.tsx
+docs/architecture/dynamic-building-family-integration.md
+```
+
+`createFamilyBenchmarkScene()` now accepts an optional `AbortSignal`, configurable `yieldEvery` interval, and injectable `yieldToMainThread()` hook. The 100-building benchmark validates the yield interval, checks cancellation before and after compile/mount work, yields between compile and mount batches by default, and disposes the temporary family runtime if cancellation or another error interrupts benchmark generation before a report is returned.
+
+Assembly Hall now owns an `AbortController` per benchmark run. Starting a new benchmark, changing fixtures, or unmounting Assembly Hall aborts the previous benchmark signal and prevents stale benchmark work from publishing into the current view. Focused coverage first failed on missing yield calls, missing abort rejection, and missing signal propagation; the final tests verify cooperative batch yields, abort-before-publish behavior, and unmount-driven benchmark cancellation. The remaining Milestone 7 performance work is the interactive 16-building orbit proof and any broader browser/hardware profile capture beyond this cooperative job-loop hardening.
+
 ## 7. App Shell, Renderer, State, Workers, And Routing
 
 Actual React shell:
@@ -2846,6 +2862,16 @@ src/app/App.css
 docs/architecture/dynamic-building-family-integration.md
 ```
 
+Milestone 7S introduced:
+
+```text
+src/features/building-family/performance/familyBenchmarkScene.ts
+src/features/building-family/tests/familyBenchmarkScene.test.ts
+src/features/building-family/ui/AssemblyHall.tsx
+src/features/building-family/tests/AssemblyHall.test.tsx
+docs/architecture/dynamic-building-family-integration.md
+```
+
 Generated and ignored directories:
 
 ```text
@@ -2854,7 +2880,7 @@ dist/
 test-results/
 ```
 
-No preassembled meshes, configured live-provider proof, or Milestone 7 interactive 16-building orbit benchmark has been added yet. The current app can generate the browser vertical slice, inspect artifacts across the four rooms, write completed-family packets into IndexedDB, rebuild live Assembly Hall runtime fixtures from those packets, attempt route-document cached restore at startup before falling back to fresh procedural generation, create a JSON-portable completed-family export bundle from a validated completed-family packet, download that bundle from the active Prompt Lab completed run, verify from exported JSON that the portable atlas bytes plus exported graph reproduce the recorded procedural building and atlas identities, convert that exported JSON back into a runtime-restorable completed-family packet, import the JSON bundle back into the live app runtime, create a pure 100-building shared-family benchmark scene/report from a completed fixture, compile high- or low-detail runtime IRs with low detail omitting decorative trim/cornice batches, run low-detail geometry through a Prompt Lab control while reusing material artifacts, surface the 100-building benchmark report from Assembly Hall, surface Assembly Hall renderer compatibility diagnostics for unsupported WebGPU/WebGL paths, and document benchmark profile coverage plus known limitations. Remaining Milestone 7 work is performance hardening.
+No preassembled meshes, configured live-provider proof, or Milestone 7 interactive 16-building orbit benchmark has been added yet. The current app can generate the browser vertical slice, inspect artifacts across the four rooms, write completed-family packets into IndexedDB, rebuild live Assembly Hall runtime fixtures from those packets, attempt route-document cached restore at startup before falling back to fresh procedural generation, create a JSON-portable completed-family export bundle from a validated completed-family packet, download that bundle from the active Prompt Lab completed run, verify from exported JSON that the portable atlas bytes plus exported graph reproduce the recorded procedural building and atlas identities, convert that exported JSON back into a runtime-restorable completed-family packet, import the JSON bundle back into the live app runtime, create a pure 100-building shared-family benchmark scene/report from a completed fixture, compile high- or low-detail runtime IRs with low detail omitting decorative trim/cornice batches, run low-detail geometry through a Prompt Lab control while reusing material artifacts, surface the 100-building benchmark report from Assembly Hall, surface Assembly Hall renderer compatibility diagnostics for unsupported WebGPU/WebGL paths, document benchmark profile coverage plus known limitations, and abort/yield stale benchmark work cooperatively. Remaining Milestone 7 work is the interactive 16-building orbit proof and broader browser/hardware profile capture.
 
 ## 14. Milestone 0 And Setup Exit Criteria
 

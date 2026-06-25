@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { vi } from "vitest";
 import type { AssemblyRendererActivation } from "../renderer-three/assemblyRendererFactory";
 import { AssemblyHall } from "../ui/AssemblyHall";
@@ -97,6 +97,34 @@ describe("AssemblyHall", () => {
     expect(screen.getByLabelText("100-building benchmark known limitations")).toHaveTextContent(
       "Frame time and interactive orbit proof"
     );
+  });
+
+  it("aborts an in-flight benchmark when Assembly Hall unmounts", async () => {
+    const fixture = await createAssemblyHallFixture();
+    let capturedSignal: AbortSignal | undefined;
+    const benchmarkSceneFactory = vi.fn(async (input: { signal?: AbortSignal }) => {
+      capturedSignal = input.signal;
+      return new Promise<never>((_, reject) => {
+        input.signal?.addEventListener("abort", () => reject(new Error("aborted")), { once: true });
+      });
+    });
+
+    const { unmount } = render(
+      <AssemblyHall
+        fixture={fixture}
+        rendererFactory={fakeRendererFactory()}
+        benchmarkSceneFactory={benchmarkSceneFactory}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Run 100-building benchmark" }));
+
+    await waitFor(() => expect(capturedSignal).toBeDefined());
+    expect(capturedSignal?.aborted).toBe(false);
+
+    unmount();
+
+    expect(capturedSignal?.aborted).toBe(true);
   });
 
   it("exposes semantic renderer lookup entries as a selectable Assembly Hall inspector", async () => {

@@ -8,12 +8,17 @@ import {
 import type { AssemblyHallFixture } from "../ui/assemblyHallFixture";
 
 const defaultBenchmarkBuildingCount = 100;
+const defaultBenchmarkYieldEvery = 10;
+const benchmarkAbortMessage = "Family benchmark generation aborted";
 const oneBuildingTriangleLimit = 150_000;
 
 export interface CreateFamilyBenchmarkSceneInput {
   fixture: AssemblyHallFixture;
   buildingCount?: number;
   now?: () => number;
+  signal?: AbortSignal;
+  yieldEvery?: number;
+  yieldToMainThread?: () => Promise<void>;
 }
 
 export interface FamilyBenchmarkReport {
@@ -69,10 +74,43 @@ function defaultNow(): number {
   return globalThis.performance?.now() ?? Date.now();
 }
 
+async function defaultYieldToMainThread(): Promise<void> {
+  await new Promise<void>((resolve) => setTimeout(resolve, 0));
+}
+
 function validateBuildingCount(buildingCount: number): void {
   if (!Number.isInteger(buildingCount) || buildingCount < 1) {
     throw new Error("Family benchmark building count must be a positive integer.");
   }
+}
+
+function validateBenchmarkYieldEvery(yieldEvery: number): void {
+  if (!Number.isInteger(yieldEvery) || yieldEvery < 1) {
+    throw new Error("Family benchmark yield interval must be a positive integer.");
+  }
+}
+
+function throwIfBenchmarkAborted(signal: AbortSignal | undefined): void {
+  if (signal?.aborted) {
+    throw new Error(benchmarkAbortMessage);
+  }
+}
+
+async function yieldAfterBenchmarkBatch(input: {
+  index: number;
+  total: number;
+  yieldEvery: number;
+  yieldToMainThread: () => Promise<void>;
+  signal: AbortSignal | undefined;
+}): Promise<void> {
+  const completed = input.index + 1;
+  if (completed >= input.total || completed % input.yieldEvery !== 0) {
+    return;
+  }
+
+  throwIfBenchmarkAborted(input.signal);
+  await input.yieldToMainThread();
+  throwIfBenchmarkAborted(input.signal);
 }
 
 function benchmarkBuildingId(baseBuildingId: string, index: number): string {
@@ -109,9 +147,13 @@ export async function createFamilyBenchmarkScene(
   input: CreateFamilyBenchmarkSceneInput
 ): Promise<FamilyBenchmarkScene> {
   const buildingCount = input.buildingCount ?? defaultBenchmarkBuildingCount;
+  const yieldEvery = input.yieldEvery ?? defaultBenchmarkYieldEvery;
   validateBuildingCount(buildingCount);
+  validateBenchmarkYieldEvery(yieldEvery);
+  throwIfBenchmarkAborted(input.signal);
 
   const now = input.now ?? defaultNow;
+  const yieldToMainThread = input.yieldToMainThread ?? defaultYieldToMainThread;
   const familyRuntime = createBuildingFamilyRuntime({
     familyId: input.fixture.spec.familyId,
     packedAtlas: input.fixture.packedAtlas,
@@ -125,6 +167,7 @@ export async function createFamilyBenchmarkScene(
     let runtimeMountTimeMs = 0;
 
     for (let index = 0; index < buildingCount; index += 1) {
+      throwIfBenchmarkAborted(input.signal);
       const compileStart = now();
       const ir = await compileBuilding({
         spec: input.fixture.spec,
@@ -132,20 +175,39 @@ export async function createFamilyBenchmarkScene(
         graph: input.fixture.graph,
         buildingId: benchmarkBuildingId(input.fixture.ir.buildingId, index)
       });
+      throwIfBenchmarkAborted(input.signal);
       compileTimeMs += elapsedMs(compileStart, now());
       benchmarkIrs.push(ir);
+      await yieldAfterBenchmarkBatch({
+        index,
+        total: buildingCount,
+        yieldEvery,
+        yieldToMainThread,
+        signal: input.signal
+      });
     }
 
-    for (const ir of benchmarkIrs) {
+    for (let index = 0; index < benchmarkIrs.length; index += 1) {
+      const ir = benchmarkIrs[index];
+      throwIfBenchmarkAborted(input.signal);
       const mountStart = now();
       familyRuntime.createOrReplaceBuilding({
         catalog: input.fixture.catalog,
         componentGallery: input.fixture.componentGallery,
         ir
       });
+      throwIfBenchmarkAborted(input.signal);
       runtimeMountTimeMs += elapsedMs(mountStart, now());
+      await yieldAfterBenchmarkBatch({
+        index,
+        total: buildingCount,
+        yieldEvery,
+        yieldToMainThread,
+        signal: input.signal
+      });
     }
 
+    throwIfBenchmarkAborted(input.signal);
     const runtimeMetrics = { ...familyRuntime.metrics };
     const perBuildingRuntimeIrBytes = estimateRuntimeIrTransferBytes(input.fixture.ir);
     const mountedRuntimes = Array.from(familyRuntime.buildingRuntimes.values());
