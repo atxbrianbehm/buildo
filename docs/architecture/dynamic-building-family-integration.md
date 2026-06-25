@@ -1,6 +1,6 @@
 # Dynamic Building Family Integration Map
 
-**Status:** Milestone 7M family benchmark scene foundation
+**Status:** Milestone 7N compiler detail-level switching
 **Plan source:** `docs/plans/dynamic-building-family.md`
 **Workspace:** `C:\Users\behmb\Documents\Cascade Projects\buildo`
 **Date:** 2026-06-24
@@ -56,7 +56,7 @@ docs/
     dynamic-building-family.md
 ```
 
-The app currently contains the deterministic domain, atlas, component, compiler, renderer, state, four-room UI, remote-material, route document id, provider-aware smoke, and Milestone 7A-7M persistence/export/performance foundations. Browser-side serialized artifact persistence now has a tested IndexedDB boundary, a schema-versioned completed-family packet/cache-entry adapter, a run-controller handoff to an injected completed-family persistence writer, default app wiring that writes completed-family records to IndexedDB when available, a controller read-restore seam that can select the latest cached completed family for a route document id, a packet-to-runtime fixture restore adapter that can inflate persisted packets into live Assembly Hall fixtures, app startup wiring that tries cached restore before fresh generation, a portable completed-family export bundle builder, an app download action that exports the active completed-family bundle as JSON, a pure export verifier that decodes bundle atlas PNGs and recompiles the exported building graph, an import adapter that turns portable export JSON back into a runtime-restorable completed-family packet, an app import action that restores a downloaded bundle into the live four-room runtime, and a pure 100-building shared-family benchmark scene/report builder; configured live-provider proof, app-facing benchmark surfacing, measured benchmark results, and the Milestone 7 interactive 16-building orbit benchmark remain later work.
+The app currently contains the deterministic domain, atlas, component, compiler, renderer, state, four-room UI, remote-material, route document id, provider-aware smoke, and Milestone 7A-7N persistence/export/performance foundations. Browser-side serialized artifact persistence now has a tested IndexedDB boundary, a schema-versioned completed-family packet/cache-entry adapter, a run-controller handoff to an injected completed-family persistence writer, default app wiring that writes completed-family records to IndexedDB when available, a controller read-restore seam that can select the latest cached completed family for a route document id, a packet-to-runtime fixture restore adapter that can inflate persisted packets into live Assembly Hall fixtures, app startup wiring that tries cached restore before fresh generation, a portable completed-family export bundle builder, an app download action that exports the active completed-family bundle as JSON, a pure export verifier that decodes bundle atlas PNGs and recompiles the exported building graph, an import adapter that turns portable export JSON back into a runtime-restorable completed-family packet, an app import action that restores a downloaded bundle into the live four-room runtime, a pure 100-building shared-family benchmark scene/report builder, and compiler-level high/low detail switching that can omit decorative trim/cornice batches while preserving default high-detail output; configured live-provider proof, app-facing benchmark surfacing, measured benchmark results, and the Milestone 7 interactive 16-building orbit benchmark remain later work.
 
 ## 2. Active Instructions
 
@@ -1451,6 +1451,20 @@ docs/architecture/dynamic-building-family-integration.md
 
 Focused coverage builds a real fixture, creates the 100-building benchmark scene, verifies all 100 runtimes are present under one family runtime, confirms wall materials are shared, checks aggregate/runtime metrics and transfer estimates, and disposes the benchmark runtime. This is the programmatic benchmark-scene foundation; app-facing benchmark UI, measured local benchmark result capture, detail-level switching, compatibility diagnostics, and interactive orbit proof remain later Milestone 7 work.
 
+## 6.63 Compiler Detail-Level Switching
+
+Actual Milestone 7N detail-level paths:
+
+```text
+src/features/building-family/compiler/buildingCompiler.ts
+src/features/building-family/tests/buildingCompiler.test.ts
+docs/architecture/dynamic-building-family-integration.md
+```
+
+`compileBuilding()` now accepts an optional `detailLevel` value of `"high"` or `"low"`. The default remains high detail, and an explicit high-detail compile serializes to the same runtime IR shape as the previous default. Low detail keeps the procedural wall, roof, window, and door batches, but omits the decorative cornice mesh and vertical-trim instance batch so draw/triangle/instance load can drop without changing atlas generation, importing preassembled geometry, or touching renderer/UI state.
+
+Focused compiler coverage first failed because low detail still emitted `mesh.cornice`; the implementation now verifies explicit high detail matches default output, low detail emits only the core mesh and instance batches, trim-stage semantic entries are absent, and low-detail triangle/instance metrics are lower than high detail. App-facing detail controls and benchmark integration remain later work.
+
 ## 7. App Shell, Renderer, State, Workers, And Routing
 
 Actual React shell:
@@ -1873,7 +1887,7 @@ Latest validation results:
 
 ```text
 typecheck: passed
-unit tests: passed, 174 tests across 45 files
+unit tests: passed, 175 tests across 45 files
 lint: passed
 build: passed
 e2e smoke: passed, including Vite material-provider route fallback probe, route document id plus Assembly Hall deep link, four-room tab navigation, expanded prompt-control edits, Remote Detail Provider opt-in, committed Run Current provider-aware fallback rerun, Prompt Lab provider timeline and sanitized route diagnostic assertions, Artifact Trace registered-artifact and run-lineage assertions in Prompt Lab, Prompt Trace PSG/interpreter diagnostics, Atlas Lab provider/channel/slot assertions plus Remote Material Details summary/diagnostics assertions, Component Forge selector/atlas-slot assertion, local component lock plus Prompt Lab invalidation and new-building lock persistence, Assembly Hall stage reveal selection, active renderer backend assertion, Assembly Hall semantic selection, and backend-specific canvas pixel probe
@@ -1893,6 +1907,7 @@ IndexedDB artifact persistence focused tests: passed, 2 tests in 1 file
 Completed-family persistence packet and runtime-restore focused tests: passed, 3 tests in 1 file
 Completed-family export bundle, reproduction verifier, and import packet adapter focused tests: passed, 3 tests in 1 file
 Family benchmark scene focused test: passed, 1 test in 1 file
+Compiler detail-level switching focused tests: passed, 9 tests across 2 files
 Expanded prompt controls focused test: passed
 Local component lock focused tests: passed
 Artifact Trace focused test: passed
@@ -2706,6 +2721,14 @@ src/features/building-family/tests/familyBenchmarkScene.test.ts
 docs/architecture/dynamic-building-family-integration.md
 ```
 
+Milestone 7N introduced:
+
+```text
+src/features/building-family/compiler/buildingCompiler.ts
+src/features/building-family/tests/buildingCompiler.test.ts
+docs/architecture/dynamic-building-family-integration.md
+```
+
 Generated and ignored directories:
 
 ```text
@@ -2714,7 +2737,7 @@ dist/
 test-results/
 ```
 
-No preassembled meshes, configured live-provider proof, app-facing benchmark UI, measured benchmark result packet, or Milestone 7 interactive 16-building orbit benchmark has been added yet. The current app can generate the browser vertical slice, inspect artifacts across the four rooms, write completed-family packets into IndexedDB, rebuild live Assembly Hall runtime fixtures from those packets, attempt route-document cached restore at startup before falling back to fresh procedural generation, create a JSON-portable completed-family export bundle from a validated completed-family packet, download that bundle from the active Prompt Lab completed run, verify from exported JSON that the portable atlas bytes plus exported graph reproduce the recorded procedural building and atlas identities, convert that exported JSON back into a runtime-restorable completed-family packet, import the JSON bundle back into the live app runtime, and create a pure 100-building shared-family benchmark scene/report from a completed fixture. Remaining Milestone 7 work is measured benchmark/performance documentation, detail-level switching, app-facing benchmark surfacing, compatibility diagnostics, and performance hardening.
+No preassembled meshes, configured live-provider proof, app-facing detail-level controls, app-facing benchmark UI, measured benchmark result packet, or Milestone 7 interactive 16-building orbit benchmark has been added yet. The current app can generate the browser vertical slice, inspect artifacts across the four rooms, write completed-family packets into IndexedDB, rebuild live Assembly Hall runtime fixtures from those packets, attempt route-document cached restore at startup before falling back to fresh procedural generation, create a JSON-portable completed-family export bundle from a validated completed-family packet, download that bundle from the active Prompt Lab completed run, verify from exported JSON that the portable atlas bytes plus exported graph reproduce the recorded procedural building and atlas identities, convert that exported JSON back into a runtime-restorable completed-family packet, import the JSON bundle back into the live app runtime, create a pure 100-building shared-family benchmark scene/report from a completed fixture, and compile high- or low-detail runtime IRs with low detail omitting decorative trim/cornice batches. Remaining Milestone 7 work is measured benchmark/performance documentation, app-facing detail/benchmark surfacing, compatibility diagnostics, and performance hardening.
 
 ## 14. Milestone 0 And Setup Exit Criteria
 

@@ -130,6 +130,20 @@ describe("compileBuilding", () => {
     expect(catalog.recipes.filter((recipe) => recipe.role === "window")).toHaveLength(1);
   });
 
+  it("switches between high and low component detail without changing the default high-detail output", async () => {
+    const { spec, catalog, graph } = await fixtureCompilerInputs();
+    const defaultIr = await compileBuilding({ spec, catalog, graph });
+    const highIr = await compileBuilding({ spec, catalog, graph, detailLevel: "high" });
+    const lowIr = await compileBuilding({ spec, catalog, graph, detailLevel: "low" });
+
+    expect(serializableIr(highIr)).toEqual(serializableIr(defaultIr));
+    expect(lowIr.meshBatches.map((batch) => batch.batchId)).toEqual(["mesh.wall-panels", "mesh.roof"]);
+    expect(lowIr.instanceBatches.map((batch) => batch.batchId)).toEqual(["instances.window", "instances.door"]);
+    expect(lowIr.semanticIndex.some((entry) => entry.stage === "trim")).toBe(false);
+    expect(lowIr.metrics.triangleCount).toBeLessThan(highIr.metrics.triangleCount);
+    expect(lowIr.metrics.instanceCount).toBeLessThan(highIr.metrics.instanceCount);
+  });
+
   it("indexes every emitted element with semantic path, batch id, stage, and element index", async () => {
     const { spec, catalog, graph } = await fixtureCompilerInputs();
     const ir = await compileBuilding({ spec, catalog, graph });

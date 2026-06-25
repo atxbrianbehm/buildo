@@ -23,11 +23,14 @@ import {
   type Vec3
 } from "./primitiveGeometry";
 
+export type BuildingComponentDetailLevel = "high" | "low";
+
 export interface CompileBuildingInput {
   spec: BuildingFamilySpec;
   catalog: ComponentCatalog;
   graph: BuildingGraph;
   buildingId?: string;
+  detailLevel?: BuildingComponentDetailLevel;
 }
 
 interface SemanticIndexEntry {
@@ -384,15 +387,16 @@ export async function compileBuilding(input: CompileBuildingInput): Promise<Runt
     }
   }
 
+  const highDetail = (input.detailLevel ?? "high") === "high";
   const meshPlans = [
     createWallMeshPlan(input.spec, input.catalog),
-    createCorniceMeshPlan(input.spec, input.catalog),
+    ...(highDetail ? [createCorniceMeshPlan(input.spec, input.catalog)] : []),
     createRoofMeshPlan(input.spec, input.catalog)
   ];
   const instancePlans = [
     createWindowInstancePlan(input.spec, input.catalog),
     createDoorInstancePlan(input.spec, input.catalog),
-    createVerticalTrimInstancePlan(input.spec, input.catalog)
+    ...(highDetail ? [createVerticalTrimInstancePlan(input.spec, input.catalog)] : [])
   ];
 
   const compiledMeshes = meshPlans.map(toMeshBatch);
