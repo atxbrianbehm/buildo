@@ -1,6 +1,6 @@
 # Dynamic Building Family Integration Map
 
-**Status:** Milestone 7T 16-building orbit benchmark
+**Status:** Milestone 7U benchmark profile packet
 **Plan source:** `docs/plans/dynamic-building-family.md`
 **Workspace:** `C:\Users\behmb\Documents\Cascade Projects\buildo`
 **Date:** 2026-06-24
@@ -56,7 +56,7 @@ docs/
     dynamic-building-family.md
 ```
 
-The app currently contains the deterministic domain, atlas, component, compiler, renderer, state, four-room UI, remote-material, route document id, provider-aware smoke, and Milestone 7A-7T persistence/export/performance foundations. Browser-side serialized artifact persistence now has a tested IndexedDB boundary, a schema-versioned completed-family packet/cache-entry adapter, a run-controller handoff to an injected completed-family persistence writer, default app wiring that writes completed-family records to IndexedDB when available, a controller read-restore seam that can select the latest cached completed family for a route document id, a packet-to-runtime fixture restore adapter that can inflate persisted packets into live Assembly Hall fixtures, app startup wiring that tries cached restore before fresh generation, a portable completed-family export bundle builder, an app download action that exports the active completed-family bundle as JSON, a pure export verifier that decodes bundle atlas PNGs and recompiles the exported building graph, an import adapter that turns portable export JSON back into a runtime-restorable completed-family packet, an app import action that restores a downloaded bundle into the live four-room runtime, a pure 100-building shared-family benchmark scene/report builder, compiler-level high/low detail switching that can omit decorative trim/cornice batches while preserving default high-detail output, a Prompt Lab detail-level selector that runs low-detail geometry without regenerating material artifacts, an Assembly Hall benchmark report action that surfaces the 100-building report in the app, Assembly Hall renderer compatibility diagnostics for unsupported WebGPU/WebGL paths, a benchmark documentation artifact that labels measured, estimated, and not-captured profile fields plus known limitations, cooperative benchmark yielding/cancellation so the 100-building benchmark can pause between batches and abort stale work, and a renderer-sampled 16-building orbit benchmark surface; configured live-provider proof and broader representative-machine profiling remain later work.
+The app currently contains the deterministic domain, atlas, component, compiler, renderer, state, four-room UI, remote-material, route document id, provider-aware smoke, and Milestone 7A-7U persistence/export/performance foundations. Browser-side serialized artifact persistence now has a tested IndexedDB boundary, a schema-versioned completed-family packet/cache-entry adapter, a run-controller handoff to an injected completed-family persistence writer, default app wiring that writes completed-family records to IndexedDB when available, a controller read-restore seam that can select the latest cached completed family for a route document id, a packet-to-runtime fixture restore adapter that can inflate persisted packets into live Assembly Hall fixtures, app startup wiring that tries cached restore before fresh generation, a portable completed-family export bundle builder, an app download action that exports the active completed-family bundle as JSON, a pure export verifier that decodes bundle atlas PNGs and recompiles the exported building graph, an import adapter that turns portable export JSON back into a runtime-restorable completed-family packet, an app import action that restores a downloaded bundle into the live four-room runtime, a pure 100-building shared-family benchmark scene/report builder, compiler-level high/low detail switching that can omit decorative trim/cornice batches while preserving default high-detail output, a Prompt Lab detail-level selector that runs low-detail geometry without regenerating material artifacts, an Assembly Hall benchmark report action that surfaces the 100-building report in the app, Assembly Hall renderer compatibility diagnostics for unsupported WebGPU/WebGL paths, a benchmark documentation artifact that labels measured, estimated, and not-captured profile fields plus known limitations, cooperative benchmark yielding/cancellation so the 100-building benchmark can pause between batches and abort stale work, a renderer-sampled 16-building orbit benchmark surface, and a schema-versioned Milestone 7 benchmark profile packet that combines construction/orbit reports with browser hardware context; configured live-provider proof and externally captured representative-machine sign-off remain later work.
 
 ## 2. Active Instructions
 
@@ -1568,6 +1568,22 @@ docs/architecture/dynamic-building-family-integration.md
 
 Assembly Hall now exposes a `16-Building Orbit Benchmark` performance panel beside the existing 16-variant stress summary and 100-building construction benchmark. The panel runs the orbit benchmark on demand, disposes the temporary orbit runtime after reading the report, and displays report kind, building count, renderer backend, p95/average/max frame timing, frame budget, atlas lineage, aggregate triangles, and target checks for interactive orbit and family asset sharing. The 100-building benchmark documentation now points frame-time readers to this separate orbit benchmark instead of saying the orbit proof is missing. Focused coverage first failed on the missing module/surface and stale limitation text, then verifies renderer-sampled frame metrics, abort cleanup, Assembly Hall report surfacing, and corrected 100-building benchmark documentation. Broader representative-machine profiling and configured live-provider proof remain later work.
 
+## 6.70 Benchmark Profile Packet
+
+Actual Milestone 7U benchmark-profile-packet paths:
+
+```text
+src/features/building-family/performance/familyBenchmarkProfilePacket.ts
+src/features/building-family/tests/familyBenchmarkProfilePacket.test.ts
+src/features/building-family/ui/AssemblyHall.tsx
+src/features/building-family/tests/AssemblyHall.test.tsx
+docs/architecture/dynamic-building-family-integration.md
+```
+
+`createFamilyBenchmarkProfilePacket()` now creates a schema-versioned `dynamic-building-family-milestone-7-profile` artifact from the 100-building construction report and the 16-building orbit report. The packet preserves both reports, captures browser/runtime context such as user agent, hardware concurrency, device memory when exposed, device pixel ratio, viewport, Three.js revision, renderer backend availability, and orbit backend, then normalizes Milestone 7 profile coverage across CPU compile time, runtime mount time, worker transfer estimate, GPU memory, triangles, instances, draw calls, and frame time.
+
+The packet keeps GPU memory explicitly `not-captured` because no stable browser GPU memory API is used, marks worker transfer size as estimated, and marks frame time as measured from the orbit benchmark p95. Assembly Hall now renders a `Milestone 7 Profile Packet` section once both benchmark reports are present, with packet identity, captured environment, coverage rows, target checks, and limitations. Focused coverage first failed on the missing module and missing UI section, then verifies JSON round-trip validation, invalid-packet rejection, preserved orbit samples, profile metric statuses, local limitations, and Assembly Hall surfacing after both benchmarks run. A representative-machine sign-off still requires rerunning this packet on the target hardware and saving the resulting evidence outside this local automated slice.
+
 ## 7. App Shell, Renderer, State, Workers, And Routing
 
 Actual React shell:
@@ -1582,7 +1598,7 @@ src/features/building-family/ui/ComponentForge.tsx
 src/features/building-family/ui/AssemblyHall.tsx
 ```
 
-Actual feature routing: root route with hash-addressable room panels plus an optional route-level document id. No router dependency exists yet. The root app shell now exposes a store-backed `Building rooms` tablist synchronized with `#room=<roomId>` hashes and preserves `#document=<documentId>&room=<roomId>` when a document id is present. Browser back/forward events synchronize route state back into the store. Prompt Lab contains the expanded Control Invalidation prompt-control surface, committed rerun buttons, a Cancel Run action, controller-backed Generation Run timeline with artifact cache-hit badges plus remote provider labels/diagnostic codes, Artifact Trace provenance tables, and Prompt Trace PSG/interpreter diagnostics. Atlas Lab exposes provider diagnostics plus channel/slot inspection, Component Forge exposes local recipe lock controls, and Assembly Hall exposes manual stage reveal, renderer compatibility diagnostics, the app-facing 100-building benchmark report, the renderer-sampled 16-building orbit benchmark, and the 16-variant stress summary; all room panels are backed by the same completed fixture artifact.
+Actual feature routing: root route with hash-addressable room panels plus an optional route-level document id. No router dependency exists yet. The root app shell now exposes a store-backed `Building rooms` tablist synchronized with `#room=<roomId>` hashes and preserves `#document=<documentId>&room=<roomId>` when a document id is present. Browser back/forward events synchronize route state back into the store. Prompt Lab contains the expanded Control Invalidation prompt-control surface, committed rerun buttons, a Cancel Run action, controller-backed Generation Run timeline with artifact cache-hit badges plus remote provider labels/diagnostic codes, Artifact Trace provenance tables, and Prompt Trace PSG/interpreter diagnostics. Atlas Lab exposes provider diagnostics plus channel/slot inspection, Component Forge exposes local recipe lock controls, and Assembly Hall exposes manual stage reveal, renderer compatibility diagnostics, the app-facing 100-building benchmark report, the renderer-sampled 16-building orbit benchmark, the Milestone 7 benchmark profile packet, and the 16-variant stress summary; all room panels are backed by the same completed fixture artifact.
 
 Actual Three.js renderer setup:
 
@@ -2902,6 +2918,16 @@ src/features/building-family/tests/AssemblyHall.test.tsx
 docs/architecture/dynamic-building-family-integration.md
 ```
 
+Milestone 7U introduced:
+
+```text
+src/features/building-family/performance/familyBenchmarkProfilePacket.ts
+src/features/building-family/tests/familyBenchmarkProfilePacket.test.ts
+src/features/building-family/ui/AssemblyHall.tsx
+src/features/building-family/tests/AssemblyHall.test.tsx
+docs/architecture/dynamic-building-family-integration.md
+```
+
 Generated and ignored directories:
 
 ```text
@@ -2910,7 +2936,7 @@ dist/
 test-results/
 ```
 
-No preassembled meshes, configured live-provider proof, or external representative-machine benchmark packet has been added yet. The current app can generate the browser vertical slice, inspect artifacts across the four rooms, write completed-family packets into IndexedDB, rebuild live Assembly Hall runtime fixtures from those packets, attempt route-document cached restore at startup before falling back to fresh procedural generation, create a JSON-portable completed-family export bundle from a validated completed-family packet, download that bundle from the active Prompt Lab completed run, verify from exported JSON that the portable atlas bytes plus exported graph reproduce the recorded procedural building and atlas identities, convert that exported JSON back into a runtime-restorable completed-family packet, import the JSON bundle back into the live app runtime, create a pure 100-building shared-family benchmark scene/report from a completed fixture, compile high- or low-detail runtime IRs with low detail omitting decorative trim/cornice batches, run low-detail geometry through a Prompt Lab control while reusing material artifacts, surface the 100-building benchmark report from Assembly Hall, surface Assembly Hall renderer compatibility diagnostics for unsupported WebGPU/WebGL paths, document benchmark profile coverage plus known limitations, abort/yield stale benchmark work cooperatively, and run a renderer-sampled 16-building orbit benchmark from Assembly Hall. Remaining Milestone 7 work is broader browser/hardware profile capture plus the configured live-provider proof still tracked from Milestone 6.
+No preassembled meshes, configured live-provider proof, or externally captured representative-machine sign-off has been added yet. The current app can generate the browser vertical slice, inspect artifacts across the four rooms, write completed-family packets into IndexedDB, rebuild live Assembly Hall runtime fixtures from those packets, attempt route-document cached restore at startup before falling back to fresh procedural generation, create a JSON-portable completed-family export bundle from a validated completed-family packet, download that bundle from the active Prompt Lab completed run, verify from exported JSON that the portable atlas bytes plus exported graph reproduce the recorded procedural building and atlas identities, convert that exported JSON back into a runtime-restorable completed-family packet, import the JSON bundle back into the live app runtime, create a pure 100-building shared-family benchmark scene/report from a completed fixture, compile high- or low-detail runtime IRs with low detail omitting decorative trim/cornice batches, run low-detail geometry through a Prompt Lab control while reusing material artifacts, surface the 100-building benchmark report from Assembly Hall, surface Assembly Hall renderer compatibility diagnostics for unsupported WebGPU/WebGL paths, document benchmark profile coverage plus known limitations, abort/yield stale benchmark work cooperatively, run a renderer-sampled 16-building orbit benchmark from Assembly Hall, and create a schema-versioned benchmark profile packet from both benchmark reports. Remaining work is externally rerunning/saving this packet on representative hardware plus the configured live-provider proof still tracked from Milestone 6.
 
 ## 14. Milestone 0 And Setup Exit Criteria
 

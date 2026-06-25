@@ -31,6 +31,10 @@ import {
   type FamilyBenchmarkScene
 } from "../performance/familyBenchmarkScene";
 import {
+  createFamilyBenchmarkProfilePacket,
+  type FamilyBenchmarkProfilePacket
+} from "../performance/familyBenchmarkProfilePacket";
+import {
   createFamilyOrbitBenchmarkScene,
   type FamilyOrbitBenchmarkReport,
   type FamilyOrbitBenchmarkScene
@@ -380,6 +384,17 @@ export function AssemblyHall({
   const benchmarkDocumentation: FamilyBenchmarkDocumentation | null = useMemo(
     () => (benchmarkReport ? createFamilyBenchmarkDocumentation({ report: benchmarkReport }) : null),
     [benchmarkReport]
+  );
+  const benchmarkProfilePacket: FamilyBenchmarkProfilePacket | null = useMemo(
+    () =>
+      benchmarkReport && orbitBenchmarkReport
+        ? createFamilyBenchmarkProfilePacket({
+            fixture,
+            constructionReport: benchmarkReport,
+            orbitReport: orbitBenchmarkReport
+          })
+        : null,
+    [benchmarkReport, fixture, orbitBenchmarkReport]
   );
   const compatibilityReport = useMemo(
     () =>
@@ -1132,6 +1147,109 @@ export function AssemblyHall({
             </>
           ) : (
             <p className="assembly-hall__benchmark-message">Not run</p>
+          )}
+        </section>
+
+        <section className="assembly-hall__benchmark" aria-label="Milestone 7 benchmark profile packet">
+          <div className="assembly-hall__benchmark-header">
+            <div>
+              <p className="project-label">Profile Packet</p>
+              <h3>Milestone 7 Profile Packet</h3>
+            </div>
+          </div>
+
+          {benchmarkProfilePacket ? (
+            <>
+              <dl className="assembly-hall__benchmark-metrics" aria-label="Milestone 7 profile packet summary">
+                <div>
+                  <dt>Packet</dt>
+                  <dd>{benchmarkProfilePacket.profileKind}</dd>
+                </div>
+                <div>
+                  <dt>Captured</dt>
+                  <dd>{benchmarkProfilePacket.createdAt}</dd>
+                </div>
+                <div>
+                  <dt>Renderer</dt>
+                  <dd>{benchmarkProfilePacket.environment.renderer.orbitBackend ?? "not captured"}</dd>
+                </div>
+                <div>
+                  <dt>Browser</dt>
+                  <dd>{benchmarkProfilePacket.environment.userAgent}</dd>
+                </div>
+                <div>
+                  <dt>Hardware</dt>
+                  <dd>
+                    {benchmarkProfilePacket.environment.hardwareConcurrency
+                      ? `${formatNumber(benchmarkProfilePacket.environment.hardwareConcurrency)} threads`
+                      : "not captured"}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Viewport</dt>
+                  <dd>
+                    {benchmarkProfilePacket.environment.viewport.widthPx &&
+                    benchmarkProfilePacket.environment.viewport.heightPx
+                      ? `${formatNumber(benchmarkProfilePacket.environment.viewport.widthPx)} x ${formatNumber(
+                          benchmarkProfilePacket.environment.viewport.heightPx
+                        )}`
+                      : "not captured"}
+                  </dd>
+                </div>
+              </dl>
+
+              <table className="assembly-hall__benchmark-coverage" aria-label="Milestone 7 profile coverage">
+                <thead>
+                  <tr>
+                    <th scope="col">Metric</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Value</th>
+                    <th scope="col">Source</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {benchmarkProfilePacket.profileCoverage.map((metric) => (
+                    <tr key={metric.id} data-status={metric.status}>
+                      <td>{metric.label}</td>
+                      <td>{metricStatusLabel(metric.status)}</td>
+                      <td>{formatProfileMetricValue(metric)}</td>
+                      <td>{metric.source}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              <ol className="assembly-hall__benchmark-targets" aria-label="Milestone 7 profile target checks">
+                <li data-passed={benchmarkProfilePacket.targets.oneBuildingTriangleLimit.passed ? "true" : "false"}>
+                  <span>
+                    Triangle target{" "}
+                    {benchmarkProfilePacket.targets.oneBuildingTriangleLimit.passed ? "passed" : "failed"}
+                  </span>
+                  <small>
+                    {formatNumber(benchmarkProfilePacket.targets.oneBuildingTriangleLimit.actual)} /{" "}
+                    {formatNumber(benchmarkProfilePacket.targets.oneBuildingTriangleLimit.limit)} triangles
+                  </small>
+                </li>
+                <li data-passed={benchmarkProfilePacket.targets.interactiveOrbit.passed ? "true" : "false"}>
+                  <span>
+                    Interactive orbit{" "}
+                    {benchmarkProfilePacket.targets.interactiveOrbit.passed ? "passed" : "needs profile"}
+                  </span>
+                  <small>
+                    {formatMilliseconds(benchmarkProfilePacket.targets.interactiveOrbit.actualP95FrameTimeMs)} /{" "}
+                    {formatMilliseconds(benchmarkProfilePacket.targets.interactiveOrbit.budgetMs)} p95
+                  </small>
+                </li>
+              </ol>
+
+              <ul className="assembly-hall__benchmark-limitations" aria-label="Milestone 7 profile limitations">
+                {benchmarkProfilePacket.knownLimitations.map((limitation) => (
+                  <li key={limitation}>{limitation}</li>
+                ))}
+              </ul>
+            </>
+          ) : (
+            <p className="assembly-hall__benchmark-message">Run both benchmark reports to create the profile packet</p>
           )}
         </section>
       </div>

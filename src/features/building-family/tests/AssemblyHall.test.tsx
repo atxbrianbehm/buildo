@@ -25,6 +25,132 @@ function fakeRendererFactory(
   };
 }
 
+function fakeConstructionBenchmarkSceneFor(fixture: Awaited<ReturnType<typeof createAssemblyHallFixture>>) {
+  return {
+    schemaVersion: "0.1.0",
+    familyRuntime: {
+      dispose: vi.fn()
+    },
+    report: {
+      schemaVersion: "0.1.0",
+      benchmarkKind: "shared-family-100-building-scene",
+      familyId: fixture.spec.familyId,
+      buildingCount: 100,
+      perBuilding: {
+        drawCallCount: fixture.buildingRuntime.renderables.length,
+        instanceCount: fixture.ir.metrics.instanceCount,
+        semanticPathCount: fixture.ir.semanticIndex.length,
+        triangleCount: fixture.ir.metrics.triangleCount
+      },
+      aggregate: {
+        drawCallCount: 600,
+        instanceCount: fixture.ir.metrics.instanceCount * 100,
+        triangleCount: fixture.ir.metrics.triangleCount * 100
+      },
+      runtimeMetrics: {
+        buildingCount: 100,
+        meshCount: 300,
+        instanceBatchCount: 300,
+        instanceCount: fixture.ir.metrics.instanceCount * 100,
+        triangleCount: fixture.ir.metrics.triangleCount * 100,
+        drawCallCount: 600,
+        sharedMaterialCount: fixture.familyRuntime.metrics.sharedMaterialCount,
+        textureCount: fixture.familyRuntime.metrics.textureCount,
+        preferredBackend: fixture.backendSupport.preferredBackend
+      },
+      transfer: {
+        perBuildingRuntimeIrBytes: 4096,
+        runtimeIrBytes: 409600
+      },
+      timing: {
+        compileTimeMs: 120,
+        runtimeMountTimeMs: 80
+      },
+      assets: {
+        atlasContentHash: fixture.packedAtlas.contentHash,
+        familyAssetsShared: true,
+        sharedMaterialCount: fixture.familyRuntime.metrics.sharedMaterialCount,
+        textureCount: fixture.familyRuntime.metrics.textureCount
+      },
+      targets: {
+        oneBuildingTriangleLimit: {
+          actual: fixture.ir.metrics.triangleCount,
+          limit: 150000,
+          passed: true
+        },
+        familyAssetSharing: {
+          passed: true
+        }
+      }
+    }
+  } as never;
+}
+
+function fakeOrbitBenchmarkSceneFor(fixture: Awaited<ReturnType<typeof createAssemblyHallFixture>>) {
+  return {
+    schemaVersion: "0.1.0",
+    familyRuntime: {
+      dispose: vi.fn()
+    },
+    report: {
+      schemaVersion: "0.1.0",
+      benchmarkKind: "shared-family-16-building-orbit",
+      familyId: fixture.spec.familyId,
+      buildingCount: 16,
+      frameSampleCount: 8,
+      aggregate: {
+        drawCallCount: 96,
+        instanceCount: fixture.ir.metrics.instanceCount * 16,
+        triangleCount: fixture.ir.metrics.triangleCount * 16
+      },
+      runtimeMetrics: {
+        buildingCount: 16,
+        meshCount: 48,
+        instanceBatchCount: 48,
+        instanceCount: fixture.ir.metrics.instanceCount * 16,
+        triangleCount: fixture.ir.metrics.triangleCount * 16,
+        drawCallCount: 96,
+        sharedMaterialCount: fixture.familyRuntime.metrics.sharedMaterialCount,
+        textureCount: fixture.familyRuntime.metrics.textureCount,
+        preferredBackend: fixture.backendSupport.preferredBackend
+      },
+      render: {
+        activeBackend: "webgl",
+        fallbackReason: null
+      },
+      frameTime: {
+        budgetMs: 33.4,
+        averageFrameTimeMs: 12,
+        p95FrameTimeMs: 14,
+        maxFrameTimeMs: 15,
+        samples: [
+          {
+            index: 0,
+            cameraPosition: [1, 2, 3],
+            elapsedMs: 12
+          }
+        ]
+      },
+      assets: {
+        atlasContentHash: fixture.packedAtlas.contentHash,
+        familyAssetsShared: true,
+        sharedMaterialCount: fixture.familyRuntime.metrics.sharedMaterialCount,
+        textureCount: fixture.familyRuntime.metrics.textureCount
+      },
+      targets: {
+        interactiveOrbit: {
+          actualP95FrameTimeMs: 14,
+          budgetMs: 33.4,
+          passed: true
+        },
+        familyAssetSharing: {
+          passed: true
+        }
+      }
+    }
+  } as never;
+}
+
 describe("AssemblyHall", () => {
   it("renders the generated building fixture, atlas identity, component gallery, and renderer metrics", async () => {
     const fixture = await createAssemblyHallFixture();
@@ -156,6 +282,37 @@ describe("AssemblyHall", () => {
     expect(orbitReport).toHaveTextContent("Interactive orbit passed");
     expect(orbitReport).toHaveTextContent(fixture.packedAtlas.contentHash);
     expect(disposeOrbitRuntime).toHaveBeenCalledTimes(1);
+  });
+
+  it("surfaces a Milestone 7 profile packet after both benchmarks run", async () => {
+    const fixture = await createAssemblyHallFixture();
+    const benchmarkSceneFactory = vi.fn(async () => fakeConstructionBenchmarkSceneFor(fixture));
+    const orbitBenchmarkSceneFactory = vi.fn(async () => fakeOrbitBenchmarkSceneFor(fixture));
+
+    render(
+      <AssemblyHall
+        fixture={fixture}
+        rendererFactory={fakeRendererFactory()}
+        benchmarkSceneFactory={benchmarkSceneFactory}
+        orbitBenchmarkSceneFactory={orbitBenchmarkSceneFactory}
+      />
+    );
+
+    const profilePacket = screen.getByLabelText("Milestone 7 benchmark profile packet");
+    expect(profilePacket).toHaveTextContent("Run both benchmark reports to create the profile packet");
+
+    fireEvent.click(screen.getByRole("button", { name: "Run 100-building benchmark" }));
+    expect(await screen.findByText("shared-family-100-building-scene")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Run 16-building orbit benchmark" }));
+    expect(await screen.findByText("dynamic-building-family-milestone-7-profile")).toBeInTheDocument();
+
+    expect(profilePacket).toHaveTextContent("Frame time");
+    expect(profilePacket).toHaveTextContent("measured");
+    expect(profilePacket).toHaveTextContent("GPU memory");
+    expect(profilePacket).toHaveTextContent("not captured");
+    expect(profilePacket).toHaveTextContent("webgl");
+    expect(profilePacket).toHaveTextContent("jsdom");
   });
 
   it("runs and surfaces the 100-building benchmark report from Assembly Hall", async () => {
