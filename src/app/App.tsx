@@ -15,6 +15,7 @@ import { decodeBrowserPngLayer } from "../features/building-family/ui/browserPng
 import { BuildingArtifactRegistry } from "../features/building-family/state/artifactRegistry";
 import { BuildingRunController } from "../features/building-family/state/buildingRunController";
 import { createCompletedFamilyExportBundle } from "../features/building-family/state/completedFamilyExportBundle";
+import { importCompletedFamilyExportBundleToPacket } from "../features/building-family/state/completedFamilyExportImport";
 import { createCompletedFamilyPersistencePacket } from "../features/building-family/state/completedFamilyPersistence";
 import {
   createBuildingStore,
@@ -291,6 +292,17 @@ export function App() {
     );
   }
 
+  async function importCompletedFamilyExport(file: File | undefined): Promise<void> {
+    if (!file) {
+      return;
+    }
+
+    const packet = await importCompletedFamilyExportBundleToPacket(JSON.parse(await file.text()));
+    selectDocument(packet.documentId);
+    pushRoomHash(activeRoom, packet.documentId, true);
+    await controller.restoreCompletedFamilyPacket(packet);
+  }
+
   return (
     <main className="app-shell">
       <section className="hero" aria-labelledby="buildo-title">
@@ -499,6 +511,20 @@ export function App() {
                 >
                   Download Export
                 </button>
+                <label className="control-panel__file-action" data-disabled={runDisabled ? "true" : "false"}>
+                  <span>Import Export</span>
+                  <input
+                    aria-label="Import Export File"
+                    accept="application/json,.json"
+                    disabled={runDisabled}
+                    type="file"
+                    onChange={(event) => {
+                      const file = event.currentTarget.files?.[0];
+                      event.currentTarget.value = "";
+                      void importCompletedFamilyExport(file).catch(() => undefined);
+                    }}
+                  />
+                </label>
               </div>
             </div>
             <div className="control-panel__preview" aria-label="Invalidation preview">

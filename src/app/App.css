@@ -323,7 +323,8 @@ h1 {
   margin-top: 16px;
 }
 
-.control-panel__actions button {
+.control-panel__actions button,
+.control-panel__file-action {
   min-height: 38px;
   min-width: 112px;
   padding: 8px 12px;
@@ -339,6 +340,21 @@ h1 {
   transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
 }
 
+.control-panel__file-action {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.control-panel__file-action input {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+  opacity: 0;
+}
+
 .control-panel__actions button:nth-child(2) {
   background: #7a4838;
 }
@@ -352,16 +368,23 @@ h1 {
   background: #7b3131;
 }
 
-.control-panel__actions button:disabled {
+.control-panel__actions button:disabled,
+.control-panel__file-action[data-disabled="true"] {
   cursor: wait;
   opacity: 0.58;
 }
 
-.control-panel__actions button:active:not(:disabled) {
+.control-panel__file-action[data-disabled="true"] input {
+  cursor: wait;
+}
+
+.control-panel__actions button:active:not(:disabled),
+.control-panel__file-action:active:not([data-disabled="true"]) {
   transform: scale(0.96);
 }
 
-.control-panel__actions button:focus-visible {
+.control-panel__actions button:focus-visible,
+.control-panel__file-action:focus-within {
   outline: 3px solid rgba(70, 118, 86, 0.28);
   outline-offset: 2px;
 }

@@ -1,6 +1,6 @@
 # Dynamic Building Family Integration Map
 
-**Status:** Milestone 7K completed-family export import packet adapter
+**Status:** Milestone 7L app completed-family export import action
 **Plan source:** `docs/plans/dynamic-building-family.md`
 **Workspace:** `C:\Users\behmb\Documents\Cascade Projects\buildo`
 **Date:** 2026-06-24
@@ -56,7 +56,7 @@ docs/
     dynamic-building-family.md
 ```
 
-The app currently contains the deterministic domain, atlas, component, compiler, renderer, state, four-room UI, remote-material, route document id, provider-aware smoke, and Milestone 7A-7K persistence/export foundations. Browser-side serialized artifact persistence now has a tested IndexedDB boundary, a schema-versioned completed-family packet/cache-entry adapter, a run-controller handoff to an injected completed-family persistence writer, default app wiring that writes completed-family records to IndexedDB when available, a controller read-restore seam that can select the latest cached completed family for a route document id, a packet-to-runtime fixture restore adapter that can inflate persisted packets into live Assembly Hall fixtures, app startup wiring that tries cached restore before fresh generation, a portable completed-family export bundle builder, an app download action that exports the active completed-family bundle as JSON, a pure export verifier that decodes bundle atlas PNGs and recompiles the exported building graph, and an import adapter that turns portable export JSON back into a runtime-restorable completed-family packet; app-facing import action, configured live-provider proof, and the Milestone 7 interactive 16-building orbit benchmark remain later work.
+The app currently contains the deterministic domain, atlas, component, compiler, renderer, state, four-room UI, remote-material, route document id, provider-aware smoke, and Milestone 7A-7L persistence/export foundations. Browser-side serialized artifact persistence now has a tested IndexedDB boundary, a schema-versioned completed-family packet/cache-entry adapter, a run-controller handoff to an injected completed-family persistence writer, default app wiring that writes completed-family records to IndexedDB when available, a controller read-restore seam that can select the latest cached completed family for a route document id, a packet-to-runtime fixture restore adapter that can inflate persisted packets into live Assembly Hall fixtures, app startup wiring that tries cached restore before fresh generation, a portable completed-family export bundle builder, an app download action that exports the active completed-family bundle as JSON, a pure export verifier that decodes bundle atlas PNGs and recompiles the exported building graph, an import adapter that turns portable export JSON back into a runtime-restorable completed-family packet, and an app import action that restores a downloaded bundle into the live four-room runtime; configured live-provider proof and the Milestone 7 interactive 16-building orbit benchmark remain later work.
 
 ## 2. Active Instructions
 
@@ -1421,6 +1421,22 @@ docs/architecture/dynamic-building-family-integration.md
 
 Focused export coverage now imports a JSON-round-tripped bundle into a completed-family packet, confirms the decoded atlas channel data is typed, verifies the imported packet reproduces atlas content hash, runtime IR identity/metrics, and component-gallery id, and then restores a live Assembly Hall fixture from that imported packet. This is the data adapter for app import, not the final app-facing file picker or import action.
 
+## 6.61 App Completed-Family Export Import Action
+
+Actual Milestone 7L app import paths:
+
+```text
+src/app/App.tsx
+src/app/App.css
+src/app/App.test.tsx
+src/features/building-family/state/buildingRunController.ts
+docs/architecture/dynamic-building-family-integration.md
+```
+
+Prompt Lab committed-run controls now expose an `Import Export` file action for JSON completed-family export bundles. The handler reads the selected JSON file, imports it through `importCompletedFamilyExportBundleToPacket()`, switches the route document id to the imported packet document id, and asks `BuildingRunController.restoreCompletedFamilyPacket()` to register the restored fixture artifacts and complete the run using the imported run/request identity. The controller persists the imported packet to the configured completed-family persistence store after a successful restore when persistence is available.
+
+Focused App coverage creates a distinct exported family bundle, imports it through the app file action, verifies the active generation artifact and route document id switch to the imported family, checks the imported prompt trace is visible, and opens Assembly Hall to confirm the restored runtime metrics match the imported fixture. This closes the app-facing import action foundation; benchmark/performance documentation, detail-level switching, and hardening remain later Milestone 7 work.
+
 ## 7. App Shell, Renderer, State, Workers, And Routing
 
 Actual React shell:
@@ -1843,7 +1859,7 @@ Latest validation results:
 
 ```text
 typecheck: passed
-unit tests: passed, 172 tests across 44 files
+unit tests: passed, 173 tests across 44 files
 lint: passed
 build: passed
 e2e smoke: passed, including Vite material-provider route fallback probe, route document id plus Assembly Hall deep link, four-room tab navigation, expanded prompt-control edits, Remote Detail Provider opt-in, committed Run Current provider-aware fallback rerun, Prompt Lab provider timeline and sanitized route diagnostic assertions, Artifact Trace registered-artifact and run-lineage assertions in Prompt Lab, Prompt Trace PSG/interpreter diagnostics, Atlas Lab provider/channel/slot assertions plus Remote Material Details summary/diagnostics assertions, Component Forge selector/atlas-slot assertion, local component lock plus Prompt Lab invalidation and new-building lock persistence, Assembly Hall stage reveal selection, active renderer backend assertion, Assembly Hall semantic selection, and backend-specific canvas pixel probe
@@ -1858,7 +1874,7 @@ Building state/controller and app remote-progress focused tests: passed, 21 test
 Building state/controller, app remote-toggle, and fixture focused tests: passed, 27 tests across 3 files
 Building state/controller completed-family persistence handoff and read-restore focused tests: passed, 19 tests in 1 file
 Assembly Hall fixture focused tests: passed
-App routing/document-id/IndexedDB-write/reload-restore/export-download/committed-rerun/cancel/remote-toggle/cache-selector focused tests: passed, 12 tests in 1 file
+App routing/document-id/IndexedDB-write/reload-restore/export-download/export-import/committed-rerun/cancel/remote-toggle/cache-selector focused tests: passed, 13 tests in 1 file
 IndexedDB artifact persistence focused tests: passed, 2 tests in 1 file
 Completed-family persistence packet and runtime-restore focused tests: passed, 3 tests in 1 file
 Completed-family export bundle, reproduction verifier, and import packet adapter focused tests: passed, 3 tests in 1 file
@@ -2657,6 +2673,16 @@ src/features/building-family/tests/completedFamilyExportBundle.test.ts
 docs/architecture/dynamic-building-family-integration.md
 ```
 
+Milestone 7L introduced:
+
+```text
+src/app/App.tsx
+src/app/App.css
+src/app/App.test.tsx
+src/features/building-family/state/buildingRunController.ts
+docs/architecture/dynamic-building-family-integration.md
+```
+
 Generated and ignored directories:
 
 ```text
@@ -2665,7 +2691,7 @@ dist/
 test-results/
 ```
 
-No preassembled meshes, configured live-provider proof, app-facing export import action, or Milestone 7 interactive 16-building orbit benchmark has been added yet. The current app can generate the browser vertical slice, inspect artifacts across the four rooms, write completed-family packets into IndexedDB, rebuild live Assembly Hall runtime fixtures from those packets, attempt route-document cached restore at startup before falling back to fresh procedural generation, create a JSON-portable completed-family export bundle from a validated completed-family packet, download that bundle from the active Prompt Lab completed run, verify from exported JSON that the portable atlas bytes plus exported graph reproduce the recorded procedural building and atlas identities, and convert that exported JSON back into a runtime-restorable completed-family packet. Remaining Milestone 7 work is app-facing import action/restore wiring, benchmark/performance documentation, detail-level switching, and compatibility/performance hardening.
+No preassembled meshes, configured live-provider proof, or Milestone 7 interactive 16-building orbit benchmark has been added yet. The current app can generate the browser vertical slice, inspect artifacts across the four rooms, write completed-family packets into IndexedDB, rebuild live Assembly Hall runtime fixtures from those packets, attempt route-document cached restore at startup before falling back to fresh procedural generation, create a JSON-portable completed-family export bundle from a validated completed-family packet, download that bundle from the active Prompt Lab completed run, verify from exported JSON that the portable atlas bytes plus exported graph reproduce the recorded procedural building and atlas identities, convert that exported JSON back into a runtime-restorable completed-family packet, and import the JSON bundle back into the live app runtime. Remaining Milestone 7 work is benchmark/performance documentation, detail-level switching, and compatibility/performance hardening.
 
 ## 14. Milestone 0 And Setup Exit Criteria
 

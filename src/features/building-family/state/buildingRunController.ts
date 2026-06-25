@@ -226,8 +226,36 @@ export class BuildingRunController {
       return undefined;
     }
 
+    return this.restoreCompletedFamilyPacketForRun({
+      packet: entry.artifact,
+      requestHash: entry.requestHash,
+      failureMessage: "Completed family restore failed"
+    });
+  }
+
+  async restoreCompletedFamilyPacket(packet: CompletedFamilyPersistencePacket): Promise<StartDemoRunResult> {
+    const result = await this.restoreCompletedFamilyPacketForRun({
+      packet,
+      requestHash: packet.requestHash,
+      failureMessage: "Completed family import failed"
+    });
+    if (!result.stale) {
+      await this.persistCompletedFamilyPacket(packet);
+    }
+    return result;
+  }
+
+  private async restoreCompletedFamilyPacketForRun(input: {
+    failureMessage: string;
+    packet: CompletedFamilyPersistencePacket;
+    requestHash: string;
+  }): Promise<StartDemoRunResult> {
+    if (!this.restoreCompletedFamilyFixture) {
+      throw new Error("Completed family restore adapter is not configured.");
+    }
+
     this.cancelActiveRun();
-    const runId = entry.artifact.runId;
+    const runId = input.packet.runId;
     const abortController = new AbortController();
     this.activeRun = { runId, abortController };
     this.store.getState().beginRun({
@@ -239,18 +267,18 @@ export class BuildingRunController {
     });
 
     try {
-      const fixture = await this.restoreCompletedFamilyFixture(entry.artifact);
+      const fixture = await this.restoreCompletedFamilyFixture(input.packet);
       if (abortController.signal.aborted || this.activeRun?.runId !== runId) {
         disposeFixture(fixture);
         return { runId, stale: true };
       }
 
       const artifactId = artifactIdForFixture(fixture);
-      this.registerFixtureArtifacts(fixture, entry.requestHash);
+      this.registerFixtureArtifacts(fixture, input.requestHash);
       const metadata = this.registry.register({
         artifactId,
         artifactType: "assembly-hall-fixture",
-        requestHash: entry.requestHash,
+        requestHash: input.requestHash,
         contentHash: fixture.packedAtlas.contentHash,
         dependencies: [fixture.ir.sourceGraphHash],
         artifact: fixture,
@@ -277,7 +305,7 @@ export class BuildingRunController {
         return { runId, stale: true };
       }
 
-      const message = error instanceof Error ? error.message : "Completed family restore failed";
+      const message = error instanceof Error ? error.message : input.failureMessage;
       this.store.getState().failRun({
         runId,
         message,
@@ -399,6 +427,18 @@ export class BuildingRunController {
         requestHash: input.requestHash,
         fixture: input.fixture
       });
+      await this.completedFamilyPersistence.put(completedFamilyPersistenceCacheEntry(packet));
+    } catch {
+      return;
+    }
+  }
+
+  private async persistCompletedFamilyPacket(packet: CompletedFamilyPersistencePacket): Promise<void> {
+    if (!this.completedFamilyPersistence) {
+      return;
+    }
+
+    try {
       await this.completedFamilyPersistence.put(completedFamilyPersistenceCacheEntry(packet));
     } catch {
       return;

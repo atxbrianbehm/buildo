@@ -3,10 +3,12 @@ import { vi } from "vitest";
 import { App } from "./App";
 import { latestMaterialSourceCacheHit } from "./runEventSelectors";
 import { indexedDbArtifactCacheKey } from "../features/building-family/materials/indexedDbArtifactPersistence";
+import { createCompletedFamilyExportBundle } from "../features/building-family/state/completedFamilyExportBundle";
 import {
   completedFamilyPersistenceCacheEntry,
   createCompletedFamilyPersistencePacket
 } from "../features/building-family/state/completedFamilyPersistence";
+import { defaultBuildingPromptControls } from "../features/building-family/state/buildingStore";
 import { createAssemblyHallFixture } from "../features/building-family/ui/assemblyHallFixture";
 
 class FakeIdbRequest<T = unknown> {
@@ -349,6 +351,66 @@ describe("App", () => {
 
     expect(screen.getByLabelText("Generation run state")).toHaveTextContent("running");
     expect(screen.getByRole("button", { name: "Download Export" })).toBeDisabled();
+  });
+
+  it("imports a completed family export bundle into the app runtime", async () => {
+    const importedFixture = await createAssemblyHallFixture({
+      promptControls: {
+        ...defaultBuildingPromptControls,
+        prompt: "six floors, 5 bays, brick, gable roof, moderate trim",
+        floorCount: 6,
+        bayCount: 5,
+        roofType: "gable",
+        trimDensity: "moderate",
+        seeds: {
+          family: "import-family-seed",
+          building: "import-building-seed",
+          material: "import-material-seed",
+          trim: "import-trim-seed"
+        }
+      }
+    });
+    const packet = await createCompletedFamilyPersistencePacket({
+      documentId: "family-doc-imported",
+      runId: "run-imported",
+      requestHash: "request-imported",
+      createdAt: "2026-06-24T00:00:00.000Z",
+      fixture: importedFixture
+    });
+    const bundle = createCompletedFamilyExportBundle(packet);
+
+    try {
+      render(<App />);
+      await waitForInitialRun();
+      const initialArtifactId = screen.getByLabelText("Generation run artifact").textContent ?? "";
+
+      fireEvent.change(screen.getByLabelText("Import Export File"), {
+        target: {
+          files: [
+            new File([JSON.stringify(bundle)], "family-doc-imported-completed-family-export.json", {
+              type: "application/json"
+            })
+          ]
+        }
+      });
+
+      await waitFor(() => expect(screen.getByLabelText("Generation run artifact")).toHaveTextContent(packet.buildingId));
+      expect(screen.getByLabelText("Generation run artifact")).not.toHaveTextContent(initialArtifactId);
+      expect(screen.getByLabelText("Route document identity")).toHaveTextContent("family-doc-imported");
+      expect(screen.getByLabelText("Generation run state")).toHaveTextContent("complete");
+      expect(screen.getByLabelText("Generation run state")).toHaveTextContent("run-imported");
+      expect(screen.getByLabelText("Prompt trace summary")).toHaveTextContent(packet.provenance.promptTrace.traceId);
+
+      selectRoom("Assembly Hall");
+      expect(await screen.findByRole("heading", { name: "Assembly Hall" })).toBeInTheDocument();
+      await waitFor(() =>
+        expect(screen.getByLabelText("Assembly Hall renderer metrics")).toHaveTextContent(
+          importedFixture.metrics.triangleCount.toLocaleString("en-US")
+        )
+      );
+    } finally {
+      importedFixture.familyRuntime.dispose();
+    }
   });
 
   it("exposes committed roof, trim, and seed controls with invalidation feedback", async () => {
