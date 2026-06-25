@@ -1,7 +1,8 @@
 import { createCompletedFamilyExportBundle, parseCompletedFamilyExportBundle } from "../state/completedFamilyExportBundle";
+import { importCompletedFamilyExportBundleToPacket } from "../state/completedFamilyExportImport";
 import { verifyCompletedFamilyExportBundle } from "../state/completedFamilyExportVerifier";
 import { createCompletedFamilyPersistencePacket } from "../state/completedFamilyPersistence";
-import { createAssemblyHallFixture } from "../ui/assemblyHallFixture";
+import { createAssemblyHallFixture, restoreAssemblyHallFixtureFromCompletedFamilyPacket } from "../ui/assemblyHallFixture";
 
 describe("completed family export bundle", () => {
   it("creates a portable JSON bundle for reproducing the completed procedural building and atlas", async () => {
@@ -96,6 +97,49 @@ describe("completed family export bundle", () => {
       ])
     );
 
+    fixture.familyRuntime.dispose();
+  });
+
+  it("imports a JSON export bundle into a runtime-restorable completed family packet", async () => {
+    const fixture = await createAssemblyHallFixture();
+    const packet = await createCompletedFamilyPersistencePacket({
+      documentId: "family-document-export",
+      runId: "run-export",
+      requestHash: "request-export",
+      createdAt: "2026-06-24T00:00:00.000Z",
+      fixture
+    });
+
+    const bundle = JSON.parse(JSON.stringify(createCompletedFamilyExportBundle(packet)));
+    const importedPacket = await importCompletedFamilyExportBundleToPacket(bundle);
+    const restoredFixture = await restoreAssemblyHallFixtureFromCompletedFamilyPacket(importedPacket);
+
+    expect(importedPacket).toMatchObject({
+      schemaVersion: "0.1.0",
+      documentId: "family-document-export",
+      runId: "run-export",
+      requestHash: "request-export",
+      contentHash: packet.contentHash,
+      familyId: fixture.spec.familyId,
+      buildingId: fixture.ir.buildingId,
+      stylePackReference: packet.stylePackReference
+    });
+    expect(importedPacket.artifacts.atlasChannels.baseColor.data).toBeInstanceOf(Uint8ClampedArray);
+    expect(importedPacket.artifacts.atlasContentHash).toBe(fixture.packedAtlas.contentHash);
+    expect(importedPacket.artifacts.runtimeIr).toMatchObject({
+      buildingId: fixture.ir.buildingId,
+      familyId: fixture.ir.familyId,
+      sourceGraphHash: fixture.ir.sourceGraphHash,
+      metrics: fixture.ir.metrics
+    });
+    expect(importedPacket.artifacts.componentGallery.galleryId).toBe(fixture.componentGallery.galleryId);
+    expect(restoredFixture.metrics).toMatchObject({
+      atlasContentHash: fixture.packedAtlas.contentHash,
+      triangleCount: fixture.metrics.triangleCount,
+      instanceCount: fixture.metrics.instanceCount
+    });
+
+    restoredFixture.familyRuntime.dispose();
     fixture.familyRuntime.dispose();
   });
 });

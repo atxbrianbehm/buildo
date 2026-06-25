@@ -3,6 +3,7 @@ import { compileBuilding } from "../compiler/buildingCompiler";
 import { type AtlasChannel } from "../contracts/atlasManifest";
 import { canonicalJson } from "../core/canonicalJson";
 import { sha256Hex } from "../core/contentHash";
+import type { PackedAtlasChannels } from "../materials/atlasPacker";
 import {
   parseCompletedFamilyExportBundle,
   type CompletedFamilyExportBundle
@@ -14,7 +15,7 @@ const pngSignature = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]);
 
 type VerificationStatus = "passed" | "failed";
 
-interface RgbaPixelLayer {
+export interface RgbaPixelLayer {
   widthPx: number;
   heightPx: number;
   channels: "rgba8";
@@ -214,7 +215,7 @@ function inflateStoredZlib(bytes: Uint8Array): Uint8Array {
   return concatBytes(chunks);
 }
 
-function decodePortablePngChannel(
+export function decodeCompletedFamilyExportChannel(
   channel: CompletedFamilyExportBundle["atlas"]["channels"][number]
 ): RgbaPixelLayer {
   if (!channel.pngDataUrl.startsWith(pngDataUrlPrefix)) {
@@ -287,6 +288,30 @@ function decodePortablePngChannel(
   };
 }
 
+export function decodeCompletedFamilyExportAtlasChannels(bundle: CompletedFamilyExportBundle): PackedAtlasChannels {
+  const channels = new Map<AtlasChannel, RgbaPixelLayer>();
+  for (const channel of bundle.atlas.channels) {
+    channels.set(channel.name, decodeCompletedFamilyExportChannel(channel));
+  }
+
+  const baseColor = channels.get("baseColor");
+  const normal = channels.get("normal");
+  const orm = channels.get("orm");
+  const height = channels.get("height");
+  const opacity = channels.get("opacity");
+  if (!baseColor || !normal || !orm || !height || !opacity) {
+    throw new Error("Completed-family export bundle is missing one or more atlas channels.");
+  }
+
+  return {
+    baseColor,
+    normal,
+    orm,
+    height,
+    opacity
+  };
+}
+
 function channelPayload(name: string, layer: RgbaPixelLayer): Uint8Array {
   return concatBytes([
     new TextEncoder().encode(`${name}:${layer.widthPx}x${layer.heightPx}:`),
@@ -298,7 +323,7 @@ async function channelHash(name: string, layer: RgbaPixelLayer): Promise<string>
   return sha256Hex(channelPayload(name, layer));
 }
 
-async function atlasContentHash(input: {
+export async function completedFamilyExportAtlasContentHash(input: {
   channels: Partial<Record<AtlasChannel, RgbaPixelLayer>>;
   slotProvenance: CompletedFamilyExportBundle["atlas"]["slotProvenance"];
 }): Promise<string> {
@@ -353,7 +378,7 @@ export async function verifyCompletedFamilyExportBundle(
 
   for (const channel of bundle.atlas.channels) {
     try {
-      const layer = decodePortablePngChannel(channel);
+      const layer = decodeCompletedFamilyExportChannel(channel);
       decodedChannels[channel.name] = layer;
       addEqualityCheck(
         checks,
@@ -379,7 +404,7 @@ export async function verifyCompletedFamilyExportBundle(
     }
   }
 
-  const computedAtlasContentHash = await atlasContentHash({
+  const computedAtlasContentHash = await completedFamilyExportAtlasContentHash({
     channels: decodedChannels,
     slotProvenance: bundle.atlas.slotProvenance
   });
