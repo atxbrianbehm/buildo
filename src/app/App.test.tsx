@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { vi } from "vitest";
 import { App } from "./App";
 import { latestMaterialSourceCacheHit } from "./runEventSelectors";
 import { indexedDbArtifactCacheKey } from "../features/building-family/materials/indexedDbArtifactPersistence";
@@ -282,6 +283,72 @@ describe("App", () => {
         Reflect.deleteProperty(globalThis, "indexedDB");
       }
     }
+  });
+
+  it("downloads the active completed family export bundle", async () => {
+    window.history.replaceState(null, "", "/#document=family-doc-export&room=promptLab");
+    const previousCreateObjectUrl = Object.getOwnPropertyDescriptor(URL, "createObjectURL");
+    const previousRevokeObjectUrl = Object.getOwnPropertyDescriptor(URL, "revokeObjectURL");
+    const createObjectURL = vi.fn((blob: Blob | MediaSource) => {
+      void blob;
+      return "blob:completed-family-export";
+    });
+    const revokeObjectURL = vi.fn();
+    Object.defineProperty(URL, "createObjectURL", {
+      configurable: true,
+      value: createObjectURL
+    });
+    Object.defineProperty(URL, "revokeObjectURL", {
+      configurable: true,
+      value: revokeObjectURL
+    });
+    const click = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => undefined);
+
+    try {
+      render(<App />);
+      await waitForInitialRun();
+
+      fireEvent.click(screen.getByRole("button", { name: "Download Export" }));
+
+      await waitFor(() => expect(createObjectURL).toHaveBeenCalledTimes(1));
+      const blob = createObjectURL.mock.calls[0]?.[0];
+      if (!(blob instanceof Blob)) {
+        throw new Error("Expected completed-family export to create a Blob");
+      }
+      const payload = JSON.parse(await blob.text());
+
+      expect(blob.type).toBe("application/json");
+      expect(payload).toMatchObject({
+        schemaVersion: "0.1.0",
+        bundleType: "completed-family-export",
+        documentId: "family-doc-export"
+      });
+      expect(payload.atlas.channels[0].pngDataUrl).toMatch(/^data:image\/png;base64,/);
+      expect(click).toHaveBeenCalledTimes(1);
+      expect(revokeObjectURL).toHaveBeenCalledWith("blob:completed-family-export");
+    } finally {
+      click.mockRestore();
+      if (previousCreateObjectUrl) {
+        Object.defineProperty(URL, "createObjectURL", previousCreateObjectUrl);
+      } else {
+        Reflect.deleteProperty(URL, "createObjectURL");
+      }
+      if (previousRevokeObjectUrl) {
+        Object.defineProperty(URL, "revokeObjectURL", previousRevokeObjectUrl);
+      } else {
+        Reflect.deleteProperty(URL, "revokeObjectURL");
+      }
+    }
+  });
+
+  it("disables completed family export while a rerun is active", async () => {
+    render(<App />);
+    await waitForInitialRun();
+
+    fireEvent.click(screen.getByRole("button", { name: "Run Current" }));
+
+    expect(screen.getByLabelText("Generation run state")).toHaveTextContent("running");
+    expect(screen.getByRole("button", { name: "Download Export" })).toBeDisabled();
   });
 
   it("exposes committed roof, trim, and seed controls with invalidation feedback", async () => {

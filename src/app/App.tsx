@@ -14,6 +14,8 @@ import {
 import { decodeBrowserPngLayer } from "../features/building-family/ui/browserPngLayerDecoder";
 import { BuildingArtifactRegistry } from "../features/building-family/state/artifactRegistry";
 import { BuildingRunController } from "../features/building-family/state/buildingRunController";
+import { createCompletedFamilyExportBundle } from "../features/building-family/state/completedFamilyExportBundle";
+import { createCompletedFamilyPersistencePacket } from "../features/building-family/state/completedFamilyPersistence";
 import {
   createBuildingStore,
   defaultBuildingDocumentId,
@@ -148,6 +150,27 @@ function createBrowserCompletedFamilyPersistence() {
   return createIndexedDbArtifactPersistence();
 }
 
+function safeFileSegment(value: string): string {
+  const fileSegment = value.trim().replace(/[^A-Za-z0-9._-]+/g, "-").replace(/^-+|-+$/g, "");
+  return fileSegment || defaultBuildingDocumentId;
+}
+
+function downloadJsonFile(fileName: string, payload: unknown): void {
+  if (typeof document === "undefined" || typeof URL.createObjectURL !== "function") {
+    return;
+  }
+
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = fileName;
+  document.body.append(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
+}
+
 export function App() {
   const [{ store, registry, controller }] = useState(() => {
     const routeSelection = currentRouteSelection();
@@ -187,6 +210,8 @@ export function App() {
   const fixture = activeFixtureArtifactId
     ? registry.get<AssemblyHallFixture>(activeFixtureArtifactId) ?? null
     : null;
+  const activeFixtureMetadata = activeFixtureArtifactId ? artifacts.byId[activeFixtureArtifactId] : undefined;
+  const exportDisabled = runState.status !== "complete" || !fixture || !currentRun || !activeFixtureMetadata;
   const materialSourceCacheHit = currentRun ? latestMaterialSourceCacheHit(currentRun.events) : undefined;
 
   useEffect(() => {
@@ -247,6 +272,23 @@ export function App() {
         ? promptControls.lockedComponentKeys.filter((lockedKey) => lockedKey !== componentKey)
         : [...promptControls.lockedComponentKeys, componentKey].sort()
     });
+  }
+
+  async function downloadCompletedFamilyExport(): Promise<void> {
+    if (exportDisabled || !fixture || !currentRun || !activeFixtureMetadata) {
+      return;
+    }
+
+    const packet = await createCompletedFamilyPersistencePacket({
+      documentId: routeDocumentId,
+      fixture,
+      requestHash: activeFixtureMetadata.requestHash,
+      runId: currentRun.runId
+    });
+    downloadJsonFile(
+      `${safeFileSegment(routeDocumentId)}-completed-family-export.json`,
+      createCompletedFamilyExportBundle(packet)
+    );
   }
 
   return (
@@ -449,6 +491,13 @@ export function App() {
                 </button>
                 <button type="button" disabled={!runDisabled} onClick={() => controller.cancelActiveRun()}>
                   Cancel Run
+                </button>
+                <button
+                  type="button"
+                  disabled={exportDisabled}
+                  onClick={() => void downloadCompletedFamilyExport().catch(() => undefined)}
+                >
+                  Download Export
                 </button>
               </div>
             </div>
