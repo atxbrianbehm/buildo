@@ -140,6 +140,31 @@ function formatProfileMetricValue(metric: FamilyBenchmarkProfileMetric): string 
   return formatNumber(metric.value);
 }
 
+function safeFileSegment(value: string): string {
+  const fileSegment = value.trim().replace(/[^A-Za-z0-9._-]+/g, "-").replace(/^-+|-+$/g, "");
+  return fileSegment || "building-family";
+}
+
+function downloadJsonFile(fileName: string, payload: unknown): void {
+  if (typeof document === "undefined" || typeof URL.createObjectURL !== "function") {
+    return;
+  }
+
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = fileName;
+  document.body.append(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
+}
+
+function downloadBenchmarkProfilePacket(packet: FamilyBenchmarkProfilePacket): void {
+  downloadJsonFile(`${safeFileSegment(packet.familyId)}-benchmark-profile-packet.json`, packet);
+}
+
 function createRendererCompatibilityReport(input: {
   activeBackend: AssemblyRendererBackend | "pending";
   backendSupport: RendererBackendSupport;
@@ -1156,6 +1181,11 @@ export function AssemblyHall({
               <p className="project-label">Profile Packet</p>
               <h3>Milestone 7 Profile Packet</h3>
             </div>
+            {benchmarkProfilePacket ? (
+              <button type="button" onClick={() => downloadBenchmarkProfilePacket(benchmarkProfilePacket)}>
+                Download Profile Packet
+              </button>
+            ) : null}
           </div>
 
           {benchmarkProfilePacket ? (

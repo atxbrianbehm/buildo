@@ -315,6 +315,97 @@ describe("AssemblyHall", () => {
     expect(profilePacket).toHaveTextContent("jsdom");
   });
 
+  it("downloads the Milestone 7 profile packet JSON after both benchmarks run", async () => {
+    const fixture = await createAssemblyHallFixture();
+    const benchmarkSceneFactory = vi.fn(async () => fakeConstructionBenchmarkSceneFor(fixture));
+    const orbitBenchmarkSceneFactory = vi.fn(async () => fakeOrbitBenchmarkSceneFor(fixture));
+    const previousCreateObjectUrl = Object.getOwnPropertyDescriptor(URL, "createObjectURL");
+    const previousRevokeObjectUrl = Object.getOwnPropertyDescriptor(URL, "revokeObjectURL");
+    const createObjectURL = vi.fn((blob: Blob | MediaSource) => {
+      void blob;
+      return "blob:benchmark-profile-packet";
+    });
+    const revokeObjectURL = vi.fn();
+    let downloadedFileName = "";
+    Object.defineProperty(URL, "createObjectURL", {
+      configurable: true,
+      value: createObjectURL
+    });
+    Object.defineProperty(URL, "revokeObjectURL", {
+      configurable: true,
+      value: revokeObjectURL
+    });
+    const click = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function (
+      this: HTMLAnchorElement
+    ) {
+      downloadedFileName = this.download;
+    });
+
+    try {
+      render(
+        <AssemblyHall
+          fixture={fixture}
+          rendererFactory={fakeRendererFactory()}
+          benchmarkSceneFactory={benchmarkSceneFactory}
+          orbitBenchmarkSceneFactory={orbitBenchmarkSceneFactory}
+        />
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: "Run 100-building benchmark" }));
+      expect(await screen.findByText("shared-family-100-building-scene")).toBeInTheDocument();
+
+      fireEvent.click(screen.getByRole("button", { name: "Run 16-building orbit benchmark" }));
+      expect(await screen.findByText("dynamic-building-family-milestone-7-profile")).toBeInTheDocument();
+
+      fireEvent.click(screen.getByRole("button", { name: "Download Profile Packet" }));
+
+      await waitFor(() => expect(createObjectURL).toHaveBeenCalledTimes(1));
+      const blob = createObjectURL.mock.calls[0]?.[0];
+      if (!(blob instanceof Blob)) {
+        throw new Error("Expected benchmark profile packet download to create a Blob");
+      }
+      const payload = JSON.parse(await blob.text());
+
+      expect(blob.type).toBe("application/json");
+      expect(payload).toMatchObject({
+        schemaVersion: "0.1.0",
+        profileKind: "dynamic-building-family-milestone-7-profile",
+        familyId: fixture.spec.familyId,
+        reports: {
+          construction: {
+            benchmarkKind: "shared-family-100-building-scene"
+          },
+          orbit: {
+            benchmarkKind: "shared-family-16-building-orbit"
+          }
+        }
+      });
+      expect(payload.profileCoverage).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: "frameTimeMs",
+            status: "measured"
+          })
+        ])
+      );
+      expect(downloadedFileName).toBe(`${fixture.spec.familyId}-benchmark-profile-packet.json`);
+      expect(click).toHaveBeenCalledTimes(1);
+      expect(revokeObjectURL).toHaveBeenCalledWith("blob:benchmark-profile-packet");
+    } finally {
+      click.mockRestore();
+      if (previousCreateObjectUrl) {
+        Object.defineProperty(URL, "createObjectURL", previousCreateObjectUrl);
+      } else {
+        Reflect.deleteProperty(URL, "createObjectURL");
+      }
+      if (previousRevokeObjectUrl) {
+        Object.defineProperty(URL, "revokeObjectURL", previousRevokeObjectUrl);
+      } else {
+        Reflect.deleteProperty(URL, "revokeObjectURL");
+      }
+    }
+  });
+
   it("runs and surfaces the 100-building benchmark report from Assembly Hall", async () => {
     const fixture = await createAssemblyHallFixture();
 
