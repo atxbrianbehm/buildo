@@ -1,5 +1,6 @@
 import type { PackedAtlas } from "../materials/atlasPacker";
 import type { AtlasDebugExport } from "../materials/atlasDebugExport";
+import { createRemoteMaterialProofPacket } from "../materials/remoteMaterialProofPacket";
 import type { AssemblyHallRemoteMaterialApplication } from "./assemblyHallFixture";
 
 export interface AtlasLabProps {
@@ -34,7 +35,50 @@ function optionalLabel(value: string | number | undefined): string {
   return value === undefined ? "none" : String(value);
 }
 
+function safeFileSegment(value: string): string {
+  const fileSegment = value.trim().replace(/[^A-Za-z0-9._-]+/g, "-").replace(/^-+|-+$/g, "");
+  return fileSegment || "building-family";
+}
+
+function downloadJsonFile(fileName: string, payload: unknown): void {
+  if (typeof document === "undefined" || typeof URL.createObjectURL !== "function") {
+    return;
+  }
+
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = fileName;
+  document.body.append(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
+}
+
+function canDownloadRemoteMaterialProofPacket(
+  remoteMaterialApplication: AssemblyHallRemoteMaterialApplication | undefined
+): remoteMaterialApplication is AssemblyHallRemoteMaterialApplication {
+  return (
+    remoteMaterialApplication?.route.status === "generated" &&
+    remoteMaterialApplication.route.providerId === "openai-image" &&
+    remoteMaterialApplication.remoteSources.length > 0
+  );
+}
+
 export function AtlasLab({ packedAtlas, debugExport, materialSourceCacheHit, remoteMaterialApplication }: AtlasLabProps) {
+  const canDownloadProofPacket = canDownloadRemoteMaterialProofPacket(remoteMaterialApplication);
+  const downloadRemoteProofPacket = () => {
+    if (!canDownloadProofPacket) {
+      return;
+    }
+
+    downloadJsonFile(
+      `${safeFileSegment(packedAtlas.atlasId)}-remote-material-proof.json`,
+      createRemoteMaterialProofPacket({ packedAtlas, debugExport, remoteMaterialApplication })
+    );
+  };
+
   return (
     <section className="atlas-lab" aria-labelledby="atlas-lab-heading">
       <header className="atlas-lab__header">
@@ -74,7 +118,14 @@ export function AtlasLab({ packedAtlas, debugExport, materialSourceCacheHit, rem
 
       {remoteMaterialApplication ? (
         <section className="atlas-lab__remote" aria-labelledby="atlas-lab-remote-heading">
-          <h3 id="atlas-lab-remote-heading">Remote Material Details</h3>
+          <div className="atlas-lab__remote-header">
+            <h3 id="atlas-lab-remote-heading">Remote Material Details</h3>
+            {canDownloadProofPacket ? (
+              <button type="button" onClick={downloadRemoteProofPacket}>
+                Download Remote Proof Packet
+              </button>
+            ) : null}
+          </div>
           <dl className="atlas-lab__remote-summary" aria-label="Remote material route summary">
             <div>
               <dt>Status</dt>

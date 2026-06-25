@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { vi } from "vitest";
 import { planAtlas } from "../materials/atlasPlanner";
 import { packAtlas, type PackedAtlas } from "../materials/atlasPacker";
 import { createAtlasDebugExport } from "../materials/atlasDebugExport";
@@ -184,5 +185,116 @@ describe("atlas debug export", () => {
     expect(screen.getByRole("table", { name: "Remote Material Diagnostics" })).toHaveTextContent(
       "remoteMaterialApplicationCoordinator.missingRemoteArtifact"
     );
+  });
+
+  it("downloads a sanitized remote material proof packet for generated remote route output", async () => {
+    const packed = await packedFixture();
+    const debugExport = await createAtlasDebugExport(packed);
+    const remoteMaterialApplication: AssemblyHallRemoteMaterialApplication = {
+      schemaVersion: "0.1.0",
+      route: {
+        schemaVersion: "0.1.0",
+        status: "generated",
+        providerId: "openai-image",
+        requestHash: "route-request-hash",
+        acceptedRequestCount: 1,
+        cacheStatus: "miss"
+      },
+      remoteSources: [
+        {
+          sourceId: "source.wall.primary",
+          providerId: "openai-image",
+          requestHash: "remote-request-hash",
+          contentHash: "remote-content-hash",
+          revisedPrompt: "revised masonry prompt with patina"
+        }
+      ],
+      diagnostics: [
+        {
+          code: "remoteMaterialProvider.liveProofNote",
+          message: "Captured without exposing sk-secret-provider-key.",
+          severity: "info"
+        }
+      ]
+    };
+    const previousCreateObjectUrl = Object.getOwnPropertyDescriptor(URL, "createObjectURL");
+    const previousRevokeObjectUrl = Object.getOwnPropertyDescriptor(URL, "revokeObjectURL");
+    const createObjectURL = vi.fn((blob: Blob | MediaSource) => {
+      void blob;
+      return "blob:remote-material-proof";
+    });
+    const revokeObjectURL = vi.fn();
+    let downloadedFileName = "";
+    Object.defineProperty(URL, "createObjectURL", {
+      configurable: true,
+      value: createObjectURL
+    });
+    Object.defineProperty(URL, "revokeObjectURL", {
+      configurable: true,
+      value: revokeObjectURL
+    });
+    const click = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function (
+      this: HTMLAnchorElement
+    ) {
+      downloadedFileName = this.download;
+    });
+
+    try {
+      render(
+        <AtlasLab
+          packedAtlas={packed}
+          debugExport={debugExport}
+          materialSourceCacheHit={false}
+          remoteMaterialApplication={remoteMaterialApplication}
+        />
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: "Download Remote Proof Packet" }));
+
+      await waitFor(() => expect(createObjectURL).toHaveBeenCalledTimes(1));
+      const blob = createObjectURL.mock.calls[0]?.[0];
+      if (!(blob instanceof Blob)) {
+        throw new Error("Expected remote material proof packet download to create a Blob");
+      }
+      const payload = JSON.parse(await blob.text());
+      const payloadJson = JSON.stringify(payload);
+
+      expect(blob.type).toBe("application/json");
+      expect(payload).toMatchObject({
+        schemaVersion: "0.1.0",
+        proofKind: "dynamic-building-family-remote-material-proof",
+        atlas: {
+          atlasId: packed.atlasId,
+          contentHash: packed.contentHash,
+          debugExportHash: debugExport.exportHash
+        },
+        route: {
+          status: "generated",
+          providerId: "openai-image"
+        },
+        remoteSources: [
+          {
+            sourceId: "source.wall.primary",
+            contentHash: "remote-content-hash"
+          }
+        ]
+      });
+      expect(payloadJson).not.toContain("sk-secret-provider-key");
+      expect(downloadedFileName).toBe(`${packed.atlasId}-remote-material-proof.json`);
+      expect(click).toHaveBeenCalledTimes(1);
+      expect(revokeObjectURL).toHaveBeenCalledWith("blob:remote-material-proof");
+    } finally {
+      click.mockRestore();
+      if (previousCreateObjectUrl) {
+        Object.defineProperty(URL, "createObjectURL", previousCreateObjectUrl);
+      } else {
+        Reflect.deleteProperty(URL, "createObjectURL");
+      }
+      if (previousRevokeObjectUrl) {
+        Object.defineProperty(URL, "revokeObjectURL", previousRevokeObjectUrl);
+      } else {
+        Reflect.deleteProperty(URL, "revokeObjectURL");
+      }
+    }
   });
 });

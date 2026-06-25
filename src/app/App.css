@@ -980,6 +980,20 @@ h1 {
   line-height: 1.2;
 }
 
+.atlas-lab__remote-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.atlas-lab__remote-header button {
+  border-color: rgba(36, 83, 57, 0.42);
+  background: #f7fbf0;
+  color: #183725;
+}
+
 .atlas-lab__remote-summary {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
