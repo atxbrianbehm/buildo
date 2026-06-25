@@ -1,4 +1,5 @@
 import { createCompletedFamilyExportBundle, parseCompletedFamilyExportBundle } from "../state/completedFamilyExportBundle";
+import { verifyCompletedFamilyExportBundle } from "../state/completedFamilyExportVerifier";
 import { createCompletedFamilyPersistencePacket } from "../state/completedFamilyPersistence";
 import { createAssemblyHallFixture } from "../ui/assemblyHallFixture";
 
@@ -47,6 +48,53 @@ describe("completed family export bundle", () => {
     expect(roundTripped.provenance).toEqual(jsonNormalizedPacket.provenance);
     expect(JSON.stringify(roundTripped)).not.toContain("familyRuntime");
     expect(JSON.stringify(roundTripped)).not.toContain("buildingRuntime");
+
+    fixture.familyRuntime.dispose();
+  });
+
+  it("verifies that a JSON export can reproduce the atlas bytes and compiled building metrics", async () => {
+    const fixture = await createAssemblyHallFixture();
+    const packet = await createCompletedFamilyPersistencePacket({
+      documentId: "family-document-export",
+      runId: "run-export",
+      requestHash: "request-export",
+      createdAt: "2026-06-24T00:00:00.000Z",
+      fixture
+    });
+
+    const bundle = JSON.parse(JSON.stringify(createCompletedFamilyExportBundle(packet)));
+    const report = await verifyCompletedFamilyExportBundle(bundle);
+
+    expect(report).toMatchObject({
+      schemaVersion: "0.1.0",
+      verificationType: "completed-family-export-reproduction",
+      status: "verified",
+      documentId: "family-document-export",
+      runId: "run-export",
+      reproduced: {
+        familyId: fixture.spec.familyId,
+        buildingId: fixture.ir.buildingId,
+        atlasId: fixture.packedAtlas.atlasId,
+        atlasContentHash: fixture.packedAtlas.contentHash,
+        componentCatalogId: fixture.catalog.catalogId,
+        graphId: fixture.graph.graphId,
+        sourceGraphHash: fixture.ir.sourceGraphHash,
+        channelCount: 5,
+        triangleCount: fixture.ir.metrics.triangleCount,
+        instanceCount: fixture.ir.metrics.instanceCount,
+        semanticPathCount: fixture.ir.semanticIndex.length
+      }
+    });
+    expect(report.checks.every((check) => check.status === "passed")).toBe(true);
+    expect(report.checks.map((check) => check.code)).toEqual(
+      expect.arrayContaining([
+        "atlas.channelSet",
+        "atlas.channelHash.baseColor",
+        "atlas.contentHash",
+        "building.sourceGraphHash",
+        "building.metrics"
+      ])
+    );
 
     fixture.familyRuntime.dispose();
   });
