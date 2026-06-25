@@ -17,6 +17,11 @@ import {
   type AssemblyRendererBackend,
   type AssemblyRendererFactory
 } from "../renderer-three/assemblyRendererFactory";
+import {
+  createFamilyBenchmarkScene,
+  type FamilyBenchmarkReport,
+  type FamilyBenchmarkScene
+} from "../performance/familyBenchmarkScene";
 import type { AssemblyHallFixture } from "./assemblyHallFixture";
 
 export interface AssemblyHallProps {
@@ -44,8 +49,35 @@ interface StageRevealSummary {
   semanticPathCount: number;
 }
 
+type BenchmarkStatus = "idle" | "running" | "complete" | "failed";
+
+interface BenchmarkState {
+  fixture: AssemblyHallFixture;
+  status: BenchmarkStatus;
+  report: FamilyBenchmarkReport | null;
+  error: string | null;
+}
+
 function formatNumber(value: number): string {
   return new Intl.NumberFormat("en-US").format(value);
+}
+
+function formatMilliseconds(value: number): string {
+  return `${new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: value >= 100 ? 0 : 1
+  }).format(value)} ms`;
+}
+
+function formatBytes(value: number): string {
+  if (value >= 1024 * 1024) {
+    return `${new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 }).format(value / (1024 * 1024))} MB`;
+  }
+
+  if (value >= 1024) {
+    return `${new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 }).format(value / 1024)} KB`;
+  }
+
+  return `${formatNumber(value)} B`;
 }
 
 function stageLabel(stage: AssemblyStage): string {
@@ -166,12 +198,21 @@ export function AssemblyHall({ fixture, rendererFactory = createAssemblyRenderer
   const revealId = useId();
   const mountRef = useRef<HTMLDivElement | null>(null);
   const renderFrameRef = useRef<(() => void) | null>(null);
+  const benchmarkRunIdRef = useRef(0);
+  const mountedRef = useRef(true);
+  const latestFixtureRef = useRef(fixture);
   const [renderError, setRenderError] = useState<string | null>(null);
   const [activeBackend, setActiveBackend] = useState<AssemblyRendererBackend | "pending">(
     fixture.metrics.activeBackend
   );
   const [backendFallbackReason, setBackendFallbackReason] = useState<string | null>(null);
   const [revealThroughStage, setRevealThroughStage] = useState<AssemblyStage>("roof");
+  const [benchmarkState, setBenchmarkState] = useState<BenchmarkState>(() => ({
+    fixture,
+    status: "idle",
+    report: null,
+    error: null
+  }));
   const revealThroughStageRef = useRef<AssemblyStage>(revealThroughStage);
   const rows = useMemo(() => galleryRows(fixture), [fixture]);
   const variants = useMemo(() => stressRows(fixture), [fixture]);
@@ -183,12 +224,73 @@ export function AssemblyHall({ fixture, rendererFactory = createAssemblyRenderer
   const [selectedSemanticPath, setSelectedSemanticPath] = useState("");
   const selectedOption =
     selectionOptions.find((option) => option.semanticPath === selectedSemanticPath) ?? selectionOptions[0];
+  const activeBenchmarkState = benchmarkState.fixture === fixture ? benchmarkState : null;
+  const benchmarkStatus = activeBenchmarkState?.status ?? "idle";
+  const benchmarkReport = activeBenchmarkState?.report ?? null;
+  const benchmarkError = activeBenchmarkState?.error ?? null;
+
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+      benchmarkRunIdRef.current += 1;
+    };
+  }, []);
+
+  useEffect(() => {
+    latestFixtureRef.current = fixture;
+    benchmarkRunIdRef.current += 1;
+  }, [fixture]);
 
   useEffect(() => {
     revealThroughStageRef.current = revealThroughStage;
     applyStageReveal(fixture, revealThroughStage);
     renderFrameRef.current?.();
   }, [fixture, revealThroughStage]);
+
+  const runBenchmark = async () => {
+    const runId = benchmarkRunIdRef.current + 1;
+    const benchmarkFixture = fixture;
+    benchmarkRunIdRef.current = runId;
+    setBenchmarkState({
+      fixture: benchmarkFixture,
+      status: "running",
+      report: null,
+      error: null
+    });
+
+    let benchmark: FamilyBenchmarkScene | undefined;
+    try {
+      benchmark = await createFamilyBenchmarkScene({ fixture: benchmarkFixture });
+      if (
+        mountedRef.current &&
+        benchmarkRunIdRef.current === runId &&
+        latestFixtureRef.current === benchmarkFixture
+      ) {
+        setBenchmarkState({
+          fixture: benchmarkFixture,
+          status: "complete",
+          report: benchmark.report,
+          error: null
+        });
+      }
+    } catch (error: unknown) {
+      if (
+        mountedRef.current &&
+        benchmarkRunIdRef.current === runId &&
+        latestFixtureRef.current === benchmarkFixture
+      ) {
+        const message = error instanceof Error ? error.message : "Unable to run the family benchmark.";
+        setBenchmarkState({
+          fixture: benchmarkFixture,
+          status: "failed",
+          report: null,
+          error: message
+        });
+      }
+    } finally {
+      benchmark?.familyRuntime.dispose();
+    }
+  };
 
   useEffect(() => {
     const mount = mountRef.current;
@@ -505,6 +607,101 @@ export function AssemblyHall({ fixture, rendererFactory = createAssemblyRenderer
               </tbody>
             </table>
           </div>
+        </section>
+
+        <section className="assembly-hall__benchmark" aria-label="100-building benchmark report">
+          <div className="assembly-hall__benchmark-header">
+            <div>
+              <p className="project-label">Performance</p>
+              <h3>100-Building Benchmark</h3>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                void runBenchmark();
+              }}
+              disabled={benchmarkStatus === "running"}
+            >
+              {benchmarkStatus === "running" ? "Running benchmark" : "Run 100-building benchmark"}
+            </button>
+          </div>
+
+          {benchmarkError ? (
+            <p className="assembly-hall__benchmark-message" role="alert">
+              {benchmarkError}
+            </p>
+          ) : benchmarkReport ? (
+            <>
+              <dl className="assembly-hall__benchmark-metrics" aria-label="100-building benchmark metrics">
+                <div>
+                  <dt>Report</dt>
+                  <dd>{benchmarkReport.benchmarkKind}</dd>
+                </div>
+                <div>
+                  <dt>Buildings</dt>
+                  <dd>{formatNumber(benchmarkReport.buildingCount)} buildings</dd>
+                </div>
+                <div>
+                  <dt>Draw calls</dt>
+                  <dd>{formatNumber(benchmarkReport.aggregate.drawCallCount)}</dd>
+                </div>
+                <div>
+                  <dt>Instances</dt>
+                  <dd>{formatNumber(benchmarkReport.aggregate.instanceCount)}</dd>
+                </div>
+                <div>
+                  <dt>Triangles</dt>
+                  <dd>{formatNumber(benchmarkReport.aggregate.triangleCount)}</dd>
+                </div>
+                <div>
+                  <dt>Runtime IR</dt>
+                  <dd>{formatBytes(benchmarkReport.transfer.runtimeIrBytes)}</dd>
+                </div>
+              </dl>
+
+              <dl className="assembly-hall__benchmark-lineage" aria-label="100-building benchmark lineage">
+                <div>
+                  <dt>Atlas content</dt>
+                  <dd>{benchmarkReport.assets.atlasContentHash}</dd>
+                </div>
+                <div>
+                  <dt>Per building triangles</dt>
+                  <dd>{formatNumber(benchmarkReport.perBuilding.triangleCount)}</dd>
+                </div>
+                <div>
+                  <dt>Compile time</dt>
+                  <dd>{formatMilliseconds(benchmarkReport.timing.compileTimeMs)}</dd>
+                </div>
+                <div>
+                  <dt>Mount time</dt>
+                  <dd>{formatMilliseconds(benchmarkReport.timing.runtimeMountTimeMs)}</dd>
+                </div>
+              </dl>
+
+              <ol className="assembly-hall__benchmark-targets" aria-label="100-building benchmark target checks">
+                <li data-passed={benchmarkReport.targets.oneBuildingTriangleLimit.passed ? "true" : "false"}>
+                  <span>
+                    Triangle target {benchmarkReport.targets.oneBuildingTriangleLimit.passed ? "passed" : "failed"}
+                  </span>
+                  <small>
+                    {formatNumber(benchmarkReport.targets.oneBuildingTriangleLimit.actual)} /{" "}
+                    {formatNumber(benchmarkReport.targets.oneBuildingTriangleLimit.limit)} triangles
+                  </small>
+                </li>
+                <li data-passed={benchmarkReport.targets.familyAssetSharing.passed ? "true" : "false"}>
+                  <span>
+                    Family assets {benchmarkReport.targets.familyAssetSharing.passed ? "shared" : "not shared"}
+                  </span>
+                  <small>
+                    {formatNumber(benchmarkReport.assets.sharedMaterialCount)} shared materials /{" "}
+                    {formatNumber(benchmarkReport.assets.textureCount)} textures
+                  </small>
+                </li>
+              </ol>
+            </>
+          ) : (
+            <p className="assembly-hall__benchmark-message">Not run</p>
+          )}
         </section>
       </div>
     </section>

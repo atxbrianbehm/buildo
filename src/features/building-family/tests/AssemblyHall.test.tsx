@@ -67,6 +67,25 @@ describe("AssemblyHall", () => {
     );
   });
 
+  it("runs and surfaces the 100-building benchmark report from Assembly Hall", async () => {
+    const fixture = await createAssemblyHallFixture();
+
+    render(<AssemblyHall fixture={fixture} rendererFactory={fakeRendererFactory()} />);
+
+    const benchmarkReport = screen.getByLabelText("100-building benchmark report");
+    expect(benchmarkReport).toHaveTextContent("Not run");
+
+    fireEvent.click(screen.getByRole("button", { name: "Run 100-building benchmark" }));
+
+    expect(await screen.findByText("shared-family-100-building-scene")).toBeInTheDocument();
+    expect(benchmarkReport).toHaveTextContent("100 buildings");
+    expect(benchmarkReport).toHaveTextContent(fixture.packedAtlas.contentHash);
+    expect(benchmarkReport).toHaveTextContent(fixture.ir.metrics.triangleCount.toLocaleString("en-US"));
+    expect(benchmarkReport).toHaveTextContent((fixture.ir.metrics.triangleCount * 100).toLocaleString("en-US"));
+    expect(benchmarkReport).toHaveTextContent("Triangle target passed");
+    expect(benchmarkReport).toHaveTextContent("Family assets shared");
+  });
+
   it("exposes semantic renderer lookup entries as a selectable Assembly Hall inspector", async () => {
     const fixture = await createAssemblyHallFixture();
     const windowPath = `building/${fixture.ir.familyId}/facade/front/floor/0/bay/0/window/frame`;
