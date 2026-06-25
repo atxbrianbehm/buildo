@@ -84,6 +84,19 @@ describe("AssemblyHall", () => {
     expect(benchmarkReport).toHaveTextContent((fixture.ir.metrics.triangleCount * 100).toLocaleString("en-US"));
     expect(benchmarkReport).toHaveTextContent("Triangle target passed");
     expect(benchmarkReport).toHaveTextContent("Family assets shared");
+    expect(screen.getByLabelText("100-building benchmark profile coverage")).toHaveTextContent(
+      "CPU compile time"
+    );
+    expect(screen.getByLabelText("100-building benchmark profile coverage")).toHaveTextContent("measured");
+    expect(screen.getByLabelText("100-building benchmark profile coverage")).toHaveTextContent(
+      "Worker transfer size"
+    );
+    expect(screen.getByLabelText("100-building benchmark profile coverage")).toHaveTextContent("estimated");
+    expect(screen.getByLabelText("100-building benchmark profile coverage")).toHaveTextContent("GPU memory");
+    expect(screen.getByLabelText("100-building benchmark profile coverage")).toHaveTextContent("not captured");
+    expect(screen.getByLabelText("100-building benchmark known limitations")).toHaveTextContent(
+      "Frame time and interactive orbit proof"
+    );
   });
 
   it("exposes semantic renderer lookup entries as a selectable Assembly Hall inspector", async () => {

@@ -20,6 +20,12 @@ import {
 } from "../renderer-three/assemblyRendererFactory";
 import type { RendererBackendSupport } from "../renderer-three/buildingSceneAdapter";
 import {
+  createFamilyBenchmarkDocumentation,
+  type FamilyBenchmarkDocumentation,
+  type FamilyBenchmarkMetricStatus,
+  type FamilyBenchmarkProfileMetric
+} from "../performance/familyBenchmarkDocumentation";
+import {
   createFamilyBenchmarkScene,
   type FamilyBenchmarkReport,
   type FamilyBenchmarkScene
@@ -94,6 +100,26 @@ function formatBytes(value: number): string {
   }
 
   return `${formatNumber(value)} B`;
+}
+
+function metricStatusLabel(status: FamilyBenchmarkMetricStatus): string {
+  return status === "not-captured" ? "not captured" : status;
+}
+
+function formatProfileMetricValue(metric: FamilyBenchmarkProfileMetric): string {
+  if (metric.value === null) {
+    return "not captured";
+  }
+
+  if (metric.unit === "bytes") {
+    return formatBytes(metric.value);
+  }
+
+  if (metric.unit === "ms") {
+    return formatMilliseconds(metric.value);
+  }
+
+  return formatNumber(metric.value);
 }
 
 function createRendererCompatibilityReport(input: {
@@ -319,6 +345,10 @@ export function AssemblyHall({ fixture, rendererFactory = createAssemblyRenderer
   const benchmarkStatus = activeBenchmarkState?.status ?? "idle";
   const benchmarkReport = activeBenchmarkState?.report ?? null;
   const benchmarkError = activeBenchmarkState?.error ?? null;
+  const benchmarkDocumentation: FamilyBenchmarkDocumentation | null = useMemo(
+    () => (benchmarkReport ? createFamilyBenchmarkDocumentation({ report: benchmarkReport }) : null),
+    [benchmarkReport]
+  );
   const compatibilityReport = useMemo(
     () =>
       createRendererCompatibilityReport({
@@ -842,6 +872,43 @@ export function AssemblyHall({ fixture, rendererFactory = createAssemblyRenderer
                   </small>
                 </li>
               </ol>
+
+              {benchmarkDocumentation ? (
+                <>
+                  <table
+                    className="assembly-hall__benchmark-coverage"
+                    aria-label="100-building benchmark profile coverage"
+                  >
+                    <thead>
+                      <tr>
+                        <th scope="col">Metric</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Value</th>
+                        <th scope="col">Source</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {benchmarkDocumentation.profileCoverage.map((metric) => (
+                        <tr key={metric.id} data-status={metric.status}>
+                          <td>{metric.label}</td>
+                          <td>{metricStatusLabel(metric.status)}</td>
+                          <td>{formatProfileMetricValue(metric)}</td>
+                          <td>{metric.source}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+
+                  <ul
+                    className="assembly-hall__benchmark-limitations"
+                    aria-label="100-building benchmark known limitations"
+                  >
+                    {benchmarkDocumentation.knownLimitations.map((limitation) => (
+                      <li key={limitation}>{limitation}</li>
+                    ))}
+                  </ul>
+                </>
+              ) : null}
             </>
           ) : (
             <p className="assembly-hall__benchmark-message">Not run</p>
