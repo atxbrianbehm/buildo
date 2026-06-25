@@ -1,6 +1,12 @@
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { App } from "./App";
 import { latestMaterialSourceCacheHit } from "./runEventSelectors";
+import { indexedDbArtifactCacheKey } from "../features/building-family/materials/indexedDbArtifactPersistence";
+import {
+  completedFamilyPersistenceCacheEntry,
+  createCompletedFamilyPersistencePacket
+} from "../features/building-family/state/completedFamilyPersistence";
+import { createAssemblyHallFixture } from "../features/building-family/ui/assemblyHallFixture";
 
 class FakeIdbRequest<T = unknown> {
   error: Error | null = null;
@@ -229,6 +235,46 @@ describe("App", () => {
         requestHash: completedFamilyEntry.entry.artifact.requestHash
       });
       expect(completedFamilyEntry.entry.artifact.runId).toMatch(/^building-run-/);
+    } finally {
+      if (previousIndexedDb) {
+        Object.defineProperty(globalThis, "indexedDB", previousIndexedDb);
+      } else {
+        Reflect.deleteProperty(globalThis, "indexedDB");
+      }
+    }
+  });
+
+  it("restores a cached completed family from IndexedDB before starting fresh generation", async () => {
+    const fakeIndexedDb = new FakeIndexedDbFactory();
+    const seedFixture = await createAssemblyHallFixture();
+    const packet = await createCompletedFamilyPersistencePacket({
+      documentId: "family-doc-alpha",
+      runId: "run-restored",
+      requestHash: "request-restored",
+      createdAt: "2026-06-24T00:00:00.000Z",
+      fixture: seedFixture
+    });
+    const entry = completedFamilyPersistenceCacheEntry(packet);
+    fakeIndexedDb.database.records.set(indexedDbArtifactCacheKey(entry), {
+      key: indexedDbArtifactCacheKey(entry),
+      entry: structuredClone(entry)
+    });
+    seedFixture.familyRuntime.dispose();
+    const previousIndexedDb = Object.getOwnPropertyDescriptor(globalThis, "indexedDB");
+    Object.defineProperty(globalThis, "indexedDB", {
+      configurable: true,
+      value: fakeIndexedDb as unknown as IDBFactory
+    });
+    window.history.replaceState(null, "", "/#document=family-doc-alpha&room=promptLab");
+
+    try {
+      render(<App />);
+      await waitForInitialRun();
+
+      expect(screen.getByLabelText("Generation run state")).toHaveTextContent("run-restored");
+      expect(screen.getByLabelText("Generation run artifact")).toHaveTextContent(packet.buildingId);
+      expect(screen.getByLabelText("Generation run timeline")).toHaveTextContent("complete");
+      expect(screen.getByLabelText("Prompt trace summary")).toHaveTextContent(packet.provenance.promptTrace.traceId);
     } finally {
       if (previousIndexedDb) {
         Object.defineProperty(globalThis, "indexedDB", previousIndexedDb);

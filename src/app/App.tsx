@@ -7,7 +7,10 @@ import { AssemblyHall } from "../features/building-family/ui/AssemblyHall";
 import { ComponentForge } from "../features/building-family/ui/ComponentForge";
 import { PromptTracePanel } from "../features/building-family/ui/PromptTracePanel";
 import { createIndexedDbArtifactPersistence } from "../features/building-family/materials/indexedDbArtifactPersistence";
-import type { AssemblyHallFixture } from "../features/building-family/ui/assemblyHallFixture";
+import {
+  restoreAssemblyHallFixtureFromCompletedFamilyPacket,
+  type AssemblyHallFixture
+} from "../features/building-family/ui/assemblyHallFixture";
 import { decodeBrowserPngLayer } from "../features/building-family/ui/browserPngLayerDecoder";
 import { BuildingArtifactRegistry } from "../features/building-family/state/artifactRegistry";
 import { BuildingRunController } from "../features/building-family/state/buildingRunController";
@@ -161,6 +164,7 @@ export function App() {
         store: createdStore,
         registry: createdRegistry,
         completedFamilyPersistence: createBrowserCompletedFamilyPersistence(),
+        restoreCompletedFamilyFixture: restoreAssemblyHallFixtureFromCompletedFamilyPacket,
         remoteMaterial: {
           decodePngLayer: decodeBrowserPngLayer
         }
@@ -186,7 +190,18 @@ export function App() {
   const materialSourceCacheHit = currentRun ? latestMaterialSourceCacheHit(currentRun.events) : undefined;
 
   useEffect(() => {
-    void controller.startDemoRun().catch(() => undefined);
+    void (async () => {
+      try {
+        const restored = await controller.restoreLatestCompletedFamily();
+        if (restored !== undefined) {
+          return;
+        }
+      } catch {
+        // Fall back to procedural generation when a persisted packet cannot be restored.
+      }
+
+      await controller.startDemoRun();
+    })().catch(() => undefined);
 
     return () => {
       controller.dispose();

@@ -1,6 +1,6 @@
 # Dynamic Building Family Integration Map
 
-**Status:** Milestone 7F completed-family packet runtime restore adapter
+**Status:** Milestone 7G app startup completed-family restore foundation
 **Plan source:** `docs/plans/dynamic-building-family.md`
 **Workspace:** `C:\Users\behmb\Documents\Cascade Projects\buildo`
 **Date:** 2026-06-24
@@ -56,7 +56,7 @@ docs/
     dynamic-building-family.md
 ```
 
-The app currently contains a setup shell, the Milestone 1 deterministic domain foundation, the Milestone 2A semantic atlas planner foundation, the Milestone 2B procedural material-source layer, the Milestone 2C atlas channel packer, the Milestone 2D in-memory atlas artifact/debug-export foundation, the Milestone 2E visible Atlas Lab fixture, the Milestone 3A component catalog / graph planning foundation, the Milestone 3B pure compiler IR foundation, the Milestone 3C compiler worker boundary, the Milestone 3D component gallery data foundation, the Milestone 4A renderer adapter foundation, the Milestone 4B atlas texture/material sampling foundation, the Milestone 4C shared family runtime foundation, the Milestone 4D Assembly Hall rendered fixture foundation, the Milestone 4E renderer resource disposal foundation, the Milestone 4F Assembly Hall semantic selection foundation, the Milestone 4G WebGPU renderer activation foundation, the Milestone 5A run controller / Zustand state foundation, the Milestone 5B control invalidation foundation, the Milestone 5C committed rerun control/artifact-lineage foundation, the Milestone 5D cancellation UI/stale-run preservation foundation, the Milestone 5E Component Forge UI foundation, the Milestone 5F stage-driven Assembly Hall reveal foundation, the Milestone 5G artifact trace/provenance foundation, the Milestone 5H expanded prompt controls foundation, the Milestone 5I local component lock foundation, the Milestone 5J four-room navigation foundation, the Milestone 5K Prompt Lab trace foundation, the Milestone 5L 16-variant stress view foundation, the Milestone 5M hash-addressable room routing foundation, the Milestone 5N Atlas Lab provider diagnostics foundation, the Milestone 6A server material-provider route contract foundation, the Milestone 6B OpenAI image provider adapter foundation, the Milestone 6C server remote-material request cache foundation, the Milestone 6D remote material timeout fallback foundation, the Milestone 6E remote material concurrency limit foundation, the Milestone 6F remote material retry policy foundation, the Milestone 6G remote overlay compositing foundation, the Milestone 6H remote material image bridge foundation, the Milestone 6I browser PNG layer decoder foundation, the Milestone 6J remote material route client foundation, the Milestone 6K Vite material-provider route host foundation, the Milestone 6L remote material application coordinator foundation, the Milestone 6M optional fixture remote material integration foundation, the Milestone 6N opt-in run-controller remote material invocation foundation, the Milestone 6O Atlas Lab remote material detail surfacing foundation, the Milestone 6P user-facing remote material feature flag foundation, the Milestone 6Q durable remote material cache persistence foundation, the Milestone 6R provider cancellation diagnostic foundation, the Milestone 6S provider progress UI foundation, the Milestone 6T in-flight remote request coalescing foundation, the Milestone 6U route-level document id foundation, the Milestone 6V provider-aware four-room e2e coverage foundation, the Milestone 7A IndexedDB artifact persistence foundation, the Milestone 7B completed-family persistence packet foundation, the Milestone 7C completed-family persistence handoff foundation, the Milestone 7D app IndexedDB completed-family write foundation, the Milestone 7E controller completed-family read-restore foundation, and the Milestone 7F completed-family packet runtime restore adapter. Browser-side serialized artifact persistence now has a tested IndexedDB boundary, a schema-versioned completed-family packet/cache-entry adapter, a run-controller handoff to an injected completed-family persistence writer, default app wiring that writes completed-family records to IndexedDB when available, a controller read-restore seam that can select the latest cached completed family for a route document id, and a packet-to-runtime fixture restore adapter that can inflate persisted packets into live Assembly Hall fixtures; app startup restore wiring, export bundles, configured live-provider proof, and the Milestone 7 interactive 16-building orbit benchmark remain later work.
+The app currently contains the deterministic domain, atlas, component, compiler, renderer, state, four-room UI, remote-material, route document id, provider-aware smoke, and Milestone 7A-7G persistence foundations. Browser-side serialized artifact persistence now has a tested IndexedDB boundary, a schema-versioned completed-family packet/cache-entry adapter, a run-controller handoff to an injected completed-family persistence writer, default app wiring that writes completed-family records to IndexedDB when available, a controller read-restore seam that can select the latest cached completed family for a route document id, a packet-to-runtime fixture restore adapter that can inflate persisted packets into live Assembly Hall fixtures, and app startup wiring that tries cached restore before fresh generation; export bundles, configured live-provider proof, and the Milestone 7 interactive 16-building orbit benchmark remain later work.
 
 ## 2. Active Instructions
 
@@ -1348,7 +1348,21 @@ docs/architecture/dynamic-building-family-integration.md
 
 `createCompletedFamilyPersistencePacket()` now writes the fixture prompt into new completed-family packets while the schema still accepts older prompt-less packets. `restoreAssemblyHallFixtureFromCompletedFamilyPacket()` validates a cloned persisted packet, reconstructs the `PackedAtlas` object from manifest, channels, slot provenance, and content hash, detects renderer backend support, creates a shared `BuildingFamilyRuntime`, creates the active `BuildingSceneRuntime`, and returns a live `AssemblyHallFixture` with restored prompt trace, component gallery, variant stress, metrics, and provenance.
 
-Focused persistence coverage now clones a real completed-family packet as IndexedDB would, restores it through the packet-to-runtime adapter, and verifies the restored fixture owns live atlas textures, shared material registry, renderable wall geometry, component gallery data, runtime metrics, and prompt identity. This is still not app startup reload restore: the root app has not yet injected the restore function or attempted a cached restore before starting fresh generation.
+Focused persistence coverage now clones a real completed-family packet as IndexedDB would, restores it through the packet-to-runtime adapter, and verifies the restored fixture owns live atlas textures, shared material registry, renderable wall geometry, component gallery data, runtime metrics, and prompt identity. Milestone 7G later wires this adapter into the root app startup path.
+
+## 6.56 App Startup Completed-Family Restore Foundation
+
+Actual Milestone 7G app startup restore paths:
+
+```text
+src/app/App.tsx
+src/app/App.test.tsx
+docs/architecture/dynamic-building-family-integration.md
+```
+
+The root app now injects `restoreAssemblyHallFixtureFromCompletedFamilyPacket()` into `BuildingRunController` alongside the existing IndexedDB completed-family persistence adapter. On startup, the app attempts `controller.restoreLatestCompletedFamily()` for the active route document id before starting fresh procedural generation. If no cached completed-family record exists, or if a persisted packet cannot be restored, startup falls back to the normal procedural run.
+
+Focused App coverage seeds the fake IndexedDB store with a real completed-family packet for `#document=family-doc-alpha`, renders the app, and verifies startup restores `run-restored`, registers the restored Assembly Hall fixture artifact, surfaces the restored completion timeline, and shows the restored prompt trace rather than starting a fresh `building-run-*`.
 
 ## 7. App Shell, Renderer, State, Workers, And Routing
 
@@ -1772,7 +1786,7 @@ Latest validation results:
 
 ```text
 typecheck: passed
-unit tests: passed, 166 tests across 43 files
+unit tests: passed, 167 tests across 43 files
 lint: passed
 build: passed
 e2e smoke: passed, including Vite material-provider route fallback probe, route document id plus Assembly Hall deep link, four-room tab navigation, expanded prompt-control edits, Remote Detail Provider opt-in, committed Run Current provider-aware fallback rerun, Prompt Lab provider timeline and sanitized route diagnostic assertions, Artifact Trace registered-artifact and run-lineage assertions in Prompt Lab, Prompt Trace PSG/interpreter diagnostics, Atlas Lab provider/channel/slot assertions plus Remote Material Details summary/diagnostics assertions, Component Forge selector/atlas-slot assertion, local component lock plus Prompt Lab invalidation and new-building lock persistence, Assembly Hall stage reveal selection, active renderer backend assertion, Assembly Hall semantic selection, and backend-specific canvas pixel probe
@@ -1787,7 +1801,7 @@ Building state/controller and app remote-progress focused tests: passed, 21 test
 Building state/controller, app remote-toggle, and fixture focused tests: passed, 27 tests across 3 files
 Building state/controller completed-family persistence handoff and read-restore focused tests: passed, 19 tests in 1 file
 Assembly Hall fixture focused tests: passed
-App routing/document-id/IndexedDB-write/committed-rerun/cancel/remote-toggle/cache-selector focused tests: passed, 9 tests in 1 file
+App routing/document-id/IndexedDB-write/reload-restore/committed-rerun/cancel/remote-toggle/cache-selector focused tests: passed, 10 tests in 1 file
 IndexedDB artifact persistence focused tests: passed, 2 tests in 1 file
 Completed-family persistence packet and runtime-restore focused tests: passed, 3 tests in 1 file
 Expanded prompt controls focused test: passed
@@ -2544,6 +2558,14 @@ src/features/building-family/tests/completedFamilyPersistence.test.ts
 docs/architecture/dynamic-building-family-integration.md
 ```
 
+Milestone 7G introduced:
+
+```text
+src/app/App.tsx
+src/app/App.test.tsx
+docs/architecture/dynamic-building-family-integration.md
+```
+
 Generated and ignored directories:
 
 ```text
@@ -2552,7 +2574,7 @@ dist/
 test-results/
 ```
 
-No preassembled meshes, configured live-provider proof, live app reload restore, export bundle, or Milestone 7 interactive 16-building orbit benchmark has been added yet. The current compiler emits generated primitive `RuntimeBuildingIR` buffers through the pure TypeScript compiler path, can deliver them across the compiler worker boundary with transferable buffers, can summarize catalog/IR component data for a Component Forge inspection surface, can convert that IR into Three.js scene objects under `renderer-three/*`, can convert packed atlas channels into texture-backed slot materials at the renderer boundary, can host multiple per-building scene runtimes against one shared family atlas/material runtime, can centralize idempotent renderer resource disposal across standalone and shared-family ownership modes, renders one deterministic fixture building in a WebGPU-first browser Assembly Hall canvas with WebGL fallback from those generated artifacts, surfaces semantic renderer lookup entries in a selectable Assembly Hall inspector, drives the root app through a Zustand-backed run controller with serializable run events plus an out-of-store runtime artifact registry, exposes a store-backed four-room tablist for Prompt Lab, Atlas Lab, Component Forge, and Assembly Hall that can be addressed with `#room=<roomId>` deep links and browser-history navigation, preserves optional route-level document ids with `#document=<documentId>&room=<roomId>` hashes, previews roadmap invalidation impacts for prompt, floor, bay, roof, trim-density, seed, local component lock, and remote material feature-flag controls, can commit `Run Current`, `New Building`, and `New Family` reruns with cache-hit artifact lineage for structural vs family-chain changes, exposes `Cancel Run` while preserving the last completed scene during pending and cancelled runs, shows Atlas Lab provider diagnostics derived from packed slot provenance and current material-source cache status plus remote route/revised-prompt/diagnostic details when a fixture includes a remote material summary, owns a tested server-only material-provider route contract, OpenAI image provider adapter, in-memory request cache, optional schema-validated file-backed request cache, timeout fallback, concurrency limit, retry policy, cancellation fallback diagnostic, in-flight request coalescing, decoded-overlay compositor, remote image artifact bridge, browser PNG layer decoder, schema-validated route client with abort-signal forwarding, Vite dev route host, route-result application coordinator with abort-signal forwarding, optional fixture-level remote material atlas integration with abort-signal forwarding, opt-in run-controller forwarding plus provider progress timeline events for material-generating runs, a default-off Prompt Lab remote material feature flag that gates app invocation, an automated provider-aware four-room fallback smoke that verifies the route diagnostic, Atlas remote details, Component Forge, and Assembly Hall together, a schema-validated IndexedDB persistence boundary for serialized cached artifacts keyed by schema/type/request hash, a schema-versioned completed-family persistence packet/cache entry that captures spec, style-pack reference, prompt identity, atlas manifest/channels/provenance, component catalog, graph, runtime IR, component gallery, debug export, and prompt/variant provenance for later reload/export wiring, a run-controller handoff that can write that completed-family cache entry through an injected persistence writer after successful current runs, default app wiring that writes completed-family cache records into IndexedDB when the browser API is available, a controller read-restore seam that can choose the newest cached completed-family packet for a route document id, and a packet-to-runtime restore adapter that can validate a persisted packet and register a live Assembly Hall fixture runtime from it, shows a dedicated Component Forge with real generated component entries, selector/toggles, dimensions, anchors, recipe JSON, selected atlas-slot highlighting, and selected-recipe lock/unlock controls, records locked component keys as semantic locks in the generated spec, drives Assembly Hall stage group visibility from a real stage reveal control backed by generated scene groups and semantic path counts, shows read-only Artifact Trace plus Prompt Trace panels with run lineage, registered artifact metadata, active fixture provenance, evaluated PSG variables, local interpreter overrides, requested controls, PSG node trace entries, remote provider labels, cache state, and sanitized provider diagnostic codes in Prompt Lab, and exposes a 16-variant stress summary with shared atlas/catalog/graph lineage and per-variant compiler metrics.
+No preassembled meshes, configured live-provider proof, export bundle, or Milestone 7 interactive 16-building orbit benchmark has been added yet. The current app can generate the browser vertical slice, inspect artifacts across the four rooms, write completed-family packets into IndexedDB, rebuild live Assembly Hall runtime fixtures from those packets, and attempt route-document cached restore at startup before falling back to fresh procedural generation. Remaining Milestone 7 work is export/reproduction packaging, benchmark/performance documentation, detail-level switching, and compatibility/performance hardening.
 
 ## 14. Milestone 0 And Setup Exit Criteria
 
