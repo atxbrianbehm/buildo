@@ -6,6 +6,7 @@ import { ArtifactTracePanel } from "../features/building-family/ui/ArtifactTrace
 import { AssemblyHall } from "../features/building-family/ui/AssemblyHall";
 import { ComponentForge } from "../features/building-family/ui/ComponentForge";
 import { PromptTracePanel } from "../features/building-family/ui/PromptTracePanel";
+import { SampleBuildingGallery } from "../features/building-family/ui/SampleBuildingGallery";
 import { createIndexedDbArtifactPersistence } from "../features/building-family/materials/indexedDbArtifactPersistence";
 import {
   restoreAssemblyHallFixtureFromCompletedFamilyPacket,
@@ -67,6 +68,7 @@ const roomOptions: Array<{ label: string; room: BuildingRoom }> = [
   { label: "Prompt Lab", room: "promptLab" },
   { label: "Atlas Lab", room: "atlasLab" },
   { label: "Component Forge", room: "componentForge" },
+  { label: "Sample Gallery", room: "sampleGallery" },
   { label: "Assembly Hall", room: "assemblyHall" }
 ];
 
@@ -697,6 +699,22 @@ export function App() {
           ) : (
             <div className="room-panel__loading" role={runState.error ? "alert" : "status"}>
               {runState.error ?? "Preparing component catalog"}
+            </div>
+          )}
+        </section>
+      ) : null}
+      {activeRoom === "sampleGallery" ? (
+        <section
+          aria-labelledby="building-room-tab-sampleGallery"
+          className="room-panel"
+          id="building-room-panel-sampleGallery"
+          role="tabpanel"
+        >
+          {fixture ? (
+            <SampleBuildingGallery fixture={fixture} />
+          ) : (
+            <div className="room-panel__loading" role={runState.error ? "alert" : "status"}>
+              {runState.error ?? "Preparing sample buildings"}
             </div>
           )}
         </section>

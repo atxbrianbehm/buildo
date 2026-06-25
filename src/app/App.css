@@ -140,7 +140,7 @@ h1 {
 
 .room-tabs {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 8px;
   max-width: 1180px;
   margin: 0 auto 22px;
@@ -1436,6 +1436,219 @@ h1 {
   white-space: pre;
 }
 
+.sample-gallery {
+  display: grid;
+  gap: 18px;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 38px 0 16px;
+}
+
+.sample-gallery__intro {
+  display: grid;
+  grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.sample-gallery__intro h2 {
+  margin: 0;
+  color: #121816;
+  font-size: 2rem;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.sample-gallery__summary,
+.sample-gallery__card-metrics {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  margin: 0;
+}
+
+.sample-gallery__summary {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.sample-gallery__summary div,
+.sample-gallery__card-metrics div {
+  min-width: 0;
+  padding: 11px 12px;
+  border-left: 3px solid rgba(72, 113, 82, 0.48);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.sample-gallery dt {
+  color: #5f6d66;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.sample-gallery dd {
+  margin: 6px 0 0;
+  overflow-wrap: anywhere;
+  color: #18201c;
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.sample-gallery__atlas {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid rgba(24, 32, 28, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.66);
+}
+
+.sample-gallery__atlas img {
+  display: block;
+  width: 76px;
+  height: 76px;
+  border-radius: 6px;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+
+.sample-gallery__atlas span {
+  display: block;
+  color: #5f6d66;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.sample-gallery__atlas strong {
+  display: block;
+  margin-top: 5px;
+  overflow-wrap: anywhere;
+  color: #18201c;
+  font-size: 0.86rem;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.sample-gallery__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.sample-gallery__card {
+  display: grid;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgba(24, 32, 28, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.76);
+  box-shadow: 0 18px 48px rgba(22, 29, 25, 0.1);
+}
+
+.sample-gallery__facade {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 320 / 390;
+}
+
+.sample-gallery__sky {
+  fill: #e7ece5;
+}
+
+.sample-gallery__roof {
+  fill: #314036;
+}
+
+.sample-gallery__wall {
+  stroke: rgba(42, 30, 24, 0.28);
+  stroke-width: 1.5;
+}
+
+.sample-gallery__belt,
+.sample-gallery__pilaster {
+  stroke: rgba(250, 237, 211, 0.64);
+  stroke-width: 2;
+}
+
+.sample-gallery__window,
+.sample-gallery__storefront {
+  fill: #d7edf2;
+  stroke: rgba(27, 49, 49, 0.72);
+  stroke-width: 2;
+}
+
+.sample-gallery__storefront {
+  fill: #cfebef;
+}
+
+.sample-gallery__door {
+  fill: #293b33;
+  stroke: rgba(247, 232, 201, 0.72);
+  stroke-width: 2;
+}
+
+.sample-gallery__cornice {
+  fill: rgba(246, 226, 190, 0.82);
+}
+
+.sample-gallery__shadow {
+  fill: rgba(24, 32, 28, 0.16);
+}
+
+.sample-gallery__card-body {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.sample-gallery__card-title {
+  display: grid;
+  gap: 6px;
+}
+
+.sample-gallery__card-title h3 {
+  margin: 0;
+  color: #121816;
+  font-size: 1.08rem;
+  line-height: 1.15;
+}
+
+.sample-gallery__card-title span {
+  overflow-wrap: anywhere;
+  color: #5f6d66;
+  font-size: 0.8rem;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.sample-gallery__card-metrics {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sample-gallery__link {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 12px;
+  border-radius: 6px;
+  color: #f9fbf6;
+  background: #263c31;
+  font-size: 0.84rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.sample-gallery__link:focus-visible {
+  outline: 3px solid rgba(70, 118, 86, 0.28);
+  outline-offset: 2px;
+}
+
 .assembly-hall {
   max-width: 1180px;
   margin: 0 auto;
@@ -2146,6 +2359,7 @@ h1 {
   .artifact-trace__tables,
   .component-forge__header,
   .component-forge__detail,
+  .sample-gallery__intro,
   .control-panel,
   .prompt-trace__header,
   .prompt-trace__tables,
@@ -2224,6 +2438,8 @@ h1 {
   .assembly-hall__benchmark-lineage,
   .assembly-hall__benchmark-metrics,
   .assembly-hall__benchmark-targets,
+  .sample-gallery__summary,
+  .sample-gallery__card-metrics,
   .prompt-trace__summary {
     grid-template-columns: 1fr;
   }

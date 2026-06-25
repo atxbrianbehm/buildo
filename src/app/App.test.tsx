@@ -88,7 +88,7 @@ async function waitForInitialRun(): Promise<void> {
   await waitFor(() => expect(screen.getByLabelText("Generation run state")).toHaveTextContent("complete"));
 }
 
-function selectRoom(name: "Prompt Lab" | "Atlas Lab" | "Component Forge" | "Assembly Hall"): void {
+function selectRoom(name: "Prompt Lab" | "Atlas Lab" | "Component Forge" | "Assembly Hall" | "Sample Gallery"): void {
   fireEvent.click(screen.getByRole("tab", { name }));
 }
 
@@ -202,6 +202,18 @@ describe("App", () => {
 
     expect(window.location.hash).toBe("#document=family-doc-alpha&room=atlasLab");
     expect(screen.getByLabelText("Route document identity")).toHaveTextContent("family-doc-alpha");
+  });
+
+  it("routes to a generated sample building gallery", async () => {
+    window.history.replaceState(null, "", "/#room=sampleGallery");
+
+    render(<App />);
+
+    await waitFor(() =>
+      expect(screen.getByRole("tab", { name: "Sample Gallery" })).toHaveAttribute("aria-selected", "true")
+    );
+    expect(await screen.findByRole("heading", { name: "Sample Buildings" })).toBeInTheDocument();
+    await waitFor(() => expect(screen.getAllByLabelText(/^Generated building sample /)).toHaveLength(8));
   });
 
   it("persists the completed family to IndexedDB using the route document id", async () => {

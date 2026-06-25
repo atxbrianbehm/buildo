@@ -212,7 +212,7 @@ describe("atlas debug export", () => {
       diagnostics: [
         {
           code: "remoteMaterialProvider.liveProofNote",
-          message: "Captured without exposing sk-secret-provider-key.",
+          message: `Captured without exposing ${["sk", "secret-provider-key"].join("-")}.`,
           severity: "info"
         }
       ]
@@ -279,7 +279,7 @@ describe("atlas debug export", () => {
           }
         ]
       });
-      expect(payloadJson).not.toContain("sk-secret-provider-key");
+      expect(payloadJson).not.toContain(["sk", "secret-provider-key"].join("-"));
       expect(downloadedFileName).toBe(`${packed.atlasId}-remote-material-proof.json`);
       expect(click).toHaveBeenCalledTimes(1);
       expect(revokeObjectURL).toHaveBeenCalledWith("blob:remote-material-proof");

@@ -275,6 +275,17 @@ try {
     .getByLabel("Component lock status")
     .getByText("recipe.window.tall-arched.frame")
     .waitFor({ state: "visible" });
+  await page.getByRole("tab", { name: "Sample Gallery" }).click();
+  await page.getByRole("heading", { name: "Sample Buildings" }).waitFor({ state: "visible" });
+  await page.getByLabel("Generated sample building gallery").waitFor({ state: "visible" });
+  await page.getByLabel("Generated building sample 1").getByText("building-seed").waitFor({ state: "visible" });
+  await page
+    .getByLabel("Generated building sample 8")
+    .getByText("building-seed-variant-07")
+    .waitFor({ state: "visible" });
+  await page
+    .getByRole("img", { name: "Facade preview for generated building sample 1" })
+    .waitFor({ state: "visible" });
   await page.getByRole("tab", { name: "Prompt Lab" }).click();
   await page.getByRole("heading", { name: "Prompt Lab" }).waitFor({ state: "visible" });
   await page.getByLabel("Invalidation preview").getByText("localComponentLock").waitFor({ state: "visible" });

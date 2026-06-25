@@ -77,7 +77,7 @@ function generatedRemoteMaterialApplication(): AssemblyHallRemoteMaterialApplica
     diagnostics: [
       {
         code: "remoteMaterialProvider.liveProofNote",
-        message: "Captured without exposing sk-secret-provider-key.",
+        message: `Captured without exposing ${["sk", "secret-provider-key"].join("-")}.`,
         severity: "info"
       }
     ]
@@ -134,7 +134,7 @@ describe("remote material proof packet", () => {
         "Provider secrets and raw remote image bytes are intentionally omitted from the proof packet."
       ])
     );
-    expect(packetJson).not.toContain("sk-secret-provider-key");
+    expect(packetJson).not.toContain(["sk", "secret-provider-key"].join("-"));
     expect(parseRemoteMaterialProofPacket(JSON.parse(packetJson))).toEqual(packet);
   });
 

@@ -1,0 +1,34 @@
+import { render, screen, within } from "@testing-library/react";
+import { createAssemblyHallFixture } from "../ui/assemblyHallFixture";
+import { SampleBuildingGallery } from "../ui/SampleBuildingGallery";
+
+describe("SampleBuildingGallery", () => {
+  it("renders generated family variants as inspectable HTML sample cards", async () => {
+    const fixture = await createAssemblyHallFixture();
+
+    try {
+      render(<SampleBuildingGallery fixture={fixture} />);
+
+      expect(screen.getByRole("heading", { name: "Sample Buildings" })).toBeInTheDocument();
+      expect(screen.getByLabelText("Generated sample building gallery")).toBeInTheDocument();
+      expect(screen.getAllByLabelText(/^Generated building sample /)).toHaveLength(8);
+      expect(screen.getAllByRole("img", { name: /^Facade preview for generated building sample / })).toHaveLength(8);
+
+      const firstSample = screen.getByLabelText("Generated building sample 1");
+      expect(firstSample).toHaveTextContent("building-seed");
+      expect(firstSample).toHaveTextContent("4 floors");
+      expect(firstSample).toHaveTextContent("7 bays");
+      expect(firstSample).toHaveTextContent(fixture.spec.familyId);
+      expect(firstSample).toHaveTextContent(fixture.packedAtlas.contentHash.slice(0, 12));
+
+      const eighthSample = screen.getByLabelText("Generated building sample 8");
+      expect(eighthSample).toHaveTextContent("building-seed-variant-07");
+      expect(within(eighthSample).getByRole("link", { name: "Open in Assembly Hall" })).toHaveAttribute(
+        "href",
+        "#room=assemblyHall"
+      );
+    } finally {
+      fixture.familyRuntime.dispose();
+    }
+  });
+});
