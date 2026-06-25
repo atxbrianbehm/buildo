@@ -1,6 +1,7 @@
 import type { GenerationStage } from "../contracts/generationRun";
 import { hashCanonicalJson } from "../core/contentHash";
 import { computeBuildingInvalidation, type BuildingInvalidation } from "../core/invalidation";
+import type { CachedArtifactEntry } from "../materials/artifactCache";
 import {
   createAssemblyHallFixture,
   type AssemblyHallFixture,
@@ -14,6 +15,7 @@ import {
   type RemoteMaterialRouteResult
 } from "./remoteMaterialRouteClient";
 import {
+  COMPLETED_FAMILY_ARTIFACT_TYPE,
   completedFamilyPersistenceCacheEntry,
   createCompletedFamilyPersistencePacket as defaultCreateCompletedFamilyPersistencePacket,
   type CompletedFamilyPersistenceCacheEntry,
@@ -25,6 +27,10 @@ export interface CompletedFamilyPersistenceWriter {
   put(entry: CompletedFamilyPersistenceCacheEntry): Promise<void>;
 }
 
+export interface CompletedFamilyPersistenceStore extends CompletedFamilyPersistenceWriter {
+  list?(): Promise<Array<CachedArtifactEntry<unknown>>>;
+}
+
 export interface BuildingRunControllerOptions {
   store: BuildingStoreApi;
   registry: BuildingArtifactRegistry;
@@ -33,9 +39,10 @@ export interface BuildingRunControllerOptions {
     input: CreateCompletedFamilyPersistencePacketInput
   ) => Promise<CompletedFamilyPersistencePacket>;
   createRunId?: () => string;
-  completedFamilyPersistence?: CompletedFamilyPersistenceWriter;
+  completedFamilyPersistence?: CompletedFamilyPersistenceStore;
   nowMs?: () => number;
   remoteMaterial?: CreateAssemblyHallFixtureInput["remoteMaterial"];
+  restoreCompletedFamilyFixture?: (packet: CompletedFamilyPersistencePacket) => Promise<AssemblyHallFixture>;
 }
 
 export interface StartDemoRunResult {
@@ -85,9 +92,12 @@ export class BuildingRunController {
     input: CreateCompletedFamilyPersistencePacketInput
   ) => Promise<CompletedFamilyPersistencePacket>;
   private readonly createRunId: () => string;
-  private readonly completedFamilyPersistence: CompletedFamilyPersistenceWriter | undefined;
+  private readonly completedFamilyPersistence: CompletedFamilyPersistenceStore | undefined;
   private readonly nowMs: () => number;
   private readonly remoteMaterial: CreateAssemblyHallFixtureInput["remoteMaterial"];
+  private readonly restoreCompletedFamilyFixture:
+    | ((packet: CompletedFamilyPersistencePacket) => Promise<AssemblyHallFixture>)
+    | undefined;
   private activeRun: ActiveRun | undefined;
   private lastCompletedFixture: AssemblyHallFixture | undefined;
   private lastCompletedPrompt: BuildingPromptControls | undefined;
@@ -102,6 +112,7 @@ export class BuildingRunController {
     this.completedFamilyPersistence = options.completedFamilyPersistence;
     this.nowMs = options.nowMs ?? (() => Date.now());
     this.remoteMaterial = options.remoteMaterial;
+    this.restoreCompletedFamilyFixture = options.restoreCompletedFamilyFixture;
   }
 
   async startDemoRun(prompt: BuildingPromptControls = defaultBuildingPromptControls): Promise<StartDemoRunResult> {
@@ -187,6 +198,86 @@ export class BuildingRunController {
       }
 
       const message = error instanceof Error ? error.message : "Building run failed";
+      this.store.getState().failRun({
+        runId,
+        message,
+        event: {
+          stage: "failed",
+          startedAtMs: this.nowMs(),
+          endedAtMs: this.nowMs(),
+          error: {
+            message
+          }
+        }
+      });
+      throw error;
+    }
+  }
+
+  async restoreLatestCompletedFamily(
+    documentId: string = this.store.getState().selection.documentId
+  ): Promise<StartDemoRunResult | undefined> {
+    if (!this.restoreCompletedFamilyFixture) {
+      return undefined;
+    }
+
+    const entry = await this.latestCompletedFamilyEntryForDocument(documentId);
+    if (!entry) {
+      return undefined;
+    }
+
+    this.cancelActiveRun();
+    const runId = entry.artifact.runId;
+    const abortController = new AbortController();
+    this.activeRun = { runId, abortController };
+    this.store.getState().beginRun({
+      runId,
+      event: {
+        stage: "resolvingPrompt",
+        startedAtMs: this.nowMs()
+      }
+    });
+
+    try {
+      const fixture = await this.restoreCompletedFamilyFixture(entry.artifact);
+      if (abortController.signal.aborted || this.activeRun?.runId !== runId) {
+        disposeFixture(fixture);
+        return { runId, stale: true };
+      }
+
+      const artifactId = artifactIdForFixture(fixture);
+      this.registerFixtureArtifacts(fixture, entry.requestHash);
+      const metadata = this.registry.register({
+        artifactId,
+        artifactType: "assembly-hall-fixture",
+        requestHash: entry.requestHash,
+        contentHash: fixture.packedAtlas.contentHash,
+        dependencies: [fixture.ir.sourceGraphHash],
+        artifact: fixture,
+        dispose: () => disposeFixture(fixture)
+      });
+      this.store.getState().registerArtifact(metadata);
+      this.store.getState().completeRun({
+        runId,
+        artifactId,
+        event: {
+          stage: "complete",
+          startedAtMs: this.nowMs(),
+          endedAtMs: this.nowMs(),
+          outputArtifactId: artifactId
+        }
+      });
+      this.lastCompletedFixture = fixture;
+      if (this.activeRun?.runId === runId) {
+        this.activeRun = undefined;
+      }
+      return { runId, artifactId, fixture, stale: false };
+    } catch (error) {
+      if (abortController.signal.aborted) {
+        return { runId, stale: true };
+      }
+
+      const message = error instanceof Error ? error.message : "Completed family restore failed";
       this.store.getState().failRun({
         runId,
         message,
@@ -312,6 +403,20 @@ export class BuildingRunController {
     } catch {
       return;
     }
+  }
+
+  private async latestCompletedFamilyEntryForDocument(
+    documentId: string
+  ): Promise<CompletedFamilyPersistenceCacheEntry | undefined> {
+    const entries = await this.completedFamilyPersistence?.list?.();
+    if (!entries) {
+      return undefined;
+    }
+
+    return entries
+      .filter((entry): entry is CompletedFamilyPersistenceCacheEntry => entry.artifactType === COMPLETED_FAMILY_ARTIFACT_TYPE)
+      .filter((entry) => entry.artifact.documentId === documentId)
+      .sort((left, right) => right.artifact.createdAt.localeCompare(left.artifact.createdAt))[0];
   }
 
   private reusableArtifactsFor(invalidation: BuildingInvalidation): ReusableAssemblyHallArtifacts {

@@ -77,15 +77,21 @@ function eventByStage(store: ReturnType<typeof createBuildingStore>, stage: stri
 
 function fakeCompletedFamilyPacket(
   requestHash: string,
-  fixture: AssemblyHallFixture
+  fixture: AssemblyHallFixture,
+  options: {
+    contentHash?: string;
+    createdAt?: string;
+    documentId?: string;
+    runId?: string;
+  } = {}
 ): CompletedFamilyPersistencePacket {
   return {
     schemaVersion: "0.1.0",
-    documentId: "family-doc-alpha",
-    runId: "run-persisted",
+    documentId: options.documentId ?? "family-doc-alpha",
+    runId: options.runId ?? "run-persisted",
     requestHash,
-    contentHash: "completed-family-content-hash",
-    createdAt: "2026-06-24T00:00:00.000Z",
+    contentHash: options.contentHash ?? "completed-family-content-hash",
+    createdAt: options.createdAt ?? "2026-06-24T00:00:00.000Z",
     familyId: fixture.spec.familyId,
     buildingId: fixture.ir.buildingId,
     artifacts: {
@@ -96,6 +102,21 @@ function fakeCompletedFamilyPacket(
       runtimeIr: { sourceGraphHash: fixture.ir.sourceGraphHash }
     }
   } as unknown as CompletedFamilyPersistencePacket;
+}
+
+function fakeCompletedFamilyEntry(
+  packet: CompletedFamilyPersistencePacket,
+  createdAt = packet.createdAt
+): CompletedFamilyPersistenceCacheEntry {
+  return {
+    schemaVersion: "0.1.0",
+    artifactType: COMPLETED_FAMILY_ARTIFACT_TYPE,
+    requestHash: packet.requestHash,
+    contentHash: packet.contentHash,
+    dependencies: [],
+    createdAt,
+    artifact: packet
+  };
 }
 
 describe("building artifact registry", () => {
@@ -274,6 +295,123 @@ describe("building run controller", () => {
     expect(completedFamilyPersistence.put).toHaveBeenCalledTimes(1);
     expect(store.getState().runs.status).toBe("complete");
     expect(registry.get<AssemblyHallFixture>(result.artifactId!)).toBe(fixture);
+  });
+
+  it("restores the latest completed-family packet for the active document id", async () => {
+    const store = createBuildingStore(defaultBuildingPromptControls, "assemblyHall", "family-doc-alpha");
+    const registry = new BuildingArtifactRegistry();
+    const olderFixture = fakeAssemblyFixture("older-persisted", {
+      buildingId: "family-doc-alpha.older-building",
+      atlasContentHash: "older-atlas-hash"
+    });
+    const restoredFixture = fakeAssemblyFixture("restored-persisted", {
+      buildingId: "family-doc-alpha.restored-building",
+      atlasContentHash: "restored-atlas-hash"
+    });
+    const otherDocumentFixture = fakeAssemblyFixture("other-document", {
+      buildingId: "family-doc-beta.restored-building",
+      atlasContentHash: "other-document-atlas-hash"
+    });
+    const olderPacket = fakeCompletedFamilyPacket("older-request-hash", olderFixture, {
+      createdAt: "2026-06-24T00:00:00.000Z",
+      runId: "run-older"
+    });
+    const restoredPacket = fakeCompletedFamilyPacket("restored-request-hash", restoredFixture, {
+      contentHash: "restored-completed-family-hash",
+      createdAt: "2026-06-24T00:02:00.000Z",
+      runId: "run-restored"
+    });
+    const otherDocumentPacket = fakeCompletedFamilyPacket("other-document-request-hash", otherDocumentFixture, {
+      createdAt: "2026-06-24T00:03:00.000Z",
+      documentId: "family-doc-beta",
+      runId: "run-other-document"
+    });
+    const completedFamilyPersistence = {
+      list: vi.fn(async () => [
+        fakeCompletedFamilyEntry(otherDocumentPacket),
+        fakeCompletedFamilyEntry(olderPacket),
+        fakeCompletedFamilyEntry(restoredPacket)
+      ]),
+      put: vi.fn()
+    };
+    const restoreCompletedFamilyFixture = vi.fn(async (packet: CompletedFamilyPersistencePacket) => {
+      if (packet.requestHash !== "restored-request-hash") {
+        throw new Error(`Unexpected restore packet ${packet.requestHash}`);
+      }
+      return restoredFixture;
+    });
+    const createFixture = vi.fn(async () => fakeAssemblyFixture("fresh-generation"));
+    const controller = new BuildingRunController({
+      store,
+      registry,
+      completedFamilyPersistence,
+      createFixture,
+      restoreCompletedFamilyFixture
+    });
+
+    const result = await controller.restoreLatestCompletedFamily();
+
+    expect(result).toMatchObject({
+      runId: "run-restored",
+      artifactId: "assembly-hall-fixture:family-doc-alpha.restored-building:restored-atlas-hash",
+      stale: false
+    });
+    expect(completedFamilyPersistence.list).toHaveBeenCalledTimes(1);
+    expect(restoreCompletedFamilyFixture).toHaveBeenCalledWith(restoredPacket);
+    expect(createFixture).not.toHaveBeenCalled();
+    expect(store.getState().runs.status).toBe("complete");
+    expect(store.getState().runs.activeFixtureArtifactId).toBe(result?.artifactId);
+    expect(registry.get<AssemblyHallFixture>(result!.artifactId!)).toBe(restoredFixture);
+  });
+
+  it("treats a completed-family restore as stale when a newer run starts before it resolves", async () => {
+    const store = createBuildingStore(defaultBuildingPromptControls, "assemblyHall", "family-doc-alpha");
+    const registry = new BuildingArtifactRegistry();
+    const restoredFixture = fakeAssemblyFixture("stale-restored", {
+      buildingId: "family-doc-alpha.stale-restored-building",
+      atlasContentHash: "stale-restored-atlas-hash"
+    });
+    const currentFixture = fakeAssemblyFixture("current-generated", {
+      buildingId: "family-doc-alpha.current-building",
+      atlasContentHash: "current-atlas-hash"
+    });
+    const restoredPacket = fakeCompletedFamilyPacket("restored-request-hash", restoredFixture, {
+      runId: "run-restored"
+    });
+    const restoreResolvers: Array<(fixture: AssemblyHallFixture) => void> = [];
+    const completedFamilyPersistence = {
+      list: vi.fn(async () => [fakeCompletedFamilyEntry(restoredPacket)]),
+      put: vi.fn()
+    };
+    const controller = new BuildingRunController({
+      store,
+      registry,
+      completedFamilyPersistence,
+      createRunId: () => "run-current",
+      createFixture: async () => currentFixture,
+      restoreCompletedFamilyFixture: () =>
+        new Promise<AssemblyHallFixture>((resolve) => {
+          restoreResolvers.push(resolve);
+        })
+    });
+
+    const restore = controller.restoreLatestCompletedFamily();
+    await vi.waitFor(() => expect(restoreResolvers).toHaveLength(1));
+    const current = await controller.startDemoRun(defaultBuildingPromptControls);
+    restoreResolvers[0](restoredFixture);
+    const restored = await restore;
+
+    expect(restored).toMatchObject({ runId: "run-restored", stale: true });
+    expect(current).toMatchObject({
+      runId: "run-current",
+      artifactId: "assembly-hall-fixture:family-doc-alpha.current-building:current-atlas-hash",
+      stale: false
+    });
+    expect(restoredFixture.familyRuntime.dispose).toHaveBeenCalledTimes(1);
+    expect(store.getState().runs.status).toBe("complete");
+    expect(store.getState().runs.activeRunId).toBe("run-current");
+    expect(store.getState().runs.activeFixtureArtifactId).toBe(current.artifactId);
+    expect(registry.get<AssemblyHallFixture>(current.artifactId!)).toBe(currentFixture);
   });
 
   it("cancels the prior run, disposes stale fixture results, and keeps the latest completed artifact active", async () => {
