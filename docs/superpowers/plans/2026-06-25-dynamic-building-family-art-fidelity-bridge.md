@@ -219,6 +219,8 @@ The schema should validate units, positive bounds, unique module ids, valid mate
 
 ### Slice 1: Art-Kit Contract And Fixture
 
+Status: implemented on 2026-06-25. The initial contract layer now includes manifest/module/material/socket schemas, semantic validation diagnostics, and a representative `late19cApartmentKit` fixture.
+
 Create the `art-kit` folder with `ArtKitManifest`, `ArtKitModule`, sockets, material roles, and quality-report schemas.
 
 Acceptance criteria:
