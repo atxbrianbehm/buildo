@@ -30,12 +30,18 @@ import {
   type FamilyBenchmarkReport,
   type FamilyBenchmarkScene
 } from "../performance/familyBenchmarkScene";
+import {
+  createFamilyOrbitBenchmarkScene,
+  type FamilyOrbitBenchmarkReport,
+  type FamilyOrbitBenchmarkScene
+} from "../performance/familyOrbitBenchmarkScene";
 import type { AssemblyHallFixture } from "./assemblyHallFixture";
 
 export interface AssemblyHallProps {
   fixture: AssemblyHallFixture;
   rendererFactory?: AssemblyRendererFactory;
   benchmarkSceneFactory?: typeof createFamilyBenchmarkScene;
+  orbitBenchmarkSceneFactory?: typeof createFamilyOrbitBenchmarkScene;
 }
 
 const selectionStageOrder: AssemblyStage[] = ["massing", "facade", "openings", "trim", "roof"];
@@ -64,6 +70,13 @@ interface BenchmarkState {
   fixture: AssemblyHallFixture;
   status: BenchmarkStatus;
   report: FamilyBenchmarkReport | null;
+  error: string | null;
+}
+
+interface OrbitBenchmarkState {
+  fixture: AssemblyHallFixture;
+  status: BenchmarkStatus;
+  report: FamilyOrbitBenchmarkReport | null;
   error: string | null;
 }
 
@@ -314,7 +327,8 @@ function stageRevealSummaries(fixture: AssemblyHallFixture, revealThroughStage: 
 export function AssemblyHall({
   fixture,
   rendererFactory = createAssemblyRenderer,
-  benchmarkSceneFactory = createFamilyBenchmarkScene
+  benchmarkSceneFactory = createFamilyBenchmarkScene,
+  orbitBenchmarkSceneFactory = createFamilyOrbitBenchmarkScene
 }: AssemblyHallProps) {
   const selectionId = useId();
   const revealId = useId();
@@ -322,6 +336,8 @@ export function AssemblyHall({
   const renderFrameRef = useRef<(() => void) | null>(null);
   const benchmarkRunIdRef = useRef(0);
   const benchmarkAbortRef = useRef<AbortController | null>(null);
+  const orbitBenchmarkRunIdRef = useRef(0);
+  const orbitBenchmarkAbortRef = useRef<AbortController | null>(null);
   const mountedRef = useRef(true);
   const latestFixtureRef = useRef(fixture);
   const [renderError, setRenderError] = useState<string | null>(null);
@@ -331,6 +347,12 @@ export function AssemblyHall({
   const [backendFallbackReason, setBackendFallbackReason] = useState<string | null>(null);
   const [revealThroughStage, setRevealThroughStage] = useState<AssemblyStage>("roof");
   const [benchmarkState, setBenchmarkState] = useState<BenchmarkState>(() => ({
+    fixture,
+    status: "idle",
+    report: null,
+    error: null
+  }));
+  const [orbitBenchmarkState, setOrbitBenchmarkState] = useState<OrbitBenchmarkState>(() => ({
     fixture,
     status: "idle",
     report: null,
@@ -351,6 +373,10 @@ export function AssemblyHall({
   const benchmarkStatus = activeBenchmarkState?.status ?? "idle";
   const benchmarkReport = activeBenchmarkState?.report ?? null;
   const benchmarkError = activeBenchmarkState?.error ?? null;
+  const activeOrbitBenchmarkState = orbitBenchmarkState.fixture === fixture ? orbitBenchmarkState : null;
+  const orbitBenchmarkStatus = activeOrbitBenchmarkState?.status ?? "idle";
+  const orbitBenchmarkReport = activeOrbitBenchmarkState?.report ?? null;
+  const orbitBenchmarkError = activeOrbitBenchmarkState?.error ?? null;
   const benchmarkDocumentation: FamilyBenchmarkDocumentation | null = useMemo(
     () => (benchmarkReport ? createFamilyBenchmarkDocumentation({ report: benchmarkReport }) : null),
     [benchmarkReport]
@@ -372,6 +398,9 @@ export function AssemblyHall({
       benchmarkRunIdRef.current += 1;
       benchmarkAbortRef.current?.abort();
       benchmarkAbortRef.current = null;
+      orbitBenchmarkRunIdRef.current += 1;
+      orbitBenchmarkAbortRef.current?.abort();
+      orbitBenchmarkAbortRef.current = null;
     };
   }, []);
 
@@ -380,6 +409,9 @@ export function AssemblyHall({
     benchmarkRunIdRef.current += 1;
     benchmarkAbortRef.current?.abort();
     benchmarkAbortRef.current = null;
+    orbitBenchmarkRunIdRef.current += 1;
+    orbitBenchmarkAbortRef.current?.abort();
+    orbitBenchmarkAbortRef.current = null;
   }, [fixture]);
 
   useEffect(() => {
@@ -446,6 +478,70 @@ export function AssemblyHall({
         benchmarkAbortRef.current = null;
       }
       benchmark?.familyRuntime.dispose();
+    }
+  };
+
+  const runOrbitBenchmark = async () => {
+    const runId = orbitBenchmarkRunIdRef.current + 1;
+    const benchmarkFixture = fixture;
+    orbitBenchmarkRunIdRef.current = runId;
+    orbitBenchmarkAbortRef.current?.abort();
+    const orbitBenchmarkAbortController = new AbortController();
+    orbitBenchmarkAbortRef.current = orbitBenchmarkAbortController;
+    setOrbitBenchmarkState({
+      fixture: benchmarkFixture,
+      status: "running",
+      report: null,
+      error: null
+    });
+
+    let orbitBenchmark: FamilyOrbitBenchmarkScene | undefined;
+    try {
+      orbitBenchmark = await orbitBenchmarkSceneFactory({
+        fixture: benchmarkFixture,
+        rendererFactory,
+        signal: orbitBenchmarkAbortController.signal
+      });
+      if (
+        mountedRef.current &&
+        orbitBenchmarkRunIdRef.current === runId &&
+        latestFixtureRef.current === benchmarkFixture
+      ) {
+        setOrbitBenchmarkState({
+          fixture: benchmarkFixture,
+          status: "complete",
+          report: orbitBenchmark.report,
+          error: null
+        });
+      }
+    } catch (error: unknown) {
+      if (
+        orbitBenchmarkAbortController.signal.aborted &&
+        (!mountedRef.current ||
+          orbitBenchmarkRunIdRef.current !== runId ||
+          latestFixtureRef.current !== benchmarkFixture)
+      ) {
+        return;
+      }
+
+      if (
+        mountedRef.current &&
+        orbitBenchmarkRunIdRef.current === runId &&
+        latestFixtureRef.current === benchmarkFixture
+      ) {
+        const message = error instanceof Error ? error.message : "Unable to run the orbit benchmark.";
+        setOrbitBenchmarkState({
+          fixture: benchmarkFixture,
+          status: "failed",
+          report: null,
+          error: message
+        });
+      }
+    } finally {
+      if (orbitBenchmarkAbortRef.current === orbitBenchmarkAbortController) {
+        orbitBenchmarkAbortRef.current = null;
+      }
+      orbitBenchmark?.familyRuntime.dispose();
     }
   };
 
@@ -807,6 +903,104 @@ export function AssemblyHall({
               </tbody>
             </table>
           </div>
+        </section>
+
+        <section className="assembly-hall__benchmark" aria-label="16-building orbit benchmark report">
+          <div className="assembly-hall__benchmark-header">
+            <div>
+              <p className="project-label">Interactive Proof</p>
+              <h3>16-Building Orbit Benchmark</h3>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                void runOrbitBenchmark();
+              }}
+              disabled={orbitBenchmarkStatus === "running"}
+            >
+              {orbitBenchmarkStatus === "running"
+                ? "Running orbit benchmark"
+                : "Run 16-building orbit benchmark"}
+            </button>
+          </div>
+
+          {orbitBenchmarkError ? (
+            <p className="assembly-hall__benchmark-message" role="alert">
+              {orbitBenchmarkError}
+            </p>
+          ) : orbitBenchmarkReport ? (
+            <>
+              <dl className="assembly-hall__benchmark-metrics" aria-label="16-building orbit benchmark metrics">
+                <div>
+                  <dt>Report</dt>
+                  <dd>{orbitBenchmarkReport.benchmarkKind}</dd>
+                </div>
+                <div>
+                  <dt>Buildings</dt>
+                  <dd>{formatNumber(orbitBenchmarkReport.buildingCount)} buildings</dd>
+                </div>
+                <div>
+                  <dt>Backend</dt>
+                  <dd>{orbitBenchmarkReport.render.activeBackend}</dd>
+                </div>
+                <div>
+                  <dt>Frame p95</dt>
+                  <dd>{formatMilliseconds(orbitBenchmarkReport.frameTime.p95FrameTimeMs)}</dd>
+                </div>
+                <div>
+                  <dt>Frame average</dt>
+                  <dd>{formatMilliseconds(orbitBenchmarkReport.frameTime.averageFrameTimeMs)}</dd>
+                </div>
+                <div>
+                  <dt>Triangles</dt>
+                  <dd>{formatNumber(orbitBenchmarkReport.aggregate.triangleCount)}</dd>
+                </div>
+              </dl>
+
+              <dl className="assembly-hall__benchmark-lineage" aria-label="16-building orbit benchmark lineage">
+                <div>
+                  <dt>Atlas content</dt>
+                  <dd>{orbitBenchmarkReport.assets.atlasContentHash}</dd>
+                </div>
+                <div>
+                  <dt>Frame max</dt>
+                  <dd>{formatMilliseconds(orbitBenchmarkReport.frameTime.maxFrameTimeMs)}</dd>
+                </div>
+                <div>
+                  <dt>Samples</dt>
+                  <dd>{formatNumber(orbitBenchmarkReport.frameSampleCount)}</dd>
+                </div>
+                <div>
+                  <dt>Budget</dt>
+                  <dd>{formatMilliseconds(orbitBenchmarkReport.frameTime.budgetMs)}</dd>
+                </div>
+              </dl>
+
+              <ol className="assembly-hall__benchmark-targets" aria-label="16-building orbit benchmark target checks">
+                <li data-passed={orbitBenchmarkReport.targets.interactiveOrbit.passed ? "true" : "false"}>
+                  <span>
+                    Interactive orbit{" "}
+                    {orbitBenchmarkReport.targets.interactiveOrbit.passed ? "passed" : "needs profile"}
+                  </span>
+                  <small>
+                    {formatMilliseconds(orbitBenchmarkReport.targets.interactiveOrbit.actualP95FrameTimeMs)} /{" "}
+                    {formatMilliseconds(orbitBenchmarkReport.targets.interactiveOrbit.budgetMs)} p95
+                  </small>
+                </li>
+                <li data-passed={orbitBenchmarkReport.targets.familyAssetSharing.passed ? "true" : "false"}>
+                  <span>
+                    Family assets {orbitBenchmarkReport.targets.familyAssetSharing.passed ? "shared" : "not shared"}
+                  </span>
+                  <small>
+                    {formatNumber(orbitBenchmarkReport.assets.sharedMaterialCount)} shared materials /{" "}
+                    {formatNumber(orbitBenchmarkReport.assets.textureCount)} textures
+                  </small>
+                </li>
+              </ol>
+            </>
+          ) : (
+            <p className="assembly-hall__benchmark-message">Not run</p>
+          )}
         </section>
 
         <section className="assembly-hall__benchmark" aria-label="100-building benchmark report">

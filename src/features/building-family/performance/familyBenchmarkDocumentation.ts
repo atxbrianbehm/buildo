@@ -108,12 +108,12 @@ export function createFamilyBenchmarkDocumentation(
         status: "not-captured",
         value: null,
         unit: "ms",
-        source: "Requires a live rendered benchmark scene and animation frame probe"
+        source: "Captured by the separate 16-building orbit benchmark"
       }
     ],
     knownLimitations: [
       "GPU memory is not exposed by a stable browser API in the current benchmark surface.",
-      "Frame time and interactive orbit proof require a live rendered benchmark scene and remain separate hardening work.",
+      "Frame time is captured by the separate 16-building orbit benchmark rather than this 100-building construction benchmark.",
       "Worker transfer size is estimated from RuntimeBuildingIR typed arrays rather than measured through an actual worker round trip."
     ]
   };

@@ -51,7 +51,7 @@ describe("family benchmark documentation", () => {
         "GPU memory is not exposed by a stable browser API in the current benchmark surface."
       );
       expect(documentation.knownLimitations).toContain(
-        "Frame time and interactive orbit proof require a live rendered benchmark scene and remain separate hardening work."
+        "Frame time is captured by the separate 16-building orbit benchmark rather than this 100-building construction benchmark."
       );
     } finally {
       benchmark?.familyRuntime.dispose();

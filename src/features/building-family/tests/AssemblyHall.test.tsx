@@ -67,6 +67,97 @@ describe("AssemblyHall", () => {
     );
   });
 
+  it("runs and surfaces the 16-building orbit benchmark report from Assembly Hall", async () => {
+    const fixture = await createAssemblyHallFixture();
+    const disposeOrbitRuntime = vi.fn();
+    const orbitBenchmarkSceneFactory = vi.fn(
+      async () =>
+        ({
+          schemaVersion: "0.1.0",
+          familyRuntime: {
+            dispose: disposeOrbitRuntime
+          },
+          report: {
+            schemaVersion: "0.1.0",
+            benchmarkKind: "shared-family-16-building-orbit",
+            familyId: fixture.spec.familyId,
+            buildingCount: 16,
+            frameSampleCount: 8,
+            aggregate: {
+              drawCallCount: 96,
+              instanceCount: fixture.ir.metrics.instanceCount * 16,
+              triangleCount: fixture.ir.metrics.triangleCount * 16
+            },
+            runtimeMetrics: {
+              buildingCount: 16,
+              meshCount: 48,
+              instanceBatchCount: 48,
+              instanceCount: fixture.ir.metrics.instanceCount * 16,
+              triangleCount: fixture.ir.metrics.triangleCount * 16,
+              drawCallCount: 96,
+              sharedMaterialCount: fixture.familyRuntime.metrics.sharedMaterialCount,
+              textureCount: fixture.familyRuntime.metrics.textureCount,
+              preferredBackend: fixture.backendSupport.preferredBackend
+            },
+            render: {
+              activeBackend: "webgl",
+              fallbackReason: null
+            },
+            frameTime: {
+              budgetMs: 33.4,
+              averageFrameTimeMs: 12,
+              p95FrameTimeMs: 14,
+              maxFrameTimeMs: 15,
+              samples: [
+                {
+                  index: 0,
+                  cameraPosition: [1, 2, 3],
+                  elapsedMs: 12
+                }
+              ]
+            },
+            assets: {
+              atlasContentHash: fixture.packedAtlas.contentHash,
+              familyAssetsShared: true,
+              sharedMaterialCount: fixture.familyRuntime.metrics.sharedMaterialCount,
+              textureCount: fixture.familyRuntime.metrics.textureCount
+            },
+            targets: {
+              interactiveOrbit: {
+                actualP95FrameTimeMs: 14,
+                budgetMs: 33.4,
+                passed: true
+              },
+              familyAssetSharing: {
+                passed: true
+              }
+            }
+          }
+        }) as never
+    );
+
+    render(
+      <AssemblyHall
+        fixture={fixture}
+        rendererFactory={fakeRendererFactory()}
+        orbitBenchmarkSceneFactory={orbitBenchmarkSceneFactory}
+      />
+    );
+
+    const orbitReport = screen.getByLabelText("16-building orbit benchmark report");
+    expect(orbitReport).toHaveTextContent("Not run");
+
+    fireEvent.click(screen.getByRole("button", { name: "Run 16-building orbit benchmark" }));
+
+    expect(await screen.findByText("shared-family-16-building-orbit")).toBeInTheDocument();
+    expect(orbitReport).toHaveTextContent("16 buildings");
+    expect(orbitReport).toHaveTextContent("Frame p95");
+    expect(orbitReport).toHaveTextContent("14 ms");
+    expect(orbitReport).toHaveTextContent("Interactive orbit passed");
+    expect(orbitReport).toHaveTextContent(fixture.packedAtlas.contentHash);
+    expect(disposeOrbitRuntime).toHaveBeenCalledTimes(1);
+  });
+
   it("runs and surfaces the 100-building benchmark report from Assembly Hall", async () => {
     const fixture = await createAssemblyHallFixture();
 
@@ -95,7 +186,7 @@ describe("AssemblyHall", () => {
     expect(screen.getByLabelText("100-building benchmark profile coverage")).toHaveTextContent("GPU memory");
     expect(screen.getByLabelText("100-building benchmark profile coverage")).toHaveTextContent("not captured");
     expect(screen.getByLabelText("100-building benchmark known limitations")).toHaveTextContent(
-      "Frame time and interactive orbit proof"
+      "separate 16-building orbit benchmark"
     );
   });
 
