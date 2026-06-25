@@ -4,6 +4,7 @@ import { ComponentGallerySchema } from "../compiler/componentGalleryBuilder";
 import { AtlasChannelSchema, AtlasManifestSchema } from "../contracts/atlasManifest";
 import { BuildingFamilySpecSchema } from "../contracts/buildingFamilySpec";
 import { BuildingGraphSchema } from "../contracts/buildingGraph";
+import type { RuntimeBuildingIR } from "../contracts/runtimeBuildingIR";
 import { AssemblyStageSchema, SchemaVersion010 } from "../contracts/shared";
 import { hashCanonicalJson } from "../core/contentHash";
 import { DiagnosticSchema } from "../core/diagnostics";
@@ -18,12 +19,12 @@ function isTypedArrayTag(value: unknown, tag: string): boolean {
   return Object.prototype.toString.call(value) === `[object ${tag}]`;
 }
 
-const Float32ArraySchema = z.custom<Float32Array>((value) => isTypedArrayTag(value, "Float32Array"));
-const Uint8ClampedArraySchema = z.custom<Uint8ClampedArray>((value) =>
+const Float32ArraySchema = z.custom<Float32Array<ArrayBuffer>>((value) => isTypedArrayTag(value, "Float32Array"));
+const Uint8ClampedArraySchema = z.custom<Uint8ClampedArray<ArrayBuffer>>((value) =>
   isTypedArrayTag(value, "Uint8ClampedArray")
 );
-const Uint16ArraySchema = z.custom<Uint16Array>((value) => isTypedArrayTag(value, "Uint16Array"));
-const Uint32ArraySchema = z.custom<Uint32Array>((value) => isTypedArrayTag(value, "Uint32Array"));
+const Uint16ArraySchema = z.custom<Uint16Array<ArrayBuffer>>((value) => isTypedArrayTag(value, "Uint16Array"));
+const Uint32ArraySchema = z.custom<Uint32Array<ArrayBuffer>>((value) => isTypedArrayTag(value, "Uint32Array"));
 
 const PixelLayerSchema = z.object({
   widthPx: z.number().int().positive(),
@@ -104,8 +105,8 @@ const StylePackReferenceSchema = z.object({
 
 const PromptTraceSchema = z.object({
   schemaVersion: SchemaVersion010,
-  interpreterProvider: z.string().min(1),
-  psgPresetId: z.string().min(1),
+  interpreterProvider: z.literal("local-rule"),
+  psgPresetId: z.literal("late19cCommercialDemo"),
   stylePackId: z.string().min(1),
   traceId: z.string().min(1),
   psgOutputs: z.array(
@@ -248,7 +249,7 @@ const CompletedFamilyArtifactsSchema = z.object({
       triangleCount: z.number().int().nonnegative(),
       instanceCount: z.number().int().nonnegative()
     })
-  }),
+  }) satisfies z.ZodType<RuntimeBuildingIR>,
   componentGallery: ComponentGallerySchema,
   debugExport: AtlasDebugExportSchema
 });
@@ -267,6 +268,7 @@ export const CompletedFamilyPersistencePacketSchema = z.object({
   requestHash: z.string().min(1),
   contentHash: z.string().min(1),
   createdAt: z.string().min(1),
+  prompt: z.string().min(1).optional(),
   familyId: z.string().min(1),
   buildingId: z.string().min(1),
   stylePackReference: StylePackReferenceSchema,
@@ -303,6 +305,7 @@ async function completedFamilyContentHash(input: {
 }): Promise<string> {
   return hashCanonicalJson({
     schemaVersion: "0.1.0",
+    prompt: input.fixture.prompt,
     familyId: input.fixture.spec.familyId,
     buildingId: input.fixture.ir.buildingId,
     stylePackReference: input.stylePackReference,
@@ -361,6 +364,7 @@ export async function createCompletedFamilyPersistencePacket(
     requestHash: input.requestHash,
     contentHash,
     createdAt: input.createdAt ?? new Date().toISOString(),
+    prompt: input.fixture.prompt,
     familyId: input.fixture.spec.familyId,
     buildingId: input.fixture.ir.buildingId,
     stylePackReference,

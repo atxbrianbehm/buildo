@@ -37,6 +37,7 @@ import {
   type RemoteMaterialImageRequester
 } from "../state/remoteMaterialApplicationCoordinator";
 import type { BuildingPromptControls } from "../state/buildingStore";
+import { parseCompletedFamilyPersistencePacket } from "../state/completedFamilyPersistence";
 import buildingFixture from "../psg/fixtures/late19cCommercialPrompt.psg.json";
 import stylePack from "../style-packs/late-19c-commercial-demo.json";
 import { evaluatePsg } from "../../prompt-spaghetti/core/evaluatePsg";
@@ -476,5 +477,61 @@ export async function createAssemblyHallFixture(
       (remoteMaterialApplication?.remoteSources.length ?? 0) +
       debugExport.channels.length +
       1
+  };
+}
+
+export async function restoreAssemblyHallFixtureFromCompletedFamilyPacket(input: unknown): Promise<AssemblyHallFixture> {
+  const packet = parseCompletedFamilyPersistencePacket(input);
+  const packedAtlas: PackedAtlas = {
+    schemaVersion: "0.1.0",
+    atlasId: packet.artifacts.atlasManifest.atlasId,
+    manifest: packet.artifacts.atlasManifest,
+    channels: packet.artifacts.atlasChannels,
+    slotProvenance: packet.artifacts.atlasSlotProvenance,
+    contentHash: packet.artifacts.atlasContentHash,
+    diagnostics: packet.artifacts.debugExport.diagnostics
+  };
+  const backendSupport = await detectRendererBackendSupport();
+  const familyRuntime = createBuildingFamilyRuntime({
+    familyId: packet.familyId,
+    packedAtlas,
+    debugExport: packet.artifacts.debugExport,
+    backendSupport
+  });
+  const buildingRuntime = familyRuntime.createOrReplaceBuilding({
+    catalog: packet.artifacts.componentCatalog,
+    componentGallery: packet.artifacts.componentGallery,
+    ir: packet.artifacts.runtimeIr
+  });
+
+  return {
+    schemaVersion: "0.1.0",
+    prompt: packet.prompt ?? "Restored completed family",
+    promptTrace: packet.provenance.promptTrace,
+    spec: packet.artifacts.spec,
+    catalog: packet.artifacts.componentCatalog,
+    graph: packet.artifacts.graph,
+    ir: packet.artifacts.runtimeIr,
+    packedAtlas,
+    debugExport: packet.artifacts.debugExport,
+    componentGallery: packet.artifacts.componentGallery,
+    variantStress: packet.provenance.variantStress,
+    remoteMaterialApplication: packet.provenance.remoteMaterialApplication,
+    backendSupport,
+    familyRuntime,
+    buildingRuntime,
+    metrics: {
+      activeBackend: "pending",
+      preferredBackend: backendSupport.preferredBackend,
+      atlasContentHash: packedAtlas.contentHash,
+      atlasChannelCount: packet.artifacts.debugExport.channels.length,
+      buildingCount: familyRuntime.metrics.buildingCount,
+      componentCount: packet.artifacts.componentGallery.entries.length,
+      drawCallCount: familyRuntime.metrics.drawCallCount,
+      instanceCount: familyRuntime.metrics.instanceCount,
+      triangleCount: familyRuntime.metrics.triangleCount,
+      textureCount: familyRuntime.metrics.textureCount
+    },
+    provenanceEntryCount: packet.provenance.provenanceEntryCount
   };
 }

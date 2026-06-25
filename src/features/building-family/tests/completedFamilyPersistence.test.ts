@@ -1,4 +1,7 @@
-import { createAssemblyHallFixture } from "../ui/assemblyHallFixture";
+import {
+  createAssemblyHallFixture,
+  restoreAssemblyHallFixtureFromCompletedFamilyPacket
+} from "../ui/assemblyHallFixture";
 import {
   COMPLETED_FAMILY_ARTIFACT_TYPE,
   CompletedFamilyPersistencePacketSchema,
@@ -64,6 +67,48 @@ describe("completed family persistence", () => {
       packet.artifacts.atlasChannels.baseColor.data.byteLength
     );
     expect(restored.artifacts.runtimeIr.sourceGraphHash).toBe(packet.artifacts.runtimeIr.sourceGraphHash);
+  });
+
+  it("restores a completed-family packet into a live Assembly Hall fixture runtime", async () => {
+    const packet = await createCompletedFamilyPersistencePacket({
+      documentId: "family-document-restore",
+      runId: "run-restore",
+      requestHash: "request-restore",
+      createdAt: "2026-06-24T00:00:00.000Z",
+      fixture
+    });
+
+    expect(packet.prompt).toBe(fixture.prompt);
+
+    const restored = await restoreAssemblyHallFixtureFromCompletedFamilyPacket(structuredClone(packet));
+    const wallObject = restored.buildingRuntime.objectsByBatchId.get("mesh.wall-panels")!;
+
+    expect(restored).not.toBe(fixture);
+    expect(restored.prompt).toBe(fixture.prompt);
+    expect(restored.spec).toEqual(packet.artifacts.spec);
+    expect(restored.packedAtlas).toMatchObject({
+      schemaVersion: "0.1.0",
+      atlasId: packet.artifacts.atlasManifest.atlasId,
+      manifest: packet.artifacts.atlasManifest,
+      contentHash: packet.artifacts.atlasContentHash,
+      slotProvenance: packet.artifacts.atlasSlotProvenance
+    });
+    expect(restored.familyRuntime.textureSet.contentHash).toBe(packet.artifacts.atlasContentHash);
+    expect(restored.buildingRuntime.materialRegistry).toBe(restored.familyRuntime.materialRegistry);
+    expect(wallObject.material.map).toBe(restored.familyRuntime.textureSet.textures.baseColor);
+    expect(restored.componentGallery).toEqual(packet.artifacts.componentGallery);
+    expect(restored.metrics).toMatchObject({
+      activeBackend: "pending",
+      atlasContentHash: packet.artifacts.atlasContentHash,
+      componentCount: packet.artifacts.componentGallery.entries.length,
+      drawCallCount: restored.buildingRuntime.renderables.length,
+      instanceCount: packet.artifacts.runtimeIr.metrics.instanceCount,
+      triangleCount: packet.artifacts.runtimeIr.metrics.triangleCount,
+      textureCount: 5
+    });
+    expect(restored.provenanceEntryCount).toBe(packet.provenance.provenanceEntryCount);
+
+    restored.familyRuntime.dispose();
   });
 
   it("adapts the packet to the artifact cache entry keyed by request hash", async () => {
