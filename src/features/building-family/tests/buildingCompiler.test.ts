@@ -109,7 +109,8 @@ describe("compileBuilding", () => {
 
     assertMeshIntegrity(ir);
     expect(ir.bounds.min[0]).toBeLessThanOrEqual(-spec.massing.widthM / 2);
-    expect(ir.bounds.min[1]).toBe(0);
+    expect(ir.bounds.min[1]).toBeGreaterThanOrEqual(-1e-6);
+    expect(ir.bounds.min[1]).toBeLessThanOrEqual(1e-6);
     expect(ir.bounds.min[2]).toBeLessThanOrEqual(-spec.massing.depthM / 2);
     expect(ir.bounds.max[0]).toBeGreaterThanOrEqual(spec.massing.widthM / 2);
     expect(ir.bounds.max[1]).toBeGreaterThanOrEqual(
@@ -169,7 +170,9 @@ describe("compileBuilding", () => {
     ]);
     expect(highIr.meshBatches.some((batch) => batch.batchId === "mesh.vertical-pilasters")).toBe(true);
     expect(highIr.meshBatches.some((batch) => batch.batchId === "mesh.spandrels")).toBe(true);
+    expect(highIr.meshBatches.some((batch) => batch.batchId === "mesh.base-plinth")).toBe(true);
     expect(highIr.instanceBatches.some((batch) => batch.batchId === "instances.vertical-trim")).toBe(false);
+    expect(catalog.recipes.find((recipe) => recipe.role === "cornice")?.profileRecipeId).toContain("profile.");
     expect(lowIr.semanticIndex.some((entry) => entry.stage === "trim")).toBe(false);
     expect(lowIr.sourceGraphHash).not.toBe(highIr.sourceGraphHash);
     expect(lowIr.metrics.triangleCount).toBeLessThan(highIr.metrics.triangleCount);

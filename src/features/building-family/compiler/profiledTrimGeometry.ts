@@ -1,6 +1,15 @@
 import type { BuildingFamilySpec } from "../contracts/buildingFamilySpec";
 import type { ComponentRecipe } from "../contracts/componentRecipe";
 import {
+  late19cBasePlinthProfile,
+  late19cBeltProfile,
+  late19cCorniceProfile,
+  late19cPilasterProfile,
+  late19cRoofCapProfile,
+  scaleProfileToHeight
+} from "./profileLibrary";
+import { densifyProfile, horizontalMoldingFromProfile, sweepProfileToBoxPrimitives } from "./profileSweepGeometry";
+import {
   buildBoxPrimitive,
   type PrimitiveGeometry,
   type Vec3
@@ -41,8 +50,8 @@ export function buildProfiledRunPrimitives(input: ProfiledRunInput): PrimitiveGe
 }
 
 /**
- * Multi-layer cornice stack for clay silhouette readability:
- * bed mold → frieze → modillion band → discrete brackets → crown → corona lip.
+ * Cornice from authored profile polyline (densified) + discrete brackets.
+ * Geometry-Nodes-like: profile point set → sweep expander → solid stack.
  */
 export function buildCorniceProfilePrimitives(
   spec: BuildingFamilySpec,
@@ -50,69 +59,25 @@ export function buildCorniceProfilePrimitives(
 ): PrimitiveGeometry[] {
   const width = recipe.dimensionsM.width;
   const height = Math.max(0.55, recipe.dimensionsM.height);
-  const depth = Math.max(0.45, recipe.dimensionsM.depth);
-  const center: Vec3 = [
-    0,
-    spec.massing.floorHeightsM.reduce((total, value) => total + value, 0) - height / 2,
-    -spec.massing.depthM / 2 + depth / 2
-  ];
-  const projection = rangeValue(recipe, "projectionM", depth);
-  const crown = Math.min(height * 0.28, rangeValue(recipe, "crownHeightM", height * 0.28));
-  const bed = Math.max(0.06, height * 0.12);
-  const frieze = Math.max(0.1, height * 0.22);
-  const modillionBand = Math.max(0.08, height * 0.16);
-  const body = Math.max(0.08, height - crown - bed - frieze - modillionBand);
-  const bracketSpacing = rangeValue(recipe, "bracketSpacingM", 0.95);
-  const bracketCount = Math.max(3, Math.floor(width / bracketSpacing));
-
-  const layers: ProfileLayer[] = [
-    {
-      id: "cornice.bed-mold",
-      offsetM: [0, -height / 2 + bed / 2, depth * 0.02],
-      sizeM: [width + 0.06, bed, depth * 0.55]
-    },
-    {
-      id: "cornice.frieze",
-      offsetM: [0, -height / 2 + bed + frieze / 2, 0],
-      sizeM: [width, frieze, depth * 0.7]
-    },
-    {
-      id: "cornice.modillion-band",
-      offsetM: [0, -height / 2 + bed + frieze + modillionBand / 2, depth * 0.08],
-      sizeM: [width * 0.99, modillionBand, depth * 0.42]
-    },
-    {
-      id: "cornice.body",
-      offsetM: [0, height / 2 - crown - body / 2, -depth * 0.02],
-      sizeM: [width + 0.04, body, depth * 0.78]
-    },
-    {
-      id: "cornice.crown",
-      offsetM: [0, height / 2 - crown / 2, -depth * 0.1],
-      sizeM: [width + 0.16, crown, Math.min(projection, depth * 1.05)]
-    },
-    {
-      id: "cornice.corona",
-      offsetM: [0, height / 2 - crown * 0.22, -depth * 0.16],
-      sizeM: [width + 0.22, crown * 0.28, Math.min(projection * 1.08, depth * 1.12)]
-    }
-  ];
-
-  const primitives = buildProfiledRunPrimitives({
-    id: recipe.id,
+  const totalHeight = spec.massing.floorHeightsM.reduce((total, value) => total + value, 0);
+  const profile = densifyProfile(scaleProfileToHeight(late19cCorniceProfile, height), 2);
+  const maxD = Math.max(...profile.points.map((point) => point.d));
+  const center: Vec3 = [0, totalHeight - height / 2, -spec.massing.depthM / 2 + maxD * 0.35];
+  const primitives = horizontalMoldingFromProfile({
+    profile,
     center,
-    size: [width, height, depth],
-    layers
+    widthM: width + 0.12
   });
 
-  // Discrete brackets under the crown — readable as massing in clay mode.
+  const bracketSpacing = rangeValue(recipe, "bracketSpacingM", 0.95);
+  const bracketCount = Math.max(3, Math.floor(width / bracketSpacing));
   for (let index = 0; index < bracketCount; index += 1) {
     const t = bracketCount === 1 ? 0.5 : index / (bracketCount - 1);
     const x = -width / 2 + 0.28 + t * (width - 0.56);
     primitives.push(
       buildBoxPrimitive({
-        center: [center[0] + x, center[1] - height * 0.08, center[2] + depth * 0.18],
-        size: [0.14, height * 0.34, depth * 0.38]
+        center: [x, center[1] - height * 0.12, center[2] + maxD * 0.25],
+        size: [0.14, height * 0.32, maxD * 0.45]
       })
     );
   }
@@ -121,49 +86,27 @@ export function buildCorniceProfilePrimitives(
 }
 
 /**
- * Belt courses at each intermediate floor line (not only the ground transition).
+ * Belt courses at each intermediate floor line from authored belt profile.
  */
 export function buildHorizontalBeltCoursePrimitives(
   spec: BuildingFamilySpec,
   recipe: ComponentRecipe
 ): PrimitiveGeometry[] {
-  const cap = rangeValue(recipe, "capHeightM", recipe.dimensionsM.height * 0.28);
-  const body = Math.max(0.06, recipe.dimensionsM.height - cap);
-  const beltHeight = recipe.dimensionsM.height;
-  const beltDepth = recipe.dimensionsM.depth;
+  const beltHeight = Math.max(0.22, recipe.dimensionsM.height);
   const width = recipe.dimensionsM.width;
+  const profile = densifyProfile(scaleProfileToHeight(late19cBeltProfile, beltHeight), 2);
+  const maxD = Math.max(...profile.points.map((point) => point.d));
   const primitives: PrimitiveGeometry[] = [];
 
   let floorTop = 0;
   for (let floor = 0; floor < spec.massing.floorCount - 1; floor += 1) {
     floorTop += spec.massing.floorHeightsM[floor] ?? 0;
-    const center: Vec3 = [
-      0,
-      floorTop - beltHeight / 2,
-      -spec.massing.depthM / 2 + beltDepth / 2
-    ];
+    const center: Vec3 = [0, floorTop - beltHeight / 2, -spec.massing.depthM / 2 + maxD * 0.4];
     primitives.push(
-      ...buildProfiledRunPrimitives({
-        id: `${recipe.id}.floor-${floor}`,
+      ...horizontalMoldingFromProfile({
+        profile,
         center,
-        size: [width, beltHeight, beltDepth],
-        layers: [
-          {
-            id: `belt.body.floor-${floor}`,
-            offsetM: [0, -beltHeight / 2 + body / 2, 0],
-            sizeM: [width, body, beltDepth * 0.88]
-          },
-          {
-            id: `belt.cap.floor-${floor}`,
-            offsetM: [0, beltHeight / 2 - cap / 2, -beltDepth * 0.06],
-            sizeM: [width + 0.1, cap, beltDepth]
-          },
-          {
-            id: `belt.shadow.floor-${floor}`,
-            offsetM: [0, -beltHeight / 2 + body * 0.15, beltDepth * 0.08],
-            sizeM: [width * 0.995, body * 0.2, beltDepth * 0.35]
-          }
-        ]
+        widthM: width
       })
     );
   }
@@ -173,39 +116,23 @@ export function buildHorizontalBeltCoursePrimitives(
 
 export function buildRoofCapPrimitives(spec: BuildingFamilySpec, recipe: ComponentRecipe): PrimitiveGeometry[] {
   const totalHeight = spec.massing.floorHeightsM.reduce((total, value) => total + value, 0);
+  const height = Math.max(0.18, recipe.dimensionsM.height);
+  const profile = densifyProfile(scaleProfileToHeight(late19cRoofCapProfile, height), 2);
+  const maxD = Math.max(...profile.points.map((point) => point.d));
   const center: Vec3 = [
     0,
-    totalHeight + spec.massing.parapetHeightM + recipe.dimensionsM.height / 2,
-    -spec.massing.depthM / 2 + recipe.dimensionsM.depth / 2
+    totalHeight + spec.massing.parapetHeightM + height / 2,
+    -spec.massing.depthM / 2 + maxD * 0.4
   ];
-
-  return buildProfiledRunPrimitives({
-    id: recipe.id,
+  return horizontalMoldingFromProfile({
+    profile,
     center,
-    size: [recipe.dimensionsM.width, recipe.dimensionsM.height, recipe.dimensionsM.depth],
-    layers: [
-      {
-        id: "roof-cap.base",
-        offsetM: [0, -recipe.dimensionsM.height * 0.18, 0],
-        sizeM: [recipe.dimensionsM.width + 0.08, recipe.dimensionsM.height * 0.5, recipe.dimensionsM.depth * 0.85]
-      },
-      {
-        id: "roof-cap.coping",
-        offsetM: [0, recipe.dimensionsM.height * 0.08, -recipe.dimensionsM.depth * 0.04],
-        sizeM: [recipe.dimensionsM.width + 0.16, recipe.dimensionsM.height * 0.4, recipe.dimensionsM.depth]
-      },
-      {
-        id: "roof-cap.lip",
-        offsetM: [0, recipe.dimensionsM.height * 0.28, -recipe.dimensionsM.depth * 0.12],
-        sizeM: [recipe.dimensionsM.width + 0.2, recipe.dimensionsM.height * 0.22, recipe.dimensionsM.depth * 0.7]
-      }
-    ]
+    widthM: recipe.dimensionsM.width + 0.12
   });
 }
 
 /**
- * Full-height multi-layer pilaster at a facade bay edge (world-space front facade).
- * Replaces short single-box instances so vertical order reads in clay mode.
+ * Full-height pilaster from authored half-profile + plinth/capital massing.
  */
 export function buildVerticalPilasterPrimitives(
   spec: BuildingFamilySpec,
@@ -213,51 +140,57 @@ export function buildVerticalPilasterPrimitives(
   edgeX: number
 ): PrimitiveGeometry[] {
   const totalHeight = spec.massing.floorHeightsM.reduce((total, value) => total + value, 0);
-  const width = Math.max(0.22, recipe.dimensionsM.width);
-  const depth = Math.max(0.16, recipe.dimensionsM.depth);
-  const projection = rangeValue(recipe, "projectionM", depth * 0.7);
-  const plinth = rangeValue(recipe, "plinthHeightM", Math.min(0.45, totalHeight * 0.08));
-  const capital = Math.min(0.38, totalHeight * 0.06);
-  const z = -spec.massing.depthM / 2 + depth / 2 + projection * 0.25;
-  const shaftHeight = Math.max(0.4, totalHeight - plinth - capital);
-  const primitives: PrimitiveGeometry[] = [];
+  const plinth = rangeValue(recipe, "plinthHeightM", Math.min(0.5, totalHeight * 0.09));
+  const capital = Math.min(0.42, totalHeight * 0.07);
+  const shaftHeight = Math.max(0.5, totalHeight - plinth - capital);
+  const profile = densifyProfile(late19cPilasterProfile, 2);
+  const maxD = Math.max(...profile.points.map((point) => point.d));
+  const maxHalf = Math.max(...profile.points.map((point) => point.u), recipe.dimensionsM.width / 2);
+  const z = -spec.massing.depthM / 2 + maxD * 0.55;
+  const shaftCenter: Vec3 = [edgeX, plinth + shaftHeight / 2, z];
 
-  // Main shaft
+  const primitives = sweepProfileToBoxPrimitives({
+    profile,
+    center: shaftCenter,
+    runLengthM: shaftHeight,
+    runAxis: "y"
+  });
+
+  // Plinth block
   primitives.push(
     buildBoxPrimitive({
-      center: [edgeX, plinth + shaftHeight / 2, z],
-      size: [width * 0.78, shaftHeight, depth + projection * 0.35]
+      center: [edgeX, plinth / 2, z + maxD * 0.1],
+      size: [maxHalf * 2.4, plinth, maxD * 1.35]
     })
   );
-  // Front raised fillet for depth catch
+  // Capital
   primitives.push(
     buildBoxPrimitive({
-      center: [edgeX, plinth + shaftHeight / 2, z + depth * 0.22],
-      size: [width * 0.42, shaftHeight * 0.98, depth * 0.35 + projection * 0.2]
-    })
-  );
-  // Plinth / base
-  primitives.push(
-    buildBoxPrimitive({
-      center: [edgeX, plinth / 2, z + projection * 0.1],
-      size: [width * 1.15, plinth, depth + projection * 0.55]
-    })
-  );
-  // Capital under cornice
-  primitives.push(
-    buildBoxPrimitive({
-      center: [edgeX, totalHeight - capital / 2, z + projection * 0.08],
-      size: [width * 1.2, capital, depth + projection * 0.5]
+      center: [edgeX, totalHeight - capital / 2, z + maxD * 0.12],
+      size: [maxHalf * 2.5, capital, maxD * 1.4]
     })
   );
   primitives.push(
     buildBoxPrimitive({
-      center: [edgeX, totalHeight - capital * 0.35, z + projection * 0.18],
-      size: [width * 1.32, capital * 0.35, depth * 0.55 + projection * 0.35]
+      center: [edgeX, totalHeight - capital * 0.3, z + maxD * 0.22],
+      size: [maxHalf * 2.7, capital * 0.32, maxD * 0.9]
     })
   );
 
   return primitives;
+}
+
+/** Continuous ground-floor water-table / plinth along front facade. */
+export function buildBasePlinthPrimitives(spec: BuildingFamilySpec): PrimitiveGeometry[] {
+  const height = Math.min(0.7, (spec.massing.floorHeightsM[0] ?? 4) * 0.16);
+  const profile = densifyProfile(scaleProfileToHeight(late19cBasePlinthProfile, height), 2);
+  const maxD = Math.max(...profile.points.map((point) => point.d));
+  const center: Vec3 = [0, height / 2, -spec.massing.depthM / 2 + maxD * 0.45];
+  return horizontalMoldingFromProfile({
+    profile,
+    center,
+    widthM: spec.massing.widthM + 0.16
+  });
 }
 
 /**
@@ -300,30 +233,28 @@ export function buildSpandrelBandPrimitives(
  * Local-space pilaster for recipe/instance previews (centered at origin).
  */
 export function buildVerticalPilasterLocalPrimitives(recipe: ComponentRecipe): PrimitiveGeometry[] {
-  const width = Math.max(0.22, recipe.dimensionsM.width);
   const height = Math.max(1, recipe.dimensionsM.height);
-  const depth = Math.max(0.16, recipe.dimensionsM.depth);
-  const projection = rangeValue(recipe, "projectionM", depth * 0.7);
   const plinth = rangeValue(recipe, "plinthHeightM", Math.min(0.4, height * 0.12));
   const capital = Math.min(0.32, height * 0.1);
   const shaftHeight = Math.max(0.3, height - plinth - capital);
-
+  const profile = densifyProfile(late19cPilasterProfile, 2);
+  const maxD = Math.max(...profile.points.map((point) => point.d));
+  const maxHalf = Math.max(...profile.points.map((point) => point.u), recipe.dimensionsM.width / 2);
+  const shaft = sweepProfileToBoxPrimitives({
+    profile,
+    center: [0, -height / 2 + plinth + shaftHeight / 2, maxD * 0.2],
+    runLengthM: shaftHeight,
+    runAxis: "y"
+  });
   return [
     buildBoxPrimitive({
-      center: [0, -height / 2 + plinth / 2, projection * 0.1],
-      size: [width * 1.15, plinth, depth + projection * 0.5]
+      center: [0, -height / 2 + plinth / 2, maxD * 0.15],
+      size: [maxHalf * 2.4, plinth, maxD * 1.3]
     }),
+    ...shaft,
     buildBoxPrimitive({
-      center: [0, -height / 2 + plinth + shaftHeight / 2, 0],
-      size: [width * 0.78, shaftHeight, depth + projection * 0.3]
-    }),
-    buildBoxPrimitive({
-      center: [0, -height / 2 + plinth + shaftHeight / 2, depth * 0.2],
-      size: [width * 0.42, shaftHeight * 0.98, depth * 0.35]
-    }),
-    buildBoxPrimitive({
-      center: [0, height / 2 - capital / 2, projection * 0.08],
-      size: [width * 1.2, capital, depth + projection * 0.45]
+      center: [0, height / 2 - capital / 2, maxD * 0.12],
+      size: [maxHalf * 2.5, capital, maxD * 1.35]
     })
   ];
 }

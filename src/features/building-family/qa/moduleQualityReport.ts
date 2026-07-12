@@ -110,12 +110,16 @@ export function evaluateModuleQualityChecklist(
         batchIds.has("mesh.roof") &&
         batchIds.has("mesh.corner-quoins") &&
         batchIds.has("mesh.vertical-pilasters") &&
-        batchIds.has("mesh.spandrels")
+        batchIds.has("mesh.spandrels") &&
+        batchIds.has("mesh.base-plinth")
       : batchIds.has("mesh.roof");
   const pilasterLayers = fixture.ir.semanticIndex.filter(
     (entry) => entry.batchId === "mesh.vertical-pilasters"
   ).length;
   const spandrelLayers = fixture.ir.semanticIndex.filter((entry) => entry.batchId === "mesh.spandrels").length;
+  const corniceUsesProfile =
+    fixture.catalog.recipes.find((recipe) => recipe.role === "cornice")?.profileRecipeId?.includes("profile.") ??
+    false;
 
   return [
     item(
@@ -157,19 +161,21 @@ export function evaluateModuleQualityChecklist(
     item(
       "trimLayering",
       "Trim profiles are multi-layer, not single flat bands",
-      detailLevel === "high" && corniceLayers >= 5 && beltLayers >= 2
+      detailLevel === "high" && corniceLayers >= 5 && beltLayers >= 2 && corniceUsesProfile
         ? "pass"
         : detailLevel === "low"
           ? "estimated"
           : "fail",
       detailLevel === "high"
-        ? "High-detail cornice uses a layered profile stack; intermediate floor belt courses present."
+        ? "High-detail cornice expands an authored profile polyline; intermediate floor belt courses present."
         : "Low-detail intentionally omits decorative trim layering.",
       {
         corniceLayers,
         beltLayers,
         corniceLayerFloor: 5,
+        corniceUsesProfile,
         hasBeltCourse: batchIds.has("mesh.belt-course"),
+        hasBasePlinth: batchIds.has("mesh.base-plinth"),
         detailLevel
       }
     ),

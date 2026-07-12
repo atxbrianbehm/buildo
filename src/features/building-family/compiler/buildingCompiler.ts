@@ -30,6 +30,7 @@ import {
   type Vec3
 } from "./primitiveGeometry";
 import {
+  buildBasePlinthPrimitives,
   buildCorniceProfilePrimitives,
   buildCornerQuoinPrimitives,
   buildHorizontalBeltCoursePrimitives,
@@ -225,10 +226,14 @@ function wallPanelPlans(spec: BuildingFamilySpec, wallRecipe: ComponentRecipe): 
   for (let floor = 0; floor < spec.massing.floorCount; floor += 1) {
     const height = spec.massing.floorHeightsM[floor] ?? spec.massing.floorHeightsM.at(-1) ?? wallRecipe.dimensionsM.height;
     const y = floorBaseY(spec, floor) + height / 2;
+    const isGround = floor === 0;
 
-    // Ground floor projects slightly as a base/storefront plinth for clay silhouette.
-    const baseProjection = floor === 0 ? Math.min(0.12, thickness * 0.45) : 0;
+    // Ground storefront hierarchy: thicker projecting body + slightly taller visual mass.
+    const baseProjection = isGround ? Math.min(0.18, thickness * 0.55) : 0;
     const floorThickness = thickness + baseProjection;
+    // Pier residual: leave a hairline gap between bays on upper floors for pilaster catch.
+    const bayGap = isGround ? 0.02 : 0.04;
+    const bayPanelWidth = Math.max(0.4, frontBayWidth - bayGap);
 
     for (let bay = 0; bay < spec.facade.frontBayCount; bay += 1) {
       const x = -spec.massing.widthM / 2 + frontBayWidth * bay + frontBayWidth / 2;
@@ -237,32 +242,33 @@ function wallPanelPlans(spec: BuildingFamilySpec, wallRecipe: ComponentRecipe): 
         floor,
         bay,
         center: [x, y, -spec.massing.depthM / 2 + floorThickness / 2],
-        size: [frontBayWidth, height, floorThickness]
+        size: [bayPanelWidth, height, floorThickness]
       });
       plans.push({
         facade: "rear",
         floor,
         bay,
         center: [x, y, spec.massing.depthM / 2 - floorThickness / 2],
-        size: [frontBayWidth, height, floorThickness]
+        size: [bayPanelWidth, height, isGround ? floorThickness * 0.92 : thickness]
       });
     }
 
     for (let bay = 0; bay < sideCount; bay += 1) {
       const z = -spec.massing.depthM / 2 + sidePanelDepth * bay + sidePanelDepth / 2;
+      const sideThickness = isGround ? thickness + baseProjection * 0.5 : thickness;
       plans.push({
         facade: "left",
         floor,
         bay,
-        center: [-spec.massing.widthM / 2 + thickness / 2, y, z],
-        size: [thickness, height, sidePanelDepth]
+        center: [-spec.massing.widthM / 2 + sideThickness / 2, y, z],
+        size: [sideThickness, height, sidePanelDepth]
       });
       plans.push({
         facade: "right",
         floor,
         bay,
-        center: [spec.massing.widthM / 2 - thickness / 2, y, z],
-        size: [thickness, height, sidePanelDepth]
+        center: [spec.massing.widthM / 2 - sideThickness / 2, y, z],
+        size: [sideThickness, height, sidePanelDepth]
       });
     }
   }
@@ -634,6 +640,29 @@ function createSpandrelMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCata
   };
 }
 
+function createBasePlinthMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCatalog): MeshPlan | undefined {
+  const trimRecipe =
+    catalog.recipes.find((candidate) => candidate.role === "horizontalTrim") ??
+    catalog.recipes.find((candidate) => candidate.role === "wall");
+  if (!trimRecipe) {
+    return undefined;
+  }
+  const primitives = buildBasePlinthPrimitives(spec);
+  return {
+    batchId: "mesh.base-plinth",
+    role: "horizontalTrim",
+    materialSlotId: firstAtlasSlot(trimRecipe),
+    stage: "facade",
+    primitives,
+    semanticEntries: primitives.map((_, elementIndex) => ({
+      semanticPath: semanticPath(spec, `facade/front/base-plinth/layer/${elementIndex}`),
+      batchId: "mesh.base-plinth",
+      elementIndex,
+      stage: "facade" as const
+    }))
+  };
+}
+
 function toMeshBatch(plan: MeshPlan): { batch: MeshBatchIR; bounds: Bounds3; vertexCount: number; triangleCount: number } {
   const combined = combinePrimitiveGeometry(plan.primitives);
   return {
@@ -695,6 +724,7 @@ export async function compileBuilding(input: CompileBuildingInput): Promise<Runt
   const moduleInstances = await resolveModuleInstances(input);
   const highDetailMeshPlans = highDetail
     ? [
+        createBasePlinthMeshPlan(input.spec, input.catalog),
         createCorniceMeshPlan(input.spec, input.catalog),
         createHorizontalBeltMeshPlan(input.spec, input.catalog),
         createVerticalPilasterMeshPlan(input.spec, input.catalog),

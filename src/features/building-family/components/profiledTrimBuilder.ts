@@ -11,7 +11,7 @@ export function buildProfiledHorizontalTrimRecipe(spec: BuildingFamilySpec) {
     uvBehavior: "cap-repeat-cap",
     variationScope: spec.variationPolicy.trim ?? "family",
     attachmentPlane: "facade.front",
-    profileRecipeId: `profile.trim.${spec.selectedFamilies.trim}.belt-course`,
+    profileRecipeId: "profile.trim.late19c.belt-course",
     parameterRanges: {
       projectionM: { min: 0.1, max: 0.28 },
       capHeightM: { min: 0.05, max: 0.12 }
@@ -33,7 +33,7 @@ export function buildProfiledVerticalTrimRecipe(spec: BuildingFamilySpec) {
     uvBehavior: "cap-repeat-cap",
     variationScope: spec.variationPolicy.trim ?? "family",
     attachmentPlane: "facade.front",
-    profileRecipeId: `profile.trim.${spec.selectedFamilies.trim}.shallow-pilaster`,
+    profileRecipeId: "profile.trim.late19c.pilaster",
     parameterRanges: {
       projectionM: { min: 0.12, max: 0.28 },
       plinthHeightM: { min: 0.28, max: 0.52 }
@@ -55,7 +55,7 @@ export function buildCorniceRecipe(spec: BuildingFamilySpec) {
     uvBehavior: "cap-repeat-cap",
     variationScope: spec.variationPolicy.cornice ?? "family",
     attachmentPlane: "facade.front",
-    profileRecipeId: `profile.cornice.${spec.selectedFamilies.cornice}.layered`,
+    profileRecipeId: "profile.cornice.late19c.layered",
     parameterRanges: {
       projectionM: { min: 0.24, max: 0.68 },
       bracketSpacingM: { min: 0.6, max: 1.4 },
@@ -74,7 +74,7 @@ export function buildProfiledRoofCapRecipe(spec: BuildingFamilySpec) {
     uvBehavior: "cap-repeat-cap",
     variationScope: spec.variationPolicy.roof ?? "family",
     attachmentPlane: "massing.top",
-    profileRecipeId: `profile.roof-cap.${spec.selectedFamilies.roof}.parapet-cap`,
+    profileRecipeId: "profile.roof-cap.late19c.parapet",
     parameterRanges: {
       projectionM: { min: 0.08, max: 0.22 }
     }
