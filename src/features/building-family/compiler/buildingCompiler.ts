@@ -11,12 +11,7 @@ import type { ComponentRecipe } from "../contracts/componentRecipe";
 import type { ModuleInstanceSet } from "../contracts/moduleInstanceSet";
 import type { ComponentCatalog } from "../components/componentCatalogBuilder";
 import { hashCanonicalJson } from "../core/contentHash";
-import {
-  buildModuleInstanceSet,
-  late19cApartmentKit,
-  planFacadeModules,
-  type FacadeModulePlan
-} from "../art-kit";
+import { late19cApartmentKit, planFacadeModules, type FacadeModulePlan } from "../art-kit";
 import { validateBuildingGraph } from "./buildingGraphBuilder";
 import {
   boundsFromBox,
@@ -24,7 +19,6 @@ import {
   combinePrimitiveGeometry,
   emptyBounds,
   expandBounds,
-  translationMatrix,
   type Bounds3,
   type PrimitiveGeometry,
   type Vec3
@@ -44,7 +38,6 @@ import {
   wallPrimitivesFromSplitPlan,
   type FacadeSplitPlan
 } from "./facadeSplitPlan";
-import type { WallFacadeName } from "./facadeWallSubdivision";
 
 export type BuildingComponentDetailLevel = "high" | "low";
 export type BuildingFidelityMode = "proof" | "kit";
@@ -58,6 +51,10 @@ export interface CompileBuildingInput {
   /** When omitted, kit mode is inferred from the art-kit graph Group node. */
   fidelityMode?: BuildingFidelityMode;
   facadePlan?: FacadeModulePlan;
+  /**
+   * Optional prebuilt module instances (non-opening layers / diagnostics).
+   * Opening layout authority is always FacadeSplitPlan — not this set.
+   */
   moduleInstances?: ModuleInstanceSet;
 }
 
@@ -97,10 +94,6 @@ interface FacadePanelPlan {
 
 function sum(values: number[]): number {
   return values.reduce((total, value) => total + value, 0);
-}
-
-function floorBaseY(spec: BuildingFamilySpec, floor: number): number {
-  return spec.massing.floorHeightsM.slice(0, floor).reduce((total, height) => total + height, 0);
 }
 
 function recipeById(catalog: ComponentCatalog, recipeId: string): ComponentRecipe {
@@ -217,10 +210,6 @@ function withPairedGlassPlans(
 
 function semanticPath(spec: BuildingFamilySpec, suffix: string): string {
   return `building/${spec.familyId}/${suffix}`;
-}
-
-function sideBayCount(spec: BuildingFamilySpec): number {
-  return Math.max(1, Math.round(spec.massing.depthM / spec.facade.sideBaySpacingM));
 }
 
 function createWallMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCatalog, split: FacadeSplitPlan): MeshPlan {
@@ -418,176 +407,12 @@ function createRoofMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCatalog)
   };
 }
 
-function createWindowInstancePlan(spec: BuildingFamilySpec, catalog: ComponentCatalog): InstancePlan {
-  const recipe = recipeByRole(catalog, "window");
-  const transforms: number[] = [];
-  const instanceBounds: Bounds3[] = [];
-  const semanticEntries: SemanticIndexEntry[] = [];
-  const bayWidth = spec.massing.widthM / spec.facade.frontBayCount;
-  const z = -spec.massing.depthM / 2 + recipe.dimensionsM.depth / 2;
-
-  for (let floor = 0; floor < spec.massing.floorCount; floor += 1) {
-    const floorHeight = spec.massing.floorHeightsM[floor] ?? recipe.dimensionsM.height;
-    const y = floorBaseY(spec, floor) + floorHeight * 0.55;
-
-    for (let bay = 0; bay < spec.facade.frontBayCount; bay += 1) {
-      const elementIndex = floor * spec.facade.frontBayCount + bay;
-      const x = -spec.massing.widthM / 2 + bayWidth * bay + bayWidth / 2;
-      const position: Vec3 = [x, y, z];
-      transforms.push(...translationMatrix(position));
-      instanceBounds.push(boundsFromBox(position, [recipe.dimensionsM.width, recipe.dimensionsM.height, recipe.dimensionsM.depth]));
-      semanticEntries.push({
-        semanticPath: semanticPath(spec, `facade/front/floor/${floor}/bay/${bay}/window/frame`),
-        batchId: "instances.window",
-        elementIndex,
-        stage: "openings"
-      });
-    }
-  }
-
-  return {
-    batchId: "instances.window",
-    recipe,
-    materialSlotId: preferredMaterialSlot(recipe, "frame"),
-    stage: "openings",
-    transforms,
-    instanceBounds,
-    semanticEntries
-  };
-}
-
-function createDoorInstancePlan(spec: BuildingFamilySpec, catalog: ComponentCatalog): InstancePlan {
-  const recipe = recipeByRole(catalog, "door");
-  const bayWidth = spec.massing.widthM / spec.facade.frontBayCount;
-  const bay = Math.floor(spec.facade.frontBayCount / 2);
-  const position: Vec3 = [
-    -spec.massing.widthM / 2 + bayWidth * bay + bayWidth / 2,
-    recipe.dimensionsM.height / 2,
-    -spec.massing.depthM / 2 + recipe.dimensionsM.depth / 2
-  ];
-
-  return {
-    batchId: "instances.door",
-    recipe,
-    materialSlotId: preferredMaterialSlot(recipe, "frame"),
-    stage: "openings",
-    transforms: translationMatrix(position),
-    instanceBounds: [boundsFromBox(position, [recipe.dimensionsM.width, recipe.dimensionsM.height, recipe.dimensionsM.depth])],
-    semanticEntries: [
-      {
-        semanticPath: semanticPath(spec, `facade/front/floor/0/bay/${bay}/door/frame`),
-        batchId: "instances.door",
-        elementIndex: 0,
-        stage: "openings"
-      }
-    ]
-  };
-}
-
 function graphHasArtKitFacadePlan(graph: BuildingGraph): boolean {
   return graph.nodes.some((node) => node.id === "node.art-kit-facade-plan" && node.type === "Group");
 }
 
 function centerFromTransform(transform: number[]): Vec3 {
   return [transform[12] ?? 0, transform[13] ?? 0, transform[14] ?? 0];
-}
-
-function createOpeningInstancePlansFromModuleInstances(
-  moduleInstances: ModuleInstanceSet,
-  catalog: ComponentCatalog
-): InstancePlan[] {
-  const windowRecipe = recipeByRole(catalog, "window");
-  const doorRecipe = recipeByRole(catalog, "door");
-  const windowTransforms: number[] = [];
-  const windowBounds: Bounds3[] = [];
-  const windowSemantics: SemanticIndexEntry[] = [];
-  const doorTransforms: number[] = [];
-  const doorBounds: Bounds3[] = [];
-  const doorSemantics: SemanticIndexEntry[] = [];
-
-  for (const instance of moduleInstances.instances) {
-    if (instance.layer !== "opening") {
-      continue;
-    }
-
-    const center = centerFromTransform(instance.transform);
-    const size: Vec3 = instance.boundsMeters.size;
-    const isDoor = instance.moduleId.includes("door");
-    if (isDoor) {
-      const elementIndex = doorSemantics.length;
-      doorTransforms.push(...instance.transform);
-      doorBounds.push(boundsFromBox(center, size));
-      doorSemantics.push({
-        semanticPath: instance.semanticPath,
-        batchId: "instances.door",
-        elementIndex,
-        stage: "openings"
-      });
-    } else {
-      const elementIndex = windowSemantics.length;
-      windowTransforms.push(...instance.transform);
-      windowBounds.push(boundsFromBox(center, size));
-      windowSemantics.push({
-        semanticPath: instance.semanticPath,
-        batchId: "instances.window",
-        elementIndex,
-        stage: "openings"
-      });
-    }
-  }
-
-  const plans: InstancePlan[] = [];
-  if (windowTransforms.length > 0) {
-    plans.push({
-      batchId: "instances.window",
-      recipe: windowRecipe,
-      materialSlotId: preferredMaterialSlot(windowRecipe, "frame"),
-      stage: "openings",
-      transforms: windowTransforms,
-      instanceBounds: windowBounds,
-      semanticEntries: windowSemantics
-    });
-  }
-  if (doorTransforms.length > 0) {
-    plans.push({
-      batchId: "instances.door",
-      recipe: doorRecipe,
-      materialSlotId: preferredMaterialSlot(doorRecipe, "frame"),
-      stage: "openings",
-      transforms: doorTransforms,
-      instanceBounds: doorBounds,
-      semanticEntries: doorSemantics
-    });
-  }
-  return withPairedGlassPlans(catalog, plans);
-}
-
-async function resolveModuleInstances(input: CompileBuildingInput): Promise<ModuleInstanceSet | undefined> {
-  if (input.moduleInstances) {
-    return input.moduleInstances;
-  }
-
-  const useKit =
-    input.fidelityMode === "kit" ||
-    (input.fidelityMode !== "proof" && (Boolean(input.facadePlan) || graphHasArtKitFacadePlan(input.graph)));
-
-  if (!useKit) {
-    return undefined;
-  }
-
-  const plan =
-    input.facadePlan ??
-    planFacadeModules({
-      spec: input.spec,
-      kit: late19cApartmentKit
-    });
-
-  return buildModuleInstanceSet({
-    spec: input.spec,
-    kit: late19cApartmentKit,
-    plan,
-    buildingId: input.buildingId
-  });
 }
 
 function createVerticalPilasterMeshPlan(
@@ -862,39 +687,48 @@ export async function compileBuilding(input: CompileBuildingInput): Promise<Runt
 
   const detailLevel = input.detailLevel ?? "high";
   const highDetail = detailLevel === "high";
-  const moduleInstances = await resolveModuleInstances(input);
   const wallRecipe = recipeByRole(input.catalog, "wall");
   const wallDepthM = Math.max(0.02, wallRecipe.dimensionsM.depth);
-  const useKitSplit =
-    input.fidelityMode === "kit" ||
-    (input.fidelityMode !== "proof" &&
-      (Boolean(input.facadePlan) || graphHasArtKitFacadePlan(input.graph) || Boolean(moduleInstances)));
+
+  // --- Opening layout authority (G1) ---
+  // kit  → art-kit FacadeModulePlan → FacadeSplitPlan (strict) → instances
+  // proof → FacadeSplitPlan defaults (front-only) → instances
+  // Never place openings from ModuleInstanceSet or hard-coded bay loops in parallel.
+  const isProofMode = input.fidelityMode === "proof";
+  const isKitMode =
+    !isProofMode &&
+    (input.fidelityMode === "kit" ||
+      Boolean(input.facadePlan) ||
+      graphHasArtKitFacadePlan(input.graph) ||
+      input.fidelityMode === undefined);
 
   const facadePlanForSplit =
-    input.facadePlan ??
-    (useKitSplit
-      ? planFacadeModules({
+    isKitMode
+      ? (input.facadePlan ??
+        planFacadeModules({
           spec: input.spec,
           kit: late19cApartmentKit
-        })
-      : undefined);
+        }))
+      : undefined;
 
-  // One split plan drives punched walls + opening instance centers (CGA/GN reconvergence).
   const facadeSplit = await buildFacadeSplitPlan({
     spec: input.spec,
     wallDepthM,
     facadePlan: facadePlanForSplit,
-    kit: facadePlanForSplit ? late19cApartmentKit : undefined
+    kit: facadePlanForSplit ? late19cApartmentKit : undefined,
+    // Proof (and any non-kit path) uses front-only defaults; kit plan implies strictOpenings.
+    defaultOpeningMode: "front-only"
   });
 
-  const openingPlans = facadePlanForSplit
-    ? createOpeningInstancePlansFromSplit(facadeSplit, input.catalog)
-    : moduleInstances
-      ? createOpeningInstancePlansFromModuleInstances(moduleInstances, input.catalog)
-      : withPairedGlassPlans(input.catalog, [
-          createWindowInstancePlan(input.spec, input.catalog),
-          createDoorInstancePlan(input.spec, input.catalog)
-        ]);
+  const openingPlans = createOpeningInstancePlansFromSplit(facadeSplit, input.catalog);
+  const frameOpeningCount = openingPlans
+    .filter((plan) => plan.batchId === "instances.window" || plan.batchId === "instances.door")
+    .reduce((total, plan) => total + plan.transforms.length / 16, 0);
+  if (frameOpeningCount !== facadeSplit.openings.length) {
+    throw new Error(
+      `Opening authority violation: ${frameOpeningCount} frame instances vs ${facadeSplit.openings.length} split openings.`
+    );
+  }
 
   const highDetailMeshPlans = highDetail
     ? [

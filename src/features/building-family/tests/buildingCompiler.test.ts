@@ -1,8 +1,9 @@
+import { late19cApartmentKit, planFacadeModules } from "../art-kit";
 import { RuntimeBuildingIRSchema, type RuntimeBuildingIR } from "../contracts/runtimeBuildingIR";
 import { buildComponentCatalog } from "../components/componentCatalogBuilder";
 import { compileBuilding } from "../compiler/buildingCompiler";
 import { buildBuildingGraph } from "../compiler/buildingGraphBuilder";
-// buildBuildingGraph used for proof-mode graphs
+import { buildFacadeSplitPlan } from "../compiler/facadeSplitPlan";
 import { normalizeBuildingSpec } from "../core/specNormalizer";
 import { planAtlas } from "../materials/atlasPlanner";
 import { adaptPsgEvaluationToBuildingIntent } from "../psg/psgBuildingIntentAdapter";
@@ -138,7 +139,7 @@ describe("compileBuilding", () => {
     expect(ir.semanticIndex.some((entry) => entry.semanticPath.includes("/opening/"))).toBe(true);
   });
 
-  it("preserves proof-mode hardcoded front window counts when fidelityMode is proof", async () => {
+  it("proof mode uses front-only split openings without an art-kit plan", async () => {
     const { spec, catalog } = await fixtureCompilerInputs();
     const proofGraph = await buildBuildingGraph(spec, catalog, { fidelityMode: "proof" });
     const ir = await compileBuilding({
@@ -147,11 +148,43 @@ describe("compileBuilding", () => {
       graph: proofGraph,
       fidelityMode: "proof"
     });
-    const windowBatch = ir.instanceBatches.find((batch) => batch.recipeId === "recipe.window.tall-arched.frame");
+    const windowBatch = ir.instanceBatches.find((batch) => batch.batchId === "instances.window");
+    const doorBatch = ir.instanceBatches.find((batch) => batch.batchId === "instances.door");
+    const frontCells = spec.massing.floorCount * spec.facade.frontBayCount;
 
-    expect(windowBatch?.count).toBe(spec.massing.floorCount * spec.facade.frontBayCount);
+    // Front-only split: one door on ground center bay, windows on remaining front cells.
+    expect(doorBatch?.count).toBe(1);
+    expect(windowBatch?.count).toBe(frontCells - 1);
+    expect((windowBatch?.count ?? 0) + (doorBatch?.count ?? 0)).toBe(frontCells);
     expect(ir.meshBatches.some((batch) => batch.role === "window")).toBe(false);
     expect(catalog.recipes.filter((recipe) => recipe.role === "window")).toHaveLength(1);
+  });
+
+  it("kit mode opening instances are 1:1 with facade split plan openings", async () => {
+    const { spec, catalog, graph } = await fixtureCompilerInputs();
+    const facadePlan = planFacadeModules({ spec, kit: late19cApartmentKit });
+    const wallDepthM = catalog.recipes.find((recipe) => recipe.role === "wall")?.dimensionsM.depth ?? 0.34;
+    const split = await buildFacadeSplitPlan({
+      spec,
+      wallDepthM,
+      facadePlan,
+      kit: late19cApartmentKit
+    });
+    const ir = await compileBuilding({
+      spec,
+      catalog,
+      graph,
+      fidelityMode: "kit",
+      facadePlan
+    });
+    const windowCount =
+      ir.instanceBatches.find((batch) => batch.batchId === "instances.window")?.count ?? 0;
+    const doorCount = ir.instanceBatches.find((batch) => batch.batchId === "instances.door")?.count ?? 0;
+
+    expect(split.openings.length).toBeGreaterThan(0);
+    expect(windowCount + doorCount).toBe(split.openings.length);
+    expect(doorCount).toBe(split.openings.filter((opening) => opening.kind === "door").length);
+    expect(windowCount).toBe(split.openings.filter((opening) => opening.kind === "window").length);
   });
 
   it("switches between high and low component detail without changing the default high-detail output", async () => {

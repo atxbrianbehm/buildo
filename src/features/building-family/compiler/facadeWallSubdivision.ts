@@ -18,6 +18,7 @@ export interface OpeningSlot {
   centerYM: number;
   /** Horizontal center of the opening within the facade (world X or Z). */
   centerAlongM: number;
+  kind?: "window" | "door";
 }
 
 export interface FacadeBayScope {
@@ -41,12 +42,19 @@ export interface SubdivideFacadeWallsInput {
     bayIndex: number;
     widthM: number;
     heightM: number;
+    kind?: "window" | "door";
   }>;
   /**
    * When true, only `openings` entries are punched — no default front/rear grids.
    * Used when an art-kit facade plan is the opening authority (CGA/GN split).
    */
   strictOpenings?: boolean;
+  /**
+   * Default punched openings when not strict and no per-cell seed:
+   * - `front-only`: proof-style full front grid (no rear/side defaults)
+   * - `multi-facade`: front + rear body + sparse sides (legacy non-strict defaults)
+   */
+  defaultOpeningMode?: "front-only" | "multi-facade";
 }
 
 function floorBaseY(spec: BuildingFamilySpec, floorIndex: number): number {
@@ -64,6 +72,7 @@ function openingKey(facade: WallFacadeName, floor: number, bay: number): string 
 export function buildFacadeBayScopes(input: SubdivideFacadeWallsInput): FacadeBayScope[] {
   const { spec, wallDepthM } = input;
   const strictOpenings = Boolean(input.strictOpenings);
+  const defaultOpeningMode = input.defaultOpeningMode ?? "multi-facade";
   const openingMap = new Map(
     (input.openings ?? []).map((opening) => [
       openingKey(opening.facade, opening.floorIndex, opening.bayIndex),
@@ -92,21 +101,34 @@ export function buildFacadeBayScopes(input: SubdivideFacadeWallsInput): FacadeBa
         const defaultOpenW = Math.min(frontBayWidth * 0.62, 1.6);
         const defaultOpenH = Math.min(floorHeight * (zone === "ground" ? 0.58 : 0.48), 2.6);
         const hasDefaultOpening =
-          !strictOpenings && (facade === "front" || (facade === "rear" && zone === "body"));
+          !strictOpenings &&
+          (defaultOpeningMode === "front-only"
+            ? facade === "front"
+            : facade === "front" || (facade === "rear" && zone === "body"));
+        const doorBay = Math.floor(spec.facade.frontBayCount / 2);
         const opening =
           openingSpec !== undefined
             ? {
                 widthM: openingSpec.widthM,
                 heightM: openingSpec.heightM,
                 centerYM: y0 + floorHeight * (zone === "ground" ? 0.52 : 0.55),
-                centerAlongM: x0 + frontBayWidth / 2
+                centerAlongM: x0 + frontBayWidth / 2,
+                kind: openingSpec.kind
               }
             : hasDefaultOpening
               ? {
-                  widthM: defaultOpenW,
-                  heightM: defaultOpenH,
+                  widthM:
+                    floor === 0 && bay === doorBay && facade === "front"
+                      ? Math.min(frontBayWidth * 0.7, 2.0)
+                      : defaultOpenW,
+                  heightM:
+                    floor === 0 && bay === doorBay && facade === "front"
+                      ? Math.min(floorHeight * 0.72, 3.0)
+                      : defaultOpenH,
                   centerYM: y0 + floorHeight * (zone === "ground" ? 0.52 : 0.55),
-                  centerAlongM: x0 + frontBayWidth / 2
+                  centerAlongM: x0 + frontBayWidth / 2,
+                  kind:
+                    floor === 0 && bay === doorBay && facade === "front" ? ("door" as const) : ("window" as const)
                 }
               : undefined;
 
@@ -136,7 +158,10 @@ export function buildFacadeBayScopes(input: SubdivideFacadeWallsInput): FacadeBa
                 centerYM: y0 + floorHeight * 0.55,
                 centerAlongM: z0 + sideBayDepth / 2
               }
-            : !strictOpenings && zone === "body" && (bay + floor) % 2 === 0
+            : !strictOpenings &&
+                defaultOpeningMode === "multi-facade" &&
+                zone === "body" &&
+                (bay + floor) % 2 === 0
               ? {
                   widthM: Math.min(sideBayDepth * 0.55, 1.2),
                   heightM: Math.min(floorHeight * 0.45, 2.2),

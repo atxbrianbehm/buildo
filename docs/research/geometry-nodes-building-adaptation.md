@@ -66,7 +66,8 @@ Critical operators for us:
 1. **Facade wall subdivision** — each front bay → pier L/R + sill + head + optional spandrel — **done** (`facadeWallSubdivision.ts`).  
 2. **Ground storefront split** — bulkhead / opening / lintel as scopes — **partial** (`mesh.storefront-hierarchy`).  
 3. **Serializable `FacadeSplitPlan`** — **done** (`facadeSplitPlan.ts`): one plan drives wall punches + opening instance centers.  
-4. Later: richer profile curves, true CSG optional, node-like debug UI, Prompt Lab split-hash diagnostics.
+4. **G1 split authority** — **done**: kit openings only from plan/split; proof uses front-only split defaults; compiler asserts 1:1 frame instances ↔ split openings. No parallel `ModuleInstanceSet` / hard-coded bay opening path.  
+5. Later (G2+): slot-locked frame sizes/pockets, storefront modules, split hash in UI, expander unification.
 
 ## Non-goals
 

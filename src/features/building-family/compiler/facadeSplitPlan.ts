@@ -42,6 +42,11 @@ export interface BuildFacadeSplitPlanInput {
   /** When set, openings come only from the art-kit plan (no default punched grids). */
   facadePlan?: FacadeModulePlan;
   kit?: ArtKitManifest;
+  /**
+   * Proof-mode defaults when no facade plan: front-only grid.
+   * Ignored when `facadePlan` is set (strict kit openings).
+   */
+  defaultOpeningMode?: "front-only" | "multi-facade";
 }
 
 export interface OpeningSeed {
@@ -120,7 +125,8 @@ function attachOpeningMeta(
     }
     const key = `${scope.facade}:${scope.floorIndex}:${scope.bayIndex}`;
     const seed = seedMap.get(key);
-    const resolvedKind: "window" | "door" = seed?.kind ?? "window";
+    const resolvedKind: "window" | "door" =
+      seed?.kind ?? scope.opening.kind ?? "window";
     const centerM = openingWorldCenter(scope, wallDepthM);
     const depth =
       scope.facade === "left" || scope.facade === "right" ? scope.sizeM[0] * 0.5 : scope.sizeM[2] * 0.55;
@@ -140,9 +146,14 @@ function attachOpeningMeta(
   return openings;
 }
 
+/**
+ * Kit mode: openings come only from the art-kit facade plan.
+ * Proof mode: no plan → front-only default slots (same split drives walls + frames).
+ */
 export async function buildFacadeSplitPlan(
   input: BuildFacadeSplitPlanInput
 ): Promise<FacadeSplitPlan> {
+  const hasKitPlan = Boolean(input.facadePlan);
   const seeds = input.facadePlan
     ? openingsFromFacadePlan(input.facadePlan, input.kit)
     : undefined;
@@ -151,7 +162,8 @@ export async function buildFacadeSplitPlan(
     wallDepthM: input.wallDepthM,
     openings: seeds,
     /** When kit plan is present, only punch openings the planner chose. */
-    strictOpenings: Boolean(input.facadePlan)
+    strictOpenings: hasKitPlan,
+    defaultOpeningMode: hasKitPlan ? undefined : (input.defaultOpeningMode ?? "front-only")
   });
   const openings = attachOpeningMeta(
     scopes,
@@ -159,6 +171,13 @@ export async function buildFacadeSplitPlan(
     input.wallDepthM,
     input.spec.familyId
   );
+
+  if (hasKitPlan && seeds && openings.length !== seeds.length) {
+    // Duplicate plan cells or failed attach — fail fast so dual authority cannot hide.
+    throw new Error(
+      `FacadeSplitPlan opening count ${openings.length} does not match kit plan opening seeds ${seeds.length}.`
+    );
+  }
   const contentHash = await hashCanonicalJson({
     familyId: input.spec.familyId,
     wallDepthM: input.wallDepthM,

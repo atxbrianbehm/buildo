@@ -93,4 +93,21 @@ describe("facadeSplitPlan", () => {
     // Subdivided walls produce many more pieces than bay count.
     expect(walls.length).toBeGreaterThan(split.scopes.length);
   });
+
+  it("proof-style defaults use front-only openings with one ground door", async () => {
+    const spec = fixtureSpec();
+    const split = await buildFacadeSplitPlan({
+      spec,
+      wallDepthM: 0.34,
+      defaultOpeningMode: "front-only"
+    });
+    const frontOpenings = split.openings.filter((opening) => opening.facade === "front");
+    const nonFront = split.openings.filter((opening) => opening.facade !== "front");
+    expect(nonFront).toHaveLength(0);
+    expect(frontOpenings).toHaveLength(spec.massing.floorCount * spec.facade.frontBayCount);
+    expect(frontOpenings.filter((opening) => opening.kind === "door")).toHaveLength(1);
+    expect(frontOpenings.filter((opening) => opening.kind === "window")).toHaveLength(
+      frontOpenings.length - 1
+    );
+  });
 });

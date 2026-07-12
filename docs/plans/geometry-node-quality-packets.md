@@ -164,11 +164,11 @@ Make `FacadeSplitPlan` the **only** opening layout authority for kit-mode compil
 
 #### Acceptance
 
-- [ ] Kit compile: every opening instance maps 1:1 to a `FacadeSplitPlan.openings[]` entry  
-- [ ] Kit compile: no front-bay default openings outside planner placements  
-- [ ] Same seed + kit → same `FacadeSplitPlan.contentHash`  
-- [ ] Proof mode still produces windows/doors without art-kit plan  
-- [ ] No regression in family benchmark smoke tests  
+- [x] Kit compile: every opening instance maps 1:1 to a `FacadeSplitPlan.openings[]` entry  
+- [x] Kit compile: no front-bay default openings outside planner placements  
+- [x] Same seed + kit → same `FacadeSplitPlan.contentHash`  
+- [x] Proof mode still produces windows/doors without art-kit plan (front-only split defaults)  
+- [x] No regression in family benchmark smoke tests (compiler suite)  
 
 #### Validation
 
@@ -575,5 +575,6 @@ Start **G1** only:
 |---|---|
 | 2026-07-12 | Plan created from codebase + GN/CGA research; baseline `92ce977`. |
 | | Prior unplanned quality commits: seeds, openings, profiles, pilasters, split walls, split plan. |
+| 2026-07-12 | **G1 landed:** kit openings only from split; proof front-only split defaults; 1:1 assert in compiler. |
 
-**Next packet to implement:** G1 — Split authority cleanup.
+**Next packet to implement:** G2 — Slot-locked openings and pockets.
