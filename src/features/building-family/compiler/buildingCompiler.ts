@@ -38,6 +38,10 @@ import {
   buildSpandrelBandPrimitives,
   buildVerticalPilasterPrimitives
 } from "./profiledTrimGeometry";
+import {
+  buildSubdividedFacadeWallPrimitives,
+  type WallFacadeName
+} from "./facadeWallSubdivision";
 
 export type BuildingComponentDetailLevel = "high" | "low";
 export type BuildingFidelityMode = "proof" | "kit";
@@ -216,70 +220,53 @@ function sideBayCount(spec: BuildingFamilySpec): number {
   return Math.max(1, Math.round(spec.massing.depthM / spec.facade.sideBaySpacingM));
 }
 
-function wallPanelPlans(spec: BuildingFamilySpec, wallRecipe: ComponentRecipe): FacadePanelPlan[] {
-  const plans: FacadePanelPlan[] = [];
-  const thickness = Math.max(0.02, wallRecipe.dimensionsM.depth);
-  const frontBayWidth = spec.massing.widthM / spec.facade.frontBayCount;
-  const sideCount = sideBayCount(spec);
-  const sidePanelDepth = spec.massing.depthM / sideCount;
+function openingsFromInstancePlans(
+  openingPlans: InstancePlan[]
+): Array<{ facade: WallFacadeName; floorIndex: number; bayIndex: number; widthM: number; heightM: number }> {
+  const results: Array<{
+    facade: WallFacadeName;
+    floorIndex: number;
+    bayIndex: number;
+    widthM: number;
+    heightM: number;
+  }> = [];
 
-  for (let floor = 0; floor < spec.massing.floorCount; floor += 1) {
-    const height = spec.massing.floorHeightsM[floor] ?? spec.massing.floorHeightsM.at(-1) ?? wallRecipe.dimensionsM.height;
-    const y = floorBaseY(spec, floor) + height / 2;
-    const isGround = floor === 0;
-
-    // Ground storefront hierarchy: thicker projecting body + slightly taller visual mass.
-    const baseProjection = isGround ? Math.min(0.18, thickness * 0.55) : 0;
-    const floorThickness = thickness + baseProjection;
-    // Pier residual: leave a hairline gap between bays on upper floors for pilaster catch.
-    const bayGap = isGround ? 0.02 : 0.04;
-    const bayPanelWidth = Math.max(0.4, frontBayWidth - bayGap);
-
-    for (let bay = 0; bay < spec.facade.frontBayCount; bay += 1) {
-      const x = -spec.massing.widthM / 2 + frontBayWidth * bay + frontBayWidth / 2;
-      plans.push({
-        facade: "front",
-        floor,
-        bay,
-        center: [x, y, -spec.massing.depthM / 2 + floorThickness / 2],
-        size: [bayPanelWidth, height, floorThickness]
-      });
-      plans.push({
-        facade: "rear",
-        floor,
-        bay,
-        center: [x, y, spec.massing.depthM / 2 - floorThickness / 2],
-        size: [bayPanelWidth, height, isGround ? floorThickness * 0.92 : thickness]
-      });
+  for (const plan of openingPlans) {
+    if (plan.batchId.includes("glass") || (!plan.batchId.includes("window") && !plan.batchId.includes("door"))) {
+      continue;
     }
-
-    for (let bay = 0; bay < sideCount; bay += 1) {
-      const z = -spec.massing.depthM / 2 + sidePanelDepth * bay + sidePanelDepth / 2;
-      const sideThickness = isGround ? thickness + baseProjection * 0.5 : thickness;
-      plans.push({
-        facade: "left",
-        floor,
-        bay,
-        center: [-spec.massing.widthM / 2 + sideThickness / 2, y, z],
-        size: [sideThickness, height, sidePanelDepth]
-      });
-      plans.push({
-        facade: "right",
-        floor,
-        bay,
-        center: [spec.massing.widthM / 2 - sideThickness / 2, y, z],
-        size: [sideThickness, height, sidePanelDepth]
+    for (const entry of plan.semanticEntries) {
+      const match = entry.semanticPath.match(
+        /facade\/(front|rear|left|right)\/floor\/(\d+)\/bay\/(\d+)\//
+      );
+      if (!match) {
+        continue;
+      }
+      results.push({
+        facade: match[1] as WallFacadeName,
+        floorIndex: Number(match[2]),
+        bayIndex: Number(match[3]),
+        widthM: plan.recipe.dimensionsM.width,
+        heightM: plan.recipe.dimensionsM.height
       });
     }
   }
-
-  return plans;
+  return results;
 }
 
-function createWallMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCatalog): MeshPlan {
+function createWallMeshPlan(
+  spec: BuildingFamilySpec,
+  catalog: ComponentCatalog,
+  openingPlans: InstancePlan[] = []
+): MeshPlan {
   const recipe = recipeByRole(catalog, "wall");
-  const plans = wallPanelPlans(spec, recipe);
-  const primitives = plans.map((plan) => buildBoxPrimitive({ center: plan.center, size: plan.size }));
+  const wallDepthM = Math.max(0.02, recipe.dimensionsM.depth);
+  // CGA/GN-style split: each bay → piers + sill + head around opening slot.
+  const primitives = buildSubdividedFacadeWallPrimitives({
+    spec,
+    wallDepthM,
+    openings: openingsFromInstancePlans(openingPlans)
+  });
 
   return {
     batchId: "mesh.wall-panels",
@@ -287,8 +274,8 @@ function createWallMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCatalog)
     materialSlotId: firstAtlasSlot(recipe),
     stage: "facade",
     primitives,
-    semanticEntries: plans.map((plan, elementIndex) => ({
-      semanticPath: semanticPath(spec, `facade/${plan.facade}/floor/${plan.floor}/bay/${plan.bay}/wall/panel`),
+    semanticEntries: primitives.map((_, elementIndex) => ({
+      semanticPath: semanticPath(spec, `facade/wall/subdivided/piece/${elementIndex}`),
       batchId: "mesh.wall-panels",
       elementIndex,
       stage: "facade"
@@ -871,7 +858,7 @@ export async function compileBuilding(input: CompileBuildingInput): Promise<Runt
       ].filter((plan): plan is MeshPlan => plan !== undefined)
     : [];
   const meshPlans = [
-    createWallMeshPlan(input.spec, input.catalog),
+    createWallMeshPlan(input.spec, input.catalog, openingPlans),
     ...highDetailMeshPlans,
     createRoofMeshPlan(input.spec, input.catalog)
   ];

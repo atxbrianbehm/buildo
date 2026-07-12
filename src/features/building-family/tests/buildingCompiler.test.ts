@@ -186,9 +186,6 @@ describe("compileBuilding", () => {
   it("indexes every emitted element with semantic path, batch id, stage, and element index", async () => {
     const { spec, catalog, graph } = await fixtureCompilerInputs();
     const ir = await compileBuilding({ spec, catalog, graph });
-    const sideBayCount = Math.max(1, Math.round(spec.massing.depthM / spec.facade.sideBaySpacingM));
-    const expectedWallPanelCount =
-      spec.massing.floorCount * (spec.facade.frontBayCount * 2 + sideBayCount * 2);
     expect(
       ir.semanticIndex.some(
         (entry) =>
@@ -220,9 +217,11 @@ describe("compileBuilding", () => {
     expect(ir.meshBatches.map((batch) => batch.batchId)).toEqual(
       expect.arrayContaining(["mesh.cornice", "mesh.belt-course", "mesh.roof-cap", "mesh.corner-quoins"])
     );
-    expect(ir.semanticIndex.filter((entry) => entry.batchId === "mesh.wall-panels")).toHaveLength(
-      expectedWallPanelCount
+    // Subdivided walls emit many pier/sill/head pieces (not one slab per bay).
+    expect(ir.semanticIndex.filter((entry) => entry.batchId === "mesh.wall-panels").length).toBeGreaterThan(
+      spec.massing.floorCount * spec.facade.frontBayCount
     );
+    expect(ir.semanticIndex.some((entry) => entry.semanticPath.includes("wall/subdivided"))).toBe(true);
     expect(ir.semanticIndex.every((entry) => entry.semanticPath.startsWith(`building/${spec.familyId}/`))).toBe(true);
   });
 });
