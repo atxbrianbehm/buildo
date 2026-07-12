@@ -54,7 +54,7 @@ describe("openingGeometry", () => {
     const combined = buildOpeningAssemblyGeometry({ recipe: frame, detail: "high", part: "frame" });
 
     expect(high.length).toBeGreaterThan(low.length);
-    expect(high.length).toBeGreaterThanOrEqual(8);
+    expect(high.length).toBeGreaterThanOrEqual(12);
     expect(openingAssemblyDepthExtent(frame, "high")).toBeGreaterThan(0.28);
     expect(openingGlassInsetFromExterior(frame)).toBeGreaterThan(0.08);
     expect(combined.normals.every((value) => Number.isFinite(value))).toBe(true);

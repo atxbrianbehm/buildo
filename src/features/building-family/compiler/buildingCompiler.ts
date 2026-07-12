@@ -224,21 +224,25 @@ function wallPanelPlans(spec: BuildingFamilySpec, wallRecipe: ComponentRecipe): 
     const height = spec.massing.floorHeightsM[floor] ?? spec.massing.floorHeightsM.at(-1) ?? wallRecipe.dimensionsM.height;
     const y = floorBaseY(spec, floor) + height / 2;
 
+    // Ground floor projects slightly as a base/storefront plinth for clay silhouette.
+    const baseProjection = floor === 0 ? Math.min(0.12, thickness * 0.45) : 0;
+    const floorThickness = thickness + baseProjection;
+
     for (let bay = 0; bay < spec.facade.frontBayCount; bay += 1) {
       const x = -spec.massing.widthM / 2 + frontBayWidth * bay + frontBayWidth / 2;
       plans.push({
         facade: "front",
         floor,
         bay,
-        center: [x, y, -spec.massing.depthM / 2 + thickness / 2],
-        size: [frontBayWidth, height, thickness]
+        center: [x, y, -spec.massing.depthM / 2 + floorThickness / 2],
+        size: [frontBayWidth, height, floorThickness]
       });
       plans.push({
         facade: "rear",
         floor,
         bay,
-        center: [x, y, spec.massing.depthM / 2 - thickness / 2],
-        size: [frontBayWidth, height, thickness]
+        center: [x, y, spec.massing.depthM / 2 - floorThickness / 2],
+        size: [frontBayWidth, height, floorThickness]
       });
     }
 

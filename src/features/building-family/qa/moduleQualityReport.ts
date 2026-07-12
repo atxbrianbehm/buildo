@@ -91,6 +91,7 @@ export function evaluateModuleQualityChecklist(
   const openingDepthM = windowRecipe ? openingAssemblyDepthExtent(windowRecipe, "high") : 0;
   const glassInsetM = windowRecipe ? openingGlassInsetFromExterior(windowRecipe) : 0;
   const corniceLayers = fixture.ir.semanticIndex.filter((entry) => entry.batchId === "mesh.cornice").length;
+  const beltLayers = fixture.ir.semanticIndex.filter((entry) => entry.batchId === "mesh.belt-course").length;
   const tileableSlots = fixture.packedAtlas.manifest.slots.filter(
     (slot) => typeof slot.metersPerTile === "number" && slot.metersPerTile > 0
   );
@@ -140,15 +141,21 @@ export function evaluateModuleQualityChecklist(
     item(
       "trimLayering",
       "Trim profiles are multi-layer, not single flat bands",
-      detailLevel === "high" && (corniceLayers >= 2 || batchIds.has("mesh.belt-course"))
+      detailLevel === "high" && corniceLayers >= 5 && beltLayers >= 2
         ? "pass"
         : detailLevel === "low"
           ? "estimated"
           : "fail",
       detailLevel === "high"
-        ? "High-detail cornice semantic layers and/or belt-course mesh present."
+        ? "High-detail cornice uses a layered profile stack; intermediate floor belt courses present."
         : "Low-detail intentionally omits decorative trim layering.",
-      { corniceLayers, hasBeltCourse: batchIds.has("mesh.belt-course"), detailLevel }
+      {
+        corniceLayers,
+        beltLayers,
+        corniceLayerFloor: 5,
+        hasBeltCourse: batchIds.has("mesh.belt-course"),
+        detailLevel
+      }
     ),
     item(
       "materialScale",

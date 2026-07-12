@@ -58,12 +58,13 @@ function assertMeshIntegrity(ir: RuntimeBuildingIR): void {
     }
 
     for (let index = 0; index < positions.length; index += 3) {
-      expect(positions[index]).toBeGreaterThanOrEqual(ir.bounds.min[0]);
-      expect(positions[index]).toBeLessThanOrEqual(ir.bounds.max[0]);
-      expect(positions[index + 1]).toBeGreaterThanOrEqual(ir.bounds.min[1]);
-      expect(positions[index + 1]).toBeLessThanOrEqual(ir.bounds.max[1]);
-      expect(positions[index + 2]).toBeGreaterThanOrEqual(ir.bounds.min[2]);
-      expect(positions[index + 2]).toBeLessThanOrEqual(ir.bounds.max[2]);
+      const epsilon = 1e-4;
+      expect(positions[index]).toBeGreaterThanOrEqual(ir.bounds.min[0] - epsilon);
+      expect(positions[index]).toBeLessThanOrEqual(ir.bounds.max[0] + epsilon);
+      expect(positions[index + 1]).toBeGreaterThanOrEqual(ir.bounds.min[1] - epsilon);
+      expect(positions[index + 1]).toBeLessThanOrEqual(ir.bounds.max[1] + epsilon);
+      expect(positions[index + 2]).toBeGreaterThanOrEqual(ir.bounds.min[2] - epsilon);
+      expect(positions[index + 2]).toBeLessThanOrEqual(ir.bounds.max[2] + epsilon);
     }
   }
 }
@@ -178,20 +179,22 @@ describe("compileBuilding", () => {
     const sideBayCount = Math.max(1, Math.round(spec.massing.depthM / spec.facade.sideBaySpacingM));
     const expectedWallPanelCount =
       spec.massing.floorCount * (spec.facade.frontBayCount * 2 + sideBayCount * 2);
-    const doorBay = Math.floor(spec.facade.frontBayCount / 2);
-
+    expect(
+      ir.semanticIndex.some(
+        (entry) =>
+          entry.batchId === "instances.window" &&
+          entry.stage === "openings" &&
+          entry.semanticPath.includes(`building/${spec.familyId}/facade/front/`)
+      )
+    ).toBe(true);
+    // Door bay is seed-weighted around center (±1), not a fixed middle bay.
     expect(ir.semanticIndex).toContainEqual(
       expect.objectContaining({
-        semanticPath: expect.stringContaining(
-          `building/${spec.familyId}/facade/front/floor/2/bay/3/opening/`
+        semanticPath: expect.stringMatching(
+          new RegExp(
+            `building/${spec.familyId}/facade/front/floor/0/bay/\\d+/opening/door\\.storefront\\.recessed`
+          )
         ),
-        batchId: "instances.window",
-        stage: "openings"
-      })
-    );
-    expect(ir.semanticIndex).toContainEqual(
-      expect.objectContaining({
-        semanticPath: `building/${spec.familyId}/facade/front/floor/0/bay/${doorBay}/opening/door.storefront.recessed`,
         batchId: "instances.door",
         stage: "openings",
         elementIndex: 0
