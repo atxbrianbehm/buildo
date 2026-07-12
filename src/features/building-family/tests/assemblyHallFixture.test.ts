@@ -257,9 +257,8 @@ describe("assembly hall fixture", () => {
     expect(fixture.variantStress.variants).toHaveLength(16);
     expect(new Set(fixture.variantStress.variants.map((variant) => variant.buildingId)).size).toBe(16);
     expect(new Set(fixture.variantStress.variants.map((variant) => variant.buildingSeed)).size).toBe(16);
-    expect(new Set(fixture.variantStress.variants.map((variant) => variant.sourceGraphHash))).toEqual(
-      new Set([fixture.ir.sourceGraphHash])
-    );
+    // Variants re-plan with distinct building seeds, so graph hashes are not forced-identical.
+    expect(new Set(fixture.variantStress.variants.map((variant) => variant.sourceGraphHash)).size).toBeGreaterThan(1);
     expect(fixture.variantStress.variants[0]).toMatchObject({
       index: 0,
       buildingId: fixture.ir.buildingId,
@@ -268,8 +267,12 @@ describe("assembly hall fixture", () => {
       instanceCount: fixture.ir.metrics.instanceCount,
       semanticPathCount: fixture.ir.semanticIndex.length
     });
-    expect(fixture.variantStress.aggregate.triangleCount).toBe(fixture.ir.metrics.triangleCount * 16);
-    expect(fixture.variantStress.aggregate.instanceCount).toBe(fixture.ir.metrics.instanceCount * 16);
+    expect(fixture.variantStress.aggregate.triangleCount).toBe(
+      fixture.variantStress.variants.reduce((total, variant) => total + variant.triangleCount, 0)
+    );
+    expect(fixture.variantStress.aggregate.instanceCount).toBe(
+      fixture.variantStress.variants.reduce((total, variant) => total + variant.instanceCount, 0)
+    );
 
     fixture.familyRuntime.dispose();
   });

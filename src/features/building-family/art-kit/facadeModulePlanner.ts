@@ -279,7 +279,9 @@ export function planFacadeModules(input: PlanFacadeModulesInput): FacadeModulePl
   const cells = buildFacadeCells(spec);
   const diagnostics: Diagnostic[] = [];
   const placements: FacadeModulePlacement[] = [];
-  const seedTree = createSeedTree(spec.seeds.family).fork("art-kit/facades");
+  // Building seed drives per-building facade choices so sample gallery variants
+  // and Assembly Hall opens are not identical for a shared family seed.
+  const seedTree = createSeedTree(spec.seeds.building).fork("art-kit/facades");
   const doorBay = Math.floor(spec.facade.frontBayCount / 2);
 
   for (const cell of cells) {

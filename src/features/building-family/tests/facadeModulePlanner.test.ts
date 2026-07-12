@@ -61,6 +61,31 @@ describe("facade module planner", () => {
     expect(cells.every((cell) => cell.semanticPath.startsWith("building/family-test/facade/"))).toBe(true);
   });
 
+  it("varies front window module choices with building seed while remaining deterministic", () => {
+    const base = fixtureSpec();
+    const seedA = planFacadeModules({
+      spec: { ...base, seeds: { ...base.seeds, building: "building-seed-a" } },
+      kit: late19cApartmentKit
+    });
+    const seedAAgain = planFacadeModules({
+      spec: { ...base, seeds: { ...base.seeds, building: "building-seed-a" } },
+      kit: late19cApartmentKit
+    });
+    const seedB = planFacadeModules({
+      spec: { ...base, seeds: { ...base.seeds, building: "building-seed-b" } },
+      kit: late19cApartmentKit
+    });
+
+    expect(seedA).toEqual(seedAAgain);
+    const frontWindowsA = seedA.placements
+      .filter((placement) => placement.facade === "front" && placement.layer === "opening")
+      .map((placement) => placement.moduleId);
+    const frontWindowsB = seedB.placements
+      .filter((placement) => placement.facade === "front" && placement.layer === "opening")
+      .map((placement) => placement.moduleId);
+    expect(frontWindowsA).not.toEqual(frontWindowsB);
+  });
+
   it("returns a deterministic empty-diagnostic plan for the fixture art kit", () => {
     const spec = fixtureSpec();
     const first = planFacadeModules({ spec, kit: late19cApartmentKit });

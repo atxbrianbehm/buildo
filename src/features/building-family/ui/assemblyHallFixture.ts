@@ -234,6 +234,8 @@ async function createVariantStressSummary(input: {
   signal: AbortSignal;
   spec: BuildingFamilySpec;
 }): Promise<AssemblyHallVariantStress> {
+  const fidelityMode = input.controls.fidelityMode ?? "kit";
+  const detailLevel = input.controls.detailLevel ?? "high";
   const variants = await Promise.all(
     Array.from({ length: 16 }, async (_, index) => {
       throwIfAborted(input.signal);
@@ -242,13 +244,23 @@ async function createVariantStressSummary(input: {
         return stressVariantForIr(index, buildingSeed, input.ir);
       }
 
+      // Re-plan + recompile with the variant building seed so stress cards are not
+      // identical IR clones of the primary fixture under a different building id.
+      const variantSpec: BuildingFamilySpec = {
+        ...input.spec,
+        seeds: {
+          ...input.spec.seeds,
+          building: buildingSeed
+        }
+      };
+      const variantGraph = await buildBuildingGraph(variantSpec, input.catalog, { fidelityMode });
       const variantIr = await compileBuilding({
-        spec: input.spec,
+        spec: variantSpec,
         catalog: input.catalog,
-        graph: input.graph,
-        buildingId: await buildingIdForSeed(input.spec, buildingSeed),
-        detailLevel: input.controls.detailLevel ?? "high",
-        fidelityMode: input.controls.fidelityMode ?? "kit"
+        graph: variantGraph,
+        buildingId: await buildingIdForSeed(variantSpec, buildingSeed),
+        detailLevel,
+        fidelityMode
       });
       return stressVariantForIr(index, buildingSeed, variantIr);
     })
