@@ -31,7 +31,11 @@ export const AtlasSlotSchema = z.object({
   profileRecipeId: z.string().optional(),
   compatibilityTags: z.array(z.string()),
   generationPrompt: z.string(),
-  seedPath: z.string()
+  seedPath: z.string(),
+  /** Optional art-kit physical tile scale for repeatable materials (glTF mapping). */
+  metersPerTile: z.number().positive().optional(),
+  artKitMaterialRoleId: z.string().optional(),
+  proceduralSource: z.string().optional()
 });
 
 export const AtlasManifestSchema = z.object({

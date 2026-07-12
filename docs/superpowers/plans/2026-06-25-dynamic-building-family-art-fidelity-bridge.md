@@ -342,6 +342,8 @@ npm.cmd run typecheck
 
 ### Slice 5: Art-Kit Material Set
 
+Status: implemented on 2026-07-12. Art-kit material roles bind to atlas slots with `metersPerTile`, procedural source ids, and glTF channel hints; tileable wall/roof slots use kit tile scale and the procedural brick generator preserves coursing density across resolutions. Implementation plan: `docs/superpowers/plans/2026-07-12-art-kit-material-set.md`.
+
 Define material sets at kit level, then map them into the existing atlas planner and Three adapter.
 
 Initial material roles:

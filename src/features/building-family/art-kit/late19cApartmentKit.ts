@@ -16,6 +16,14 @@ export const late19cApartmentKit: ArtKitManifest = ArtKitManifestSchema.parse({
       proceduralSource: "running-bond-brick"
     },
     {
+      id: "plaster",
+      label: "Painted plaster / stucco",
+      channels: ["baseColor", "normal", "orm", "height"],
+      metersPerTile: 1.5,
+      atlasSlotHint: "wall.secondary",
+      proceduralSource: "painted-stucco"
+    },
+    {
       id: "trim-stone",
       label: "Pale trim stone",
       channels: ["baseColor", "normal", "orm", "height"],
@@ -54,6 +62,14 @@ export const late19cApartmentKit: ArtKitManifest = ArtKitManifestSchema.parse({
       metersPerTile: 2,
       atlasSlotHint: "roof.primary",
       proceduralSource: "roof-membrane"
+    },
+    {
+      id: "grime",
+      label: "Grime / weathering mask",
+      channels: ["baseColor", "orm", "opacity", "height"],
+      metersPerTile: 1,
+      atlasSlotHint: "utility.mask",
+      proceduralSource: "grime-weathering-mask"
     }
   ],
   modules: [

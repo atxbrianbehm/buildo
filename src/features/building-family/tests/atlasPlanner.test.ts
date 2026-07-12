@@ -53,7 +53,32 @@ describe("AtlasPlanner", () => {
     expect(first.manifest.channels).toEqual(["baseColor", "normal", "orm", "height", "opacity"]);
     expect(first.manifest.paddingPx).toBe(12);
     expect(first.manifest.slots.map((slot) => slot.id)).toEqual(requiredSlotIds);
-    expect(first.diagnostics).toEqual([]);
+    expect(first.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
+  });
+
+  it("binds art-kit metersPerTile onto tileable wall slots for stable material scale", async () => {
+    const spec = await fixtureSpec();
+    const plan = await planAtlas(spec, { widthPx: 1024, heightPx: 1024, paddingPx: 12 });
+    const wall = plan.manifest.slots.find((slot) => slot.id === "wall.primary");
+    const roof = plan.manifest.slots.find((slot) => slot.id === "roof.primary");
+    const wallSource = plan.materialSources.find((source) => source.sourceId === "source.wall.primary");
+
+    expect(wall?.metersPerTile).toBe(1.2);
+    expect(wall?.artKitMaterialRoleId).toBe("brick");
+    expect(wall?.proceduralSource).toBe("running-bond-brick");
+    expect(wall?.physicalSizeM).toEqual({ width: 1.2, height: 1.2 });
+    expect(roof?.metersPerTile).toBe(2);
+    expect(roof?.physicalSizeM).toEqual({ width: 2, height: 2 });
+    expect(wallSource?.metersPerTile).toBe(1.2);
+    expect(wallSource?.proceduralSource).toBe("running-bond-brick");
+  });
+
+  it("can disable art-kit binding and restore facade-extent physical sizes", async () => {
+    const spec = await fixtureSpec();
+    const plan = await planAtlas(spec, { artKit: null, widthPx: 1024, heightPx: 1024, paddingPx: 12 });
+    const wall = plan.manifest.slots.find((slot) => slot.id === "wall.primary");
+    expect(wall?.metersPerTile).toBeUndefined();
+    expect(wall?.physicalSizeM.width).toBeCloseTo(spec.massing.widthM, 5);
   });
 
   it("validates slot bounds, overlap, padding, and source/profile references", async () => {

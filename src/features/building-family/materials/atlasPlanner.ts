@@ -1,13 +1,22 @@
+import { late19cApartmentKit, type ArtKitManifest } from "../art-kit";
 import { AtlasManifestSchema, type AtlasManifest, type AtlasSlot } from "../contracts/atlasManifest";
 import type { BuildingFamilySpec } from "../contracts/buildingFamilySpec";
 import { BuildingFamilySpecSchema } from "../contracts/buildingFamilySpec";
 import type { Diagnostic } from "../core/diagnostics";
 import { hashCanonicalJson } from "../core/contentHash";
+import {
+  artKitMaterialForAtlasSlot,
+  mapSelectedFamilyToArtKitMaterialId,
+  resolveArtKitMaterialSet,
+  tilePhysicalSizeM
+} from "./artKitMaterialSet";
 
 export interface AtlasPlannerOptions {
   widthPx?: number;
   heightPx?: number;
   paddingPx?: number;
+  /** Pass null to disable art-kit scale binding. Default: kit matching style pack. */
+  artKit?: ArtKitManifest | null;
 }
 
 export interface AtlasMaterialSourcePlan {
@@ -18,6 +27,9 @@ export interface AtlasMaterialSourcePlan {
   physicalSizeM: AtlasSlot["physicalSizeM"];
   seedPath: string;
   promptVocabulary: string[];
+  metersPerTile?: number;
+  artKitMaterialRoleId?: string;
+  proceduralSource?: string;
 }
 
 export interface AtlasPlan {
@@ -213,16 +225,84 @@ function promptForSlot(spec: BuildingFamilySpec, template: SlotTemplate): string
   return [family, ...template.promptTerms, ...template.compatibilityTags].join(", ");
 }
 
-function buildMaterialSources(spec: BuildingFamilySpec): AtlasMaterialSourcePlan[] {
-  return slotTemplates.map((template) => ({
-    sourceId: template.materialSourceId,
-    role: template.role,
-    selectedFamily: selectedFamily(spec, template.selectedFamily),
-    periodicity: template.periodicity,
-    physicalSizeM: template.physicalSize(spec),
-    seedPath: `atlas/source/${template.id}/${selectedFamily(spec, template.selectedFamily)}`,
-    promptVocabulary: [selectedFamily(spec, template.selectedFamily), ...template.promptTerms]
-  }));
+function isTileableTemplate(template: SlotTemplate): boolean {
+  return template.periodicity === "x" || template.periodicity === "xy";
+}
+
+function resolvePlannerArtKit(spec: BuildingFamilySpec, options: AtlasPlannerOptions): ArtKitManifest | undefined {
+  if (options.artKit === null) {
+    return undefined;
+  }
+  if (options.artKit) {
+    return options.artKit;
+  }
+  if (late19cApartmentKit.stylePackIds.includes(spec.stylePackId)) {
+    return late19cApartmentKit;
+  }
+  return undefined;
+}
+
+function materialMetadataForSlot(
+  kit: ArtKitManifest | undefined,
+  template: SlotTemplate,
+  spec: BuildingFamilySpec
+): {
+  physicalSizeM: AtlasSlot["physicalSizeM"];
+  metersPerTile?: number;
+  artKitMaterialRoleId?: string;
+  proceduralSource?: string;
+} {
+  const family = selectedFamily(spec, template.selectedFamily);
+  const byHint = kit ? artKitMaterialForAtlasSlot(kit, template.id) : undefined;
+  const roleId =
+    byHint?.id ??
+    (kit ? mapSelectedFamilyToArtKitMaterialId(template.role, family) : undefined);
+  const material = roleId ? kit?.materials.find((candidate) => candidate.id === roleId) : undefined;
+
+  if (material && isTileableTemplate(template)) {
+    return {
+      physicalSizeM: tilePhysicalSizeM(material.metersPerTile),
+      metersPerTile: material.metersPerTile,
+      artKitMaterialRoleId: material.id,
+      proceduralSource: material.proceduralSource
+    };
+  }
+
+  if (material) {
+    return {
+      physicalSizeM: template.physicalSize(spec),
+      metersPerTile: material.metersPerTile,
+      artKitMaterialRoleId: material.id,
+      proceduralSource: material.proceduralSource
+    };
+  }
+
+  return { physicalSizeM: template.physicalSize(spec) };
+}
+
+function buildMaterialSources(
+  spec: BuildingFamilySpec,
+  kit: ArtKitManifest | undefined
+): AtlasMaterialSourcePlan[] {
+  return slotTemplates.map((template) => {
+    const meta = materialMetadataForSlot(kit, template, spec);
+    return {
+      sourceId: template.materialSourceId,
+      role: template.role,
+      selectedFamily: selectedFamily(spec, template.selectedFamily),
+      periodicity: template.periodicity,
+      physicalSizeM: meta.physicalSizeM,
+      seedPath: `atlas/source/${template.id}/${selectedFamily(spec, template.selectedFamily)}`,
+      promptVocabulary: [
+        selectedFamily(spec, template.selectedFamily),
+        ...template.promptTerms,
+        ...(meta.proceduralSource ? [meta.proceduralSource] : [])
+      ],
+      metersPerTile: meta.metersPerTile,
+      artKitMaterialRoleId: meta.artKitMaterialRoleId,
+      proceduralSource: meta.proceduralSource
+    };
+  });
 }
 
 export async function planAtlas(specInput: unknown, options: AtlasPlannerOptions = {}): Promise<AtlasPlan> {
@@ -230,23 +310,31 @@ export async function planAtlas(specInput: unknown, options: AtlasPlannerOptions
   const widthPx = options.widthPx ?? 1024;
   const heightPx = options.heightPx ?? 1024;
   const paddingPx = options.paddingPx ?? 12;
+  const artKit = resolvePlannerArtKit(spec, options);
+  const materialSet = artKit ? resolveArtKitMaterialSet(artKit) : undefined;
   const profileRecipeIds = slotTemplates
     .map((template) => template.profileRecipeId?.(spec))
     .filter((id): id is string => Boolean(id));
 
-  const slots = slotTemplates.map((template, index): AtlasSlot => ({
-    id: template.id,
-    role: template.role,
-    rectPx: makeGridRect(index, widthPx, heightPx, paddingPx),
-    uvMode: template.uvMode,
-    periodicity: template.periodicity,
-    physicalSizeM: template.physicalSize(spec),
-    materialSourceId: template.materialSourceId,
-    profileRecipeId: template.profileRecipeId?.(spec),
-    compatibilityTags: template.compatibilityTags,
-    generationPrompt: promptForSlot(spec, template),
-    seedPath: `atlas/slot/${template.id}/${spec.familyId}`
-  }));
+  const slots = slotTemplates.map((template, index): AtlasSlot => {
+    const meta = materialMetadataForSlot(artKit, template, spec);
+    return {
+      id: template.id,
+      role: template.role,
+      rectPx: makeGridRect(index, widthPx, heightPx, paddingPx),
+      uvMode: template.uvMode,
+      periodicity: template.periodicity,
+      physicalSizeM: meta.physicalSizeM,
+      materialSourceId: template.materialSourceId,
+      profileRecipeId: template.profileRecipeId?.(spec),
+      compatibilityTags: template.compatibilityTags,
+      generationPrompt: promptForSlot(spec, template),
+      seedPath: `atlas/slot/${template.id}/${spec.familyId}`,
+      metersPerTile: meta.metersPerTile,
+      artKitMaterialRoleId: meta.artKitMaterialRoleId,
+      proceduralSource: meta.proceduralSource
+    };
+  });
 
   const manifestWithoutId = {
     schemaVersion: "0.1.0" as const,
@@ -262,14 +350,14 @@ export async function planAtlas(specInput: unknown, options: AtlasPlannerOptions
   const manifest = AtlasManifestSchema.parse({ ...manifestWithoutId, atlasId });
   const plan = {
     manifest,
-    materialSources: buildMaterialSources(spec),
+    materialSources: buildMaterialSources(spec, artKit),
     profileRecipeIds,
-    diagnostics: [] satisfies Diagnostic[]
+    diagnostics: [...(materialSet?.diagnostics ?? [])] satisfies Diagnostic[]
   };
 
   return {
     ...plan,
-    diagnostics: validateAtlasPlan(plan)
+    diagnostics: [...plan.diagnostics, ...validateAtlasPlan(plan)]
   };
 }
 

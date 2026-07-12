@@ -112,10 +112,23 @@ function layerBytes(layers: MaterialSourceArtifact["layers"]): Uint8Array {
   return combined;
 }
 
+/**
+ * Derive brick cell size from metersPerTile so coursing density stays stable.
+ * Standard course ~0.075 m; tile of 1.2 m → ~16 courses across the tile height.
+ */
+export function brickCellSizePx(request: MaterialSourceRequest): { brickWidth: number; brickHeight: number; mortar: number } {
+  const metersPerTile =
+    request.metersPerTile ??
+    Math.max(request.physicalSizeM.width, request.physicalSizeM.height);
+  const coursesPerTile = Math.max(4, metersPerTile / 0.075);
+  const brickHeight = Math.max(2, Math.round(request.heightPx / coursesPerTile));
+  const brickWidth = Math.max(4, Math.round(brickHeight * 2));
+  const mortar = Math.max(1, Math.round(brickHeight * 0.12));
+  return { brickWidth, brickHeight, mortar };
+}
+
 function brickLayers(request: MaterialSourceRequest, seed: SeedTree): MaterialSourceArtifact["layers"] {
-  const brickHeight = 8;
-  const brickWidth = 16;
-  const mortar = 1;
+  const { brickHeight, brickWidth, mortar } = brickCellSizePx(request);
   const baseColor = makeLayer(request.widthPx, request.heightPx, request.periodicity, (x, y) => {
     const row = Math.floor(y / brickHeight);
     const offsetX = row % 2 === 0 ? x : x + brickWidth / 2;
@@ -236,23 +249,51 @@ function ornamentLayers(request: MaterialSourceRequest, seed: SeedTree): Materia
 function layersForRequest(request: MaterialSourceRequest, seed: SeedTree): MaterialSourceArtifact["layers"] {
   const family = request.selectedFamily.toLowerCase();
   const source = request.sourceId.toLowerCase();
+  const procedural = (request.proceduralSource ?? "").toLowerCase();
+  const role = (request.artKitMaterialRoleId ?? "").toLowerCase();
 
-  if (family.includes("brick")) {
+  if (
+    family.includes("brick") ||
+    procedural.includes("brick") ||
+    role === "brick"
+  ) {
     return brickLayers(request, seed);
   }
-  if (family.includes("stucco")) {
+  if (
+    family.includes("stucco") ||
+    family.includes("plaster") ||
+    procedural.includes("stucco") ||
+    procedural.includes("plaster") ||
+    role === "plaster"
+  ) {
     return stuccoLayers(request, seed);
   }
-  if (source.includes("roof") || family.includes("roof") || family.includes("gable")) {
+  if (
+    source.includes("roof") ||
+    family.includes("roof") ||
+    family.includes("gable") ||
+    procedural.includes("roof") ||
+    role === "roof"
+  ) {
     return roofLayers(request, seed);
   }
-  if (source.includes("glass")) {
+  if (source.includes("glass") || procedural.includes("glass") || role === "glass") {
     return glassLayers(request, seed);
   }
-  if (source.includes("door") || family.includes("wood")) {
+  if (
+    source.includes("door") ||
+    family.includes("wood") ||
+    procedural.includes("wood") ||
+    role === "painted-wood"
+  ) {
     return paintedWoodLayers(request, seed);
   }
-  if (source.includes("ornament") || source.includes("utility")) {
+  if (
+    source.includes("ornament") ||
+    source.includes("utility") ||
+    procedural.includes("grime") ||
+    role === "grime"
+  ) {
     return ornamentLayers(request, seed);
   }
   return paintedMetalLayers(request, seed);
