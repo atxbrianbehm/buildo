@@ -133,9 +133,9 @@ export function evaluateModuleQualityChecklist(
     item(
       "openingDepth",
       "Openings have measurable recess depth and glass inset",
-      openingDepthM > 0.15 && glassInsetM > 0.05 ? "pass" : "fail",
-      "Window assembly geometry depth and glass inset measured from openingGeometry helpers.",
-      { openingDepthM, glassInsetM }
+      openingDepthM > 0.28 && glassInsetM > 0.08 ? "pass" : "fail",
+      "Window assembly geometry depth and glass inset measured from openingGeometry helpers (raised clay-readability bar).",
+      { openingDepthM, glassInsetM, depthFloorM: 0.28, glassInsetFloorM: 0.08 }
     ),
     item(
       "trimLayering",

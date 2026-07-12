@@ -55,8 +55,8 @@ describe("openingGeometry", () => {
 
     expect(high.length).toBeGreaterThan(low.length);
     expect(high.length).toBeGreaterThanOrEqual(8);
-    expect(openingAssemblyDepthExtent(frame, "high")).toBeGreaterThan(0.15);
-    expect(openingGlassInsetFromExterior(frame)).toBeGreaterThan(0.05);
+    expect(openingAssemblyDepthExtent(frame, "high")).toBeGreaterThan(0.28);
+    expect(openingGlassInsetFromExterior(frame)).toBeGreaterThan(0.08);
     expect(combined.normals.every((value) => Number.isFinite(value))).toBe(true);
     expect(combined.indices.length % 3).toBe(0);
   });

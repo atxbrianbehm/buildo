@@ -37,8 +37,9 @@ export function buildOpeningGlassPrimitives(recipe: ComponentRecipe): PrimitiveG
   const depth = Math.max(0.015, recipe.dimensionsM.depth);
   return [
     buildBoxPrimitive({
-      center: [0, 0, -depth * 0.15],
-      size: [width, height, depth]
+      // Push glass deeper into the recess so exterior reads as framed architecture.
+      center: [0, 0, -depth * 0.45],
+      size: [width, height, Math.min(0.03, depth)]
     })
   ];
 }
@@ -142,45 +143,45 @@ export function buildWindowFramePrimitives(
   const width = recipe.dimensionsM.width;
   const height = recipe.dimensionsM.height;
   const depth = recipe.dimensionsM.depth;
-  const thickness = midRange(recipe, "frameThicknessM", 0.08);
-  const recessDepth = midRange(recipe, "recessDepthM", 0.16);
-  const sillProjection = midRange(recipe, "sillProjectionM", 0.1);
-  const mullionDepth = midRange(recipe, "mullionDepthM", 0.08);
+  const thickness = midRange(recipe, "frameThicknessM", 0.11);
+  const recessDepth = midRange(recipe, "recessDepthM", 0.26);
+  const sillProjection = midRange(recipe, "sillProjectionM", 0.13);
+  const mullionDepth = midRange(recipe, "mullionDepthM", 0.1);
   const countX = Math.round(midRange(recipe, "mullionCountX", 1));
   const countY = Math.round(midRange(recipe, "mullionCountY", 1));
-  const frameZ = 0;
+  const frameZ = 0.02;
 
   if (detail === "low") {
     return [
       buildBoxPrimitive({
         center: [0, 0, 0],
-        size: [width, height, Math.max(0.08, depth * 0.55)]
+        size: [width, height, Math.max(0.1, depth * 0.6)]
       })
     ];
   }
 
   const primitives: PrimitiveGeometry[] = [
     buildBoxPrimitive({
-      center: [0, 0, -recessDepth / 2 - depth * 0.15],
-      size: [width + 0.14, height + 0.14, recessDepth]
+      center: [0, 0, -recessDepth / 2 - depth * 0.18],
+      size: [width + 0.18, height + 0.18, recessDepth]
     }),
-    ...frameBars({ width, height, depth: depth * 0.7, thickness, z: frameZ }),
+    ...frameBars({ width, height, depth: depth * 0.78, thickness, z: frameZ }),
     ...mullions({
       width,
       height,
       depth: mullionDepth,
-      thickness: thickness * 0.75,
+      thickness: thickness * 0.78,
       countX: Math.max(1, countX),
       countY: Math.max(1, countY),
-      z: frameZ + depth * 0.05
+      z: frameZ + depth * 0.04
     }),
     buildBoxPrimitive({
-      center: [0, -height / 2 + thickness * 0.35, sillProjection * 0.35],
-      size: [width + 0.08, thickness * 0.9, depth * 0.55 + sillProjection]
+      center: [0, -height / 2 + thickness * 0.4, sillProjection * 0.4],
+      size: [width + 0.1, thickness * 1.05, depth * 0.6 + sillProjection]
     }),
     buildBoxPrimitive({
-      center: [0, height / 2 - thickness * 0.2, -depth * 0.05],
-      size: [width + 0.06, thickness * 1.1, depth * 0.75]
+      center: [0, height / 2 - thickness * 0.25, -depth * 0.06],
+      size: [width + 0.08, thickness * 1.25, depth * 0.8]
     })
   ];
 
@@ -189,8 +190,8 @@ export function buildWindowFramePrimitives(
       ...archedCrown({
         width: width * 0.98,
         height,
-        depth: depth * 0.7,
-        steps: 4
+        depth: depth * 0.78,
+        steps: 6
       })
     );
   }
@@ -205,16 +206,16 @@ export function buildDoorFramePrimitives(
   const width = recipe.dimensionsM.width;
   const height = recipe.dimensionsM.height;
   const depth = recipe.dimensionsM.depth;
-  const thickness = midRange(recipe, "frameThicknessM", 0.1);
-  const recessDepth = midRange(recipe, "recessDepthM", 0.2);
+  const thickness = midRange(recipe, "frameThicknessM", 0.13);
+  const recessDepth = midRange(recipe, "recessDepthM", 0.3);
   const transomHeight = midRange(recipe, "transomHeightM", 0.45);
-  const leafInset = midRange(recipe, "leafInsetM", 0.06);
+  const leafInset = midRange(recipe, "leafInsetM", 0.09);
 
   if (detail === "low") {
     return [
       buildBoxPrimitive({
         center: [0, 0, 0],
-        size: [width, height, Math.max(0.1, depth * 0.6)]
+        size: [width, height, Math.max(0.12, depth * 0.65)]
       })
     ];
   }
@@ -222,21 +223,21 @@ export function buildDoorFramePrimitives(
   const leafHeight = Math.max(0.4, height - transomHeight - thickness * 1.5);
   return [
     buildBoxPrimitive({
-      center: [0, 0, -recessDepth / 2 - depth * 0.12],
-      size: [width + 0.16, height + 0.1, recessDepth]
+      center: [0, 0, -recessDepth / 2 - depth * 0.14],
+      size: [width + 0.2, height + 0.12, recessDepth]
     }),
-    ...frameBars({ width, height, depth: depth * 0.75, thickness, z: 0 }),
+    ...frameBars({ width, height, depth: depth * 0.82, thickness, z: 0.02 }),
     buildBoxPrimitive({
-      center: [0, -height / 2 + thickness * 0.4, depth * 0.12],
-      size: [width + 0.1, thickness * 0.85, depth * 0.7]
+      center: [0, -height / 2 + thickness * 0.45, depth * 0.14],
+      size: [width + 0.12, thickness * 0.95, depth * 0.75]
     }),
     buildBoxPrimitive({
       center: [0, -height / 2 + thickness + leafHeight / 2, -leafInset],
-      size: [Math.max(0.2, width - thickness * 2.2), leafHeight, depth * 0.35]
+      size: [Math.max(0.2, width - thickness * 2.2), leafHeight, depth * 0.4]
     }),
     buildBoxPrimitive({
-      center: [0, height / 2 - transomHeight / 2 - thickness * 0.2, 0],
-      size: [Math.max(0.15, width - thickness * 2), thickness * 0.7, depth * 0.55]
+      center: [0, height / 2 - transomHeight / 2 - thickness * 0.2, -0.02],
+      size: [Math.max(0.15, width - thickness * 2), thickness * 0.8, depth * 0.6]
     })
   ];
 }
