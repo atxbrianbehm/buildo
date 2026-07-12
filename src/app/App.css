@@ -1780,13 +1780,46 @@ h1 {
 
 .assembly-hall__reveal,
 .assembly-hall__selection,
-.assembly-hall__compatibility {
+.assembly-hall__compatibility,
+.assembly-hall__visual-qa {
   display: grid;
   gap: 12px;
   min-width: 0;
   padding: 14px;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.7);
+}
+
+.assembly-hall__visual-qa-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.assembly-hall__visual-qa-header h3 {
+  margin: 0;
+  color: #121816;
+  font-size: 1.05rem;
+}
+
+.assembly-hall__visual-qa-header button {
+  min-height: 36px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 6px;
+  color: #f9fbf6;
+  background: #263c31;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.assembly-hall__visual-qa-header button:focus-visible {
+  outline: 3px solid rgba(70, 118, 86, 0.28);
+  outline-offset: 2px;
+}
   box-shadow:
     0 14px 36px rgba(22, 29, 25, 0.08),
     inset 0 0 0 1px rgba(24, 32, 28, 0.1);

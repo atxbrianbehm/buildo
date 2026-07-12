@@ -2,7 +2,7 @@
 
 ## Implementation plan
 
-**Status:** in progress — M1–M10 landed; next M11 visual QA packet  
+**Status:** in progress — M1–M11 landed (Phase C complete); next M12 WFC facade solver  
 **Date:** 2026-07-12  
 **Depends on:** MVP vertical slice (Milestones 0–7) complete; art-fidelity Slice 1 (`ArtKitManifest` + `late19cApartmentKit`) complete; visual-truth Assembly Hall prerequisite  
 **Related plans:**
@@ -18,6 +18,7 @@
 | `docs/superpowers/plans/2026-07-12-art-kit-material-set.md` | Detailed task plan for Phase C1 / M8 |
 | `docs/superpowers/plans/2026-07-12-art-fidelity-mode.md` | Detailed task plan for Phase C2 / M9 |
 | `docs/superpowers/plans/2026-07-12-art-kit-lab-gallery.md` | Detailed task plan for Phase C3 / M10 |
+| `docs/superpowers/plans/2026-07-12-visual-qa-packet.md` | Detailed task plan for Phase C4 / M11 |
 
 **Delivery mode:** small, reviewable milestones. Do not combine phases or merge independent intermediate artifacts without explicit instruction. Preserve all `AGENTS.md` Dynamic Building Family rules.
 
@@ -841,7 +842,7 @@ Execute in order. Each row is one reviewable PR-sized milestone unless noted.
 | M8 | Art-kit material set + scale | C1 | atlas + materials | done 2026-07-12 |
 | M9 | Fidelity mode proof/kit in run + export | C2 | persistence/export | done 2026-07-12 |
 | M10 | Art Kit Lab + gallery labels | C3 | UI + e2e | done 2026-07-12 |
-| M11 | Visual QA packet | C4 | QA schema + docs | pending |
+| M11 | Visual QA packet | C4 | QA schema + docs | done 2026-07-12 |
 | M12 | WFC constraint model + solver | D1 | pure WFC tests | pending |
 | M13 | WFC planner wiring + invalidation | D2 | controller + invalidation | pending |
 | M14 | UTDG contracts + demo graph | E1 | contract tests | pending |

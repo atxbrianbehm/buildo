@@ -3,6 +3,7 @@ import { vi } from "vitest";
 import type { AssemblyRendererActivation } from "../renderer-three/assemblyRendererFactory";
 import { AssemblyHall } from "../ui/AssemblyHall";
 import { createAssemblyHallFixture } from "../ui/assemblyHallFixture";
+import { VISUAL_QA_PACKET_KIND } from "../qa/visualQaPacket";
 
 function fakeRendererFactory(
   activeBackend: AssemblyRendererActivation["activeBackend"] = "webgl",
@@ -174,6 +175,9 @@ describe("AssemblyHall", () => {
     expect(screen.getByRole("table", { name: "Component gallery summary" })).toHaveTextContent(
       "instanceBatch"
     );
+    expect(screen.getByRole("heading", { name: "Visual QA Packet" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Download Visual QA Packet" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Visual QA packet summary")).toHaveTextContent(fixture.fidelityMode);
   });
 
   it("switches the live renderer between textured and clay inspection modes", async () => {
@@ -510,7 +514,9 @@ describe("AssemblyHall", () => {
 
   it("exposes semantic renderer lookup entries as a selectable Assembly Hall inspector", async () => {
     const fixture = await createAssemblyHallFixture();
-    const windowPath = `building/${fixture.ir.familyId}/facade/front/floor/0/bay/0/window/frame`;
+    const windowPath =
+      fixture.ir.semanticIndex.find((entry) => entry.batchId === "instances.window")?.semanticPath ??
+      `building/${fixture.ir.familyId}/facade/front/floor/0/bay/0/opening/opening.window.arched`;
 
     render(<AssemblyHall fixture={fixture} rendererFactory={fakeRendererFactory()} />);
 
@@ -522,7 +528,7 @@ describe("AssemblyHall", () => {
     expect(inspector).toHaveTextContent(windowPath);
     expect(inspector).toHaveTextContent("instances.window");
     expect(inspector).toHaveTextContent("openings");
-    expect(inspector).toHaveTextContent("glass.primary");
+    expect(inspector).toHaveTextContent("frame.primary");
     expect(inspector).toHaveTextContent("InstancedMesh");
     expect(inspector).toHaveTextContent("Window frame");
   });

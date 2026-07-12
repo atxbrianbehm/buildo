@@ -442,6 +442,8 @@ npm.cmd run typecheck
 
 ### Slice 8: Visual QA And Representative Evidence
 
+Status: implemented on 2026-07-12. Assembly Hall can download a schema-versioned visual QA packet with checklist results (pass/fail/estimated/not-captured), hashes, fidelity mode, and known gaps. Implementation plan: `docs/superpowers/plans/2026-07-12-visual-qa-packet.md`.
+
 Define a visual QA packet so fidelity does not drift into subjective hand-waving.
 
 The packet should include:

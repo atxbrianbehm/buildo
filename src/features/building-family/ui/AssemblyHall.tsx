@@ -48,6 +48,7 @@ import {
   type FamilyOrbitBenchmarkReport,
   type FamilyOrbitBenchmarkScene
 } from "../performance/familyOrbitBenchmarkScene";
+import { createVisualQaPacket, type VisualQaPacket } from "../qa/visualQaPacket";
 import type { AssemblyHallFixture } from "./assemblyHallFixture";
 
 export interface AssemblyHallProps {
@@ -181,6 +182,10 @@ function downloadJsonFile(fileName: string, payload: unknown): void {
 
 function downloadBenchmarkProfilePacket(packet: FamilyBenchmarkProfilePacket): void {
   downloadJsonFile(`${safeFileSegment(packet.familyId)}-benchmark-profile-packet.json`, packet);
+}
+
+function downloadVisualQaPacket(packet: VisualQaPacket): void {
+  downloadJsonFile(`${safeFileSegment(packet.hashes.buildingId)}-visual-qa-packet.json`, packet);
 }
 
 function createRendererCompatibilityReport(input: {
@@ -544,6 +549,31 @@ export function AssemblyHall({
         : null,
     [benchmarkReport, fixture, orbitBenchmarkReport]
   );
+  const [visualQaStatus, setVisualQaStatus] = useState<"idle" | "building" | "ready" | "failed">("idle");
+  const [visualQaError, setVisualQaError] = useState<string | null>(null);
+  const [visualQaPacket, setVisualQaPacket] = useState<VisualQaPacket | null>(null);
+
+  const exportVisualQaPacket = async () => {
+    setVisualQaStatus("building");
+    setVisualQaError(null);
+    try {
+      const packet = await createVisualQaPacket({
+        fixture,
+        seeds: fixture.spec.seeds,
+        detailLevel: "high",
+        screenshotTargetRoute: "#room=assemblyHall",
+        benchmarkProfileId: benchmarkProfilePacket
+          ? `${benchmarkProfilePacket.profileKind}:${benchmarkProfilePacket.familyId}`
+          : undefined
+      });
+      setVisualQaPacket(packet);
+      downloadVisualQaPacket(packet);
+      setVisualQaStatus("ready");
+    } catch (error) {
+      setVisualQaStatus("failed");
+      setVisualQaError(error instanceof Error ? error.message : "Failed to create visual QA packet");
+    }
+  };
   const compatibilityReport = useMemo(
     () =>
       createRendererCompatibilityReport({
@@ -916,6 +946,52 @@ export function AssemblyHall({
               <dd>{fixture.metrics.componentCount}</dd>
             </div>
           </dl>
+
+          <section className="assembly-hall__visual-qa" aria-labelledby="assembly-visual-qa-heading">
+            <div className="assembly-hall__visual-qa-header">
+              <h3 id="assembly-visual-qa-heading">Visual QA Packet</h3>
+              <button type="button" onClick={() => void exportVisualQaPacket()}>
+                Download Visual QA Packet
+              </button>
+            </div>
+            <dl className="assembly-hall__metrics" aria-label="Visual QA packet summary">
+              <div>
+                <dt>Status</dt>
+                <dd>{visualQaStatus}</dd>
+              </div>
+              <div>
+                <dt>Fidelity</dt>
+                <dd>{fixture.fidelityMode}</dd>
+              </div>
+              <div>
+                <dt>Pass / fail</dt>
+                <dd>
+                  {visualQaPacket
+                    ? `${visualQaPacket.qualityReport.summary.passCount} / ${visualQaPacket.qualityReport.summary.failCount}`
+                    : "—"}
+                </dd>
+              </div>
+              <div>
+                <dt>Estimated</dt>
+                <dd>{visualQaPacket?.qualityReport.summary.estimatedCount ?? "—"}</dd>
+              </div>
+            </dl>
+            {visualQaError ? (
+              <p className="assembly-hall__benchmark-message" role="alert">
+                {visualQaError}
+              </p>
+            ) : null}
+            {visualQaPacket ? (
+              <p className="assembly-hall__benchmark-message" aria-label="Visual QA packet fingerprint">
+                fingerprint {visualQaPacket.hashes.contentFingerprint.slice(0, 16)}…
+              </p>
+            ) : (
+              <p className="assembly-hall__benchmark-message">
+                Export a schema-versioned checklist packet for this fixture (measured IR/atlas signals + estimated
+                presentation coverage).
+              </p>
+            )}
+          </section>
 
           <section className="assembly-hall__compatibility" aria-labelledby="assembly-compatibility-heading">
             <div className="assembly-hall__compatibility-header">
