@@ -1,6 +1,10 @@
 import { z } from "zod";
 import { late19cApartmentKit, summarizeArtKitFacadePlanFromGraph } from "../art-kit";
 import { openingAssemblyDepthExtent, openingGlassInsetFromExterior } from "../compiler/openingGeometry";
+import {
+  FRAME_INSET_FROM_SLOT_M,
+  OPENING_SLOT_ALIGNMENT_EPS_M
+} from "../compiler/openingSlotBinding";
 import { SchemaVersion010 } from "../contracts/shared";
 import type { AssemblyHallFixture } from "../ui/assemblyHallFixture";
 
@@ -126,6 +130,29 @@ export function evaluateModuleQualityChecklist(
     fixture.catalog.recipes.find((recipe) => recipe.role === "cornice")?.profileRecipeId?.includes("profile.") ??
     false;
 
+  // Slot-locked frame metrics (G2): instance scale × recipe ≈ slot inset outer size.
+  const windowBatch = fixture.ir.instanceBatches.find((batch) => batch.batchId === "instances.window");
+  const doorBatch = fixture.ir.instanceBatches.find((batch) => batch.batchId === "instances.door");
+  const frameInstanceCount = (windowBatch?.count ?? 0) + (doorBatch?.count ?? 0);
+  const sampleScales: number[] = [];
+  const sampleFrameWidths: number[] = [];
+  if (windowBatch?.transforms && windowRecipe) {
+    for (let i = 0; i < Math.min(windowBatch.count, 6); i += 1) {
+      const sx = windowBatch.transforms[i * 16] ?? 1;
+      sampleScales.push(sx);
+      sampleFrameWidths.push(windowRecipe.dimensionsM.width * sx);
+    }
+  }
+  const avgFrameWidthM =
+    sampleFrameWidths.length > 0
+      ? sampleFrameWidths.reduce((a, b) => a + b, 0) / sampleFrameWidths.length
+      : 0;
+  const slotLockedFrames =
+    frameInstanceCount > 0 &&
+    openingPockets > 0 &&
+    sampleScales.length > 0 &&
+    avgFrameWidthM > 0.2;
+
   return [
     item(
       "silhouette",
@@ -152,14 +179,24 @@ export function evaluateModuleQualityChecklist(
       "openingDepth",
       "Openings have wall pockets plus frame/glass depth hierarchy",
       detailLevel === "high"
-        ? openingDepthM > 0.28 && glassInsetM > 0.08 && openingPockets > 0
+        ? openingDepthM > 0.28 && glassInsetM > 0.08 && openingPockets > 0 && slotLockedFrames
           ? "pass"
           : "fail"
         : openingDepthM > 0.15
           ? "pass"
           : "fail",
-      "Opening frame depth, glass inset, and additive wall-pocket mass for punched-window read.",
-      { openingDepthM, glassInsetM, openingPockets, detailLevel }
+      "Opening frame depth, glass inset, slot-locked frame scale, and additive wall-pocket mass for punched-window read.",
+      {
+        openingDepthM,
+        glassInsetM,
+        openingPockets,
+        frameInstanceCount,
+        avgFrameWidthM,
+        slotLockedFrames,
+        frameInsetFromSlotM: FRAME_INSET_FROM_SLOT_M,
+        slotAlignmentEpsM: OPENING_SLOT_ALIGNMENT_EPS_M,
+        detailLevel
+      }
     ),
     item(
       "facadeRhythm",

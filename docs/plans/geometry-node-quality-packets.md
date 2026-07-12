@@ -206,10 +206,10 @@ Opening **geometry** and **wall pockets** consume split slot metrics:
 
 #### Acceptance
 
-- [ ] For a fixed seed, `|frameWidth - slotWidth| < ε` (documented ε, e.g. 5 cm inset)  
-- [ ] Pocket center equals slot center in X/Y (facade plane) within ε  
-- [ ] Glass still inset behind frame; clay depth checklist passes  
-- [ ] Oversize module → diagnostic, not silent clip through pier  
+- [x] For a fixed seed, `|frameWidth - slotWidth| < ε` (documented ε, e.g. 5 cm inset)  
+- [x] Pocket center equals slot center in X/Y (facade plane) within ε  
+- [x] Glass still inset behind frame; clay depth checklist passes  
+- [x] Oversize module → diagnostic, not silent clip through pier  
 
 #### Validation
 
@@ -576,5 +576,6 @@ Start **G1** only:
 | 2026-07-12 | Plan created from codebase + GN/CGA research; baseline `92ce977`. |
 | | Prior unplanned quality commits: seeds, openings, profiles, pilasters, split walls, split plan. |
 | 2026-07-12 | **G1 landed:** kit openings only from split; proof front-only split defaults; 1:1 assert in compiler. |
+| 2026-07-12 | **G2 landed:** `openingSlotBinding` locks frame scale + pocket AABB to split slots; oversize diagnostics. |
 
-**Next packet to implement:** G2 — Slot-locked openings and pockets.
+**Next packet to implement:** G3 — Storefront scope split.

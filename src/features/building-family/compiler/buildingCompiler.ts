@@ -34,10 +34,13 @@ import {
 } from "./profiledTrimGeometry";
 import {
   buildFacadeSplitPlan,
-  openingTransformFromPlacement,
   wallPrimitivesFromSplitPlan,
   type FacadeSplitPlan
 } from "./facadeSplitPlan";
+import {
+  bindOpeningsFromSplitPlan,
+  type BoundOpeningGeometry
+} from "./openingSlotBinding";
 
 export type BuildingComponentDetailLevel = "high" | "low";
 export type BuildingFidelityMode = "proof" | "kit";
@@ -231,10 +234,28 @@ function createWallMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCatalog,
   };
 }
 
-/** Place opening frames/doors from split slots so they match punched wall cells. */
-function createOpeningInstancePlansFromSplit(
+/** Slot-lock opening instances: size/transform from FacadeSplitPlan + openingSlotBinding (G2). */
+function bindSplitOpenings(split: FacadeSplitPlan, catalog: ComponentCatalog): BoundOpeningGeometry[] {
+  const windowRecipe = recipeByRole(catalog, "window");
+  const doorRecipe = recipeByRole(catalog, "door");
+  return bindOpeningsFromSplitPlan(split.openings, split.wallDepthM, {
+    window: {
+      width: windowRecipe.dimensionsM.width,
+      height: windowRecipe.dimensionsM.height,
+      depth: windowRecipe.dimensionsM.depth
+    },
+    door: {
+      width: doorRecipe.dimensionsM.width,
+      height: doorRecipe.dimensionsM.height,
+      depth: doorRecipe.dimensionsM.depth
+    }
+  });
+}
+
+function createOpeningInstancePlansFromBindings(
   split: FacadeSplitPlan,
-  catalog: ComponentCatalog
+  catalog: ComponentCatalog,
+  bindings: BoundOpeningGeometry[]
 ): InstancePlan[] {
   const windowRecipe = recipeByRole(catalog, "window");
   const doorRecipe = recipeByRole(catalog, "door");
@@ -245,13 +266,13 @@ function createOpeningInstancePlansFromSplit(
   const doorBounds: Bounds3[] = [];
   const doorSemantics: SemanticIndexEntry[] = [];
 
-  for (const placement of split.openings) {
-    const center = placement.centerM;
-    const size = placement.sizeM;
-    if (placement.kind === "door") {
+  for (let index = 0; index < bindings.length; index += 1) {
+    const bound = bindings[index]!;
+    const placement = split.openings[index]!;
+    if (bound.kind === "door") {
       const elementIndex = doorSemantics.length;
-      doorTransforms.push(...openingTransformFromPlacement(placement));
-      doorBounds.push(boundsFromBox(center, size));
+      doorTransforms.push(...bound.transform);
+      doorBounds.push(boundsFromBox(bound.frameCenterM, bound.frameOuterSizeM));
       doorSemantics.push({
         semanticPath: placement.semanticPath,
         batchId: "instances.door",
@@ -260,8 +281,8 @@ function createOpeningInstancePlansFromSplit(
       });
     } else {
       const elementIndex = windowSemantics.length;
-      windowTransforms.push(...openingTransformFromPlacement(placement));
-      windowBounds.push(boundsFromBox(center, size));
+      windowTransforms.push(...bound.transform);
+      windowBounds.push(boundsFromBox(bound.frameCenterM, bound.frameOuterSizeM));
       windowSemantics.push({
         semanticPath: placement.semanticPath,
         batchId: "instances.window",
@@ -411,10 +432,6 @@ function graphHasArtKitFacadePlan(graph: BuildingGraph): boolean {
   return graph.nodes.some((node) => node.id === "node.art-kit-facade-plan" && node.type === "Group");
 }
 
-function centerFromTransform(transform: number[]): Vec3 {
-  return [transform[12] ?? 0, transform[13] ?? 0, transform[14] ?? 0];
-}
-
 function createVerticalPilasterMeshPlan(
   spec: BuildingFamilySpec,
   catalog: ComponentCatalog
@@ -501,71 +518,45 @@ function createBasePlinthMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCa
 }
 
 /**
- * Additive wall-pocket mass behind each opening (no mesh booleans).
- * Reads as a punched recess when lit in clay mode.
+ * Additive wall-pocket mass from slot bindings (G2) — same center/size authority as frames.
+ * No mesh booleans; reads as punched recess under raking clay light.
  */
 function createOpeningPocketMeshPlan(
   spec: BuildingFamilySpec,
   catalog: ComponentCatalog,
-  openingPlans: InstancePlan[]
+  bindings: BoundOpeningGeometry[]
 ): MeshPlan | undefined {
   const wallRecipe = catalog.recipes.find((candidate) => candidate.role === "wall");
-  if (!wallRecipe || openingPlans.length === 0) {
+  if (!wallRecipe || bindings.length === 0) {
     return undefined;
   }
-  const wallDepth = Math.max(0.2, wallRecipe.dimensionsM.depth);
   const primitives: PrimitiveGeometry[] = [];
   const semanticEntries: SemanticIndexEntry[] = [];
 
-  for (const plan of openingPlans) {
-    if (!plan.batchId.includes("window") && !plan.batchId.includes("door")) {
-      continue;
-    }
-    if (plan.batchId.includes("glass")) {
-      continue;
-    }
-    const isDoor = plan.batchId.includes("door");
-    const recipe = plan.recipe;
-    for (let index = 0; index < plan.transforms.length; index += 16) {
-      const transform = plan.transforms.slice(index, index + 16);
-      const center = centerFromTransform(transform);
-      // Pull pocket into the wall mass (behind the exterior opening frame).
-      const pocketCenter: Vec3 = [
-        center[0],
-        center[1],
-        -spec.massing.depthM / 2 + wallDepth * 0.42
-      ];
-      const width = recipe.dimensionsM.width * (isDoor ? 1.08 : 1.12);
-      const height = recipe.dimensionsM.height * (isDoor ? 1.04 : 1.1);
-      const depth = wallDepth * 0.72;
-      primitives.push(
-        buildBoxPrimitive({
-          center: pocketCenter,
-          size: [width, height, depth]
-        })
-      );
-      // Outer reveal lip on the facade plane.
-      primitives.push(
-        buildBoxPrimitive({
-          center: [center[0], center[1], -spec.massing.depthM / 2 + wallDepth * 0.12],
-          size: [width + 0.08, height + 0.08, wallDepth * 0.18]
-        })
-      );
-      const elementIndex = primitives.length - 2;
-      semanticEntries.push({
-        semanticPath: semanticPath(
-          spec,
-          `facade/front/opening-pocket/${plan.batchId}/${index / 16}`
-        ),
-        batchId: "mesh.opening-pockets",
-        elementIndex,
-        stage: "openings"
-      });
-    }
-  }
-
-  if (primitives.length === 0) {
-    return undefined;
+  for (let index = 0; index < bindings.length; index += 1) {
+    const bound = bindings[index]!;
+    primitives.push(
+      buildBoxPrimitive({
+        center: bound.pocketCenterM,
+        size: bound.pocketSizeM
+      })
+    );
+    primitives.push(
+      buildBoxPrimitive({
+        center: bound.revealCenterM,
+        size: bound.revealSizeM
+      })
+    );
+    const elementIndex = primitives.length - 2;
+    semanticEntries.push({
+      semanticPath: semanticPath(
+        spec,
+        `facade/${bound.facade}/opening-pocket/${bound.kind}/${index}`
+      ),
+      batchId: "mesh.opening-pockets",
+      elementIndex,
+      stage: "openings"
+    });
   }
 
   return {
@@ -720,13 +711,14 @@ export async function compileBuilding(input: CompileBuildingInput): Promise<Runt
     defaultOpeningMode: "front-only"
   });
 
-  const openingPlans = createOpeningInstancePlansFromSplit(facadeSplit, input.catalog);
+  const openingBindings = bindSplitOpenings(facadeSplit, input.catalog);
+  const openingPlans = createOpeningInstancePlansFromBindings(facadeSplit, input.catalog, openingBindings);
   const frameOpeningCount = openingPlans
     .filter((plan) => plan.batchId === "instances.window" || plan.batchId === "instances.door")
     .reduce((total, plan) => total + plan.transforms.length / 16, 0);
-  if (frameOpeningCount !== facadeSplit.openings.length) {
+  if (frameOpeningCount !== facadeSplit.openings.length || openingBindings.length !== facadeSplit.openings.length) {
     throw new Error(
-      `Opening authority violation: ${frameOpeningCount} frame instances vs ${facadeSplit.openings.length} split openings.`
+      `Opening authority violation: ${frameOpeningCount} frame instances / ${openingBindings.length} bindings vs ${facadeSplit.openings.length} split openings.`
     );
   }
 
@@ -738,7 +730,7 @@ export async function compileBuilding(input: CompileBuildingInput): Promise<Runt
         createHorizontalBeltMeshPlan(input.spec, input.catalog),
         createVerticalPilasterMeshPlan(input.spec, input.catalog),
         createSpandrelMeshPlan(input.spec, input.catalog),
-        createOpeningPocketMeshPlan(input.spec, input.catalog, openingPlans),
+        createOpeningPocketMeshPlan(input.spec, input.catalog, openingBindings),
         createRoofCapMeshPlan(input.spec, input.catalog),
         createCornerQuoinMeshPlan(input.spec, input.catalog)
       ].filter((plan): plan is MeshPlan => plan !== undefined)
