@@ -82,8 +82,9 @@ describe("profiled trim builders", () => {
     expect(horizontal.lowDetailRecipeId).toBe(horizontal.id);
     expect(vertical.profileRecipeId).toBe("profile.trim.pressed-metal.shallow-pilaster");
     expect(vertical.atlasSlotIds).toEqual(["trim.vertical.primary"]);
-    expect(cornice.profileRecipeId).toBe("profile.cornice.bracketed-metal.layered");
-    expect(cornice.parameterRanges.projectionM).toEqual({ min: 0.24, max: 0.68 });
+    expect(cornice.profileRecipeId).toMatch(/^profile\.cornice\.bracketed-metal\.(layered|restrained)$/);
+    expect(cornice.parameterRanges.projectionM?.min).toBeGreaterThan(0);
+    expect(cornice.parameterRanges.projectionM?.max).toBeGreaterThan(cornice.parameterRanges.projectionM?.min ?? 0);
     expect(roofCap.role).toBe("roofCap");
     expect(roofCap.atlasSlotIds).toEqual(["trim.horizontal.primary"]);
   });

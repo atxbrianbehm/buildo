@@ -73,7 +73,7 @@ describe("buildComponentCatalog", () => {
     expect(cornice).toBeDefined();
     expect(cornice?.kind).toBe("profileSweep");
     expect(cornice?.atlasSlotIds).toEqual(["cornice.primary"]);
-    expect(cornice?.profileRecipeId).toBe("profile.cornice.bracketed-metal.layered");
+    expect(cornice?.profileRecipeId).toMatch(/^profile\.cornice\.bracketed-metal\.(layered|restrained)$/);
     expect(cornice?.variationScope).toBe("family");
   });
 

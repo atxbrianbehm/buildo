@@ -408,14 +408,14 @@ Not a full second historical style pack unless cheap.
 
 #### Acceptance
 
-- [ ] Seed or control selects alternate profile id  
-- [ ] IR / clay visibly different for same massing  
-- [ ] No new compiler conditionals per style—lookup by profile id  
+- [x] Seed or control selects alternate profile id  
+- [x] IR / clay visibly different for same massing  
+- [x] No new compiler conditionals per style—lookup by profile id  
 
 #### Validation
 
 ```powershell
-npm.cmd run test -- profileLibrary profileSweepGeometry facadeSplitPlan
+npm.cmd run test -- profileLibrary profileSweepGeometry profileLibraryG7 facadeSplitPlan
 npm.cmd run typecheck
 ```
 
@@ -581,5 +581,6 @@ Start **G1** only:
 | 2026-07-12 | **G4 landed:** storefront kit modules + planner ground grammar (bulkhead/glazing/door/lintel). |
 | 2026-07-12 | **G5 landed:** split hash + counts in Visual QA / quality checklist / Artifact Trace / Assembly Hall. |
 | 2026-07-12 | **G6 landed:** expanders barrel (`expandOpeningFromSlot` / `expandProfileRun`), kit mesh batch id list, worker parity. |
+| 2026-07-12 | **G7 landed:** restrained cornice profile + seed-selected profileRecipeId lookup (no style forks). |
 
-**Next packet to implement:** G7 — Thin second profile / module stress.
+**Next packet to implement:** G8 — Clay quality gate.

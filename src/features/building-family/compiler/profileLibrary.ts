@@ -49,6 +49,25 @@ export const late19cCorniceProfile: ProfileDefinition = {
   ]
 };
 
+/**
+ * Shallower alternate cornice (G7 stress) — same expand path, different profile id.
+ * Selected via recipe.profileRecipeId / seed, not a compiler style fork.
+ */
+export const late19cRestrainedCorniceProfile: ProfileDefinition = {
+  id: "profile.cornice.late19c.restrained",
+  label: "Late 19c restrained cornice",
+  points: [
+    { u: 0.0, d: 0.05 },
+    { u: 0.08, d: 0.08 },
+    { u: 0.18, d: 0.12 },
+    { u: 0.32, d: 0.16 },
+    { u: 0.48, d: 0.2 },
+    { u: 0.65, d: 0.22 },
+    { u: 0.82, d: 0.24 },
+    { u: 1.0, d: 0.26 }
+  ]
+};
+
 /** Shallow belt-course section. */
 export const late19cBeltProfile: ProfileDefinition = {
   id: "profile.trim.late19c.belt-course",
@@ -103,14 +122,25 @@ export const late19cBasePlinthProfile: ProfileDefinition = {
 
 const profileById: Record<string, ProfileDefinition> = {
   [late19cCorniceProfile.id]: late19cCorniceProfile,
+  [late19cRestrainedCorniceProfile.id]: late19cRestrainedCorniceProfile,
   [late19cBeltProfile.id]: late19cBeltProfile,
   [late19cPilasterProfile.id]: late19cPilasterProfile,
   [late19cRoofCapProfile.id]: late19cRoofCapProfile,
-  [late19cBasePlinthProfile.id]: late19cBasePlinthProfile
+  [late19cBasePlinthProfile.id]: late19cBasePlinthProfile,
+  // Style-pack family aliases → same geometry expanders (lookup by id only).
+  "profile.cornice.bracketed-metal.layered": late19cCorniceProfile,
+  "profile.cornice.bracketed-metal.restrained": late19cRestrainedCorniceProfile,
+  "profile.trim.pressed-metal.belt-course": late19cBeltProfile,
+  "profile.trim.pressed-metal.shallow-pilaster": late19cPilasterProfile
 };
 
 export function getProfileDefinition(id: string): ProfileDefinition | undefined {
   return profileById[id];
+}
+
+/** Max projection depth of a profile (useful for silhouette comparisons). */
+export function profileMaxProjectionM(profile: ProfileDefinition): number {
+  return Math.max(...profile.points.map((point) => point.d));
 }
 
 export function requireProfileDefinition(id: string): ProfileDefinition {

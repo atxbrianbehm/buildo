@@ -6,6 +6,7 @@ import {
   late19cCorniceProfile,
   late19cPilasterProfile,
   late19cRoofCapProfile,
+  getProfileDefinition,
   scaleProfileToHeight
 } from "./profileLibrary";
 import { densifyProfile, horizontalMoldingFromProfile, sweepProfileToBoxPrimitives } from "./profileSweepGeometry";
@@ -60,7 +61,11 @@ export function buildCorniceProfilePrimitives(
   const width = recipe.dimensionsM.width;
   const height = Math.max(0.55, recipe.dimensionsM.height);
   const totalHeight = spec.massing.floorHeightsM.reduce((total, value) => total + value, 0);
-  const profile = densifyProfile(scaleProfileToHeight(late19cCorniceProfile, height), 2);
+  // Profile id is the style switch — no per-style compiler branches (G7).
+  const profileDef =
+    (recipe.profileRecipeId ? getProfileDefinition(recipe.profileRecipeId) : undefined) ??
+    late19cCorniceProfile;
+  const profile = densifyProfile(scaleProfileToHeight(profileDef, height), 2);
   const maxD = Math.max(...profile.points.map((point) => point.d));
   const center: Vec3 = [0, totalHeight - height / 2, -spec.massing.depthM / 2 + maxD * 0.35];
   const primitives = horizontalMoldingFromProfile({
@@ -69,17 +74,21 @@ export function buildCorniceProfilePrimitives(
     widthM: width + 0.12
   });
 
-  const bracketSpacing = rangeValue(recipe, "bracketSpacingM", 0.95);
-  const bracketCount = Math.max(3, Math.floor(width / bracketSpacing));
-  for (let index = 0; index < bracketCount; index += 1) {
-    const t = bracketCount === 1 ? 0.5 : index / (bracketCount - 1);
-    const x = -width / 2 + 0.28 + t * (width - 0.56);
-    primitives.push(
-      buildBoxPrimitive({
-        center: [x, center[1] - height * 0.12, center[2] + maxD * 0.25],
-        size: [0.14, height * 0.32, maxD * 0.45]
-      })
-    );
+  // Restrained profiles skip heavy brackets (shallower read).
+  const isRestrained = profileDef.id.includes("restrained");
+  if (!isRestrained) {
+    const bracketSpacing = rangeValue(recipe, "bracketSpacingM", 0.95);
+    const bracketCount = Math.max(3, Math.floor(width / bracketSpacing));
+    for (let index = 0; index < bracketCount; index += 1) {
+      const t = bracketCount === 1 ? 0.5 : index / (bracketCount - 1);
+      const x = -width / 2 + 0.28 + t * (width - 0.56);
+      primitives.push(
+        buildBoxPrimitive({
+          center: [x, center[1] - height * 0.12, center[2] + maxD * 0.25],
+          size: [0.14, height * 0.32, maxD * 0.45]
+        })
+      );
+    }
   }
 
   return primitives;
