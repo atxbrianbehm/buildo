@@ -62,10 +62,10 @@ Critical operators for us:
 
 ## Implementation priority (this track)
 
-1. **Facade wall subdivision** — each front bay → pier L/R + sill + head + optional spandrel (this doc’s code target).  
-2. **Ground storefront split** — bulkhead / opening / lintel as scopes (started; refine).  
-3. **Serializable `FacadeSplitPlan`** (optional) for trace/QA.  
-4. Later: richer profile curves, true CSG optional, node-like debug UI.
+1. **Facade wall subdivision** — each front bay → pier L/R + sill + head + optional spandrel — **done** (`facadeWallSubdivision.ts`).  
+2. **Ground storefront split** — bulkhead / opening / lintel as scopes — **partial** (`mesh.storefront-hierarchy`).  
+3. **Serializable `FacadeSplitPlan`** — **done** (`facadeSplitPlan.ts`): one plan drives wall punches + opening instance centers.  
+4. Later: richer profile curves, true CSG optional, node-like debug UI, Prompt Lab split-hash diagnostics.
 
 ## Non-goals
 

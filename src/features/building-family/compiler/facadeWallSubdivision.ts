@@ -42,6 +42,11 @@ export interface SubdivideFacadeWallsInput {
     widthM: number;
     heightM: number;
   }>;
+  /**
+   * When true, only `openings` entries are punched — no default front/rear grids.
+   * Used when an art-kit facade plan is the opening authority (CGA/GN split).
+   */
+  strictOpenings?: boolean;
 }
 
 function floorBaseY(spec: BuildingFamilySpec, floorIndex: number): number {
@@ -58,6 +63,7 @@ function openingKey(facade: WallFacadeName, floor: number, bay: number): string 
  */
 export function buildFacadeBayScopes(input: SubdivideFacadeWallsInput): FacadeBayScope[] {
   const { spec, wallDepthM } = input;
+  const strictOpenings = Boolean(input.strictOpenings);
   const openingMap = new Map(
     (input.openings ?? []).map((opening) => [
       openingKey(opening.facade, opening.floorIndex, opening.bayIndex),
@@ -85,7 +91,8 @@ export function buildFacadeBayScopes(input: SubdivideFacadeWallsInput): FacadeBa
         const openingSpec = openingMap.get(openingKey(facade, floor, bay));
         const defaultOpenW = Math.min(frontBayWidth * 0.62, 1.6);
         const defaultOpenH = Math.min(floorHeight * (zone === "ground" ? 0.58 : 0.48), 2.6);
-        const hasDefaultOpening = facade === "front" || (facade === "rear" && zone === "body");
+        const hasDefaultOpening =
+          !strictOpenings && (facade === "front" || (facade === "rear" && zone === "body"));
         const opening =
           openingSpec !== undefined
             ? {
@@ -120,15 +127,23 @@ export function buildFacadeBayScopes(input: SubdivideFacadeWallsInput): FacadeBa
       for (const facade of ["left", "right"] as const) {
         const x0 =
           facade === "left" ? -spec.massing.widthM / 2 : spec.massing.widthM / 2 - depth;
+        const sideOpeningSpec = openingMap.get(openingKey(facade, floor, bay));
         const sideOpening =
-          zone === "body" && (bay + floor) % 2 === 0
+          sideOpeningSpec !== undefined
             ? {
-                widthM: Math.min(sideBayDepth * 0.55, 1.2),
-                heightM: Math.min(floorHeight * 0.45, 2.2),
+                widthM: sideOpeningSpec.widthM,
+                heightM: sideOpeningSpec.heightM,
                 centerYM: y0 + floorHeight * 0.55,
                 centerAlongM: z0 + sideBayDepth / 2
               }
-            : undefined;
+            : !strictOpenings && zone === "body" && (bay + floor) % 2 === 0
+              ? {
+                  widthM: Math.min(sideBayDepth * 0.55, 1.2),
+                  heightM: Math.min(floorHeight * 0.45, 2.2),
+                  centerYM: y0 + floorHeight * 0.55,
+                  centerAlongM: z0 + sideBayDepth / 2
+                }
+              : undefined;
         scopes.push({
           facade,
           floorIndex: floor,

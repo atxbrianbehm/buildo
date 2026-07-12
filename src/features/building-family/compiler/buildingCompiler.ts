@@ -39,9 +39,12 @@ import {
   buildVerticalPilasterPrimitives
 } from "./profiledTrimGeometry";
 import {
-  buildSubdividedFacadeWallPrimitives,
-  type WallFacadeName
-} from "./facadeWallSubdivision";
+  buildFacadeSplitPlan,
+  openingTransformFromPlacement,
+  wallPrimitivesFromSplitPlan,
+  type FacadeSplitPlan
+} from "./facadeSplitPlan";
+import type { WallFacadeName } from "./facadeWallSubdivision";
 
 export type BuildingComponentDetailLevel = "high" | "low";
 export type BuildingFidelityMode = "proof" | "kit";
@@ -220,53 +223,9 @@ function sideBayCount(spec: BuildingFamilySpec): number {
   return Math.max(1, Math.round(spec.massing.depthM / spec.facade.sideBaySpacingM));
 }
 
-function openingsFromInstancePlans(
-  openingPlans: InstancePlan[]
-): Array<{ facade: WallFacadeName; floorIndex: number; bayIndex: number; widthM: number; heightM: number }> {
-  const results: Array<{
-    facade: WallFacadeName;
-    floorIndex: number;
-    bayIndex: number;
-    widthM: number;
-    heightM: number;
-  }> = [];
-
-  for (const plan of openingPlans) {
-    if (plan.batchId.includes("glass") || (!plan.batchId.includes("window") && !plan.batchId.includes("door"))) {
-      continue;
-    }
-    for (const entry of plan.semanticEntries) {
-      const match = entry.semanticPath.match(
-        /facade\/(front|rear|left|right)\/floor\/(\d+)\/bay\/(\d+)\//
-      );
-      if (!match) {
-        continue;
-      }
-      results.push({
-        facade: match[1] as WallFacadeName,
-        floorIndex: Number(match[2]),
-        bayIndex: Number(match[3]),
-        widthM: plan.recipe.dimensionsM.width,
-        heightM: plan.recipe.dimensionsM.height
-      });
-    }
-  }
-  return results;
-}
-
-function createWallMeshPlan(
-  spec: BuildingFamilySpec,
-  catalog: ComponentCatalog,
-  openingPlans: InstancePlan[] = []
-): MeshPlan {
+function createWallMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCatalog, split: FacadeSplitPlan): MeshPlan {
   const recipe = recipeByRole(catalog, "wall");
-  const wallDepthM = Math.max(0.02, recipe.dimensionsM.depth);
-  // CGA/GN-style split: each bay → piers + sill + head around opening slot.
-  const primitives = buildSubdividedFacadeWallPrimitives({
-    spec,
-    wallDepthM,
-    openings: openingsFromInstancePlans(openingPlans)
-  });
+  const primitives = wallPrimitivesFromSplitPlan(split);
 
   return {
     batchId: "mesh.wall-panels",
@@ -281,6 +240,72 @@ function createWallMeshPlan(
       stage: "facade"
     }))
   };
+}
+
+/** Place opening frames/doors from split slots so they match punched wall cells. */
+function createOpeningInstancePlansFromSplit(
+  split: FacadeSplitPlan,
+  catalog: ComponentCatalog
+): InstancePlan[] {
+  const windowRecipe = recipeByRole(catalog, "window");
+  const doorRecipe = recipeByRole(catalog, "door");
+  const windowTransforms: number[] = [];
+  const windowBounds: Bounds3[] = [];
+  const windowSemantics: SemanticIndexEntry[] = [];
+  const doorTransforms: number[] = [];
+  const doorBounds: Bounds3[] = [];
+  const doorSemantics: SemanticIndexEntry[] = [];
+
+  for (const placement of split.openings) {
+    const center = placement.centerM;
+    const size = placement.sizeM;
+    if (placement.kind === "door") {
+      const elementIndex = doorSemantics.length;
+      doorTransforms.push(...openingTransformFromPlacement(placement));
+      doorBounds.push(boundsFromBox(center, size));
+      doorSemantics.push({
+        semanticPath: placement.semanticPath,
+        batchId: "instances.door",
+        elementIndex,
+        stage: "openings"
+      });
+    } else {
+      const elementIndex = windowSemantics.length;
+      windowTransforms.push(...openingTransformFromPlacement(placement));
+      windowBounds.push(boundsFromBox(center, size));
+      windowSemantics.push({
+        semanticPath: placement.semanticPath,
+        batchId: "instances.window",
+        elementIndex,
+        stage: "openings"
+      });
+    }
+  }
+
+  const plans: InstancePlan[] = [];
+  if (windowTransforms.length > 0) {
+    plans.push({
+      batchId: "instances.window",
+      recipe: windowRecipe,
+      materialSlotId: preferredMaterialSlot(windowRecipe, "frame"),
+      stage: "openings",
+      transforms: windowTransforms,
+      instanceBounds: windowBounds,
+      semanticEntries: windowSemantics
+    });
+  }
+  if (doorTransforms.length > 0) {
+    plans.push({
+      batchId: "instances.door",
+      recipe: doorRecipe,
+      materialSlotId: preferredMaterialSlot(doorRecipe, "frame"),
+      stage: "openings",
+      transforms: doorTransforms,
+      instanceBounds: doorBounds,
+      semanticEntries: doorSemantics
+    });
+  }
+  return withPairedGlassPlans(catalog, plans);
 }
 
 function createCorniceMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCatalog): MeshPlan {
@@ -838,12 +863,39 @@ export async function compileBuilding(input: CompileBuildingInput): Promise<Runt
   const detailLevel = input.detailLevel ?? "high";
   const highDetail = detailLevel === "high";
   const moduleInstances = await resolveModuleInstances(input);
-  const openingPlans = moduleInstances
-    ? createOpeningInstancePlansFromModuleInstances(moduleInstances, input.catalog)
-    : withPairedGlassPlans(input.catalog, [
-        createWindowInstancePlan(input.spec, input.catalog),
-        createDoorInstancePlan(input.spec, input.catalog)
-      ]);
+  const wallRecipe = recipeByRole(input.catalog, "wall");
+  const wallDepthM = Math.max(0.02, wallRecipe.dimensionsM.depth);
+  const useKitSplit =
+    input.fidelityMode === "kit" ||
+    (input.fidelityMode !== "proof" &&
+      (Boolean(input.facadePlan) || graphHasArtKitFacadePlan(input.graph) || Boolean(moduleInstances)));
+
+  const facadePlanForSplit =
+    input.facadePlan ??
+    (useKitSplit
+      ? planFacadeModules({
+          spec: input.spec,
+          kit: late19cApartmentKit
+        })
+      : undefined);
+
+  // One split plan drives punched walls + opening instance centers (CGA/GN reconvergence).
+  const facadeSplit = await buildFacadeSplitPlan({
+    spec: input.spec,
+    wallDepthM,
+    facadePlan: facadePlanForSplit,
+    kit: facadePlanForSplit ? late19cApartmentKit : undefined
+  });
+
+  const openingPlans = facadePlanForSplit
+    ? createOpeningInstancePlansFromSplit(facadeSplit, input.catalog)
+    : moduleInstances
+      ? createOpeningInstancePlansFromModuleInstances(moduleInstances, input.catalog)
+      : withPairedGlassPlans(input.catalog, [
+          createWindowInstancePlan(input.spec, input.catalog),
+          createDoorInstancePlan(input.spec, input.catalog)
+        ]);
+
   const highDetailMeshPlans = highDetail
     ? [
         createBasePlinthMeshPlan(input.spec, input.catalog),
@@ -858,7 +910,7 @@ export async function compileBuilding(input: CompileBuildingInput): Promise<Runt
       ].filter((plan): plan is MeshPlan => plan !== undefined)
     : [];
   const meshPlans = [
-    createWallMeshPlan(input.spec, input.catalog, openingPlans),
+    createWallMeshPlan(input.spec, input.catalog, facadeSplit),
     ...highDetailMeshPlans,
     createRoofMeshPlan(input.spec, input.catalog)
   ];
