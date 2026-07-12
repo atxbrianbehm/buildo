@@ -892,20 +892,26 @@ export function AssemblyHall({
     };
     resetCameraRef.current = resetCamera;
 
+    // OrbitControls maps Shift+left-drag to pan ("truck"). Intercept in the capture
+    // phase and stop the event so the camera never moves while lighting the model.
     const onLightPointerDown = (event: PointerEvent) => {
       if (!preparedScene || !orbitControls || event.button !== 0 || !event.shiftKey) {
         return;
       }
       event.preventDefault();
-      event.stopPropagation();
+      event.stopImmediatePropagation();
       lightDragging = true;
       lightDragLastX = event.clientX;
       lightDragLastY = event.clientY;
       lightOffset.copy(preparedScene.keyLight.position).sub(preparedScene.orbitTarget);
       lightSpherical.setFromVector3(lightOffset);
       orbitControls.enabled = false;
+      orbitControls.enableRotate = false;
+      orbitControls.enablePan = false;
+      orbitControls.enableZoom = false;
       pointerActive = true;
-      (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+      const target = event.currentTarget as HTMLElement;
+      target.setPointerCapture(event.pointerId);
       scheduleFrame();
     };
 
@@ -914,6 +920,7 @@ export function AssemblyHall({
         return;
       }
       event.preventDefault();
+      event.stopImmediatePropagation();
       const dx = event.clientX - lightDragLastX;
       const dy = event.clientY - lightDragLastY;
       lightDragLastX = event.clientX;
@@ -931,10 +938,15 @@ export function AssemblyHall({
       if (!lightDragging) {
         return;
       }
+      event.preventDefault();
+      event.stopImmediatePropagation();
       lightDragging = false;
       pointerActive = false;
       if (orbitControls) {
         orbitControls.enabled = true;
+        orbitControls.enableRotate = true;
+        orbitControls.enablePan = true;
+        orbitControls.enableZoom = true;
       }
       try {
         (event.currentTarget as HTMLElement).releasePointerCapture(event.pointerId);
@@ -1003,10 +1015,11 @@ export function AssemblyHall({
         controls.update();
         orbitControls = controls;
 
-        renderer.domElement.addEventListener("pointerdown", onLightPointerDown);
-        renderer.domElement.addEventListener("pointermove", onLightPointerMove);
-        renderer.domElement.addEventListener("pointerup", endLightDrag);
-        renderer.domElement.addEventListener("pointercancel", endLightDrag);
+        // Capture phase so we beat OrbitControls (which treats Shift+LMB as pan).
+        renderer.domElement.addEventListener("pointerdown", onLightPointerDown, true);
+        renderer.domElement.addEventListener("pointermove", onLightPointerMove, true);
+        renderer.domElement.addEventListener("pointerup", endLightDrag, true);
+        renderer.domElement.addEventListener("pointercancel", endLightDrag, true);
 
         // Paint once immediately so first frame does not wait on rAF (tests + first paint).
         needsRender = false;
@@ -1035,10 +1048,10 @@ export function AssemblyHall({
       loopScheduled = false;
       resizeObserver?.disconnect();
       if (renderer?.domElement) {
-        renderer.domElement.removeEventListener("pointerdown", onLightPointerDown);
-        renderer.domElement.removeEventListener("pointermove", onLightPointerMove);
-        renderer.domElement.removeEventListener("pointerup", endLightDrag);
-        renderer.domElement.removeEventListener("pointercancel", endLightDrag);
+        renderer.domElement.removeEventListener("pointerdown", onLightPointerDown, true);
+        renderer.domElement.removeEventListener("pointermove", onLightPointerMove, true);
+        renderer.domElement.removeEventListener("pointerup", endLightDrag, true);
+        renderer.domElement.removeEventListener("pointercancel", endLightDrag, true);
       }
       orbitControls?.dispose();
       orbitControls = null;
