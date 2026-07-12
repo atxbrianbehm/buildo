@@ -68,6 +68,7 @@ describe("buildBuildingGraph", () => {
       })
     );
     expect(artKitNode?.parameters.artKitManifestId).toBe("late-19c-apartment-kit");
+    expect(artKitNode?.parameters.fidelityMode).toBe("kit");
     expect(artKitNode?.parameters.placementCount).toBeGreaterThan(0);
     expect(artKitNode?.parameters.diagnostics).toEqual([]);
     expect(artKitNode?.parameters.placements).toEqual(
@@ -84,6 +85,15 @@ describe("buildBuildingGraph", () => {
       expect(node.semanticPathTemplate).toContain("building/");
       expect(["massing", "facade", "openings", "trim", "roof"]).toContain(node.stage);
     }
+  });
+
+  it("omits the art-kit facade plan node in proof fidelity mode", async () => {
+    const { spec, catalog } = await fixtureInputs();
+    const graph = await buildBuildingGraph(spec, catalog, { fidelityMode: "proof" });
+
+    expect(graph.nodes.some((node) => node.id === "node.art-kit-facade-plan")).toBe(false);
+    expect(graph.nodes.find((node) => node.id === "node.wall-panels")?.upstreamIds).toEqual(["node.bays"]);
+    expect(graph.nodes.map((node) => node.type)).not.toContain("Group");
   });
 
   it("plans repeated windows as instance component work rather than duplicated mesh recipes", async () => {

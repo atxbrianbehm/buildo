@@ -261,6 +261,8 @@ const CompletedFamilyProvenanceSchema = z.object({
   provenanceEntryCount: z.number().int().nonnegative()
 });
 
+export const ArtFidelityModeSchema = z.enum(["proof", "kit"]);
+
 export const CompletedFamilyPersistencePacketSchema = z.object({
   schemaVersion: SchemaVersion010,
   documentId: z.string().min(1),
@@ -269,6 +271,7 @@ export const CompletedFamilyPersistencePacketSchema = z.object({
   contentHash: z.string().min(1),
   createdAt: z.string().min(1),
   prompt: z.string().min(1).optional(),
+  fidelityMode: ArtFidelityModeSchema.optional(),
   familyId: z.string().min(1),
   buildingId: z.string().min(1),
   stylePackReference: StylePackReferenceSchema,
@@ -306,6 +309,7 @@ async function completedFamilyContentHash(input: {
   return hashCanonicalJson({
     schemaVersion: "0.1.0",
     prompt: input.fixture.prompt,
+    fidelityMode: input.fixture.fidelityMode,
     familyId: input.fixture.spec.familyId,
     buildingId: input.fixture.ir.buildingId,
     stylePackReference: input.stylePackReference,
@@ -365,6 +369,7 @@ export async function createCompletedFamilyPersistencePacket(
     contentHash,
     createdAt: input.createdAt ?? new Date().toISOString(),
     prompt: input.fixture.prompt,
+    fidelityMode: input.fixture.fidelityMode,
     familyId: input.fixture.spec.familyId,
     buildingId: input.fixture.ir.buildingId,
     stylePackReference,

@@ -7,26 +7,11 @@ import {
   type MaterialSourceRequest,
   type PixelLayer
 } from "../materials/providers/proceduralMaterialProvider";
+import { defaultBuildingPromptControls } from "../state/buildingStore";
 import { createAssemblyHallFixture, type AssemblyHallFixture } from "../ui/assemblyHallFixture";
 
 const createFixtureWithOptions = createAssemblyHallFixture as (input?: {
-  promptControls?: {
-    prompt: string;
-    psgPresetId: "late19cCommercialDemo";
-    stylePackId: "late-19c-commercial-demo";
-    seeds: {
-      family: string;
-      building: string;
-      material: string;
-      trim: string;
-    };
-    floorCount: number;
-    bayCount: number;
-    detailLevel?: "high" | "low";
-    roofType: "flat";
-    trimDensity: "ornate";
-    lockedComponentKeys: string[];
-  };
+  promptControls?: typeof defaultBuildingPromptControls;
   reusableArtifacts?: Pick<AssemblyHallFixture, "catalog" | "debugExport" | "packedAtlas">;
   materialProvider?: MaterialGenerationProvider;
   runId?: string;
@@ -43,9 +28,8 @@ const createFixtureWithOptions = createAssemblyHallFixture as (input?: {
 }) => Promise<AssemblyHallFixture>;
 
 const explicitPromptControls = {
+  ...defaultBuildingPromptControls,
   prompt: "make a controlled building",
-  psgPresetId: "late19cCommercialDemo" as const,
-  stylePackId: "late-19c-commercial-demo" as const,
   seeds: {
     family: "family-seed",
     building: "building-seed-explicit",
@@ -138,6 +122,41 @@ describe("assembly hall fixture", () => {
     expect(fixture.ir.metrics.instanceCount).toBeGreaterThan(6 * 5);
 
     fixture.familyRuntime.dispose();
+  });
+
+  it("switches between kit and proof fidelity modes for the same prompt controls", async () => {
+    const kitFixture = await createAssemblyHallFixture({
+      promptControls: {
+        ...defaultBuildingPromptControls,
+        fidelityMode: "kit"
+      }
+    });
+    const proofFixture = await createAssemblyHallFixture({
+      promptControls: {
+        ...defaultBuildingPromptControls,
+        fidelityMode: "proof"
+      },
+      reusableArtifacts: {
+        packedAtlas: kitFixture.packedAtlas,
+        debugExport: kitFixture.debugExport,
+        catalog: kitFixture.catalog
+      }
+    });
+
+    expect(kitFixture.fidelityMode).toBe("kit");
+    expect(proofFixture.fidelityMode).toBe("proof");
+    expect(kitFixture.graph.nodes.some((node) => node.id === "node.art-kit-facade-plan")).toBe(true);
+    expect(proofFixture.graph.nodes.some((node) => node.id === "node.art-kit-facade-plan")).toBe(false);
+    const kitWindows = kitFixture.ir.instanceBatches.find((batch) => batch.batchId === "instances.window")?.count ?? 0;
+    const proofWindows =
+      proofFixture.ir.instanceBatches.find((batch) => batch.batchId === "instances.window")?.count ?? 0;
+    expect(kitWindows).toBeGreaterThan(proofWindows);
+    expect(proofWindows).toBe(
+      proofFixture.spec.massing.floorCount * proofFixture.spec.facade.frontBayCount
+    );
+
+    kitFixture.familyRuntime.dispose();
+    proofFixture.familyRuntime.dispose();
   });
 
   it("passes low detail controls into the runtime fixture and variant stress summary", async () => {

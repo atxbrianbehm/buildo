@@ -4,6 +4,11 @@ import type { Diagnostic } from "../core/diagnostics";
 import { hashCanonicalJson } from "../core/contentHash";
 import type { ComponentCatalog } from "../components/componentCatalogBuilder";
 import { late19cApartmentKit, planFacadeModules } from "../art-kit";
+import type { BuildingFidelityMode } from "./buildingCompiler";
+
+export interface BuildBuildingGraphOptions {
+  fidelityMode?: BuildingFidelityMode;
+}
 
 function buildingPath(spec: BuildingFamilySpec, suffix: string): string {
   return `building/${spec.familyId}/${suffix}`;
@@ -21,7 +26,13 @@ function recipeId(catalog: ComponentCatalog, role: string): string {
   return recipe.id;
 }
 
-function buildNodes(spec: BuildingFamilySpec, catalog: ComponentCatalog): BuildingGraphNode[] {
+function buildNodes(
+  spec: BuildingFamilySpec,
+  catalog: ComponentCatalog,
+  options: BuildBuildingGraphOptions = {}
+): BuildingGraphNode[] {
+  const fidelityMode = options.fidelityMode ?? "kit";
+  const includeArtKitPlan = fidelityMode !== "proof";
   const wallPanelRecipeId = recipeId(catalog, "wall");
   const windowRecipeId = recipeId(catalog, "window");
   const doorRecipeId = recipeId(catalog, "door");
@@ -29,12 +40,14 @@ function buildNodes(spec: BuildingFamilySpec, catalog: ComponentCatalog): Buildi
   const corniceRecipeId = recipeId(catalog, "cornice");
   const roofRecipeId = recipeId(catalog, "roof");
   const windowCount = spec.massing.floorCount * spec.facade.frontBayCount;
-  const facadeModulePlan = planFacadeModules({
-    spec,
-    kit: late19cApartmentKit
-  });
+  const facadeModulePlan = includeArtKitPlan
+    ? planFacadeModules({
+        spec,
+        kit: late19cApartmentKit
+      })
+    : undefined;
 
-  return [
+  const nodes: BuildingGraphNode[] = [
     node({
       id: "node.footprint",
       type: "CreateRectFootprint",
@@ -88,34 +101,43 @@ function buildNodes(spec: BuildingFamilySpec, catalog: ComponentCatalog): Buildi
       upstreamIds: ["node.floors"],
       semanticPathTemplate: buildingPath(spec, "facade/{facade}/floor/{floor}/bay/{bay}"),
       stage: "facade"
-    }),
-    node({
-      id: "node.art-kit-facade-plan",
-      type: "Group",
-      parameters: {
-        artKitManifestId: facadeModulePlan.artKitManifestId,
-        unitMeters: facadeModulePlan.unitMeters,
-        plannerId: facadeModulePlan.plannerId,
-        cellCount: facadeModulePlan.cells.length,
-        placementCount: facadeModulePlan.placements.length,
-        diagnostics: facadeModulePlan.diagnostics,
-        placements: facadeModulePlan.placements.map((placement) => ({
-          id: placement.id,
-          moduleId: placement.moduleId,
-          facade: placement.facade,
-          floorIndex: placement.floorIndex,
-          bayIndex: placement.bayIndex,
-          zone: placement.zone,
-          layer: placement.layer,
-          originMeters: placement.originMeters,
-          sizeMeters: placement.sizeMeters,
-          semanticPath: placement.semanticPath
-        }))
-      },
-      upstreamIds: ["node.bays"],
-      semanticPathTemplate: buildingPath(spec, "art-kit/facade-plan"),
-      stage: "facade"
-    }),
+    })
+  ];
+
+  if (facadeModulePlan) {
+    nodes.push(
+      node({
+        id: "node.art-kit-facade-plan",
+        type: "Group",
+        parameters: {
+          artKitManifestId: facadeModulePlan.artKitManifestId,
+          unitMeters: facadeModulePlan.unitMeters,
+          plannerId: facadeModulePlan.plannerId,
+          fidelityMode,
+          cellCount: facadeModulePlan.cells.length,
+          placementCount: facadeModulePlan.placements.length,
+          diagnostics: facadeModulePlan.diagnostics,
+          placements: facadeModulePlan.placements.map((placement) => ({
+            id: placement.id,
+            moduleId: placement.moduleId,
+            facade: placement.facade,
+            floorIndex: placement.floorIndex,
+            bayIndex: placement.bayIndex,
+            zone: placement.zone,
+            layer: placement.layer,
+            originMeters: placement.originMeters,
+            sizeMeters: placement.sizeMeters,
+            semanticPath: placement.semanticPath
+          }))
+        },
+        upstreamIds: ["node.bays"],
+        semanticPathTemplate: buildingPath(spec, "art-kit/facade-plan"),
+        stage: "facade"
+      })
+    );
+  }
+
+  nodes.push(
     node({
       id: "node.wall-panels",
       type: "EmitWallPanel",
@@ -123,7 +145,7 @@ function buildNodes(spec: BuildingFamilySpec, catalog: ComponentCatalog): Buildi
         recipeId: wallPanelRecipeId,
         atlasSlotId: "wall.primary"
       },
-      upstreamIds: ["node.art-kit-facade-plan"],
+      upstreamIds: [facadeModulePlan ? "node.art-kit-facade-plan" : "node.bays"],
       semanticPathTemplate: buildingPath(spec, "facade/{facade}/floor/{floor}/bay/{bay}/wall/panel"),
       stage: "facade"
     }),
@@ -197,14 +219,17 @@ function buildNodes(spec: BuildingFamilySpec, catalog: ComponentCatalog): Buildi
       semanticPathTemplate: buildingPath(spec, "output"),
       stage: "roof"
     })
-  ];
+  );
+
+  return nodes;
 }
 
 export async function buildBuildingGraph(
   spec: BuildingFamilySpec,
-  catalog: ComponentCatalog
+  catalog: ComponentCatalog,
+  options: BuildBuildingGraphOptions = {}
 ): Promise<BuildingGraph> {
-  const nodes = buildNodes(spec, catalog);
+  const nodes = buildNodes(spec, catalog, options);
   const graphWithoutId = {
     schemaVersion: "0.1.0" as const,
     graphId: "pending",

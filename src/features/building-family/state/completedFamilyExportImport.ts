@@ -125,11 +125,13 @@ export async function importCompletedFamilyExportBundleToPacket(
     channels: atlasChannels,
     slotProvenance: bundle.atlas.slotProvenance
   });
+  const fidelityMode = bundle.fidelityMode ?? "kit";
   const runtimeIr = await compileBuilding({
     spec: bundle.spec,
     catalog: bundle.componentCatalog,
     graph: bundle.graph,
-    buildingId: bundle.buildingId
+    buildingId: bundle.buildingId,
+    fidelityMode
   });
   const componentGallery = await buildComponentGallery({
     catalog: bundle.componentCatalog,
@@ -143,6 +145,7 @@ export async function importCompletedFamilyExportBundleToPacket(
     requestHash: bundle.requestHash,
     contentHash: bundle.contentHash,
     createdAt: bundle.createdAt,
+    fidelityMode,
     familyId: bundle.familyId,
     buildingId: bundle.buildingId,
     stylePackReference: bundle.stylePackReference,

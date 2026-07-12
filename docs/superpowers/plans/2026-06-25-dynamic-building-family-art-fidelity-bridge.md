@@ -386,6 +386,8 @@ npm.cmd run typecheck
 
 ### Slice 6: Art Fidelity Mode In Runtime
 
+Status: implemented on 2026-07-12. Prompt Lab exposes `fidelityMode` (`kit` default, `proof` legacy). Graph builder omits the art-kit plan node in proof mode; compiler/fixture/export/import/benchmark packets record the mode. Implementation plan: `docs/superpowers/plans/2026-07-12-art-fidelity-mode.md`.
+
 Add a feature option such as:
 
 ```ts

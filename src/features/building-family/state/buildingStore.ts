@@ -13,6 +13,7 @@ export type BuildingRoom = "promptLab" | "atlasLab" | "componentForge" | "sample
 export type BuildingDetailLevel = "high" | "low";
 export type BuildingRoofType = "flat" | "gable";
 export type BuildingTrimDensity = "restrained" | "moderate" | "ornate";
+export type BuildingFidelityMode = "proof" | "kit";
 export const defaultBuildingDocumentId = "buildo-demo-family";
 
 export interface BuildingPromptControls {
@@ -23,6 +24,7 @@ export interface BuildingPromptControls {
   floorCount: number;
   bayCount: number;
   detailLevel: BuildingDetailLevel;
+  fidelityMode: BuildingFidelityMode;
   roofType: BuildingRoofType;
   trimDensity: BuildingTrimDensity;
   windowFamily: string;
@@ -96,6 +98,7 @@ export const defaultBuildingPromptControls: BuildingPromptControls = {
   floorCount: 4,
   bayCount: 7,
   detailLevel: "high",
+  fidelityMode: "kit",
   roofType: "flat",
   trimDensity: "ornate",
   windowFamily: "tall-arched",

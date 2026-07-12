@@ -2,6 +2,7 @@ import { RuntimeBuildingIRSchema, type RuntimeBuildingIR } from "../contracts/ru
 import { buildComponentCatalog } from "../components/componentCatalogBuilder";
 import { compileBuilding } from "../compiler/buildingCompiler";
 import { buildBuildingGraph } from "../compiler/buildingGraphBuilder";
+// buildBuildingGraph used for proof-mode graphs
 import { normalizeBuildingSpec } from "../core/specNormalizer";
 import { planAtlas } from "../materials/atlasPlanner";
 import { adaptPsgEvaluationToBuildingIntent } from "../psg/psgBuildingIntentAdapter";
@@ -136,8 +137,14 @@ describe("compileBuilding", () => {
   });
 
   it("preserves proof-mode hardcoded front window counts when fidelityMode is proof", async () => {
-    const { spec, catalog, graph } = await fixtureCompilerInputs();
-    const ir = await compileBuilding({ spec, catalog, graph, fidelityMode: "proof" });
+    const { spec, catalog } = await fixtureCompilerInputs();
+    const proofGraph = await buildBuildingGraph(spec, catalog, { fidelityMode: "proof" });
+    const ir = await compileBuilding({
+      spec,
+      catalog,
+      graph: proofGraph,
+      fidelityMode: "proof"
+    });
     const windowBatch = ir.instanceBatches.find((batch) => batch.recipeId === "recipe.window.tall-arched.frame");
 
     expect(windowBatch?.count).toBe(spec.massing.floorCount * spec.facade.frontBayCount);

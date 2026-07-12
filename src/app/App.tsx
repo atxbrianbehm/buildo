@@ -26,6 +26,7 @@ import {
   type BuildingPromptControlPatch,
   type BuildingPromptControls,
   type BuildingDetailLevel,
+  type BuildingFidelityMode,
   type BuildingRoofType,
   type BuildingStoreApi
 } from "../features/building-family/state/buildingStore";
@@ -57,6 +58,11 @@ const roofTypeOptions: Array<{ label: string; value: BuildingRoofType }> = [
 const detailLevelOptions: Array<{ label: string; value: BuildingDetailLevel }> = [
   { label: "High", value: "high" },
   { label: "Low", value: "low" }
+];
+
+const fidelityModeOptions: Array<{ label: string; value: BuildingFidelityMode }> = [
+  { label: "Kit (art-kit planner)", value: "kit" },
+  { label: "Proof (legacy front openings)", value: "proof" }
 ];
 
 const trimDensityOptions: Array<{ label: string; value: BuildingPromptControls["trimDensity"] }> = [
@@ -427,6 +433,24 @@ export function App() {
                     }
                   >
                     {detailLevelOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  <span>Fidelity Mode</span>
+                  <select
+                    aria-label="Fidelity Mode"
+                    value={promptControls.fidelityMode}
+                    onChange={(event) =>
+                      updatePromptControls({
+                        fidelityMode: event.currentTarget.value as BuildingFidelityMode
+                      })
+                    }
+                  >
+                    {fidelityModeOptions.map((option) => (
                       <option key={option.value} value={option.value}>
                         {option.label}
                       </option>

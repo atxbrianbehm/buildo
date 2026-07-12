@@ -53,6 +53,7 @@ const defaultFixturePromptControls: BuildingPromptControls = {
   floorCount: 4,
   bayCount: 7,
   detailLevel: "high",
+  fidelityMode: "kit",
   roofType: "flat",
   trimDensity: "ornate",
   windowFamily: "tall-arched",
@@ -145,6 +146,7 @@ export interface AssemblyHallRemoteMaterialApplication {
 export interface AssemblyHallFixture {
   schemaVersion: "0.1.0";
   prompt: string;
+  fidelityMode: BuildingPromptControls["fidelityMode"];
   promptTrace: AssemblyHallPromptTrace;
   spec: BuildingFamilySpec;
   catalog: ComponentCatalog;
@@ -245,7 +247,8 @@ async function createVariantStressSummary(input: {
         catalog: input.catalog,
         graph: input.graph,
         buildingId: await buildingIdForSeed(input.spec, buildingSeed),
-        detailLevel: input.controls.detailLevel ?? "high"
+        detailLevel: input.controls.detailLevel ?? "high",
+        fidelityMode: input.controls.fidelityMode ?? "kit"
       });
       return stressVariantForIr(index, buildingSeed, variantIr);
     })
@@ -295,6 +298,7 @@ function promptTraceFor(input: {
       { name: "floorCount", value: input.controls.floorCount },
       { name: "bayCount", value: input.controls.bayCount },
       { name: "detailLevel", value: input.controls.detailLevel ?? "high" },
+      { name: "fidelityMode", value: input.controls.fidelityMode ?? "kit" },
       { name: "roofType", value: input.controls.roofType },
       { name: "trimDensity", value: input.controls.trimDensity },
       { name: "stylePackId", value: input.controls.stylePackId },
@@ -378,15 +382,17 @@ export async function createAssemblyHallFixture(
   const spec = (await normalizeBuildingSpec(adapted.intent, stylePack)).spec;
   const promptTrace = promptTraceFor({ adapted, controls, evaluation, promptResult, spec });
   throwIfAborted(signal);
+  const fidelityMode = controls.fidelityMode ?? "kit";
   const atlasPlan = await planAtlas(spec, { widthPx: 128, heightPx: 128, paddingPx: 4 });
   const catalog = input.reusableArtifacts?.catalog ?? (await buildComponentCatalog(spec, atlasPlan.manifest));
-  const graph = await buildBuildingGraph(spec, catalog);
+  const graph = await buildBuildingGraph(spec, catalog, { fidelityMode });
   const ir = await compileBuilding({
     spec,
     catalog,
     graph,
     buildingId: await buildingIdFor(spec, controls),
-    detailLevel: controls.detailLevel ?? "high"
+    detailLevel: controls.detailLevel ?? "high",
+    fidelityMode
   });
   let generatedMaterialSourceCount = 0;
   let packedAtlas = input.reusableArtifacts?.packedAtlas;
@@ -459,6 +465,7 @@ export async function createAssemblyHallFixture(
   return {
     schemaVersion: "0.1.0",
     prompt: controls.prompt,
+    fidelityMode,
     promptTrace,
     spec,
     catalog,
@@ -520,6 +527,7 @@ export async function restoreAssemblyHallFixtureFromCompletedFamilyPacket(input:
   return {
     schemaVersion: "0.1.0",
     prompt: packet.prompt ?? "Restored completed family",
+    fidelityMode: packet.fidelityMode ?? "kit",
     promptTrace: packet.provenance.promptTrace,
     spec: packet.artifacts.spec,
     catalog: packet.artifacts.componentCatalog,

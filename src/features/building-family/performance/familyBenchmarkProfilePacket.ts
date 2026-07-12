@@ -145,6 +145,7 @@ export const FamilyBenchmarkProfilePacketSchema = z.object({
   profileKind: z.literal(FAMILY_BENCHMARK_PROFILE_PACKET_KIND),
   familyId: z.string().min(1),
   createdAt: z.string().min(1),
+  fidelityMode: z.enum(["proof", "kit"]).optional(),
   reports: z.object({
     construction: ConstructionBenchmarkReportSchema,
     orbit: OrbitBenchmarkReportSchema
@@ -347,6 +348,7 @@ export function createFamilyBenchmarkProfilePacket(
     profileKind: FAMILY_BENCHMARK_PROFILE_PACKET_KIND,
     familyId: input.constructionReport.familyId,
     createdAt: environment.capturedAt,
+    fidelityMode: input.fixture.fidelityMode,
     reports: {
       construction: input.constructionReport,
       orbit: input.orbitReport

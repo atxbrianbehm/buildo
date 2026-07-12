@@ -33,6 +33,7 @@ export type BuildingControlName =
   | "floorCount"
   | "bayCount"
   | "detailLevel"
+  | "fidelityMode"
   | "roofType"
   | "trimDensity"
   | "windowFamily"
@@ -48,6 +49,7 @@ export interface BuildingControlSnapshot {
   floorCount: number;
   bayCount: number;
   detailLevel?: string;
+  fidelityMode?: string;
   roofType: string;
   trimDensity: string;
   windowFamily?: string;
@@ -146,6 +148,12 @@ const controlImpactMatrix: Record<BuildingControlName, Record<BuildingInvalidati
   },
   detailLevel: {
     ...noImpact,
+    runtimeBuildingIr: "full",
+    gpuScene: "full"
+  },
+  fidelityMode: {
+    ...noImpact,
+    buildingGraph: "full",
     runtimeBuildingIr: "full",
     gpuScene: "full"
   },
@@ -261,6 +269,7 @@ function changedControls(previous: BuildingControlSnapshot, next: BuildingContro
   if (previous.floorCount !== next.floorCount) changed.push("floorCount");
   if (previous.bayCount !== next.bayCount) changed.push("bayCount");
   if ((previous.detailLevel ?? "high") !== (next.detailLevel ?? "high")) changed.push("detailLevel");
+  if ((previous.fidelityMode ?? "kit") !== (next.fidelityMode ?? "kit")) changed.push("fidelityMode");
   if (previous.roofType !== next.roofType) changed.push("roofType");
   if (previous.trimDensity !== next.trimDensity) changed.push("trimDensity");
   if ((previous.windowFamily ?? "") !== (next.windowFamily ?? "")) changed.push("windowFamily");
