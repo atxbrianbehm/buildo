@@ -5,6 +5,10 @@ import { buildComponentGallery, type ComponentGallery } from "../compiler/compon
 import type { BuildingGraph } from "../contracts/buildingGraph";
 import type { BuildingFamilySpec } from "../contracts/buildingFamilySpec";
 import type { RuntimeBuildingIR } from "../contracts/runtimeBuildingIR";
+import {
+  buildingCompositionKey,
+  withBuildingSeedVariation
+} from "../core/buildingSeedVariation";
 import { hashCanonicalJson } from "../core/contentHash";
 import { normalizeBuildingSpec } from "../core/specNormalizer";
 import { createAtlasDebugExport, type AtlasDebugExport } from "../materials/atlasDebugExport";
@@ -86,6 +90,11 @@ export interface AssemblyHallVariantStressVariant {
   buildingSeed: string;
   buildingId: string;
   sourceGraphHash: string;
+  /** Structural composition key used to prove building seeds are not near-clones. */
+  compositionKey?: string;
+  frontBayCount?: number;
+  depthM?: number;
+  windowFamily?: string;
   drawCallCount: number;
   instanceCount: number;
   triangleCount: number;
@@ -211,13 +220,18 @@ function variantBuildingSeed(baseSeed: string, index: number): string {
 function stressVariantForIr(
   index: number,
   buildingSeed: string,
-  ir: RuntimeBuildingIR
+  ir: RuntimeBuildingIR,
+  spec: BuildingFamilySpec
 ): AssemblyHallVariantStressVariant {
   return {
     index,
     buildingSeed,
     buildingId: ir.buildingId,
     sourceGraphHash: ir.sourceGraphHash,
+    compositionKey: buildingCompositionKey(spec),
+    frontBayCount: spec.facade.frontBayCount,
+    depthM: spec.massing.depthM,
+    windowFamily: spec.selectedFamilies.window,
     drawCallCount: ir.meshBatches.length + ir.instanceBatches.length,
     instanceCount: ir.metrics.instanceCount,
     triangleCount: ir.metrics.triangleCount,
@@ -241,28 +255,23 @@ async function createVariantStressSummary(input: {
       throwIfAborted(input.signal);
       const buildingSeed = variantBuildingSeed(input.controls.seeds.building, index);
       if (index === 0) {
-        return stressVariantForIr(index, buildingSeed, input.ir);
+        return stressVariantForIr(index, buildingSeed, input.ir, input.spec);
       }
 
-      // Re-plan + recompile with the variant building seed so stress cards are not
-      // identical IR clones of the primary fixture under a different building id.
-      const variantSpec: BuildingFamilySpec = {
-        ...input.spec,
-        seeds: {
-          ...input.spec.seeds,
-          building: buildingSeed
-        }
-      };
-      const variantGraph = await buildBuildingGraph(variantSpec, input.catalog, { fidelityMode });
+      // Re-derive building-scoped massing/opening families, then replan + recompile.
+      // Catalog is rebuilt when window family changes so recipes match the seed.
+      const variantSpec = withBuildingSeedVariation(input.spec, buildingSeed, stylePack);
+      const variantCatalog = await buildComponentCatalog(variantSpec, input.packedAtlas.manifest);
+      const variantGraph = await buildBuildingGraph(variantSpec, variantCatalog, { fidelityMode });
       const variantIr = await compileBuilding({
         spec: variantSpec,
-        catalog: input.catalog,
+        catalog: variantCatalog,
         graph: variantGraph,
         buildingId: await buildingIdForSeed(variantSpec, buildingSeed),
         detailLevel,
         fidelityMode
       });
-      return stressVariantForIr(index, buildingSeed, variantIr);
+      return stressVariantForIr(index, buildingSeed, variantIr, variantSpec);
     })
   );
   throwIfAborted(input.signal);

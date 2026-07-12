@@ -43,9 +43,16 @@ describe("normalizeBuildingSpec", () => {
     expect(second.spec.familyId).toBe(first.spec.familyId);
     expect(second.spec.materialParameters).toEqual(first.spec.materialParameters);
     expect(second.spec.selectedFamilies.wall).toBe(first.spec.selectedFamilies.wall);
+    expect(second.spec.massing.floorCount).toBe(first.spec.massing.floorCount);
+    // Building seed is allowed to change composition (bays/depth/window family).
     expect(second.spec.componentParameters.windowJitterSeed).not.toBe(
       first.spec.componentParameters.windowJitterSeed
     );
+    const sameComposition =
+      second.spec.facade.frontBayCount === first.spec.facade.frontBayCount &&
+      second.spec.massing.depthM === first.spec.massing.depthM &&
+      second.spec.selectedFamilies.window === first.spec.selectedFamilies.window;
+    expect(sameComposition).toBe(false);
   });
 
   it("normalizes invalid combinations with diagnostics instead of silently accepting them", async () => {

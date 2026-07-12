@@ -259,6 +259,13 @@ describe("assembly hall fixture", () => {
     expect(new Set(fixture.variantStress.variants.map((variant) => variant.buildingSeed)).size).toBe(16);
     // Variants re-plan with distinct building seeds, so graph hashes are not forced-identical.
     expect(new Set(fixture.variantStress.variants.map((variant) => variant.sourceGraphHash)).size).toBeGreaterThan(1);
+    // Composition keys capture bay/depth/window-family differences — not just renames.
+    expect(
+      new Set(fixture.variantStress.variants.map((variant) => variant.compositionKey)).size
+    ).toBeGreaterThanOrEqual(6);
+    expect(
+      new Set(fixture.variantStress.variants.map((variant) => variant.frontBayCount)).size
+    ).toBeGreaterThan(1);
     expect(fixture.variantStress.variants[0]).toMatchObject({
       index: 0,
       buildingId: fixture.ir.buildingId,

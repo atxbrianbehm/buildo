@@ -5,6 +5,7 @@ import {
   type HistoricalStylePack
 } from "../contracts/historicalStylePack";
 import type { Diagnostic } from "./diagnostics";
+import { withBuildingSeedVariation } from "./buildingSeedVariation";
 import { hashCanonicalJson } from "./contentHash";
 import { createSeedTree } from "./seedTree";
 
@@ -178,6 +179,8 @@ export async function normalizeBuildingSpec(
   );
   const roofFamily = roofType === "flat" ? "flat-membrane" : "simple-gable";
 
+  // Family identity excludes building-scoped component families (window/door) so
+  // sample variants can differ without splitting the shared family atlas lineage.
   const familyScopedIdentity = {
     stylePackId: stylePack.id,
     familySeed: intent.seeds.family,
@@ -187,7 +190,6 @@ export async function normalizeBuildingSpec(
     frontBayCount,
     wallMaterial,
     roofType,
-    windowFamily,
     corniceFamily,
     trimDensity: intent.requested.trimDensity ?? stylePack.defaults.trimDensity
   };
@@ -199,7 +201,7 @@ export async function normalizeBuildingSpec(
     materialSeed: createSeedTree(intent.seeds.material).uint32(`material/${wallMaterial}`)
   };
 
-  const spec = BuildingFamilySpecSchema.parse({
+  const baseSpec = BuildingFamilySpecSchema.parse({
     schemaVersion: "0.1.0",
     familyId,
     sourceIntentHash,
@@ -239,6 +241,8 @@ export async function normalizeBuildingSpec(
     materialParameters,
     componentParameters: {
       trimDensity: intent.requested.trimDensity ?? stylePack.defaults.trimDensity,
+      requestedBayCount: frontBayCount,
+      requestedFloorCount: floorCount,
       windowJitterSeed: buildingSeedTree.uint32("components/windows/jitter"),
       bayRhythmSeed: familySeedTree.uint32("facade/front/bay-rhythm")
     },
@@ -246,6 +250,10 @@ export async function normalizeBuildingSpec(
     locks: intent.locks,
     diagnostics
   });
+
+  // Apply building-seed structural variety (bays/depth/window family/rhythm) while
+  // keeping familyId and material seeds stable for shared-family samples.
+  const spec = withBuildingSeedVariation(baseSpec, intent.seeds.building, stylePack);
 
   return { spec, diagnostics };
 }

@@ -1,10 +1,12 @@
 import { useMemo } from "react";
 import { late19cApartmentKit, planFacadeModules, type FacadeModulePlacement } from "../art-kit";
+import { withBuildingSeedVariation } from "../core/buildingSeedVariation";
 import type { BuildingFamilySpec } from "../contracts/buildingFamilySpec";
 import type {
   AssemblyHallFixture,
   AssemblyHallVariantStressVariant
 } from "./assemblyHallFixture";
+import stylePack from "../style-packs/late-19c-commercial-demo.json";
 
 export interface SampleBuildingGalleryProps {
   fixture: AssemblyHallFixture;
@@ -19,6 +21,7 @@ export interface SampleBuildingGalleryProps {
 interface SampleBuildingCard {
   sampleNumber: number;
   variant: AssemblyHallVariantStressVariant;
+  variantSpec: BuildingFamilySpec;
   frontOpenings: FacadeModulePlacement[];
   facadeSignature: string;
   archedCount: number;
@@ -59,13 +62,8 @@ function facadeSignatureFor(frontOpenings: FacadeModulePlacement[]): string {
 
 function sampleCardsForFixture(fixture: AssemblyHallFixture, sampleCount: number): SampleBuildingCard[] {
   return fixture.variantStress.variants.slice(0, sampleCount).map((variant, index) => {
-    const variantSpec: BuildingFamilySpec = {
-      ...fixture.spec,
-      seeds: {
-        ...fixture.spec.seeds,
-        building: variant.buildingSeed
-      }
-    };
+    // Same building-seed variation path as stress / Assembly Hall opens.
+    const variantSpec = withBuildingSeedVariation(fixture.spec, variant.buildingSeed, stylePack);
     const plan =
       fixture.fidelityMode === "kit"
         ? planFacadeModules({
@@ -87,6 +85,7 @@ function sampleCardsForFixture(fixture: AssemblyHallFixture, sampleCount: number
     return {
       sampleNumber: index + 1,
       variant,
+      variantSpec,
       frontOpenings,
       facadeSignature: facadeSignatureFor(frontOpenings),
       archedCount,
@@ -106,6 +105,7 @@ function BuildingFacadePreview({
   spec
 }: {
   sample: SampleBuildingCard;
+  /** Per-sample building-seeded spec (may differ from family base massing). */
   spec: BuildingFamilySpec;
 }) {
   const floorCount = spec.massing.floorCount;
@@ -307,7 +307,7 @@ export function SampleBuildingGallery({
 
       <p className="sample-gallery__fidelity-banner" aria-label="Sample gallery fidelity banner">
         {fixture.fidelityMode === "kit"
-          ? "Showing kit-mode variants (art-kit facade planner + plan-driven openings). Each card uses its building seed plan."
+          ? "Kit-mode building seeds vary bays, depth, window family, and facade rhythm. Card drawings are schematic; Open in Assembly Hall shows the real mesh."
           : "Showing proof-mode variants (legacy front-only openings, no art-kit plan node)."}
       </p>
 
@@ -327,7 +327,7 @@ export function SampleBuildingGallery({
             key={sample.variant.buildingId}
             data-facade-signature={sample.facadeSignature}
           >
-            <BuildingFacadePreview sample={sample} spec={fixture.spec} />
+            <BuildingFacadePreview sample={sample} spec={sample.variantSpec} />
             <div className="sample-gallery__card-body">
               <div className="sample-gallery__card-title">
                 <h3>Sample {sample.sampleNumber}</h3>
@@ -339,8 +339,15 @@ export function SampleBuildingGallery({
               <dl className="sample-gallery__card-metrics">
                 <div>
                   <dt>Shape</dt>
-                  <dd>
-                    {floorLabel} / {bayLabel}
+                  <dd aria-label={`Sample ${sample.sampleNumber} shape`}>
+                    {sample.variantSpec.massing.floorCount} floors / {sample.variantSpec.facade.frontBayCount}{" "}
+                    bays · {sample.variantSpec.massing.depthM.toFixed(1)}m deep
+                  </dd>
+                </div>
+                <div>
+                  <dt>Window family</dt>
+                  <dd aria-label={`Sample ${sample.sampleNumber} window family`}>
+                    {sample.variantSpec.selectedFamilies.window}
                   </dd>
                 </div>
                 <div>

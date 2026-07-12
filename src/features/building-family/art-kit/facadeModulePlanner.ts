@@ -337,6 +337,18 @@ export function planFacadeModules(input: PlanFacadeModulesInput): FacadeModulePl
     }
 
     if (cell.facade === "front") {
+      // Building-seed rhythm: some body bays stay solid wall so samples are not
+      // a uniform punched grid of identical openings.
+      const openProbability =
+        cell.zone === "ground"
+          ? 0.92
+          : 0.55 + seedTree.float01("front-density") * 0.4;
+      if (
+        seedTree.float01(`front-open/${cell.floorIndex}/${cell.bayIndex}`) >
+        openProbability
+      ) {
+        continue;
+      }
       const windowModule = chooseWindowModule(kit, cell, seedTree);
       if (windowModule) {
         const size = placementSizeForFacade(cell.facade, windowModule);

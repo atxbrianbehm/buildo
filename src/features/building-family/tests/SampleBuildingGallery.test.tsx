@@ -17,15 +17,15 @@ describe("SampleBuildingGallery", () => {
       expect(screen.getByLabelText("Generated sample building gallery")).toBeInTheDocument();
       expect(screen.getByLabelText("Sample gallery fidelity mode")).toHaveTextContent(fixture.fidelityMode);
       expect(screen.getByLabelText("Sample gallery fidelity banner")).toHaveTextContent(
-        fixture.fidelityMode === "kit" ? "kit-mode" : "proof-mode"
+        fixture.fidelityMode === "kit" ? "building seeds vary" : "proof-mode"
       );
       expect(screen.getAllByLabelText(/^Generated building sample /)).toHaveLength(8);
       expect(screen.getAllByRole("img", { name: /^Facade preview for generated building sample / })).toHaveLength(8);
 
       const firstSample = screen.getByLabelText("Generated building sample 1");
       expect(firstSample).toHaveTextContent("building-seed");
-      expect(firstSample).toHaveTextContent("4 floors");
-      expect(firstSample).toHaveTextContent("7 bays");
+      expect(firstSample).toHaveTextContent(/floors/);
+      expect(firstSample).toHaveTextContent(/bays/);
       expect(firstSample).toHaveTextContent(fixture.spec.familyId);
       expect(firstSample).toHaveTextContent(fixture.packedAtlas.contentHash.slice(0, 12));
       expect(screen.getByLabelText("Sample 1 fidelity mode")).toHaveTextContent(
