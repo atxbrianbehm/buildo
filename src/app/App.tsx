@@ -7,6 +7,7 @@ import { ArtifactTracePanel } from "../features/building-family/ui/ArtifactTrace
 import { AssemblyHall } from "../features/building-family/ui/AssemblyHall";
 import { ComponentForge } from "../features/building-family/ui/ComponentForge";
 import { PromptTracePanel } from "../features/building-family/ui/PromptTracePanel";
+import { ArtKitLab } from "../features/building-family/ui/ArtKitLab";
 import { SampleBuildingGallery } from "../features/building-family/ui/SampleBuildingGallery";
 import { createIndexedDbArtifactPersistence } from "../features/building-family/materials/indexedDbArtifactPersistence";
 import {
@@ -75,6 +76,7 @@ const roomOptions: Array<{ label: string; room: BuildingRoom }> = [
   { label: "Prompt Lab", room: "promptLab" },
   { label: "Atlas Lab", room: "atlasLab" },
   { label: "Component Forge", room: "componentForge" },
+  { label: "Art Kit Lab", room: "artKitLab" },
   { label: "Sample Gallery", room: "sampleGallery" },
   { label: "Assembly Hall", room: "assemblyHall" }
 ];
@@ -740,6 +742,16 @@ export function App() {
               {runState.error ?? "Preparing component catalog"}
             </div>
           )}
+        </section>
+      ) : null}
+      {activeRoom === "artKitLab" ? (
+        <section
+          aria-labelledby="building-room-tab-artKitLab"
+          className="room-panel"
+          id="building-room-panel-artKitLab"
+          role="tabpanel"
+        >
+          <ArtKitLab fixture={fixture} />
         </section>
       ) : null}
       {activeRoom === "sampleGallery" ? (

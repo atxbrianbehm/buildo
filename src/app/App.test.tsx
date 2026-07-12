@@ -88,7 +88,9 @@ async function waitForInitialRun(): Promise<void> {
   await waitFor(() => expect(screen.getByLabelText("Generation run state")).toHaveTextContent("complete"));
 }
 
-function selectRoom(name: "Prompt Lab" | "Atlas Lab" | "Component Forge" | "Assembly Hall" | "Sample Gallery"): void {
+function selectRoom(
+  name: "Prompt Lab" | "Atlas Lab" | "Component Forge" | "Art Kit Lab" | "Assembly Hall" | "Sample Gallery"
+): void {
   fireEvent.click(screen.getByRole("tab", { name }));
 }
 
@@ -152,6 +154,11 @@ describe("App", () => {
     });
     expect(screen.getByLabelText("Selected component recipe")).toHaveTextContent("Window frame");
     expect(within(screen.getByRole("table", { name: "Selected atlas slots" })).getByText("glass.primary")).toBeInTheDocument();
+
+    selectRoom("Art Kit Lab");
+    expect(await screen.findByRole("heading", { name: "Late 19th Century Apartment Kit" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Art kit module catalog")).toBeInTheDocument();
+    expect(screen.getByRole("table", { name: "Art kit material roles" })).toHaveTextContent("brick");
 
     selectRoom("Assembly Hall");
     expect(await screen.findByRole("heading", { name: "Assembly Hall" })).toBeInTheDocument();

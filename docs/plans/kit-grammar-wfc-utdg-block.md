@@ -2,7 +2,7 @@
 
 ## Implementation plan
 
-**Status:** in progress — M1–M9 landed; next M10 Art Kit Lab / gallery  
+**Status:** in progress — M1–M10 landed; next M11 visual QA packet  
 **Date:** 2026-07-12  
 **Depends on:** MVP vertical slice (Milestones 0–7) complete; art-fidelity Slice 1 (`ArtKitManifest` + `late19cApartmentKit`) complete; visual-truth Assembly Hall prerequisite  
 **Related plans:**
@@ -17,6 +17,7 @@
 | `docs/superpowers/plans/2026-07-12-high-fidelity-openings.md` | Detailed task plan for Phase B2 / M7 |
 | `docs/superpowers/plans/2026-07-12-art-kit-material-set.md` | Detailed task plan for Phase C1 / M8 |
 | `docs/superpowers/plans/2026-07-12-art-fidelity-mode.md` | Detailed task plan for Phase C2 / M9 |
+| `docs/superpowers/plans/2026-07-12-art-kit-lab-gallery.md` | Detailed task plan for Phase C3 / M10 |
 
 **Delivery mode:** small, reviewable milestones. Do not combine phases or merge independent intermediate artifacts without explicit instruction. Preserve all `AGENTS.md` Dynamic Building Family rules.
 
@@ -839,7 +840,7 @@ Execute in order. Each row is one reviewable PR-sized milestone unless noted.
 | M7 | High-fidelity openings | B2 | opening geometry + forge | done 2026-07-12 |
 | M8 | Art-kit material set + scale | C1 | atlas + materials | done 2026-07-12 |
 | M9 | Fidelity mode proof/kit in run + export | C2 | persistence/export | done 2026-07-12 |
-| M10 | Art Kit Lab + gallery labels | C3 | UI + e2e | pending |
+| M10 | Art Kit Lab + gallery labels | C3 | UI + e2e | done 2026-07-12 |
 | M11 | Visual QA packet | C4 | QA schema + docs | pending |
 | M12 | WFC constraint model + solver | D1 | pure WFC tests | pending |
 | M13 | WFC planner wiring + invalidation | D2 | controller + invalidation | pending |

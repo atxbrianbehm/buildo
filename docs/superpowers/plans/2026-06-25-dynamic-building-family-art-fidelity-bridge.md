@@ -412,6 +412,8 @@ npm.cmd run typecheck
 
 ### Slice 7: Art Kit Lab And Sample Gallery Upgrade
 
+Status: implemented on 2026-07-12. `#room=artKitLab` inspects modules, materials, clay/wireframe/textured previews, and quality report; Sample Gallery labels kit vs proof fidelity. Implementation plan: `docs/superpowers/plans/2026-07-12-art-kit-lab-gallery.md`.
+
 Add an inspection route for the kit and upgrade the gallery so it communicates fidelity honestly.
 
 Required UI surfaces:

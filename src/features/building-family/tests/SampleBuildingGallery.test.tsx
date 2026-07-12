@@ -11,6 +11,10 @@ describe("SampleBuildingGallery", () => {
 
       expect(screen.getByRole("heading", { name: "Sample Buildings" })).toBeInTheDocument();
       expect(screen.getByLabelText("Generated sample building gallery")).toBeInTheDocument();
+      expect(screen.getByLabelText("Sample gallery fidelity mode")).toHaveTextContent(fixture.fidelityMode);
+      expect(screen.getByLabelText("Sample gallery fidelity banner")).toHaveTextContent(
+        fixture.fidelityMode === "kit" ? "kit-mode" : "proof-mode"
+      );
       expect(screen.getAllByLabelText(/^Generated building sample /)).toHaveLength(8);
       expect(screen.getAllByRole("img", { name: /^Facade preview for generated building sample / })).toHaveLength(8);
 
@@ -20,6 +24,9 @@ describe("SampleBuildingGallery", () => {
       expect(firstSample).toHaveTextContent("7 bays");
       expect(firstSample).toHaveTextContent(fixture.spec.familyId);
       expect(firstSample).toHaveTextContent(fixture.packedAtlas.contentHash.slice(0, 12));
+      expect(screen.getByLabelText("Sample 1 fidelity mode")).toHaveTextContent(
+        fixture.fidelityMode === "kit" ? "kit mode" : "proof mode"
+      );
 
       const eighthSample = screen.getByLabelText("Generated building sample 8");
       expect(eighthSample).toHaveTextContent("building-seed-variant-07");

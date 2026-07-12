@@ -2459,3 +2459,203 @@ h1 {
     white-space: nowrap;
   }
 }
+
+.sample-gallery__fidelity-banner {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(24, 32, 28, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #24302a;
+  font-size: 0.88rem;
+  line-height: 1.35;
+}
+
+.sample-gallery__mode-badge {
+  display: inline-flex;
+  width: fit-content;
+  margin: 0;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(38, 60, 49, 0.1);
+  color: #243c31;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.art-kit-lab {
+  display: grid;
+  gap: 18px;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 40px 0 16px;
+}
+
+.art-kit-lab__header {
+  display: grid;
+  gap: 14px;
+}
+
+.art-kit-lab__header h2 {
+  margin: 0;
+  color: #121816;
+  font-size: clamp(1.6rem, 2vw, 2rem);
+}
+
+.art-kit-lab__summary,
+.art-kit-lab__quality {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.art-kit-lab__summary div,
+.art-kit-lab__quality div {
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(24, 32, 28, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.66);
+}
+
+.art-kit-lab dt {
+  color: #5f6d66;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.art-kit-lab dd {
+  margin: 6px 0 0;
+  overflow-wrap: anywhere;
+  color: #18201c;
+  font-size: 0.84rem;
+  font-family: " SFMono-Regular\, Consolas, \Liberation Mono\, monospace;
+}
+
+.art-kit-lab__controls {
+ display: flex;
+ flex-wrap: wrap;
+ gap: 12px;
+}
+
+.art-kit-lab__controls label {
+ display: grid;
+ gap: 6px;
+ min-width: 180px;
+ color: #24302a;
+ font-size: 0.84rem;
+ font-weight: 700;
+}
+
+.art-kit-lab__controls select {
+ min-height: 38px;
+ padding: 8px 10px;
+ border: 1px solid rgba(24, 32, 28, 0.16);
+ border-radius: 6px;
+ background: #fff;
+ color: #18201c;
+}
+
+.art-kit-lab__section {
+ display: grid;
+ gap: 12px;
+}
+
+.art-kit-lab__section h3 {
+ margin: 0;
+ color: #121816;
+ font-size: 1.1rem;
+}
+
+.art-kit-lab__module-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+ gap: 14px;
+}
+
+.art-kit-lab__module-card {
+ display: grid;
+ gap: 10px;
+ overflow: hidden;
+ border: 1px solid rgba(24, 32, 28, 0.12);
+ border-radius: 8px;
+ background: rgba(255, 255, 255, 0.76);
+ box-shadow: 0 18px 48px rgba(22, 29, 25, 0.08);
+}
+
+.art-kit-lab__preview {
+ display: block;
+ width: 100%;
+ height: auto;
+ aspect-ratio: 120 / 100;
+ background: #e8ebe4;
+}
+
+.art-kit-lab__preview-bg {
+ fill: #e8ebe4;
+}
+
+.art-kit-lab__preview-caption {
+ fill: #4a554f;
+ font-size: 8px;
+ font-family: \SFMono-Regular\, Consolas, \Liberation Mono\, monospace;
+}
+
+.art-kit-lab__module-body {
+ display: grid;
+ gap: 8px;
+ padding: 0 12px 12px;
+}
+
+.art-kit-lab__module-body h4 {
+ margin: 0;
+ overflow-wrap: anywhere;
+ color: #121816;
+ font-size: 0.92rem;
+}
+
+.art-kit-lab__module-body dl {
+ display: grid;
+ gap: 6px;
+ margin: 0;
+}
+
+.art-kit-lab__module-body div {
+ display: grid;
+ gap: 2px;
+}
+
+.art-kit-lab__table-scroll {
+ overflow-x: auto;
+}
+
+.art-kit-lab__table {
+ width: 100%;
+ border-collapse: collapse;
+ background: rgba(255, 255, 255, 0.72);
+}
+
+.art-kit-lab__table th,
+.art-kit-lab__table td {
+ padding: 8px 10px;
+ border: 1px solid rgba(24, 32, 28, 0.1);
+ text-align: left;
+ vertical-align: top;
+ font-size: 0.82rem;
+}
+
+.art-kit-lab__table th {
+ background: rgba(38, 60, 49, 0.08);
+ color: #24302a;
+ font-weight: 800;
+}
+
+.art-kit-lab ul {
+ margin: 0;
+ padding-left: 1.2rem;
+ color: #24302a;
+ font-size: 0.88rem;
+}

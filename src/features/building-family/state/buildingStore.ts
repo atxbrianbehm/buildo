@@ -9,7 +9,13 @@ import {
 } from "../core/invalidation";
 import type { BuildingArtifactMetadata, BuildingArtifactType } from "./artifactRegistry";
 
-export type BuildingRoom = "promptLab" | "atlasLab" | "componentForge" | "sampleGallery" | "assemblyHall";
+export type BuildingRoom =
+  | "promptLab"
+  | "atlasLab"
+  | "componentForge"
+  | "artKitLab"
+  | "sampleGallery"
+  | "assemblyHall";
 export type BuildingDetailLevel = "high" | "low";
 export type BuildingRoofType = "flat" | "gable";
 export type BuildingTrimDensity = "restrained" | "moderate" | "ornate";

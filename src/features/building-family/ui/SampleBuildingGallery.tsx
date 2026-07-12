@@ -155,6 +155,10 @@ export function SampleBuildingGallery({ fixture, sampleCount = 8 }: SampleBuildi
             <dd>{fixture.spec.familyId}</dd>
           </div>
           <div>
+            <dt>Fidelity</dt>
+            <dd aria-label="Sample gallery fidelity mode">{fixture.fidelityMode}</dd>
+          </div>
+          <div>
             <dt>Atlas</dt>
             <dd>{shortHash(fixture.packedAtlas.contentHash)}</dd>
           </div>
@@ -170,6 +174,12 @@ export function SampleBuildingGallery({ fixture, sampleCount = 8 }: SampleBuildi
           </div>
         </dl>
       </div>
+
+      <p className="sample-gallery__fidelity-banner" aria-label="Sample gallery fidelity banner">
+        {fixture.fidelityMode === "kit"
+          ? "Showing kit-mode variants (art-kit facade planner + plan-driven openings)."
+          : "Showing proof-mode variants (legacy front-only openings, no art-kit plan node)."}
+      </p>
 
       <div className="sample-gallery__atlas" aria-label="Sample gallery material atlas">
         {baseColorChannel ? <img alt="baseColor atlas used by sample buildings" src={baseColorChannel.pngDataUrl} /> : null}
@@ -192,6 +202,9 @@ export function SampleBuildingGallery({ fixture, sampleCount = 8 }: SampleBuildi
                 <h3>Sample {sample.sampleNumber}</h3>
                 <span>{sample.variant.buildingSeed}</span>
               </div>
+              <p className="sample-gallery__mode-badge" aria-label={`Sample ${sample.sampleNumber} fidelity mode`}>
+                {fixture.fidelityMode === "kit" ? "kit mode" : "proof mode"}
+              </p>
               <dl className="sample-gallery__card-metrics">
                 <div>
                   <dt>Shape</dt>
