@@ -29,7 +29,13 @@ describe("visualQaPacket", () => {
       expect(packet.hashes.atlasContentHash).toBe(fixture.packedAtlas.contentHash);
       expect(packet.hashes.sourceGraphHash).toBe(fixture.ir.sourceGraphHash);
       expect(packet.hashes.contentFingerprint.length).toBeGreaterThan(8);
-      expect(packet.qualityReport.checklist.length).toBeGreaterThanOrEqual(11);
+      expect(packet.hashes.facadeSplitContentHash).toBe(packet.facadeSplit?.contentHash);
+      expect(packet.facadeSplit?.openingCount).toBeGreaterThan(0);
+      expect(packet.facadeSplit?.wallPieceCount).toBeGreaterThan(0);
+      expect(packet.qualityReport.checklist.length).toBeGreaterThanOrEqual(12);
+      expect(
+        packet.qualityReport.checklist.some((item) => item.label.includes("Facade split plan"))
+      ).toBe(true);
       expect(packet.fieldCoverage.measured.length).toBeGreaterThan(0);
       expect(packet.benchmarkProfileId).toBe("profile-demo");
       expect(parseVisualQaPacket(packet)).toEqual(packet);

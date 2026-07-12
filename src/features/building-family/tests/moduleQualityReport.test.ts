@@ -17,6 +17,7 @@ describe("moduleQualityReport", () => {
       expect(report.reportKind).toBe(MODULE_QUALITY_REPORT_KIND);
       expect(report.fidelityMode).toBe("kit");
       expect(report.checklist.length).toBeGreaterThanOrEqual(11);
+      // Split checklist may be IR-proxied when no splitEvidence is supplied.
       expect(report.checklist.map((item) => item.category)).toEqual(
         expect.arrayContaining([
           "silhouette",

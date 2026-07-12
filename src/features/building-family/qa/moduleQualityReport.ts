@@ -56,11 +56,23 @@ export type QualityChecklistCategory = z.infer<typeof QualityChecklistCategorySc
 export type QualityChecklistItem = z.infer<typeof QualityChecklistItemSchema>;
 export type ModuleQualityReport = z.infer<typeof ModuleQualityReportSchema>;
 
+export interface SplitQualityEvidence {
+  contentHash: string;
+  openingCount: number;
+  scopeCount: number;
+  storefrontScopeCount: number;
+  wallPieceCount: number;
+  doorCount: number;
+  windowCount: number;
+}
+
 export interface CreateModuleQualityReportInput {
   fixture: AssemblyHallFixture;
   /** Optional explicit detail level; defaults to high when unknown. */
   detailLevel?: "high" | "low";
   oneBuildingTriangleLimit?: number;
+  /** Optional FacadeSplitPlan metrics (G5); when omitted, split checklist is estimated from IR. */
+  splitEvidence?: SplitQualityEvidence;
 }
 
 function countByStatus(checklist: QualityChecklistItem[]): ModuleQualityReport["summary"] {
@@ -153,6 +165,24 @@ export function evaluateModuleQualityChecklist(
     sampleScales.length > 0 &&
     avgFrameWidthM > 0.2;
 
+  const split = input.splitEvidence;
+  const wallPanelPieces = fixture.ir.semanticIndex.filter(
+    (entry) => entry.batchId === "mesh.wall-panels"
+  ).length;
+  const kitMissingSplit =
+    fixture.fidelityMode === "kit" &&
+    split !== undefined &&
+    (split.openingCount === 0 || split.wallPieceCount === 0);
+  const splitPresent =
+    split !== undefined
+      ? split.contentHash.length > 0 && split.scopeCount > 0 && split.openingCount > 0
+      : wallPanelPieces > 0 && frameInstanceCount > 0;
+  const pierLikePieces = split?.wallPieceCount ?? wallPanelPieces;
+  const splitChecklistPass =
+    detailLevel === "high"
+      ? splitPresent && pierLikePieces > 0 && !kitMissingSplit
+      : splitPresent || wallPanelPieces > 0;
+
   return [
     item(
       "silhouette",
@@ -195,6 +225,29 @@ export function evaluateModuleQualityChecklist(
         slotLockedFrames,
         frameInsetFromSlotM: FRAME_INSET_FROM_SLOT_M,
         slotAlignmentEpsM: OPENING_SLOT_ALIGNMENT_EPS_M,
+        detailLevel
+      }
+    ),
+    item(
+      "facadeRhythm",
+      "Facade split plan present with openings and pier-like wall pieces",
+      splitChecklistPass ? "pass" : "fail",
+      split
+        ? "FacadeSplitPlan content hash, opening slots, and subdivided wall piece counts from split expand."
+        : "IR wall-panel and frame instance counts used as split presence proxy (no split hash supplied).",
+      {
+        splitPresent,
+        kitMissingSplit,
+        pierLikePieces,
+        wallPanelPieces,
+        splitContentHash: split?.contentHash,
+        openingCount: split?.openingCount ?? frameInstanceCount,
+        scopeCount: split?.scopeCount,
+        storefrontScopeCount: split?.storefrontScopeCount,
+        wallPieceCount: split?.wallPieceCount ?? wallPanelPieces,
+        doorCount: split?.doorCount,
+        windowCount: split?.windowCount,
+        fidelityMode: fixture.fidelityMode,
         detailLevel
       }
     ),

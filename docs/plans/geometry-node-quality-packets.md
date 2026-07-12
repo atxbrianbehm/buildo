@@ -334,14 +334,14 @@ Make the expand pipeline debuggable in-product:
 
 #### Acceptance
 
-- [ ] Completed run exposes split hash in trace or metrics  
-- [ ] Visual QA packet includes split hash + opening/slot counts  
-- [ ] Checklist fails if kit mode missing split / zero piers  
+- [x] Completed run exposes split hash in trace or metrics  
+- [x] Visual QA packet includes split hash + opening/slot counts  
+- [x] Checklist fails if kit mode missing split / zero piers  
 
 #### Validation
 
 ```powershell
-npm.cmd run test -- visualQaPacket moduleQualityReport ArtifactTracePanel AssemblyHall
+npm.cmd run test -- visualQaPacket moduleQualityReport facadeSplitObservability ArtifactTracePanel AssemblyHall
 npm.cmd run typecheck
 ```
 
@@ -579,5 +579,6 @@ Start **G1** only:
 | 2026-07-12 | **G2 landed:** `openingSlotBinding` locks frame scale + pocket AABB to split slots; oversize diagnostics. |
 | 2026-07-12 | **G3 landed:** ground front storefront vertical split (bulkhead/glazing/lintel); proud hierarchy from scopes. |
 | 2026-07-12 | **G4 landed:** storefront kit modules + planner ground grammar (bulkhead/glazing/door/lintel). |
+| 2026-07-12 | **G5 landed:** split hash + counts in Visual QA / quality checklist / Artifact Trace / Assembly Hall. |
 
-**Next packet to implement:** G5 — Split observability.
+**Next packet to implement:** G6 — Expander unification.

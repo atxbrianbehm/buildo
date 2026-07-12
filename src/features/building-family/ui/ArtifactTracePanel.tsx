@@ -1,6 +1,7 @@
 import type { ArtKitFacadePlanSummary } from "../art-kit";
 import { emptyArtKitFacadePlanSummary } from "../art-kit";
 import type { GenerationRun, GenerationRunEvent } from "../contracts/generationRun";
+import type { FacadeSplitObservabilitySummary } from "../qa/facadeSplitObservability";
 import type { BuildingArtifactMetadata } from "../state/artifactRegistry";
 import type { BuildingArtifactSliceState } from "../state/buildingStore";
 
@@ -9,6 +10,8 @@ export interface ArtifactTracePanelProps {
   artifacts: BuildingArtifactSliceState;
   run: GenerationRun | null;
   artKitFacadePlan?: ArtKitFacadePlanSummary;
+  /** Optional FacadeSplitPlan metrics (G5). */
+  facadeSplit?: FacadeSplitObservabilitySummary | null;
 }
 
 function artifactRows(artifacts: BuildingArtifactSliceState): BuildingArtifactMetadata[] {
@@ -55,7 +58,8 @@ export function ArtifactTracePanel({
   activeArtifactId,
   artifacts,
   run,
-  artKitFacadePlan
+  artKitFacadePlan,
+  facadeSplit
 }: ArtifactTracePanelProps) {
   const rows = artifactRows(artifacts);
   const events = eventRows(run);
@@ -82,8 +86,48 @@ export function ArtifactTracePanel({
             <dt>Active</dt>
             <dd>{activeArtifactId ?? "pending"}</dd>
           </div>
+          {facadeSplit ? (
+            <div>
+              <dt>Split</dt>
+              <dd>{shortHash(facadeSplit.contentHash)}</dd>
+            </div>
+          ) : null}
         </dl>
       </div>
+
+      {facadeSplit ? (
+        <section className="artifact-trace__split" aria-labelledby="facade-split-heading">
+          <h3 id="facade-split-heading">Facade Split</h3>
+          <dl className="artifact-trace__summary" aria-label="Facade split summary">
+            <div>
+              <dt>Hash</dt>
+              <dd>{shortHash(facadeSplit.contentHash)}</dd>
+            </div>
+            <div>
+              <dt>Openings</dt>
+              <dd>
+                {facadeSplit.openingCount} ({facadeSplit.windowCount}w / {facadeSplit.doorCount}d)
+              </dd>
+            </div>
+            <div>
+              <dt>Scopes</dt>
+              <dd>{facadeSplit.scopeCount}</dd>
+            </div>
+            <div>
+              <dt>Storefront</dt>
+              <dd>{facadeSplit.storefrontScopeCount}</dd>
+            </div>
+            <div>
+              <dt>Wall pieces</dt>
+              <dd>{facadeSplit.wallPieceCount}</dd>
+            </div>
+            <div>
+              <dt>Mode</dt>
+              <dd>{facadeSplit.fidelityMode}</dd>
+            </div>
+          </dl>
+        </section>
+      ) : null}
 
       <section className="artifact-trace__art-kit" aria-labelledby="art-kit-facade-plan-heading">
         <h3 id="art-kit-facade-plan-heading">Art-Kit Facade Plan</h3>

@@ -1218,6 +1218,14 @@ export function AssemblyHall({
                 <dt>Estimated</dt>
                 <dd>{visualQaPacket?.qualityReport.summary.estimatedCount ?? "—"}</dd>
               </div>
+              <div>
+                <dt>Split</dt>
+                <dd>
+                  {visualQaPacket?.facadeSplit
+                    ? `${visualQaPacket.facadeSplit.openingCount} op · ${visualQaPacket.facadeSplit.wallPieceCount} pieces`
+                    : "—"}
+                </dd>
+              </div>
             </dl>
             {visualQaError ? (
               <p className="assembly-hall__benchmark-message" role="alert">
@@ -1227,6 +1235,9 @@ export function AssemblyHall({
             {visualQaPacket ? (
               <p className="assembly-hall__benchmark-message" aria-label="Visual QA packet fingerprint">
                 fingerprint {visualQaPacket.hashes.contentFingerprint.slice(0, 16)}…
+                {visualQaPacket.hashes.facadeSplitContentHash
+                  ? ` · split ${visualQaPacket.hashes.facadeSplitContentHash.slice(0, 12)}…`
+                  : ""}
               </p>
             ) : (
               <p className="assembly-hall__benchmark-message">

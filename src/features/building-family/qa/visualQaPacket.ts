@@ -9,8 +9,24 @@ import {
   type CreateModuleQualityReportInput,
   type ModuleQualityReport
 } from "./moduleQualityReport";
+import {
+  buildFacadeSplitObservabilitySummary,
+  type FacadeSplitObservabilitySummary
+} from "./facadeSplitObservability";
 
 export const VISUAL_QA_PACKET_KIND = "dynamic-building-family-visual-qa";
+
+export const FacadeSplitSummarySchema = z.object({
+  schemaVersion: z.literal("0.1.0"),
+  contentHash: z.string().min(1),
+  openingCount: z.number().int().nonnegative(),
+  scopeCount: z.number().int().nonnegative(),
+  storefrontScopeCount: z.number().int().nonnegative(),
+  wallPieceCount: z.number().int().nonnegative(),
+  doorCount: z.number().int().nonnegative(),
+  windowCount: z.number().int().nonnegative(),
+  fidelityMode: z.enum(["proof", "kit"])
+});
 
 export const VisualQaPacketSchema = z.object({
   schemaVersion: SchemaVersion010,
@@ -31,8 +47,10 @@ export const VisualQaPacketSchema = z.object({
     familyId: z.string().min(1),
     buildingId: z.string().min(1),
     componentCatalogId: z.string().min(1),
-    contentFingerprint: z.string().min(1)
+    contentFingerprint: z.string().min(1),
+    facadeSplitContentHash: z.string().min(1).optional()
   }),
+  facadeSplit: FacadeSplitSummarySchema.optional(),
   qualityReport: ModuleQualityReportSchema,
   knownGaps: z.array(z.string().min(1)),
   benchmarkProfileId: z.string().min(1).optional(),
@@ -80,10 +98,24 @@ export function parseVisualQaPacket(input: unknown): VisualQaPacket {
 }
 
 export async function createVisualQaPacket(input: CreateVisualQaPacketInput): Promise<VisualQaPacket> {
+  const splitSummary: FacadeSplitObservabilitySummary = await buildFacadeSplitObservabilitySummary({
+    spec: input.fixture.spec,
+    catalog: input.fixture.catalog,
+    fidelityMode: input.fixture.fidelityMode
+  });
   const qualityInput: CreateModuleQualityReportInput = {
     fixture: input.fixture,
     detailLevel: input.detailLevel,
-    oneBuildingTriangleLimit: input.oneBuildingTriangleLimit
+    oneBuildingTriangleLimit: input.oneBuildingTriangleLimit,
+    splitEvidence: {
+      contentHash: splitSummary.contentHash,
+      openingCount: splitSummary.openingCount,
+      scopeCount: splitSummary.scopeCount,
+      storefrontScopeCount: splitSummary.storefrontScopeCount,
+      wallPieceCount: splitSummary.wallPieceCount,
+      doorCount: splitSummary.doorCount,
+      windowCount: splitSummary.windowCount
+    }
   };
   const qualityReport = input.qualityReport ?? createModuleQualityReport(qualityInput);
   const seeds = input.seeds ?? input.fixture.spec.seeds;
@@ -94,6 +126,7 @@ export async function createVisualQaPacket(input: CreateVisualQaPacketInput): Pr
     fidelityMode: input.fixture.fidelityMode,
     atlasContentHash: input.fixture.packedAtlas.contentHash,
     sourceGraphHash: input.fixture.ir.sourceGraphHash,
+    facadeSplitContentHash: splitSummary.contentHash,
     qualitySummary: qualityReport.summary
   });
 
@@ -116,8 +149,10 @@ export async function createVisualQaPacket(input: CreateVisualQaPacketInput): Pr
       familyId: input.fixture.spec.familyId,
       buildingId: input.fixture.ir.buildingId,
       componentCatalogId: input.fixture.catalog.catalogId,
-      contentFingerprint
+      contentFingerprint,
+      facadeSplitContentHash: splitSummary.contentHash
     },
+    facadeSplit: splitSummary,
     qualityReport,
     knownGaps: qualityReport.knownGaps,
     benchmarkProfileId: input.benchmarkProfileId,

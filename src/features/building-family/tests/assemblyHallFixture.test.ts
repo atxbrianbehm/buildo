@@ -150,10 +150,15 @@ describe("assembly hall fixture", () => {
     const kitWindows = kitFixture.ir.instanceBatches.find((batch) => batch.batchId === "instances.window")?.count ?? 0;
     const proofWindows =
       proofFixture.ir.instanceBatches.find((batch) => batch.batchId === "instances.window")?.count ?? 0;
+    const proofDoors =
+      proofFixture.ir.instanceBatches.find((batch) => batch.batchId === "instances.door")?.count ?? 0;
+    const frontCells =
+      proofFixture.spec.massing.floorCount * proofFixture.spec.facade.frontBayCount;
     expect(kitWindows).toBeGreaterThan(proofWindows);
-    expect(proofWindows).toBe(
-      proofFixture.spec.massing.floorCount * proofFixture.spec.facade.frontBayCount
-    );
+    // Proof uses front-only split: one ground door + windows on remaining front cells.
+    expect(proofDoors).toBe(1);
+    expect(proofWindows).toBe(frontCells - 1);
+    expect(proofWindows + proofDoors).toBe(frontCells);
 
     kitFixture.familyRuntime.dispose();
     proofFixture.familyRuntime.dispose();
@@ -182,7 +187,8 @@ describe("assembly hall fixture", () => {
     ]);
     expect(lowFixture.ir.semanticIndex.some((entry) => entry.stage === "trim")).toBe(false);
     expect(lowFixture.metrics.triangleCount).toBeLessThan(highFixture.metrics.triangleCount);
-    expect(lowFixture.metrics.instanceCount).toBeLessThan(highFixture.metrics.instanceCount);
+    // Opening instances share the same split slots; low detail only drops decorative mesh.
+    expect(lowFixture.metrics.instanceCount).toBeLessThanOrEqual(highFixture.metrics.instanceCount);
     expect(lowFixture.variantStress.variants[0]).toMatchObject({
       triangleCount: lowFixture.ir.metrics.triangleCount,
       instanceCount: lowFixture.ir.metrics.instanceCount
