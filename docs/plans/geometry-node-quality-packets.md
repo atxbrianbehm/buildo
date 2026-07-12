@@ -374,15 +374,15 @@ Reduce hybrid compiler debt so kit mode is “split → expand → IR” only:
 
 #### Acceptance
 
-- [ ] `buildingCompiler.ts` reads as orchestrator, not geometry kitchen sink  
-- [ ] Kit IR golden-ish smoke: mesh batch ids stable list documented  
-- [ ] Worker + main compile parity for one fixture seed  
-- [ ] Typecheck + focused tests pass  
+- [x] `buildingCompiler.ts` reads as orchestrator, not geometry kitchen sink  
+- [x] Kit IR golden-ish smoke: mesh batch ids stable list documented  
+- [x] Worker + main compile parity for one fixture seed  
+- [x] Typecheck + focused tests pass  
 
 #### Validation
 
 ```powershell
-npm.cmd run test -- buildingCompiler buildingCompilerWorker facadeSplitPlan openingGeometry profileSweepGeometry
+npm.cmd run test -- buildingCompiler buildingCompilerWorker facadeSplitPlan openingGeometry profileSweepGeometry expanders
 npm.cmd run typecheck
 ```
 
@@ -580,5 +580,6 @@ Start **G1** only:
 | 2026-07-12 | **G3 landed:** ground front storefront vertical split (bulkhead/glazing/lintel); proud hierarchy from scopes. |
 | 2026-07-12 | **G4 landed:** storefront kit modules + planner ground grammar (bulkhead/glazing/door/lintel). |
 | 2026-07-12 | **G5 landed:** split hash + counts in Visual QA / quality checklist / Artifact Trace / Assembly Hall. |
+| 2026-07-12 | **G6 landed:** expanders barrel (`expandOpeningFromSlot` / `expandProfileRun`), kit mesh batch id list, worker parity. |
 
-**Next packet to implement:** G6 — Expander unification.
+**Next packet to implement:** G7 — Thin second profile / module stress.

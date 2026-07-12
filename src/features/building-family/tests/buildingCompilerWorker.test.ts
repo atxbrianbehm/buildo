@@ -11,6 +11,7 @@ import {
   type CompilerWorkerResponse
 } from "../compiler/compilerWorkerProtocol";
 import { createCompilerWorkerRuntime } from "../compiler/compilerWorkerRuntime";
+import { KIT_HIGH_DETAIL_MESH_BATCH_IDS } from "../compiler/expanders";
 import { normalizeBuildingSpec } from "../core/specNormalizer";
 import { planAtlas } from "../materials/atlasPlanner";
 import { adaptPsgEvaluationToBuildingIntent } from "../psg/psgBuildingIntentAdapter";
@@ -259,5 +260,36 @@ describe("compiler worker boundary", () => {
       buildingId: "building-new",
       familyId: "family-test"
     });
+  });
+
+  it("worker compile matches main-thread compile for one fixture seed (G6 parity)", async () => {
+    const input = await fixtureCompilerInput();
+    const mainIr = await compileBuilding(input);
+    const responses: CompilerWorkerResponse[] = [];
+    const runtime = createCompilerWorkerRuntime({
+      postMessage: (message) => responses.push(message)
+    });
+    await runtime.handleMessage({
+      type: "compile",
+      requestId: "parity-kit",
+      spec: input.spec,
+      graph: input.graph,
+      catalog: input.catalog
+    });
+
+    const complete = responses.find((response) => response.type === "complete");
+    expect(complete?.type).toBe("complete");
+    if (!complete || complete.type !== "complete") {
+      throw new Error("Expected complete worker response");
+    }
+    expect(complete.ir.metrics.triangleCount).toBe(mainIr.metrics.triangleCount);
+    expect(complete.ir.metrics.instanceCount).toBe(mainIr.metrics.instanceCount);
+    expect(complete.ir.instanceBatches.map((batch) => batch.batchId).sort()).toEqual(
+      mainIr.instanceBatches.map((batch) => batch.batchId).sort()
+    );
+    const meshIds = new Set(mainIr.meshBatches.map((batch) => batch.batchId));
+    for (const batchId of KIT_HIGH_DETAIL_MESH_BATCH_IDS) {
+      expect(meshIds.has(batchId)).toBe(true);
+    }
   });
 });
