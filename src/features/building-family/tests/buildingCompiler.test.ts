@@ -122,11 +122,14 @@ describe("compileBuilding", () => {
     const windowBatch = ir.instanceBatches.find((batch) => batch.recipeId === "recipe.window.tall-arched.frame");
 
     expect(windowBatch).toBeDefined();
-    expect(windowBatch?.materialSlotId).toBe("glass.primary");
+    expect(windowBatch?.materialSlotId).toBe("frame.primary");
     // Kit-mode openings come from the facade plan (front/side/rear), so count is plan-driven.
     expect(windowBatch?.count).toBeGreaterThan(spec.massing.floorCount);
     expect(windowBatch?.transforms).toBeInstanceOf(Float32Array);
     expect(windowBatch?.transforms?.length).toBe(windowBatch!.count * 16);
+    const glassBatch = ir.instanceBatches.find((batch) => batch.batchId === "instances.window.glass");
+    expect(glassBatch?.materialSlotId).toBe("glass.primary");
+    expect(glassBatch?.count).toBe(windowBatch?.count);
     expect(ir.meshBatches.some((batch) => batch.role === "window")).toBe(false);
     expect(catalog.recipes.filter((recipe) => recipe.role === "window")).toHaveLength(1);
     expect(ir.semanticIndex.some((entry) => entry.semanticPath.includes("/opening/"))).toBe(true);
@@ -150,7 +153,12 @@ describe("compileBuilding", () => {
 
     expect(serializableIr(highIr)).toEqual(serializableIr(defaultIr));
     expect(lowIr.meshBatches.map((batch) => batch.batchId)).toEqual(["mesh.wall-panels", "mesh.roof"]);
-    expect(lowIr.instanceBatches.map((batch) => batch.batchId)).toEqual(["instances.window", "instances.door"]);
+    expect(lowIr.instanceBatches.map((batch) => batch.batchId)).toEqual([
+      "instances.window",
+      "instances.window.glass",
+      "instances.door",
+      "instances.door.glass"
+    ]);
     expect(lowIr.semanticIndex.some((entry) => entry.stage === "trim")).toBe(false);
     expect(lowIr.sourceGraphHash).not.toBe(highIr.sourceGraphHash);
     expect(lowIr.metrics.triangleCount).toBeLessThan(highIr.metrics.triangleCount);

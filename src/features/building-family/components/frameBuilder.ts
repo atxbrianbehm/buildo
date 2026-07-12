@@ -1,5 +1,12 @@
 import type { BuildingFamilySpec } from "../contracts/buildingFamilySpec";
 import { bayWidth, makeComponentRecipe, typicalFloorHeight } from "./primitiveBuilders";
+import {
+  buildDoorGlassRecipe,
+  buildDoorRecipe,
+  buildWindowFrameRecipe,
+  buildWindowGlassRecipe,
+  buildWindowRecessRecipe
+} from "./openingAssemblyBuilder";
 
 export function buildWallPanelRecipe(spec: BuildingFamilySpec) {
   return makeComponentRecipe({
@@ -21,58 +28,12 @@ export function buildWallPanelRecipe(spec: BuildingFamilySpec) {
   });
 }
 
-export function buildWindowFrameRecipe(spec: BuildingFamilySpec) {
-  const ranges = spec.componentParameters;
-  const width = typeof ranges.windowWidthM === "number" ? ranges.windowWidthM : 1.35;
-  const height = typeof ranges.windowHeightM === "number" ? ranges.windowHeightM : 2.45;
-
-  return makeComponentRecipe({
-    id: `recipe.window.${spec.selectedFamilies.window}.frame`,
-    kind: "frame",
-    role: "window",
-    dimensionsM: { width, height, depth: 0.18 },
-    atlasSlotIds: ["glass.primary", "frame.primary"],
-    uvBehavior: "cap-repeat-cap",
-    variationScope: spec.variationPolicy.window ?? "building",
-    attachmentPlane: "facade.opening",
-    parameterRanges: {
-      mullionDepthM: { min: 0.04, max: 0.12 },
-      insetM: { min: 0.04, max: 0.2 }
-    }
-  });
-}
-
-export function buildWindowRecessRecipe() {
-  return makeComponentRecipe({
-    id: "recipe.opening.window.recess",
-    kind: "recess",
-    role: "opening",
-    dimensionsM: { width: 1.55, height: 2.65, depth: 0.26 },
-    atlasSlotIds: ["wall.primary"],
-    uvBehavior: "stretch",
-    variationScope: "building",
-    attachmentPlane: "facade.front",
-    subcomponentRecipeIds: ["recipe.window.tall-arched.frame"],
-    parameterRanges: {
-      recessDepthM: { min: 0.08, max: 0.32 }
-    }
-  });
-}
-
-export function buildDoorRecipe(spec: BuildingFamilySpec) {
-  return makeComponentRecipe({
-    id: `recipe.door.${spec.selectedFamilies.door}`,
-    kind: "frame",
-    role: "door",
-    dimensionsM: { width: 2.2, height: spec.massing.floorHeightsM[0] * 0.78, depth: 0.22 },
-    atlasSlotIds: ["door.primary", "frame.primary"],
-    uvBehavior: "stretch",
-    variationScope: spec.variationPolicy.door ?? "building",
-    attachmentPlane: "facade.opening",
-    parameterRanges: {
-      insetM: { min: 0.08, max: 0.28 }
-    }
-  });
-}
+export {
+  buildDoorGlassRecipe,
+  buildDoorRecipe,
+  buildWindowFrameRecipe,
+  buildWindowGlassRecipe,
+  buildWindowRecessRecipe
+};
 
 export { buildTrimRecipes } from "./profiledTrimBuilder";

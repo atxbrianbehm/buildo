@@ -117,6 +117,94 @@ function firstAtlasSlot(recipe: ComponentRecipe): string {
   return slotId;
 }
 
+/** Prefer non-glass slots for frame/door assemblies so glass can be a paired batch. */
+function preferredMaterialSlot(recipe: ComponentRecipe, prefer: "frame" | "glass" | "any" = "any"): string {
+  if (prefer === "glass") {
+    const glass = recipe.atlasSlotIds.find((slotId) => slotId.includes("glass"));
+    if (glass) {
+      return glass;
+    }
+  }
+  if (prefer === "frame") {
+    const frame = recipe.atlasSlotIds.find((slotId) => !slotId.includes("glass"));
+    if (frame) {
+      return frame;
+    }
+  }
+  return firstAtlasSlot(recipe);
+}
+
+function recipeByRoleOptional(catalog: ComponentCatalog, role: string): ComponentRecipe | undefined {
+  return catalog.recipes.find((candidate) => candidate.role === role);
+}
+
+function cloneInstancePlanWithRecipe(
+  base: InstancePlan,
+  input: {
+    batchId: string;
+    recipe: ComponentRecipe;
+    materialSlotId: string;
+    semanticPathSuffix?: string;
+  }
+): InstancePlan {
+  return {
+    batchId: input.batchId,
+    recipe: input.recipe,
+    materialSlotId: input.materialSlotId,
+    stage: base.stage,
+    transforms: [...base.transforms],
+    instanceBounds: base.instanceBounds.map((bounds) => ({
+      min: [...bounds.min] as Vec3,
+      max: [...bounds.max] as Vec3
+    })),
+    semanticEntries: base.semanticEntries.map((entry, elementIndex) => ({
+      ...entry,
+      batchId: input.batchId,
+      elementIndex,
+      semanticPath: input.semanticPathSuffix
+        ? `${entry.semanticPath}${input.semanticPathSuffix}`
+        : entry.semanticPath
+    }))
+  };
+}
+
+function withPairedGlassPlans(
+  catalog: ComponentCatalog,
+  framePlans: InstancePlan[]
+): InstancePlan[] {
+  const plans: InstancePlan[] = [];
+  for (const framePlan of framePlans) {
+    plans.push(framePlan);
+    if (framePlan.batchId === "instances.window") {
+      const glassRecipe = recipeByRoleOptional(catalog, "windowGlass");
+      if (glassRecipe && framePlan.transforms.length > 0) {
+        plans.push(
+          cloneInstancePlanWithRecipe(framePlan, {
+            batchId: "instances.window.glass",
+            recipe: glassRecipe,
+            materialSlotId: preferredMaterialSlot(glassRecipe, "glass"),
+            semanticPathSuffix: "/glass"
+          })
+        );
+      }
+    }
+    if (framePlan.batchId === "instances.door") {
+      const glassRecipe = recipeByRoleOptional(catalog, "doorGlass");
+      if (glassRecipe && framePlan.transforms.length > 0) {
+        plans.push(
+          cloneInstancePlanWithRecipe(framePlan, {
+            batchId: "instances.door.glass",
+            recipe: glassRecipe,
+            materialSlotId: preferredMaterialSlot(glassRecipe, "glass"),
+            semanticPathSuffix: "/transom-glass"
+          })
+        );
+      }
+    }
+  }
+  return plans;
+}
+
 function semanticPath(spec: BuildingFamilySpec, suffix: string): string {
   return `building/${spec.familyId}/${suffix}`;
 }
@@ -336,7 +424,7 @@ function createWindowInstancePlan(spec: BuildingFamilySpec, catalog: ComponentCa
   return {
     batchId: "instances.window",
     recipe,
-    materialSlotId: firstAtlasSlot(recipe),
+    materialSlotId: preferredMaterialSlot(recipe, "frame"),
     stage: "openings",
     transforms,
     instanceBounds,
@@ -357,7 +445,7 @@ function createDoorInstancePlan(spec: BuildingFamilySpec, catalog: ComponentCata
   return {
     batchId: "instances.door",
     recipe,
-    materialSlotId: firstAtlasSlot(recipe),
+    materialSlotId: preferredMaterialSlot(recipe, "frame"),
     stage: "openings",
     transforms: translationMatrix(position),
     instanceBounds: [boundsFromBox(position, [recipe.dimensionsM.width, recipe.dimensionsM.height, recipe.dimensionsM.depth])],
@@ -429,7 +517,7 @@ function createOpeningInstancePlansFromModuleInstances(
     plans.push({
       batchId: "instances.window",
       recipe: windowRecipe,
-      materialSlotId: firstAtlasSlot(windowRecipe),
+      materialSlotId: preferredMaterialSlot(windowRecipe, "frame"),
       stage: "openings",
       transforms: windowTransforms,
       instanceBounds: windowBounds,
@@ -440,14 +528,14 @@ function createOpeningInstancePlansFromModuleInstances(
     plans.push({
       batchId: "instances.door",
       recipe: doorRecipe,
-      materialSlotId: firstAtlasSlot(doorRecipe),
+      materialSlotId: preferredMaterialSlot(doorRecipe, "frame"),
       stage: "openings",
       transforms: doorTransforms,
       instanceBounds: doorBounds,
       semanticEntries: doorSemantics
     });
   }
-  return plans;
+  return withPairedGlassPlans(catalog, plans);
 }
 
 async function resolveModuleInstances(input: CompileBuildingInput): Promise<ModuleInstanceSet | undefined> {
@@ -586,7 +674,10 @@ export async function compileBuilding(input: CompileBuildingInput): Promise<Runt
   ];
   const openingPlans = moduleInstances
     ? createOpeningInstancePlansFromModuleInstances(moduleInstances, input.catalog)
-    : [createWindowInstancePlan(input.spec, input.catalog), createDoorInstancePlan(input.spec, input.catalog)];
+    : withPairedGlassPlans(input.catalog, [
+        createWindowInstancePlan(input.spec, input.catalog),
+        createDoorInstancePlan(input.spec, input.catalog)
+      ]);
   const instancePlans = [
     ...openingPlans,
     ...(highDetail ? [createVerticalTrimInstancePlan(input.spec, input.catalog)] : [])

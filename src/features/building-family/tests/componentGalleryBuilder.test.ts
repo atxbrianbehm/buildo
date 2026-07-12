@@ -66,16 +66,9 @@ describe("buildComponentGallery", () => {
     expect(first.sourceGraphHash).toBe(ir.sourceGraphHash);
     expect(first.entries).toHaveLength(catalog.recipes.length);
     expect(first.entries.map((entry) => entry.recipeId)).toEqual(catalog.recipes.map((recipe) => recipe.id));
-    expect(first.entries.map((entry) => `${entry.grid.row}:${entry.grid.column}`)).toEqual([
-      "0:0",
-      "0:1",
-      "0:2",
-      "0:3",
-      "1:0",
-      "1:1",
-      "1:2",
-      "1:3"
-    ]);
+    expect(first.entries.map((entry) => `${entry.grid.row}:${entry.grid.column}`)).toEqual(
+      catalog.recipes.map((_, index) => `${Math.floor(index / 4)}:${index % 4}`)
+    );
   });
 
   it("summarizes emitted mesh and instance components without copying typed-array buffers into gallery data", async () => {
@@ -101,8 +94,8 @@ describe("buildComponentGallery", () => {
       source: "instanceBatch",
       batchId: "instances.window",
       stage: "openings",
-      materialSlotId: "glass.primary",
-      sampleSemanticPath: `building/${ir.familyId}/facade/front/floor/0/bay/0/window/frame`
+      materialSlotId: "frame.primary",
+      sampleSemanticPath: expect.stringContaining("/opening/")
     });
     expect(windowFrame?.metrics.instanceCount).toBe(
       ir.instanceBatches.find((batch) => batch.batchId === "instances.window")!.count
@@ -122,8 +115,10 @@ describe("buildComponentGallery", () => {
       batchId: undefined,
       sampleSemanticPath: undefined
     });
+    // Belt courses are emitted as high-detail mesh batches after profiled-trim work.
     expect(beltCourse).toMatchObject({
-      source: "recipeOnly",
+      source: "meshBatch",
+      batchId: "mesh.belt-course",
       label: "Belt course / horizontal trim",
       stage: "trim"
     });
@@ -134,13 +129,6 @@ describe("buildComponentGallery", () => {
         received: "recipe.opening.window.recess"
       })
     );
-    expect(gallery.diagnostics).toContainEqual(
-      expect.objectContaining({
-        code: "componentGallery.recipeOnly",
-        severity: "warning",
-        received: beltCourse?.recipeId
-      })
-    );
   });
 
   it("preserves anchors, dimensions, atlas slots, and stage metadata needed by Component Forge controls", async () => {
@@ -148,12 +136,13 @@ describe("buildComponentGallery", () => {
     const gallery: ComponentGallery = await buildComponentGallery({ catalog, ir });
     const cornice = gallery.entries.find((entry) => entry.role === "cornice");
     const verticalTrim = gallery.entries.find((entry) => entry.role === "verticalTrim");
+    const windowFrame = gallery.entries.find((entry) => entry.role === "window");
 
     expect(cornice).toMatchObject({
       label: "Cornice",
       recipeKind: "profileSweep",
       atlasSlotIds: ["cornice.primary"],
-      profileRecipeId: expect.stringMatching(/^profile\.cornice\..+\.primary$/),
+      profileRecipeId: expect.stringMatching(/^profile\.cornice\..+\.layered$/),
       dimensionsM: expect.objectContaining({
         width: expect.any(Number),
         height: expect.any(Number),
@@ -170,6 +159,8 @@ describe("buildComponentGallery", () => {
         instanceCount: 8
       })
     });
+    expect(windowFrame?.dimensionsM.depth).toBeGreaterThanOrEqual(0.28);
+    expect(windowFrame?.anchorIds).toEqual(expect.arrayContaining(["origin", "sill-center", "lintel-center"]));
     expect(gallery.entries.every((entry) => entry.atlasSlotIds.length > 0)).toBe(true);
     expect(gallery.entries.every((entry) => entry.dimensionsM.width > 0 && entry.dimensionsM.height > 0)).toBe(true);
   });

@@ -1,5 +1,4 @@
 import {
-  BoxGeometry,
   BufferAttribute,
   BufferGeometry,
   Group,
@@ -16,6 +15,7 @@ import type { ComponentRecipe } from "../contracts/componentRecipe";
 import type { MeshBatchIR, RuntimeBuildingIR } from "../contracts/runtimeBuildingIR";
 import type { AssemblyStage } from "../contracts/shared";
 import type { AtlasMaterialRegistry } from "./buildingAtlasMaterialFactory";
+import { createRecipeBufferGeometry } from "./recipeGeometryFactory";
 import {
   disposeBuildingSceneResources,
   type DisposeBuildingSceneResourcesResult
@@ -155,17 +155,7 @@ function remapGeometryUvsToAtlasSlot(geometry: BufferGeometry, material: MeshSta
 }
 
 function createRecipeGeometry(recipe: ComponentRecipe): BufferGeometry {
-  const geometry = new BoxGeometry(
-    recipe.dimensionsM.width,
-    recipe.dimensionsM.height,
-    Math.max(recipe.dimensionsM.depth, 0.01)
-  );
-  geometry.name = `recipe-geometry.${recipe.id}`;
-  geometry.userData = {
-    recipeId: recipe.id,
-    generatedFromRecipe: true
-  };
-  return geometry;
+  return createRecipeBufferGeometry(recipe);
 }
 
 function assignInstanceMatrices(object: InstancedMesh<BufferGeometry, MeshStandardMaterial>, transforms: Float32Array): void {

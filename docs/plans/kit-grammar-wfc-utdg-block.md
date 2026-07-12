@@ -2,7 +2,7 @@
 
 ## Implementation plan
 
-**Status:** in progress — M1–M6 landed; next M7 high-fidelity openings  
+**Status:** in progress — M1–M7 landed; next M8 art-kit material set / C1  
 **Date:** 2026-07-12  
 **Depends on:** MVP vertical slice (Milestones 0–7) complete; art-fidelity Slice 1 (`ArtKitManifest` + `late19cApartmentKit`) complete; visual-truth Assembly Hall prerequisite  
 **Related plans:**
@@ -14,6 +14,7 @@
 | `docs/superpowers/plans/2026-06-25-dynamic-building-family-art-fidelity-bridge.md` | Fidelity bridge goal and Slices 1–8 |
 | `docs/superpowers/plans/2026-06-25-art-kit-snap-grid-facade-planner.md` | Detailed task plan for Phase A1 |
 | `docs/superpowers/plans/2026-06-25-profiled-trim-cornice-geometry.md` | Detailed task plan for Phase B1 |
+| `docs/superpowers/plans/2026-07-12-high-fidelity-openings.md` | Detailed task plan for Phase B2 / M7 |
 
 **Delivery mode:** small, reviewable milestones. Do not combine phases or merge independent intermediate artifacts without explicit instruction. Preserve all `AGENTS.md` Dynamic Building Family rules.
 
@@ -833,7 +834,7 @@ Execute in order. Each row is one reviewable PR-sized milestone unless noted.
 | M5 | Plan diagnostics in trace/Assembly Hall | A3 | UI tests | done 2026-07-12 |
 | M5b | Thin Forge/Assembly variant swap | A0 | ComponentForge + invalidation | done 2026-07-12 |
 | M6 | Profiled trim recipes + geometry | B1 | trim/quoin/compiler | done 2026-07-12 |
-| M7 | High-fidelity openings | B2 | opening geometry + forge | pending |
+| M7 | High-fidelity openings | B2 | opening geometry + forge | done 2026-07-12 |
 | M8 | Art-kit material set + scale | C1 | atlas + materials | pending |
 | M9 | Fidelity mode proof/kit in run + export | C2 | persistence/export | pending |
 | M10 | Art Kit Lab + gallery labels | C3 | UI + e2e | pending |

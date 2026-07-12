@@ -5,10 +5,12 @@ import { ComponentRecipeSchema, type ComponentRecipe } from "../contracts/compon
 import { DiagnosticSchema, type Diagnostic } from "../core/diagnostics";
 import { hashCanonicalJson } from "../core/contentHash";
 import {
+  buildDoorGlassRecipe,
   buildDoorRecipe,
   buildTrimRecipes,
   buildWallPanelRecipe,
   buildWindowFrameRecipe,
+  buildWindowGlassRecipe,
   buildWindowRecessRecipe
 } from "./frameBuilder";
 import { buildCorniceRecipe, buildProfiledRoofCapRecipe } from "./profiledTrimBuilder";
@@ -65,8 +67,10 @@ export async function buildComponentCatalog(
   const recipes = [
     buildWallPanelRecipe(spec),
     buildWindowFrameRecipe(spec),
-    buildWindowRecessRecipe(),
+    buildWindowGlassRecipe(spec),
+    buildWindowRecessRecipe(spec),
     buildDoorRecipe(spec),
+    buildDoorGlassRecipe(spec),
     ...buildTrimRecipes(spec),
     buildCorniceRecipe(spec),
     buildProfiledRoofCapRecipe(spec),

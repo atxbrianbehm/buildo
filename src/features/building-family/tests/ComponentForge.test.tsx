@@ -11,8 +11,8 @@ describe("ComponentForge", () => {
 
     expect(screen.getByRole("heading", { name: "Component Forge" })).toBeInTheDocument();
     const componentGrid = screen.getByLabelText("Generated component grid");
-    expect(componentGrid).toHaveTextContent("Window frame");
-    expect(componentGrid).toHaveTextContent("Storefront door");
+    expect(componentGrid).toHaveTextContent("Window frame assembly");
+    expect(componentGrid).toHaveTextContent("Storefront door assembly");
     expect(componentGrid).toHaveTextContent("Cornice");
 
     fireEvent.change(screen.getByRole("combobox", { name: "Component selector" }), {
@@ -23,7 +23,7 @@ describe("ComponentForge", () => {
     fireEvent.click(screen.getByRole("checkbox", { name: "Semantic Anchors" }));
 
     const selected = screen.getByLabelText("Selected component recipe");
-    expect(selected).toHaveTextContent("Window frame");
+    expect(selected).toHaveTextContent("Window frame assembly");
     expect(selected).toHaveTextContent("recipe.window.tall-arched.frame");
     expect(selected).toHaveTextContent("frame");
     expect(selected).toHaveTextContent("instanceBatch");
@@ -31,8 +31,7 @@ describe("ComponentForge", () => {
     expect(selected).toHaveTextContent("UV overlay on");
     expect(selected).toHaveTextContent("Semantic anchors on");
     expect(selected).toHaveTextContent("1.35");
-    expect(selected).toHaveTextContent("2.45");
-    expect(selected).toHaveTextContent("0.18");
+    expect(selected).toHaveTextContent("0.32");
 
     const atlasSlots = screen.getByRole("table", { name: "Selected atlas slots" });
     expect(within(atlasSlots).getByText("glass.primary")).toBeInTheDocument();
@@ -41,6 +40,7 @@ describe("ComponentForge", () => {
     expect(atlasSlots).toHaveTextContent("cap-repeat-cap");
 
     expect(screen.getByLabelText("Selected semantic anchors")).toHaveTextContent("origin");
+    expect(screen.getByLabelText("Selected semantic anchors")).toHaveTextContent("sill-center");
     expect(screen.getByLabelText("Selected component recipe JSON")).toHaveTextContent('"role": "window"');
 
     fixture.familyRuntime.dispose();

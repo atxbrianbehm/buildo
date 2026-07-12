@@ -71,12 +71,16 @@ interface RecipeSourceSummary {
 function labelForRole(role: string): string {
   const labels: Record<string, string> = {
     wall: "Wall panel",
-    window: "Window frame",
+    window: "Window frame assembly",
+    windowGlass: "Window glass",
     opening: "Window recess",
-    door: "Storefront door",
+    door: "Storefront door assembly",
+    doorGlass: "Door transom glass",
     horizontalTrim: "Belt course / horizontal trim",
     verticalTrim: "Pilaster / vertical trim",
     cornice: "Cornice",
+    roofCap: "Roof cap",
+    cornerQuoin: "Corner quoin",
     roof: "Roof"
   };
   return labels[role] ?? role;
@@ -86,7 +90,13 @@ function fallbackStageForRole(role: string): ComponentGalleryEntry["stage"] {
   if (role === "wall") {
     return "facade";
   }
-  if (role === "window" || role === "door" || role === "opening") {
+  if (
+    role === "window" ||
+    role === "door" ||
+    role === "opening" ||
+    role === "windowGlass" ||
+    role === "doorGlass"
+  ) {
     return "openings";
   }
   if (role === "roof") {

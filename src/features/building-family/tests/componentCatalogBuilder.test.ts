@@ -43,8 +43,10 @@ describe("buildComponentCatalog", () => {
     expect(first.recipes.map((recipe) => recipe.id)).toEqual([
       "recipe.wall.panel.primary",
       "recipe.window.tall-arched.frame",
+      "recipe.window.tall-arched.glass",
       "recipe.opening.window.recess",
       "recipe.door.recessed-storefront",
+      "recipe.door.recessed-storefront.glass",
       "recipe.trim.pressed-metal.horizontal",
       "recipe.trim.pressed-metal.vertical",
       "recipe.cornice.bracketed-metal.primary",
@@ -87,7 +89,7 @@ describe("buildComponentCatalog", () => {
     expect(wall?.dimensionsM.height).toBeCloseTo(spec.massing.floorHeightsM[1] ?? spec.massing.floorHeightsM[0], 5);
     expect(wall?.atlasSlotIds).toEqual(["wall.primary"]);
     expect(wall?.variationScope).toBe("family");
-    expect(windowFrame?.atlasSlotIds).toEqual(["glass.primary", "frame.primary"]);
+    expect(windowFrame?.atlasSlotIds).toEqual(["frame.primary", "glass.primary"]);
     expect(windowFrame?.variationScope).toBe("building");
     expect(roof?.kind).toBe("flatRoof");
     expect(roof?.atlasSlotIds).toEqual(["roof.primary"]);

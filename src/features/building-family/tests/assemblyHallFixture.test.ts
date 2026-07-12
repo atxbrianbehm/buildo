@@ -155,7 +155,12 @@ describe("assembly hall fixture", () => {
     });
 
     expect(lowFixture.ir.meshBatches.map((batch) => batch.batchId)).toEqual(["mesh.wall-panels", "mesh.roof"]);
-    expect(lowFixture.ir.instanceBatches.map((batch) => batch.batchId)).toEqual(["instances.window", "instances.door"]);
+    expect(lowFixture.ir.instanceBatches.map((batch) => batch.batchId)).toEqual([
+      "instances.window",
+      "instances.window.glass",
+      "instances.door",
+      "instances.door.glass"
+    ]);
     expect(lowFixture.ir.semanticIndex.some((entry) => entry.stage === "trim")).toBe(false);
     expect(lowFixture.metrics.triangleCount).toBeLessThan(highFixture.metrics.triangleCount);
     expect(lowFixture.metrics.instanceCount).toBeLessThan(highFixture.metrics.instanceCount);

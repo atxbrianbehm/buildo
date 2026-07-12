@@ -313,6 +313,8 @@ npm.cmd run typecheck
 
 ### Slice 4: High-Fidelity Openings
 
+Status: implemented on 2026-07-12. Windows and doors are multi-part assemblies (recess, frame bars, mullions, sill/lintel, arched crown approximation, door leaf/transom) with paired glass instance batches. Implementation plan: `docs/superpowers/plans/2026-07-12-high-fidelity-openings.md`.
+
 Add procedural window and door modules that match the reference qualities:
 
 - rectangular sash windows;

@@ -159,8 +159,9 @@ describe("building scene adapter", () => {
     expect(windowObject?.count).toBe(windowBatch.count);
     expect(matrixElements).toEqual(Array.from(windowBatch.transforms!.slice(0, 16)));
     expect(windowObject?.userData.recipeId).toBe("recipe.window.tall-arched.frame");
-    expect(windowObject?.userData.materialSlotId).toBe("glass.primary");
+    expect(windowObject?.userData.materialSlotId).toBe("frame.primary");
     expect(runtime.metrics.instanceCount).toBe(ir.metrics.instanceCount);
+    expect(runtime.objectsByBatchId.get("instances.window.glass")?.isInstancedMesh).toBe(true);
   });
 
   it("builds semantic lookup entries and links gallery entries to renderer objects", async () => {
@@ -175,8 +176,11 @@ describe("building scene adapter", () => {
         debugExport
       })
     });
-    const windowPath = `building/${ir.familyId}/facade/front/floor/0/bay/0/window/frame`;
-    const lookup = runtime.semanticLookup.get(windowPath);
+    const windowPath = ir.semanticIndex.find(
+      (entry) => entry.batchId === "instances.window" && entry.elementIndex === 0
+    )?.semanticPath;
+    expect(windowPath).toBeDefined();
+    const lookup = runtime.semanticLookup.get(windowPath!);
     const windowGallery = runtime.galleryObjects.get("recipe.window.tall-arched.frame");
 
     expect(lookup).toMatchObject({
