@@ -203,6 +203,131 @@ export function buildRoofCapPrimitives(spec: BuildingFamilySpec, recipe: Compone
   });
 }
 
+/**
+ * Full-height multi-layer pilaster at a facade bay edge (world-space front facade).
+ * Replaces short single-box instances so vertical order reads in clay mode.
+ */
+export function buildVerticalPilasterPrimitives(
+  spec: BuildingFamilySpec,
+  recipe: ComponentRecipe,
+  edgeX: number
+): PrimitiveGeometry[] {
+  const totalHeight = spec.massing.floorHeightsM.reduce((total, value) => total + value, 0);
+  const width = Math.max(0.22, recipe.dimensionsM.width);
+  const depth = Math.max(0.16, recipe.dimensionsM.depth);
+  const projection = rangeValue(recipe, "projectionM", depth * 0.7);
+  const plinth = rangeValue(recipe, "plinthHeightM", Math.min(0.45, totalHeight * 0.08));
+  const capital = Math.min(0.38, totalHeight * 0.06);
+  const z = -spec.massing.depthM / 2 + depth / 2 + projection * 0.25;
+  const shaftHeight = Math.max(0.4, totalHeight - plinth - capital);
+  const primitives: PrimitiveGeometry[] = [];
+
+  // Main shaft
+  primitives.push(
+    buildBoxPrimitive({
+      center: [edgeX, plinth + shaftHeight / 2, z],
+      size: [width * 0.78, shaftHeight, depth + projection * 0.35]
+    })
+  );
+  // Front raised fillet for depth catch
+  primitives.push(
+    buildBoxPrimitive({
+      center: [edgeX, plinth + shaftHeight / 2, z + depth * 0.22],
+      size: [width * 0.42, shaftHeight * 0.98, depth * 0.35 + projection * 0.2]
+    })
+  );
+  // Plinth / base
+  primitives.push(
+    buildBoxPrimitive({
+      center: [edgeX, plinth / 2, z + projection * 0.1],
+      size: [width * 1.15, plinth, depth + projection * 0.55]
+    })
+  );
+  // Capital under cornice
+  primitives.push(
+    buildBoxPrimitive({
+      center: [edgeX, totalHeight - capital / 2, z + projection * 0.08],
+      size: [width * 1.2, capital, depth + projection * 0.5]
+    })
+  );
+  primitives.push(
+    buildBoxPrimitive({
+      center: [edgeX, totalHeight - capital * 0.35, z + projection * 0.18],
+      size: [width * 1.32, capital * 0.35, depth * 0.55 + projection * 0.35]
+    })
+  );
+
+  return primitives;
+}
+
+/**
+ * Spandrel bands between stories on the front facade — solid mass under window lines.
+ */
+export function buildSpandrelBandPrimitives(
+  spec: BuildingFamilySpec,
+  options?: { bandHeightM?: number; projectionM?: number }
+): PrimitiveGeometry[] {
+  const bandHeight = options?.bandHeightM ?? 0.55;
+  const projection = options?.projectionM ?? 0.08;
+  const width = spec.massing.widthM;
+  const depth = 0.2 + projection;
+  const z = -spec.massing.depthM / 2 + depth / 2;
+  const primitives: PrimitiveGeometry[] = [];
+  let floorTop = 0;
+
+  for (let floor = 0; floor < spec.massing.floorCount - 1; floor += 1) {
+    floorTop += spec.massing.floorHeightsM[floor] ?? 0;
+    // Sit just above the floor line so belts and spandrels stack as separate mass.
+    const centerY = floorTop + bandHeight / 2 + 0.02;
+    primitives.push(
+      buildBoxPrimitive({
+        center: [0, centerY, z],
+        size: [width * 0.995, bandHeight, depth]
+      })
+    );
+    primitives.push(
+      buildBoxPrimitive({
+        center: [0, centerY - bandHeight * 0.15, z + depth * 0.12],
+        size: [width * 0.99, bandHeight * 0.35, depth * 0.45]
+      })
+    );
+  }
+
+  return primitives;
+}
+
+/**
+ * Local-space pilaster for recipe/instance previews (centered at origin).
+ */
+export function buildVerticalPilasterLocalPrimitives(recipe: ComponentRecipe): PrimitiveGeometry[] {
+  const width = Math.max(0.22, recipe.dimensionsM.width);
+  const height = Math.max(1, recipe.dimensionsM.height);
+  const depth = Math.max(0.16, recipe.dimensionsM.depth);
+  const projection = rangeValue(recipe, "projectionM", depth * 0.7);
+  const plinth = rangeValue(recipe, "plinthHeightM", Math.min(0.4, height * 0.12));
+  const capital = Math.min(0.32, height * 0.1);
+  const shaftHeight = Math.max(0.3, height - plinth - capital);
+
+  return [
+    buildBoxPrimitive({
+      center: [0, -height / 2 + plinth / 2, projection * 0.1],
+      size: [width * 1.15, plinth, depth + projection * 0.5]
+    }),
+    buildBoxPrimitive({
+      center: [0, -height / 2 + plinth + shaftHeight / 2, 0],
+      size: [width * 0.78, shaftHeight, depth + projection * 0.3]
+    }),
+    buildBoxPrimitive({
+      center: [0, -height / 2 + plinth + shaftHeight / 2, depth * 0.2],
+      size: [width * 0.42, shaftHeight * 0.98, depth * 0.35]
+    }),
+    buildBoxPrimitive({
+      center: [0, height / 2 - capital / 2, projection * 0.08],
+      size: [width * 1.2, capital, depth + projection * 0.45]
+    })
+  ];
+}
+
 export function buildCornerQuoinPrimitives(spec: BuildingFamilySpec, recipe: ComponentRecipe): PrimitiveGeometry[] {
   const totalHeight = spec.massing.floorHeightsM.reduce((total, value) => total + value, 0);
   const halfWidth = recipe.dimensionsM.width / 2;

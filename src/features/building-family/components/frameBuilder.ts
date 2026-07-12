@@ -16,7 +16,8 @@ export function buildWallPanelRecipe(spec: BuildingFamilySpec) {
     dimensionsM: {
       width: bayWidth(spec.massing.widthM, spec.facade.frontBayCount),
       height: typicalFloorHeight(spec.massing.floorHeightsM),
-      depth: 0.24
+      // Thicker wall mass so openings recess read against a real depth.
+      depth: 0.34
     },
     atlasSlotIds: ["wall.primary"],
     uvBehavior: "repeat",

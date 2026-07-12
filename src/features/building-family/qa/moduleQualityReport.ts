@@ -106,8 +106,16 @@ export function evaluateModuleQualityChecklist(
 
   const silhouettePass =
     detailLevel === "high"
-      ? batchIds.has("mesh.cornice") && batchIds.has("mesh.roof") && batchIds.has("mesh.corner-quoins")
+      ? batchIds.has("mesh.cornice") &&
+        batchIds.has("mesh.roof") &&
+        batchIds.has("mesh.corner-quoins") &&
+        batchIds.has("mesh.vertical-pilasters") &&
+        batchIds.has("mesh.spandrels")
       : batchIds.has("mesh.roof");
+  const pilasterLayers = fixture.ir.semanticIndex.filter(
+    (entry) => entry.batchId === "mesh.vertical-pilasters"
+  ).length;
+  const spandrelLayers = fixture.ir.semanticIndex.filter((entry) => entry.batchId === "mesh.spandrels").length;
 
   return [
     item(
@@ -121,15 +129,23 @@ export function evaluateModuleQualityChecklist(
         hasCornice: batchIds.has("mesh.cornice"),
         hasRoof: batchIds.has("mesh.roof"),
         hasQuoins: batchIds.has("mesh.corner-quoins"),
+        hasPilasters: batchIds.has("mesh.vertical-pilasters"),
+        hasSpandrels: batchIds.has("mesh.spandrels"),
+        pilasterLayers,
+        spandrelLayers,
         detailLevel
       }
     ),
     item(
       "facadeRhythm",
       "Floors and bays read as a regular facade grid",
-      floorCount >= 2 && bayCount >= 3 ? "pass" : "fail",
-      `Spec massing uses ${floorCount} floors and ${bayCount} front bays.`,
-      { floorCount, bayCount }
+      floorCount >= 2 && bayCount >= 3 && (detailLevel === "low" || pilasterLayers >= bayCount)
+        ? "pass"
+        : "fail",
+      detailLevel === "high"
+        ? `Spec massing uses ${floorCount} floors and ${bayCount} front bays with full-height pilasters.`
+        : `Spec massing uses ${floorCount} floors and ${bayCount} front bays.`,
+      { floorCount, bayCount, pilasterLayers, detailLevel }
     ),
     item(
       "openingDepth",

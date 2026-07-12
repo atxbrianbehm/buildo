@@ -33,7 +33,9 @@ import {
   buildCorniceProfilePrimitives,
   buildCornerQuoinPrimitives,
   buildHorizontalBeltCoursePrimitives,
-  buildRoofCapPrimitives
+  buildRoofCapPrimitives,
+  buildSpandrelBandPrimitives,
+  buildVerticalPilasterPrimitives
 } from "./profiledTrimGeometry";
 
 export type BuildingComponentDetailLevel = "high" | "low";
@@ -570,37 +572,65 @@ async function resolveModuleInstances(input: CompileBuildingInput): Promise<Modu
   });
 }
 
-function createVerticalTrimInstancePlan(spec: BuildingFamilySpec, catalog: ComponentCatalog): InstancePlan {
-  const recipe = recipeByRole(catalog, "verticalTrim");
-  const transforms: number[] = [];
-  const instanceBounds: Bounds3[] = [];
-  const semanticEntries: SemanticIndexEntry[] = [];
+function createVerticalPilasterMeshPlan(
+  spec: BuildingFamilySpec,
+  catalog: ComponentCatalog
+): MeshPlan | undefined {
+  const recipe = catalog.recipes.find((candidate) => candidate.role === "verticalTrim");
+  if (!recipe) {
+    return undefined;
+  }
   const bayWidth = spec.massing.widthM / spec.facade.frontBayCount;
-  const totalHeight = sum(spec.massing.floorHeightsM);
-  const z = -spec.massing.depthM / 2 + recipe.dimensionsM.depth / 2;
+  const primitives: PrimitiveGeometry[] = [];
+  const semanticEntries: SemanticIndexEntry[] = [];
 
   for (let edge = 0; edge <= spec.facade.frontBayCount; edge += 1) {
     const x = -spec.massing.widthM / 2 + bayWidth * edge;
-    const position: Vec3 = [x, totalHeight / 2, z];
-    const size: Vec3 = [recipe.dimensionsM.width, totalHeight, recipe.dimensionsM.depth];
-    transforms.push(...translationMatrix(position));
-    instanceBounds.push(boundsFromBox(position, size));
-    semanticEntries.push({
-      semanticPath: semanticPath(spec, `facade/front/bay-edge/${edge}/trim/vertical`),
-      batchId: "instances.vertical-trim",
-      elementIndex: edge,
-      stage: "trim"
-    });
+    const edgePrimitives = buildVerticalPilasterPrimitives(spec, recipe, x);
+    const baseIndex = primitives.length;
+    primitives.push(...edgePrimitives);
+    for (let layer = 0; layer < edgePrimitives.length; layer += 1) {
+      semanticEntries.push({
+        semanticPath: semanticPath(spec, `facade/front/bay-edge/${edge}/pilaster/layer/${layer}`),
+        batchId: "mesh.vertical-pilasters",
+        elementIndex: baseIndex + layer,
+        stage: "trim"
+      });
+    }
   }
 
   return {
-    batchId: "instances.vertical-trim",
-    recipe,
+    batchId: "mesh.vertical-pilasters",
+    role: "verticalTrim",
     materialSlotId: firstAtlasSlot(recipe),
     stage: "trim",
-    transforms,
-    instanceBounds,
+    primitives,
     semanticEntries
+  };
+}
+
+function createSpandrelMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCatalog): MeshPlan | undefined {
+  if (spec.massing.floorCount < 2) {
+    return undefined;
+  }
+  const wallRecipe = catalog.recipes.find((candidate) => candidate.role === "wall");
+  const materialSlotId = wallRecipe ? firstAtlasSlot(wallRecipe) : "wall.primary";
+  const primitives = buildSpandrelBandPrimitives(spec);
+  if (primitives.length === 0) {
+    return undefined;
+  }
+  return {
+    batchId: "mesh.spandrels",
+    role: "wall",
+    materialSlotId,
+    stage: "facade",
+    primitives,
+    semanticEntries: primitives.map((_, elementIndex) => ({
+      semanticPath: semanticPath(spec, `facade/front/spandrel/layer/${elementIndex}`),
+      batchId: "mesh.spandrels",
+      elementIndex,
+      stage: "facade" as const
+    }))
   };
 }
 
@@ -667,6 +697,8 @@ export async function compileBuilding(input: CompileBuildingInput): Promise<Runt
     ? [
         createCorniceMeshPlan(input.spec, input.catalog),
         createHorizontalBeltMeshPlan(input.spec, input.catalog),
+        createVerticalPilasterMeshPlan(input.spec, input.catalog),
+        createSpandrelMeshPlan(input.spec, input.catalog),
         createRoofCapMeshPlan(input.spec, input.catalog),
         createCornerQuoinMeshPlan(input.spec, input.catalog)
       ].filter((plan): plan is MeshPlan => plan !== undefined)
@@ -682,10 +714,7 @@ export async function compileBuilding(input: CompileBuildingInput): Promise<Runt
         createWindowInstancePlan(input.spec, input.catalog),
         createDoorInstancePlan(input.spec, input.catalog)
       ]);
-  const instancePlans = [
-    ...openingPlans,
-    ...(highDetail ? [createVerticalTrimInstancePlan(input.spec, input.catalog)] : [])
-  ];
+  const instancePlans = [...openingPlans];
 
   const compiledMeshes = meshPlans.map(toMeshBatch);
   const meshBatches = compiledMeshes.map((compiled) => compiled.batch);

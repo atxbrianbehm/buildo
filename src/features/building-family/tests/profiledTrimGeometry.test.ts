@@ -3,9 +3,16 @@ import {
   buildCornerQuoinPrimitives,
   buildHorizontalBeltCoursePrimitives,
   buildProfiledRunPrimitives,
-  buildRoofCapPrimitives
+  buildRoofCapPrimitives,
+  buildSpandrelBandPrimitives,
+  buildVerticalPilasterPrimitives
 } from "../compiler/profiledTrimGeometry";
-import { buildCorniceRecipe, buildProfiledHorizontalTrimRecipe, buildProfiledRoofCapRecipe } from "../components/profiledTrimBuilder";
+import {
+  buildCorniceRecipe,
+  buildProfiledHorizontalTrimRecipe,
+  buildProfiledRoofCapRecipe,
+  buildProfiledVerticalTrimRecipe
+} from "../components/profiledTrimBuilder";
 import { buildCornerQuoinRecipe } from "../components/quoinBuilder";
 import type { BuildingFamilySpec } from "../contracts/buildingFamilySpec";
 
@@ -54,6 +61,8 @@ describe("profiled trim geometry", () => {
     const belt = buildHorizontalBeltCoursePrimitives(spec, buildProfiledHorizontalTrimRecipe(spec));
     const roofCap = buildRoofCapPrimitives(spec, buildProfiledRoofCapRecipe(spec));
     const quoins = buildCornerQuoinPrimitives(spec, buildCornerQuoinRecipe(spec));
+    const pilaster = buildVerticalPilasterPrimitives(spec, buildProfiledVerticalTrimRecipe(spec), -spec.massing.widthM / 2);
+    const spandrels = buildSpandrelBandPrimitives(spec);
     const stacked = buildProfiledRunPrimitives({
       id: "test-run",
       center: [0, 1, 0],
@@ -69,9 +78,12 @@ describe("profiled trim geometry", () => {
     expect(belt.length).toBeGreaterThanOrEqual(6);
     expect(roofCap.length).toBeGreaterThanOrEqual(3);
     expect(quoins.length).toBeGreaterThan(4);
+    expect(pilaster.length).toBeGreaterThanOrEqual(4);
+    expect(spandrels.length).toBeGreaterThanOrEqual(4);
     expect(stacked).toHaveLength(2);
+    expect(pilaster[0].bounds.max[1] - pilaster[0].bounds.min[1]).toBeGreaterThan(1);
 
-    for (const primitive of [...cornice, ...belt, ...roofCap, ...quoins, ...stacked]) {
+    for (const primitive of [...cornice, ...belt, ...roofCap, ...quoins, ...pilaster, ...spandrels, ...stacked]) {
       expect(primitive.positions.length).toBeGreaterThan(0);
       expect(primitive.normals.length).toBe(primitive.positions.length);
       expect(primitive.indices.length % 3).toBe(0);

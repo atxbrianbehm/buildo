@@ -25,9 +25,9 @@ export function buildProfiledVerticalTrimRecipe(spec: BuildingFamilySpec) {
     kind: "profileSweep",
     role: "verticalTrim",
     dimensionsM: {
-      width: 0.34,
+      width: 0.42,
       height: typicalFloorHeight(spec.massing.floorHeightsM),
-      depth: 0.18
+      depth: 0.28
     },
     atlasSlotIds: ["trim.vertical.primary"],
     uvBehavior: "cap-repeat-cap",
@@ -35,8 +35,8 @@ export function buildProfiledVerticalTrimRecipe(spec: BuildingFamilySpec) {
     attachmentPlane: "facade.front",
     profileRecipeId: `profile.trim.${spec.selectedFamilies.trim}.shallow-pilaster`,
     parameterRanges: {
-      projectionM: { min: 0.08, max: 0.22 },
-      plinthHeightM: { min: 0.18, max: 0.36 }
+      projectionM: { min: 0.12, max: 0.28 },
+      plinthHeightM: { min: 0.28, max: 0.52 }
     }
   });
 }

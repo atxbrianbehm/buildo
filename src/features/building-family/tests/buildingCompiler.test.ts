@@ -167,10 +167,15 @@ describe("compileBuilding", () => {
       "instances.door",
       "instances.door.glass"
     ]);
+    expect(highIr.meshBatches.some((batch) => batch.batchId === "mesh.vertical-pilasters")).toBe(true);
+    expect(highIr.meshBatches.some((batch) => batch.batchId === "mesh.spandrels")).toBe(true);
+    expect(highIr.instanceBatches.some((batch) => batch.batchId === "instances.vertical-trim")).toBe(false);
     expect(lowIr.semanticIndex.some((entry) => entry.stage === "trim")).toBe(false);
     expect(lowIr.sourceGraphHash).not.toBe(highIr.sourceGraphHash);
     expect(lowIr.metrics.triangleCount).toBeLessThan(highIr.metrics.triangleCount);
-    expect(lowIr.metrics.instanceCount).toBeLessThan(highIr.metrics.instanceCount);
+    // High-detail facade mass (pilasters/spandrels/trim) is mesh, not instances.
+    expect(highIr.meshBatches.length).toBeGreaterThan(lowIr.meshBatches.length);
+    expect(lowIr.metrics.instanceCount).toBe(highIr.metrics.instanceCount);
   });
 
   it("indexes every emitted element with semantic path, batch id, stage, and element index", async () => {
