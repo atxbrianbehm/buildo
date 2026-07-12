@@ -1,5 +1,9 @@
 import {
+  boundsFromBox,
   buildBoxPrimitive,
+  emptyBounds,
+  expandBounds,
+  type Bounds3,
   type PrimitiveGeometry,
   type Vec3
 } from "./primitiveGeometry";
@@ -22,9 +26,150 @@ export interface SweepProfileAlongRunInput {
   facadeSign?: 1 | -1;
 }
 
+function closeProfileAgainstWall(points: ProfilePoint2[]): ProfilePoint2[] {
+  if (points.length === 0) {
+    return [];
+  }
+  const first = points[0];
+  const last = points[points.length - 1];
+  return [{ u: first.u, d: 0 }, ...points, { u: last.u, d: 0 }];
+}
+
+function pushVertex(
+  positions: number[],
+  normals: number[],
+  uvs: number[],
+  point: Vec3,
+  normal: Vec3,
+  uv: [number, number]
+): void {
+  positions.push(point[0], point[1], point[2]);
+  normals.push(normal[0], normal[1], normal[2]);
+  uvs.push(uv[0], uv[1]);
+}
+
+function pushQuad(
+  positions: number[],
+  normals: number[],
+  uvs: number[],
+  indices: number[],
+  a: Vec3,
+  b: Vec3,
+  c: Vec3,
+  d: Vec3
+): void {
+  const ab: Vec3 = [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
+  const ad: Vec3 = [d[0] - a[0], d[1] - a[1], d[2] - a[2]];
+  const nx = ab[1] * ad[2] - ab[2] * ad[1];
+  const ny = ab[2] * ad[0] - ab[0] * ad[2];
+  const nz = ab[0] * ad[1] - ab[1] * ad[0];
+  const len = Math.hypot(nx, ny, nz) || 1;
+  const normal: Vec3 = [nx / len, ny / len, nz / len];
+  const base = positions.length / 3;
+  pushVertex(positions, normals, uvs, a, normal, [0, 0]);
+  pushVertex(positions, normals, uvs, b, normal, [1, 0]);
+  pushVertex(positions, normals, uvs, c, normal, [1, 1]);
+  pushVertex(positions, normals, uvs, d, normal, [0, 1]);
+  indices.push(base, base + 1, base + 2, base, base + 2, base + 3);
+}
+
+function boundsFromPositions(positions: number[]): Bounds3 {
+  let bounds = emptyBounds();
+  for (let index = 0; index < positions.length; index += 3) {
+    bounds = expandBounds(bounds, {
+      min: [positions[index], positions[index + 1], positions[index + 2]],
+      max: [positions[index], positions[index + 1], positions[index + 2]]
+    });
+  }
+  if (!Number.isFinite(bounds.min[0])) {
+    return boundsFromBox([0, 0, 0], [0.01, 0.01, 0.01]);
+  }
+  return bounds;
+}
+
 /**
- * Expand an authored 2D profile into box segments — a Geometry-Nodes-like
- * "profile curve → solid" approximation without mesh booleans.
+ * True extruded solid from a closed profile polyline along X (horizontal molding).
+ * Profile (u,d) → (Y, Z); run along X. This is the Geometry-Nodes-like solid path.
+ */
+export function extrudeProfileSolidAlongX(input: {
+  profile: ProfileDefinition;
+  center: Vec3;
+  runLengthM: number;
+  facadeSign?: 1 | -1;
+}): PrimitiveGeometry {
+  const facadeSign = input.facadeSign ?? 1;
+  const closed = closeProfileAgainstWall(input.profile.points);
+  if (closed.length < 3) {
+    return buildBoxPrimitive({ center: input.center, size: [input.runLengthM, 0.1, 0.1] });
+  }
+
+  const uMin = Math.min(...closed.map((point) => point.u));
+  const uMax = Math.max(...closed.map((point) => point.u));
+  const uMid = (uMin + uMax) / 2;
+  const halfRun = input.runLengthM / 2;
+  const x0 = input.center[0] - halfRun;
+  const x1 = input.center[0] + halfRun;
+
+  const ring = closed.map((point) => {
+    const y = input.center[1] + (point.u - uMid);
+    const z = input.center[2] + facadeSign * point.d;
+    return { y, z };
+  });
+
+  const positions: number[] = [];
+  const normals: number[] = [];
+  const uvs: number[] = [];
+  const indices: number[] = [];
+
+  // Side strip quads between consecutive profile edges, extruded along X.
+  for (let index = 0; index < ring.length - 1; index += 1) {
+    const p0 = ring[index];
+    const p1 = ring[index + 1];
+    const a: Vec3 = [x0, p0.y, p0.z];
+    const b: Vec3 = [x1, p0.y, p0.z];
+    const c: Vec3 = [x1, p1.y, p1.z];
+    const d: Vec3 = [x0, p1.y, p1.z];
+    pushQuad(positions, normals, uvs, indices, a, b, c, d);
+  }
+
+  // End caps (fan from centroid of ring at each end).
+  const cy = ring.reduce((sum, point) => sum + point.y, 0) / ring.length;
+  const cz = ring.reduce((sum, point) => sum + point.z, 0) / ring.length;
+  for (const x of [x0, x1]) {
+    const outward: Vec3 = x === x0 ? [-1, 0, 0] : [1, 0, 0];
+    for (let index = 0; index < ring.length - 1; index += 1) {
+      const p0 = ring[index];
+      const p1 = ring[index + 1];
+      const base = positions.length / 3;
+      const center: Vec3 = [x, cy, cz];
+      const a: Vec3 = [x, p0.y, p0.z];
+      const b: Vec3 = [x, p1.y, p1.z];
+      // Winding: outward normal for each end.
+      if (x === x1) {
+        pushVertex(positions, normals, uvs, center, outward, [0.5, 0.5]);
+        pushVertex(positions, normals, uvs, a, outward, [0, 0]);
+        pushVertex(positions, normals, uvs, b, outward, [1, 0]);
+      } else {
+        pushVertex(positions, normals, uvs, center, outward, [0.5, 0.5]);
+        pushVertex(positions, normals, uvs, b, outward, [1, 0]);
+        pushVertex(positions, normals, uvs, a, outward, [0, 0]);
+      }
+      indices.push(base, base + 1, base + 2);
+    }
+  }
+
+  return {
+    positions,
+    normals,
+    uvs,
+    indices,
+    bounds: boundsFromPositions(positions)
+  };
+}
+
+/**
+ * Expand an authored 2D profile into solid geometry.
+ * Horizontal runs use true extrusion; vertical uses segmented solid approximation.
  */
 export function sweepProfileToBoxPrimitives(input: SweepProfileAlongRunInput): PrimitiveGeometry[] {
   const points = input.profile.points;
@@ -32,64 +177,64 @@ export function sweepProfileToBoxPrimitives(input: SweepProfileAlongRunInput): P
     return [];
   }
   const facadeSign = input.facadeSign ?? 1;
-  const primitives: PrimitiveGeometry[] = [];
 
   if (input.runAxis === "x") {
-    for (let index = 0; index < points.length - 1; index += 1) {
-      const a = points[index];
-      const b = points[index + 1];
-      const u0 = Math.min(a.u, b.u);
-      const u1 = Math.max(a.u, b.u);
-      const height = Math.max(0.02, u1 - u0);
-      const depth = Math.max(0.02, (a.d + b.d) / 2);
-      const midU = (u0 + u1) / 2;
-      // Center profile so u-mid of full span sits at center.y
-      const uMin = points[0].u;
-      const uMax = points[points.length - 1].u;
-      const uMid = (uMin + uMax) / 2;
-      const y = input.center[1] + (midU - uMid);
-      const z = input.center[2] + facadeSign * (depth / 2 - 0.02);
-      primitives.push(
-        buildBoxPrimitive({
-          center: [input.center[0], y, z],
-          size: [input.runLengthM, height, depth]
-        })
-      );
-    }
-    return primitives;
+    return [
+      extrudeProfileSolidAlongX({
+        profile: input.profile,
+        center: input.center,
+        runLengthM: input.runLengthM,
+        facadeSign
+      })
+    ];
   }
 
-  // Vertical run: build shaft from mirrored half-profile (u = half-width).
-  const halfWidths = points.map((point) => point.u);
-  const maxHalf = Math.max(...halfWidths, 0.05);
-  for (let index = 0; index < points.length - 1; index += 1) {
-    const a = points[index];
-    const b = points[index + 1];
-    const halfW = Math.max(0.04, (a.u + b.u) / 2);
-    const depth = Math.max(0.04, (a.d + b.d) / 2);
-    // Stack layers along height using index as normalized band
-    const band = 1 / (points.length - 1);
-    const y0 = -input.runLengthM / 2 + index * band * input.runLengthM;
-    const y1 = -input.runLengthM / 2 + (index + 1) * band * input.runLengthM;
-    const height = Math.max(0.05, y1 - y0);
-    const y = input.center[1] + (y0 + y1) / 2;
-    primitives.push(
-      buildBoxPrimitive({
-        center: [input.center[0], y, input.center[2] + facadeSign * (depth / 2)],
-        size: [halfW * 2, height, depth]
-      })
-    );
+  // Vertical run: loft half-profile rings along Y (true-ish solid shaft).
+  return [extrudeHalfProfileSolidAlongY(input)];
+}
+
+function extrudeHalfProfileSolidAlongY(input: SweepProfileAlongRunInput): PrimitiveGeometry {
+  const facadeSign = input.facadeSign ?? 1;
+  const points = input.profile.points;
+  const halfRun = input.runLengthM / 2;
+  const y0 = input.center[1] - halfRun;
+  const y1 = input.center[1] + halfRun;
+
+  // Closed half-profile: center spine → outer points → back to spine.
+  const ring: Array<{ x: number; z: number }> = [{ x: 0, z: 0 }];
+  for (const point of points) {
+    ring.push({ x: point.u, z: facadeSign * point.d });
   }
-  // Outer fillet at max projection for capital/base readability
-  const tip = points[points.length - 1];
-  primitives.push(
-    buildBoxPrimitive({
-      center: [input.center[0], input.center[1], input.center[2] + facadeSign * (tip.d * 0.55)],
-      size: [maxHalf * 1.35, input.runLengthM * 0.08, tip.d * 0.45]
-    })
-  );
-  void tip;
-  return primitives;
+  ring.push({ x: 0, z: 0 });
+  // Mirror left side
+  for (let index = points.length - 1; index >= 0; index -= 1) {
+    const point = points[index];
+    ring.push({ x: -point.u, z: facadeSign * point.d });
+  }
+  ring.push({ x: 0, z: 0 });
+
+  const positions: number[] = [];
+  const normals: number[] = [];
+  const uvs: number[] = [];
+  const indices: number[] = [];
+
+  for (let index = 0; index < ring.length - 1; index += 1) {
+    const p0 = ring[index];
+    const p1 = ring[index + 1];
+    const a: Vec3 = [input.center[0] + p0.x, y0, input.center[2] + p0.z];
+    const b: Vec3 = [input.center[0] + p1.x, y0, input.center[2] + p1.z];
+    const c: Vec3 = [input.center[0] + p1.x, y1, input.center[2] + p1.z];
+    const d: Vec3 = [input.center[0] + p0.x, y1, input.center[2] + p0.z];
+    pushQuad(positions, normals, uvs, indices, a, b, c, d);
+  }
+
+  return {
+    positions,
+    normals,
+    uvs,
+    indices,
+    bounds: boundsFromPositions(positions)
+  };
 }
 
 /** Horizontal molding run on the front facade from an authored profile. */
@@ -108,7 +253,7 @@ export function horizontalMoldingFromProfile(input: {
   });
 }
 
-/** Sample denser steps for smoother moldings (still box primitives). */
+/** Sample denser steps for smoother moldings. */
 export function densifyProfile(profile: ProfileDefinition, stepsPerSegment = 2): ProfileDefinition {
   if (stepsPerSegment <= 1) {
     return profile;

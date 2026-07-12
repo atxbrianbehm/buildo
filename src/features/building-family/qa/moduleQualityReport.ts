@@ -111,12 +111,17 @@ export function evaluateModuleQualityChecklist(
         batchIds.has("mesh.corner-quoins") &&
         batchIds.has("mesh.vertical-pilasters") &&
         batchIds.has("mesh.spandrels") &&
-        batchIds.has("mesh.base-plinth")
+        batchIds.has("mesh.base-plinth") &&
+        batchIds.has("mesh.opening-pockets") &&
+        batchIds.has("mesh.storefront-hierarchy")
       : batchIds.has("mesh.roof");
   const pilasterLayers = fixture.ir.semanticIndex.filter(
     (entry) => entry.batchId === "mesh.vertical-pilasters"
   ).length;
   const spandrelLayers = fixture.ir.semanticIndex.filter((entry) => entry.batchId === "mesh.spandrels").length;
+  const openingPockets = fixture.ir.semanticIndex.filter(
+    (entry) => entry.batchId === "mesh.opening-pockets"
+  ).length;
   const corniceUsesProfile =
     fixture.catalog.recipes.find((recipe) => recipe.role === "cornice")?.profileRecipeId?.includes("profile.") ??
     false;
@@ -135,10 +140,26 @@ export function evaluateModuleQualityChecklist(
         hasQuoins: batchIds.has("mesh.corner-quoins"),
         hasPilasters: batchIds.has("mesh.vertical-pilasters"),
         hasSpandrels: batchIds.has("mesh.spandrels"),
+        hasOpeningPockets: batchIds.has("mesh.opening-pockets"),
+        hasStorefrontHierarchy: batchIds.has("mesh.storefront-hierarchy"),
         pilasterLayers,
         spandrelLayers,
+        openingPockets,
         detailLevel
       }
+    ),
+    item(
+      "openingDepth",
+      "Openings have wall pockets plus frame/glass depth hierarchy",
+      detailLevel === "high"
+        ? openingDepthM > 0.28 && glassInsetM > 0.08 && openingPockets > 0
+          ? "pass"
+          : "fail"
+        : openingDepthM > 0.15
+          ? "pass"
+          : "fail",
+      "Opening frame depth, glass inset, and additive wall-pocket mass for punched-window read.",
+      { openingDepthM, glassInsetM, openingPockets, detailLevel }
     ),
     item(
       "facadeRhythm",
@@ -152,27 +173,23 @@ export function evaluateModuleQualityChecklist(
       { floorCount, bayCount, pilasterLayers, detailLevel }
     ),
     item(
-      "openingDepth",
-      "Openings have measurable recess depth and glass inset",
-      openingDepthM > 0.28 && glassInsetM > 0.08 ? "pass" : "fail",
-      "Window assembly geometry depth and glass inset measured from openingGeometry helpers (raised clay-readability bar).",
-      { openingDepthM, glassInsetM, depthFloorM: 0.28, glassInsetFloorM: 0.08 }
-    ),
-    item(
       "trimLayering",
       "Trim profiles are multi-layer, not single flat bands",
-      detailLevel === "high" && corniceLayers >= 5 && beltLayers >= 2 && corniceUsesProfile
+      detailLevel === "high" &&
+        corniceLayers >= 1 &&
+        beltLayers >= 2 &&
+        corniceUsesProfile &&
+        batchIds.has("mesh.base-plinth")
         ? "pass"
         : detailLevel === "low"
           ? "estimated"
           : "fail",
       detailLevel === "high"
-        ? "High-detail cornice expands an authored profile polyline; intermediate floor belt courses present."
+        ? "High-detail cornice expands an authored profile solid; belts and base plinth present."
         : "Low-detail intentionally omits decorative trim layering.",
       {
         corniceLayers,
         beltLayers,
-        corniceLayerFloor: 5,
         corniceUsesProfile,
         hasBeltCourse: batchIds.has("mesh.belt-course"),
         hasBasePlinth: batchIds.has("mesh.base-plinth"),

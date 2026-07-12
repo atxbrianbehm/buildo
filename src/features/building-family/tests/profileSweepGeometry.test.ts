@@ -21,7 +21,7 @@ describe("profile library + sweep expander", () => {
     }
   });
 
-  it("densifies and scales cornice profiles then sweeps to multi-segment solids", () => {
+  it("densifies and scales cornice profiles then extrudes a closed solid", () => {
     const scaled = densifyProfile(scaleProfileToHeight(late19cCorniceProfile, 0.9), 2);
     const segments = horizontalMoldingFromProfile({
       profile: scaled,
@@ -29,26 +29,30 @@ describe("profile library + sweep expander", () => {
       widthM: 20
     });
     expect(scaled.points.length).toBeGreaterThan(late19cCorniceProfile.points.length);
-    expect(segments.length).toBeGreaterThanOrEqual(8);
-    for (const segment of segments) {
-      expect(segment.positions.length).toBeGreaterThan(0);
-      expect(segment.indices.length % 3).toBe(0);
-    }
+    expect(segments).toHaveLength(1);
+    const solid = segments[0];
+    // Closed profile loft: many ring edges × side quads + caps.
+    expect(solid.positions.length / 3).toBeGreaterThan(40);
+    expect(solid.indices.length).toBeGreaterThan(100);
+    expect(solid.indices.length % 3).toBe(0);
+    expect(solid.bounds.max[0] - solid.bounds.min[0]).toBeGreaterThan(19);
   });
 
-  it("sweeps pilaster half-profiles along a vertical run", () => {
+  it("extrudes pilaster half-profiles along a vertical run as one solid", () => {
     const shaft = sweepProfileToBoxPrimitives({
       profile: densifyProfile(late19cPilasterProfile, 2),
       center: [0, 5, -9],
       runLengthM: 10,
       runAxis: "y"
     });
-    expect(shaft.length).toBeGreaterThanOrEqual(4);
+    expect(shaft).toHaveLength(1);
+    expect(shaft[0].positions.length / 3).toBeGreaterThan(20);
     const belt = horizontalMoldingFromProfile({
       profile: densifyProfile(scaleProfileToHeight(late19cBeltProfile, 0.3), 2),
       center: [0, 4, -9],
       widthM: 18
     });
-    expect(belt.length).toBeGreaterThanOrEqual(3);
+    expect(belt).toHaveLength(1);
+    expect(belt[0].indices.length % 3).toBe(0);
   });
 });

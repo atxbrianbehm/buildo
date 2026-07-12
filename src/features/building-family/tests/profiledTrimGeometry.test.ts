@@ -75,14 +75,16 @@ describe("profiled trim geometry", () => {
       ]
     });
 
-    expect(cornice.length).toBeGreaterThanOrEqual(8);
-    // Intermediate floor belts (3 floor breaks × multi-layer) for a 4-floor building.
-    expect(belt.length).toBeGreaterThanOrEqual(6);
-    expect(roofCap.length).toBeGreaterThanOrEqual(3);
+    // Cornice = extruded profile solid + bracket boxes.
+    expect(cornice.length).toBeGreaterThanOrEqual(4);
+    expect(cornice[0].positions.length / 3).toBeGreaterThan(40);
+    // Intermediate floor belts (one extruded solid per floor break).
+    expect(belt.length).toBeGreaterThanOrEqual(3);
+    expect(roofCap.length).toBeGreaterThanOrEqual(1);
     expect(quoins.length).toBeGreaterThan(4);
-    expect(pilaster.length).toBeGreaterThanOrEqual(4);
+    expect(pilaster.length).toBeGreaterThanOrEqual(3);
     expect(spandrels.length).toBeGreaterThanOrEqual(4);
-    expect(plinth.length).toBeGreaterThanOrEqual(3);
+    expect(plinth.length).toBeGreaterThanOrEqual(1);
     expect(stacked).toHaveLength(2);
 
     for (const primitive of [

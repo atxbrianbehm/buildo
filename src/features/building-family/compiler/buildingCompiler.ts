@@ -663,6 +663,135 @@ function createBasePlinthMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCa
   };
 }
 
+/**
+ * Additive wall-pocket mass behind each opening (no mesh booleans).
+ * Reads as a punched recess when lit in clay mode.
+ */
+function createOpeningPocketMeshPlan(
+  spec: BuildingFamilySpec,
+  catalog: ComponentCatalog,
+  openingPlans: InstancePlan[]
+): MeshPlan | undefined {
+  const wallRecipe = catalog.recipes.find((candidate) => candidate.role === "wall");
+  if (!wallRecipe || openingPlans.length === 0) {
+    return undefined;
+  }
+  const wallDepth = Math.max(0.2, wallRecipe.dimensionsM.depth);
+  const primitives: PrimitiveGeometry[] = [];
+  const semanticEntries: SemanticIndexEntry[] = [];
+
+  for (const plan of openingPlans) {
+    if (!plan.batchId.includes("window") && !plan.batchId.includes("door")) {
+      continue;
+    }
+    if (plan.batchId.includes("glass")) {
+      continue;
+    }
+    const isDoor = plan.batchId.includes("door");
+    const recipe = plan.recipe;
+    for (let index = 0; index < plan.transforms.length; index += 16) {
+      const transform = plan.transforms.slice(index, index + 16);
+      const center = centerFromTransform(transform);
+      // Pull pocket into the wall mass (behind the exterior opening frame).
+      const pocketCenter: Vec3 = [
+        center[0],
+        center[1],
+        -spec.massing.depthM / 2 + wallDepth * 0.42
+      ];
+      const width = recipe.dimensionsM.width * (isDoor ? 1.08 : 1.12);
+      const height = recipe.dimensionsM.height * (isDoor ? 1.04 : 1.1);
+      const depth = wallDepth * 0.72;
+      primitives.push(
+        buildBoxPrimitive({
+          center: pocketCenter,
+          size: [width, height, depth]
+        })
+      );
+      // Outer reveal lip on the facade plane.
+      primitives.push(
+        buildBoxPrimitive({
+          center: [center[0], center[1], -spec.massing.depthM / 2 + wallDepth * 0.12],
+          size: [width + 0.08, height + 0.08, wallDepth * 0.18]
+        })
+      );
+      const elementIndex = primitives.length - 2;
+      semanticEntries.push({
+        semanticPath: semanticPath(
+          spec,
+          `facade/front/opening-pocket/${plan.batchId}/${index / 16}`
+        ),
+        batchId: "mesh.opening-pockets",
+        elementIndex,
+        stage: "openings"
+      });
+    }
+  }
+
+  if (primitives.length === 0) {
+    return undefined;
+  }
+
+  return {
+    batchId: "mesh.opening-pockets",
+    role: "opening",
+    materialSlotId: firstAtlasSlot(wallRecipe),
+    stage: "openings",
+    primitives,
+    semanticEntries
+  };
+}
+
+/** Ground-floor storefront bulkhead + continuous lintel band. */
+function createStorefrontHierarchyMeshPlan(
+  spec: BuildingFamilySpec,
+  catalog: ComponentCatalog
+): MeshPlan | undefined {
+  if (spec.massing.floorCount < 1) {
+    return undefined;
+  }
+  const wallRecipe = catalog.recipes.find((candidate) => candidate.role === "wall");
+  const trimRecipe = catalog.recipes.find((candidate) => candidate.role === "horizontalTrim");
+  if (!wallRecipe) {
+    return undefined;
+  }
+  const groundHeight = spec.massing.floorHeightsM[0] ?? 4;
+  const width = spec.massing.widthM;
+  const bulkheadHeight = Math.min(0.85, groundHeight * 0.2);
+  const lintelHeight = Math.min(0.35, groundHeight * 0.08);
+  const zBulk = -spec.massing.depthM / 2 + wallRecipe.dimensionsM.depth * 0.55;
+  const primitives: PrimitiveGeometry[] = [
+    // Bulkhead / base under storefront glazing.
+    buildBoxPrimitive({
+      center: [0, bulkheadHeight / 2 + 0.02, zBulk],
+      size: [width * 0.98, bulkheadHeight, wallRecipe.dimensionsM.depth * 0.55]
+    }),
+    // Continuous storefront lintel below 2nd floor.
+    buildBoxPrimitive({
+      center: [0, groundHeight - lintelHeight / 2 - 0.04, zBulk + 0.04],
+      size: [width * 0.99, lintelHeight, wallRecipe.dimensionsM.depth * 0.7]
+    }),
+    // Slightly proud fascia above lintel.
+    buildBoxPrimitive({
+      center: [0, groundHeight - lintelHeight * 0.15, zBulk + 0.08],
+      size: [width + 0.06, lintelHeight * 0.35, wallRecipe.dimensionsM.depth * 0.45]
+    })
+  ];
+  const materialSlotId = trimRecipe ? firstAtlasSlot(trimRecipe) : firstAtlasSlot(wallRecipe);
+  return {
+    batchId: "mesh.storefront-hierarchy",
+    role: "wall",
+    materialSlotId,
+    stage: "facade",
+    primitives,
+    semanticEntries: primitives.map((_, elementIndex) => ({
+      semanticPath: semanticPath(spec, `facade/front/storefront/layer/${elementIndex}`),
+      batchId: "mesh.storefront-hierarchy",
+      elementIndex,
+      stage: "facade" as const
+    }))
+  };
+}
+
 function toMeshBatch(plan: MeshPlan): { batch: MeshBatchIR; bounds: Bounds3; vertexCount: number; triangleCount: number } {
   const combined = combinePrimitiveGeometry(plan.primitives);
   return {
@@ -722,13 +851,21 @@ export async function compileBuilding(input: CompileBuildingInput): Promise<Runt
   const detailLevel = input.detailLevel ?? "high";
   const highDetail = detailLevel === "high";
   const moduleInstances = await resolveModuleInstances(input);
+  const openingPlans = moduleInstances
+    ? createOpeningInstancePlansFromModuleInstances(moduleInstances, input.catalog)
+    : withPairedGlassPlans(input.catalog, [
+        createWindowInstancePlan(input.spec, input.catalog),
+        createDoorInstancePlan(input.spec, input.catalog)
+      ]);
   const highDetailMeshPlans = highDetail
     ? [
         createBasePlinthMeshPlan(input.spec, input.catalog),
+        createStorefrontHierarchyMeshPlan(input.spec, input.catalog),
         createCorniceMeshPlan(input.spec, input.catalog),
         createHorizontalBeltMeshPlan(input.spec, input.catalog),
         createVerticalPilasterMeshPlan(input.spec, input.catalog),
         createSpandrelMeshPlan(input.spec, input.catalog),
+        createOpeningPocketMeshPlan(input.spec, input.catalog, openingPlans),
         createRoofCapMeshPlan(input.spec, input.catalog),
         createCornerQuoinMeshPlan(input.spec, input.catalog)
       ].filter((plan): plan is MeshPlan => plan !== undefined)
@@ -738,12 +875,6 @@ export async function compileBuilding(input: CompileBuildingInput): Promise<Runt
     ...highDetailMeshPlans,
     createRoofMeshPlan(input.spec, input.catalog)
   ];
-  const openingPlans = moduleInstances
-    ? createOpeningInstancePlansFromModuleInstances(moduleInstances, input.catalog)
-    : withPairedGlassPlans(input.catalog, [
-        createWindowInstancePlan(input.spec, input.catalog),
-        createDoorInstancePlan(input.spec, input.catalog)
-      ]);
   const instancePlans = [...openingPlans];
 
   const compiledMeshes = meshPlans.map(toMeshBatch);
