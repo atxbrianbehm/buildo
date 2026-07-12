@@ -1,6 +1,6 @@
-import type { ArtKitManifest } from "./artKitContracts";
+import { ArtKitManifestSchema, type ArtKitManifest } from "./artKitContracts";
 
-export const late19cApartmentKit = {
+export const late19cApartmentKit: ArtKitManifest = ArtKitManifestSchema.parse({
   schemaVersion: "0.1.0",
   id: "late-19c-apartment-kit",
   label: "Late 19th Century Apartment Kit",
@@ -369,4 +369,4 @@ export const late19cApartmentKit = {
       "Designed around 1 meter modular assumptions and late-19c demo style constraints."
     ]
   }
-} satisfies ArtKitManifest;
+});

@@ -123,9 +123,21 @@ describe("compileBuilding", () => {
 
     expect(windowBatch).toBeDefined();
     expect(windowBatch?.materialSlotId).toBe("glass.primary");
-    expect(windowBatch?.count).toBe(spec.massing.floorCount * spec.facade.frontBayCount);
+    // Kit-mode openings come from the facade plan (front/side/rear), so count is plan-driven.
+    expect(windowBatch?.count).toBeGreaterThan(spec.massing.floorCount);
     expect(windowBatch?.transforms).toBeInstanceOf(Float32Array);
     expect(windowBatch?.transforms?.length).toBe(windowBatch!.count * 16);
+    expect(ir.meshBatches.some((batch) => batch.role === "window")).toBe(false);
+    expect(catalog.recipes.filter((recipe) => recipe.role === "window")).toHaveLength(1);
+    expect(ir.semanticIndex.some((entry) => entry.semanticPath.includes("/opening/"))).toBe(true);
+  });
+
+  it("preserves proof-mode hardcoded front window counts when fidelityMode is proof", async () => {
+    const { spec, catalog, graph } = await fixtureCompilerInputs();
+    const ir = await compileBuilding({ spec, catalog, graph, fidelityMode: "proof" });
+    const windowBatch = ir.instanceBatches.find((batch) => batch.recipeId === "recipe.window.tall-arched.frame");
+
+    expect(windowBatch?.count).toBe(spec.massing.floorCount * spec.facade.frontBayCount);
     expect(ir.meshBatches.some((batch) => batch.role === "window")).toBe(false);
     expect(catalog.recipes.filter((recipe) => recipe.role === "window")).toHaveLength(1);
   });
@@ -148,17 +160,26 @@ describe("compileBuilding", () => {
   it("indexes every emitted element with semantic path, batch id, stage, and element index", async () => {
     const { spec, catalog, graph } = await fixtureCompilerInputs();
     const ir = await compileBuilding({ spec, catalog, graph });
-    const expectedWindowPath = `building/${spec.familyId}/facade/front/floor/2/bay/3/window/frame`;
     const sideBayCount = Math.max(1, Math.round(spec.massing.depthM / spec.facade.sideBaySpacingM));
     const expectedWallPanelCount =
       spec.massing.floorCount * (spec.facade.frontBayCount * 2 + sideBayCount * 2);
+    const doorBay = Math.floor(spec.facade.frontBayCount / 2);
 
     expect(ir.semanticIndex).toContainEqual(
       expect.objectContaining({
-        semanticPath: expectedWindowPath,
+        semanticPath: expect.stringContaining(
+          `building/${spec.familyId}/facade/front/floor/2/bay/3/opening/`
+        ),
         batchId: "instances.window",
+        stage: "openings"
+      })
+    );
+    expect(ir.semanticIndex).toContainEqual(
+      expect.objectContaining({
+        semanticPath: `building/${spec.familyId}/facade/front/floor/0/bay/${doorBay}/opening/door.storefront.recessed`,
+        batchId: "instances.door",
         stage: "openings",
-        elementIndex: 17
+        elementIndex: 0
       })
     );
     expect(ir.semanticIndex).toContainEqual(

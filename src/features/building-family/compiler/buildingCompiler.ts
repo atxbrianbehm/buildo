@@ -8,8 +8,15 @@ import {
 } from "../contracts/runtimeBuildingIR";
 import type { AssemblyStage } from "../contracts/shared";
 import type { ComponentRecipe } from "../contracts/componentRecipe";
+import type { ModuleInstanceSet } from "../contracts/moduleInstanceSet";
 import type { ComponentCatalog } from "../components/componentCatalogBuilder";
 import { hashCanonicalJson } from "../core/contentHash";
+import {
+  buildModuleInstanceSet,
+  late19cApartmentKit,
+  planFacadeModules,
+  type FacadeModulePlan
+} from "../art-kit";
 import { validateBuildingGraph } from "./buildingGraphBuilder";
 import {
   boundsFromBox,
@@ -24,6 +31,7 @@ import {
 } from "./primitiveGeometry";
 
 export type BuildingComponentDetailLevel = "high" | "low";
+export type BuildingFidelityMode = "proof" | "kit";
 
 export interface CompileBuildingInput {
   spec: BuildingFamilySpec;
@@ -31,6 +39,10 @@ export interface CompileBuildingInput {
   graph: BuildingGraph;
   buildingId?: string;
   detailLevel?: BuildingComponentDetailLevel;
+  /** When omitted, kit mode is inferred from the art-kit graph Group node. */
+  fidelityMode?: BuildingFidelityMode;
+  facadePlan?: FacadeModulePlan;
+  moduleInstances?: ModuleInstanceSet;
 }
 
 interface SemanticIndexEntry {
@@ -297,6 +309,112 @@ function createDoorInstancePlan(spec: BuildingFamilySpec, catalog: ComponentCata
   };
 }
 
+function graphHasArtKitFacadePlan(graph: BuildingGraph): boolean {
+  return graph.nodes.some((node) => node.id === "node.art-kit-facade-plan" && node.type === "Group");
+}
+
+function centerFromTransform(transform: number[]): Vec3 {
+  return [transform[12] ?? 0, transform[13] ?? 0, transform[14] ?? 0];
+}
+
+function createOpeningInstancePlansFromModuleInstances(
+  moduleInstances: ModuleInstanceSet,
+  catalog: ComponentCatalog
+): InstancePlan[] {
+  const windowRecipe = recipeByRole(catalog, "window");
+  const doorRecipe = recipeByRole(catalog, "door");
+  const windowTransforms: number[] = [];
+  const windowBounds: Bounds3[] = [];
+  const windowSemantics: SemanticIndexEntry[] = [];
+  const doorTransforms: number[] = [];
+  const doorBounds: Bounds3[] = [];
+  const doorSemantics: SemanticIndexEntry[] = [];
+
+  for (const instance of moduleInstances.instances) {
+    if (instance.layer !== "opening") {
+      continue;
+    }
+
+    const center = centerFromTransform(instance.transform);
+    const size: Vec3 = instance.boundsMeters.size;
+    const isDoor = instance.moduleId.includes("door");
+    if (isDoor) {
+      const elementIndex = doorSemantics.length;
+      doorTransforms.push(...instance.transform);
+      doorBounds.push(boundsFromBox(center, size));
+      doorSemantics.push({
+        semanticPath: instance.semanticPath,
+        batchId: "instances.door",
+        elementIndex,
+        stage: "openings"
+      });
+    } else {
+      const elementIndex = windowSemantics.length;
+      windowTransforms.push(...instance.transform);
+      windowBounds.push(boundsFromBox(center, size));
+      windowSemantics.push({
+        semanticPath: instance.semanticPath,
+        batchId: "instances.window",
+        elementIndex,
+        stage: "openings"
+      });
+    }
+  }
+
+  const plans: InstancePlan[] = [];
+  if (windowTransforms.length > 0) {
+    plans.push({
+      batchId: "instances.window",
+      recipe: windowRecipe,
+      materialSlotId: firstAtlasSlot(windowRecipe),
+      stage: "openings",
+      transforms: windowTransforms,
+      instanceBounds: windowBounds,
+      semanticEntries: windowSemantics
+    });
+  }
+  if (doorTransforms.length > 0) {
+    plans.push({
+      batchId: "instances.door",
+      recipe: doorRecipe,
+      materialSlotId: firstAtlasSlot(doorRecipe),
+      stage: "openings",
+      transforms: doorTransforms,
+      instanceBounds: doorBounds,
+      semanticEntries: doorSemantics
+    });
+  }
+  return plans;
+}
+
+async function resolveModuleInstances(input: CompileBuildingInput): Promise<ModuleInstanceSet | undefined> {
+  if (input.moduleInstances) {
+    return input.moduleInstances;
+  }
+
+  const useKit =
+    input.fidelityMode === "kit" ||
+    (input.fidelityMode !== "proof" && (Boolean(input.facadePlan) || graphHasArtKitFacadePlan(input.graph)));
+
+  if (!useKit) {
+    return undefined;
+  }
+
+  const plan =
+    input.facadePlan ??
+    planFacadeModules({
+      spec: input.spec,
+      kit: late19cApartmentKit
+    });
+
+  return buildModuleInstanceSet({
+    spec: input.spec,
+    kit: late19cApartmentKit,
+    plan,
+    buildingId: input.buildingId
+  });
+}
+
 function createVerticalTrimInstancePlan(spec: BuildingFamilySpec, catalog: ComponentCatalog): InstancePlan {
   const recipe = recipeByRole(catalog, "verticalTrim");
   const transforms: number[] = [];
@@ -389,14 +507,17 @@ export async function compileBuilding(input: CompileBuildingInput): Promise<Runt
 
   const detailLevel = input.detailLevel ?? "high";
   const highDetail = detailLevel === "high";
+  const moduleInstances = await resolveModuleInstances(input);
   const meshPlans = [
     createWallMeshPlan(input.spec, input.catalog),
     ...(highDetail ? [createCorniceMeshPlan(input.spec, input.catalog)] : []),
     createRoofMeshPlan(input.spec, input.catalog)
   ];
+  const openingPlans = moduleInstances
+    ? createOpeningInstancePlansFromModuleInstances(moduleInstances, input.catalog)
+    : [createWindowInstancePlan(input.spec, input.catalog), createDoorInstancePlan(input.spec, input.catalog)];
   const instancePlans = [
-    createWindowInstancePlan(input.spec, input.catalog),
-    createDoorInstancePlan(input.spec, input.catalog),
+    ...openingPlans,
     ...(highDetail ? [createVerticalTrimInstancePlan(input.spec, input.catalog)] : [])
   ];
 

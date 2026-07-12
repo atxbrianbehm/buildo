@@ -252,6 +252,8 @@ npm.cmd run typecheck
 
 ### Slice 2: Snap Grid And Facade Module Planner
 
+Status: implemented on 2026-07-12. The art-kit layer now includes one-meter snap-grid helpers, facade cell planning, deterministic module placements for front/rear/side facades, placement diagnostics (including same-facade layer overlap), and a graph-builder handoff node. Compiler consumption of the plan is Phase A2 / M3–M4 in `docs/plans/kit-grammar-wfc-utdg-block.md`.
+
 Implementation plan: `docs/superpowers/plans/2026-06-25-art-kit-snap-grid-facade-planner.md`.
 
 Implement `moduleSnapGrid.ts` and `facadeModulePlanner.ts` so a building graph can place modules using:

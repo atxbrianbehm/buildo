@@ -3,6 +3,7 @@ import type { BuildingFamilySpec } from "../contracts/buildingFamilySpec";
 import type { Diagnostic } from "../core/diagnostics";
 import { hashCanonicalJson } from "../core/contentHash";
 import type { ComponentCatalog } from "../components/componentCatalogBuilder";
+import { late19cApartmentKit, planFacadeModules } from "../art-kit";
 
 function buildingPath(spec: BuildingFamilySpec, suffix: string): string {
   return `building/${spec.familyId}/${suffix}`;
@@ -28,6 +29,10 @@ function buildNodes(spec: BuildingFamilySpec, catalog: ComponentCatalog): Buildi
   const corniceRecipeId = recipeId(catalog, "cornice");
   const roofRecipeId = recipeId(catalog, "roof");
   const windowCount = spec.massing.floorCount * spec.facade.frontBayCount;
+  const facadeModulePlan = planFacadeModules({
+    spec,
+    kit: late19cApartmentKit
+  });
 
   return [
     node({
@@ -85,13 +90,40 @@ function buildNodes(spec: BuildingFamilySpec, catalog: ComponentCatalog): Buildi
       stage: "facade"
     }),
     node({
+      id: "node.art-kit-facade-plan",
+      type: "Group",
+      parameters: {
+        artKitManifestId: facadeModulePlan.artKitManifestId,
+        unitMeters: facadeModulePlan.unitMeters,
+        plannerId: facadeModulePlan.plannerId,
+        cellCount: facadeModulePlan.cells.length,
+        placementCount: facadeModulePlan.placements.length,
+        diagnostics: facadeModulePlan.diagnostics,
+        placements: facadeModulePlan.placements.map((placement) => ({
+          id: placement.id,
+          moduleId: placement.moduleId,
+          facade: placement.facade,
+          floorIndex: placement.floorIndex,
+          bayIndex: placement.bayIndex,
+          zone: placement.zone,
+          layer: placement.layer,
+          originMeters: placement.originMeters,
+          sizeMeters: placement.sizeMeters,
+          semanticPath: placement.semanticPath
+        }))
+      },
+      upstreamIds: ["node.bays"],
+      semanticPathTemplate: buildingPath(spec, "art-kit/facade-plan"),
+      stage: "facade"
+    }),
+    node({
       id: "node.wall-panels",
       type: "EmitWallPanel",
       parameters: {
         recipeId: wallPanelRecipeId,
         atlasSlotId: "wall.primary"
       },
-      upstreamIds: ["node.bays"],
+      upstreamIds: ["node.art-kit-facade-plan"],
       semanticPathTemplate: buildingPath(spec, "facade/{facade}/floor/{floor}/bay/{bay}/wall/panel"),
       stage: "facade"
     }),

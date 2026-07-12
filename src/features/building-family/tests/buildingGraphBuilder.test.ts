@@ -49,6 +49,7 @@ describe("buildBuildingGraph", () => {
       "ForEachFacade",
       "SplitFloors",
       "SplitBays",
+      "Group",
       "EmitWallPanel",
       "PlaceOpening",
       "InstanceComponent",
@@ -57,6 +58,27 @@ describe("buildBuildingGraph", () => {
       "EmitRoof",
       "OutputBuilding"
     ]);
+
+    const artKitNode = first.nodes.find((node) => node.id === "node.art-kit-facade-plan");
+    expect(artKitNode).toEqual(
+      expect.objectContaining({
+        type: "Group",
+        stage: "facade",
+        upstreamIds: ["node.bays"]
+      })
+    );
+    expect(artKitNode?.parameters.artKitManifestId).toBe("late-19c-apartment-kit");
+    expect(artKitNode?.parameters.placementCount).toBeGreaterThan(0);
+    expect(artKitNode?.parameters.diagnostics).toEqual([]);
+    expect(artKitNode?.parameters.placements).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          moduleId: "wall-panel.brick.body",
+          layer: "wall",
+          facade: "front"
+        })
+      ])
+    );
 
     for (const node of first.nodes) {
       expect(node.semanticPathTemplate).toContain("building/");

@@ -2,9 +2,9 @@
 
 ## Implementation plan
 
-**Status:** ready for phased execution  
+**Status:** in progress — Phase A through A2 opening consumption (M1–M4); next M5 diagnostics / M5b variant swap / B1 profiled trim  
 **Date:** 2026-07-12  
-**Depends on:** MVP vertical slice (Milestones 0–7) complete; art-fidelity Slice 1 (`ArtKitManifest` + `late19cApartmentKit`) complete  
+**Depends on:** MVP vertical slice (Milestones 0–7) complete; art-fidelity Slice 1 (`ArtKitManifest` + `late19cApartmentKit`) complete; visual-truth Assembly Hall prerequisite  
 **Related plans:**
 
 | Plan | Role |
@@ -16,6 +16,20 @@
 | `docs/superpowers/plans/2026-06-25-profiled-trim-cornice-geometry.md` | Detailed task plan for Phase B1 |
 
 **Delivery mode:** small, reviewable milestones. Do not combine phases or merge independent intermediate artifacts without explicit instruction. Preserve all `AGENTS.md` Dynamic Building Family rules.
+
+### Research alignment (2026-07-12)
+
+External research brief validated the architecture. Use it as guidance, not a rewrite:
+
+| Literature / practice | Buildo mapping | When |
+|---|---|---|
+| CGA shape grammars (Müller et al.) | `BuildingGraph` + facade planner + later WFC tiles — not a freeform CGA interpreter inside the mesh compiler | A1–A2, D |
+| Kit-of-parts / parametric profiles | Art-kit modules, sockets, snap grid, profiled trim expanders | A–B |
+| Facade parsing (FaçAID-class) | Intent/style suggestions only; never structural truth from images | After C–D |
+| SYNBUILD-3D / large synthetic sets | Validation and style-pack seeding, not a near-term dependency | C4+ research |
+| ML ornament / diffusion | Material and mask overlays only (existing remote material lane) | Optional, never structure |
+
+**Explicit non-starts until A2 (plan-driven placement) is green:** full CGA DSL, photo→mesh import, block generation, UTDG authoring UI.
 
 ---
 
@@ -82,6 +96,7 @@ Already landed and must remain stable:
 |---|---|---|
 | Graph is declarative scaffolding | Compiler re-derives placement from `BuildingFamilySpec` boxes | A2 |
 | Art kit not structural | Manifest exists; no planner, no compiler consumption | A1–A2 |
+| Weak component edit loop | Forge shows recipes but not click→style variants→recompile | A0 (thin), deeper after A2 |
 | Flat geometry | Cornice/openings/trim are orthographic boxes | B1–B2 |
 | Material scale soft | Roles exist; kit-level scale discipline incomplete | C1 |
 | No WFC | Placement is fixed/greedy only | D1–D2 |
@@ -204,6 +219,38 @@ WFC must implement the same interface and emit the same `FacadeModulePlan` schem
 ---
 
 ## 6. Phase A — Kit placement becomes structural truth
+
+### A0 — Thin selection-aware variant swap (product feel, parallel-safe)
+
+#### Intent
+
+Give an early “editable kit” loop **without** waiting for WFC or full planner-driven geometry:
+
+- Select a semantic element in Component Forge (or Assembly Hall selection where already available).
+- Show alternate `selectedFamilies` / recipe ids allowed by the active style pack for that role (window, door, cornice, trim).
+- Commit a swap → re-normalize/recompile for the current building seed with the existing invalidation matrix (prefer no material regen when only component family changes and the matrix allows).
+
+#### Constraints
+
+- Do **not** invent freeform mesh edits.
+- Do **not** block A1/A2; A0 may land after A1 if it would delay snap grid.
+- Prefer reusing existing lock + control surfaces over a new room.
+- Full click-any-module-id kit editing waits until A2 module instance ids are stable.
+
+#### Acceptance
+
+- [ ] User can change at least one component family (e.g. window) from the UI and see a recompiled IR / scene update  
+- [ ] Invalidation preview shows structural stages without forcing material regeneration when matrix says so  
+- [ ] Swap is seed-stable and recorded in run/provenance diagnostics  
+
+#### Validation
+
+```powershell
+npm.cmd run test -- ComponentForge buildingRunController invalidation
+npm.cmd run typecheck
+```
+
+---
 
 ### A1 — Snap grid + facade module planner
 
@@ -777,27 +824,28 @@ Do not start Phase F until items 1–7 pass for kit mode on a representative mac
 
 Execute in order. Each row is one reviewable PR-sized milestone unless noted.
 
-| ID | Milestone | Phase | Primary validation focus |
-|---|---|---|---|
-| M1 | Snap grid helpers | A1 | `moduleSnapGrid` |
-| M2 | Seeded-greedy facade planner + graph Group node | A1 | `facadeModulePlanner`, graph tests |
-| M3 | `ModuleInstanceSet` builder | A2 | pure instance builder tests |
-| M4 | Compiler consumes plan/instances; keep proof fallback | A2 | compiler + worker |
-| M5 | Plan diagnostics in trace/Assembly Hall | A3 | UI tests |
-| M6 | Profiled trim recipes + geometry | B1 | trim/quoin/compiler |
-| M7 | High-fidelity openings | B2 | opening geometry + forge |
-| M8 | Art-kit material set + scale | C1 | atlas + materials |
-| M9 | Fidelity mode proof/kit in run + export | C2 | persistence/export |
-| M10 | Art Kit Lab + gallery labels | C3 | UI + e2e |
-| M11 | Visual QA packet | C4 | QA schema + docs |
-| M12 | WFC constraint model + solver | D1 | pure WFC tests |
-| M13 | WFC planner wiring + invalidation | D2 | controller + invalidation |
-| M14 | UTDG contracts + demo graph | E1 | contract tests |
-| M15 | Trim sheet planner integration | E2 | atlas + trim sheet |
-| M16 | Parcel plan + block seeds | F1 | parcel tests |
-| M17 | Street segment assembly view | F2 | block UI + perf smoke |
+| ID | Milestone | Phase | Primary validation focus | Status |
+|---|---|---|---|---|
+| M1 | Snap grid helpers | A1 | `moduleSnapGrid` | done 2026-07-12 |
+| M2 | Seeded-greedy facade planner + graph Group node | A1 | `facadeModulePlanner`, graph tests | done 2026-07-12 |
+| M3 | `ModuleInstanceSet` builder | A2 | pure instance builder tests | done 2026-07-12 |
+| M4 | Compiler consumes plan/instances; keep proof fallback | A2 | compiler + worker | done 2026-07-12 (openings; walls/trim still hybrid) |
+| M5 | Plan diagnostics in trace/Assembly Hall | A3 | UI tests | pending |
+| M5b | Thin Forge/Assembly variant swap | A0 | ComponentForge + invalidation | pending (after M2; may slip after M4) |
+| M6 | Profiled trim recipes + geometry | B1 | trim/quoin/compiler | pending |
+| M7 | High-fidelity openings | B2 | opening geometry + forge | pending |
+| M8 | Art-kit material set + scale | C1 | atlas + materials | pending |
+| M9 | Fidelity mode proof/kit in run + export | C2 | persistence/export | pending |
+| M10 | Art Kit Lab + gallery labels | C3 | UI + e2e | pending |
+| M11 | Visual QA packet | C4 | QA schema + docs | pending |
+| M12 | WFC constraint model + solver | D1 | pure WFC tests | pending |
+| M13 | WFC planner wiring + invalidation | D2 | controller + invalidation | pending |
+| M14 | UTDG contracts + demo graph | E1 | contract tests | pending |
+| M15 | Trim sheet planner integration | E2 | atlas + trim sheet | pending |
+| M16 | Parcel plan + block seeds | F1 | parcel tests | pending |
+| M17 | Street segment assembly view | F2 | block UI + perf smoke | pending |
 
-**Next implementation action:** M1 from the detailed Slice 2 plan. Do not start M3 until M2 lands.
+**Execution order:** M1 → M2 → M3 → M4 → (M5 and/or M5b) → B…. Do not start M3 until M2 lands. Do not start M12+ until A2 and B openings/trim gates pass.
 
 ---
 
@@ -895,13 +943,13 @@ Always:
 Read AGENTS.md, docs/plans/kit-grammar-wfc-utdg-block.md, and
 docs/superpowers/plans/2026-06-25-art-kit-snap-grid-facade-planner.md.
 
-Execute Milestone M1 only (snap grid helpers from Slice 2 Task 1).
-Do not implement the facade planner, compiler consumption, WFC, or UTDG.
-Add tests first, implement, run the Slice 2 validation commands that apply,
-update the integration map if files land, and stop for review.
+Execute Phase A1 (M1 + M2): snap grid helpers, facade module planner,
+and graph Group handoff. Do not implement compiler plan consumption (M3/M4),
+WFC, UTDG, or block generation. Run Slice 2 validation commands, update the
+integration map and plan checkboxes, then stop for review before A2.
 ```
 
-Subsequent milestones use the same pattern: one ID from Section 13, no forward scope.
+Subsequent milestones use the same pattern: one ID range from Section 13, no forward scope into later phases.
 
 ---
 

@@ -88,7 +88,7 @@ export interface FacadeModulePlan {
 - Create: `src/features/building-family/tests/moduleSnapGrid.test.ts`
 - Modify: `src/features/building-family/art-kit/index.ts`
 
-- [ ] **Step 1: Write the failing grid rounding and alignment tests**
+- [x] **Step 1: Write the failing grid rounding and alignment tests**
 
 Add this test file:
 
