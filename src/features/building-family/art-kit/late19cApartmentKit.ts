@@ -229,6 +229,159 @@ export const late19cApartmentKit: ArtKitManifest = ArtKitManifestSchema.parse({
       tags: ["door", "storefront", "ground"]
     },
     {
+      id: "storefront.bulkhead.panel",
+      kind: "storefront",
+      boundsMeters: { width: 2.4, height: 0.85, depth: 0.28 },
+      pivot: "bottom-center-back",
+      facadeZones: ["ground"],
+      sockets: [
+        {
+          id: "bulkhead-left",
+          kind: "edge",
+          positionMeters: [0, 0.4, 0],
+          normal: [-1, 0, 0],
+          accepts: ["edge", "trim"]
+        },
+        {
+          id: "bulkhead-right",
+          kind: "edge",
+          positionMeters: [2.4, 0.4, 0],
+          normal: [1, 0, 0],
+          accepts: ["edge", "trim"]
+        },
+        {
+          id: "glazing-seat",
+          kind: "opening",
+          positionMeters: [1.2, 0.85, 0.04],
+          normal: [0, 1, 0],
+          accepts: ["opening"]
+        }
+      ],
+      materialRoles: {
+        panel: "painted-wood",
+        base: "trim-stone"
+      },
+      recipe: {
+        id: "storefront.bulkhead.panel",
+        kind: "panel"
+      },
+      lod: {
+        high: true
+      },
+      tags: ["storefront", "bulkhead", "ground", "panel"]
+    },
+    {
+      id: "storefront.glazing.bay",
+      kind: "opening",
+      boundsMeters: { width: 1.9, height: 2.55, depth: 0.38 },
+      pivot: "bottom-center-back",
+      facadeZones: ["ground"],
+      sockets: [
+        {
+          id: "opening-back",
+          kind: "opening",
+          positionMeters: [0, 0, 0],
+          normal: [0, 0, -1],
+          accepts: ["opening"]
+        },
+        {
+          id: "mullion-grid",
+          kind: "trim",
+          positionMeters: [0, 1.25, 0.08],
+          normal: [0, 0, 1],
+          accepts: ["trim"]
+        }
+      ],
+      materialRoles: {
+        frame: "painted-metal",
+        mullion: "painted-metal",
+        glass: "glass",
+        sill: "trim-stone"
+      },
+      recipe: {
+        id: "storefront.glazing.bay",
+        kind: "frame"
+      },
+      lod: {
+        high: true,
+        lowFallbackModuleId: "opening.window.rectangular"
+      },
+      tags: ["storefront", "glazing", "ground", "window"]
+    },
+    {
+      id: "storefront.door.recessed",
+      kind: "door",
+      boundsMeters: { width: 1.7, height: 2.7, depth: 0.55 },
+      pivot: "bottom-center-back",
+      facadeZones: ["ground"],
+      sockets: [
+        {
+          id: "door-opening",
+          kind: "opening",
+          positionMeters: [0, 0, 0],
+          normal: [0, 0, -1],
+          accepts: ["opening"]
+        },
+        {
+          id: "transom-trim",
+          kind: "trim",
+          positionMeters: [0, 2.7, 0.12],
+          normal: [0, 1, 0],
+          accepts: ["trim"]
+        }
+      ],
+      materialRoles: {
+        door: "painted-wood",
+        transom: "glass",
+        hardware: "painted-metal",
+        threshold: "trim-stone"
+      },
+      recipe: {
+        id: "storefront.door.recessed",
+        kind: "boxAssembly"
+      },
+      lod: {
+        high: true,
+        lowFallbackModuleId: "door.storefront.recessed"
+      },
+      tags: ["door", "storefront", "ground"]
+    },
+    {
+      id: "storefront.lintel.band",
+      kind: "storefront",
+      boundsMeters: { width: 2.4, height: 0.32, depth: 0.3 },
+      pivot: "bottom-center-back",
+      facadeZones: ["ground"],
+      sockets: [
+        {
+          id: "lintel-left",
+          kind: "edge",
+          positionMeters: [0, 0.16, 0],
+          normal: [-1, 0, 0],
+          accepts: ["edge", "trim"]
+        },
+        {
+          id: "lintel-right",
+          kind: "edge",
+          positionMeters: [2.4, 0.16, 0],
+          normal: [1, 0, 0],
+          accepts: ["edge", "trim"]
+        }
+      ],
+      materialRoles: {
+        lintel: "trim-stone",
+        fascia: "painted-metal"
+      },
+      recipe: {
+        id: "storefront.lintel.band",
+        kind: "profileSweep"
+      },
+      lod: {
+        high: true
+      },
+      tags: ["storefront", "lintel", "ground", "trim"]
+    },
+    {
       id: "trim.belt-course.stone",
       kind: "trim-run",
       boundsMeters: { width: 2, height: 0.24, depth: 0.18 },

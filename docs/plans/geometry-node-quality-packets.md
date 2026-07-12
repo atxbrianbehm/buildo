@@ -294,10 +294,10 @@ Planner places them only on `zone: ground` + `facade: front` (and optional side 
 
 #### Acceptance
 
-- [ ] Kit plan for default demo includes storefront modules on floor 0  
-- [ ] Split + compile consume those module ids  
-- [ ] Body floors still use residential/commercial window modules  
-- [ ] Art Kit Lab lists new modules  
+- [x] Kit plan for default demo includes storefront modules on floor 0  
+- [x] Split + compile consume those module ids  
+- [x] Body floors still use residential/commercial window modules  
+- [x] Art Kit Lab lists new modules  
 
 #### Validation
 
@@ -578,5 +578,6 @@ Start **G1** only:
 | 2026-07-12 | **G1 landed:** kit openings only from split; proof front-only split defaults; 1:1 assert in compiler. |
 | 2026-07-12 | **G2 landed:** `openingSlotBinding` locks frame scale + pocket AABB to split slots; oversize diagnostics. |
 | 2026-07-12 | **G3 landed:** ground front storefront vertical split (bulkhead/glazing/lintel); proud hierarchy from scopes. |
+| 2026-07-12 | **G4 landed:** storefront kit modules + planner ground grammar (bulkhead/glazing/door/lintel). |
 
-**Next packet to implement:** G4 — Storefront kit modules.
+**Next packet to implement:** G5 — Split observability.

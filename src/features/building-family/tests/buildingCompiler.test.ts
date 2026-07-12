@@ -232,7 +232,7 @@ describe("compileBuilding", () => {
       expect.objectContaining({
         semanticPath: expect.stringMatching(
           new RegExp(
-            `building/${spec.familyId}/facade/front/floor/0/bay/\\d+/opening/door\\.storefront\\.recessed`
+            `building/${spec.familyId}/facade/front/floor/0/bay/\\d+/opening/storefront\\.door\\.recessed`
           )
         ),
         batchId: "instances.door",

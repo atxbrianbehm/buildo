@@ -31,6 +31,10 @@ describe("art kit contracts", () => {
         "opening.window.rectangular",
         "opening.window.arched",
         "door.storefront.recessed",
+        "storefront.bulkhead.panel",
+        "storefront.glazing.bay",
+        "storefront.door.recessed",
+        "storefront.lintel.band",
         "trim.cornice.bracketed",
         "corner.quoin.stone"
       ])

@@ -110,7 +110,25 @@ describe("facade module planner", () => {
       expect.arrayContaining([
         expect.objectContaining({ moduleId: "wall-panel.brick.body", facade: "front", layer: "wall" }),
         expect.objectContaining({
-          moduleId: "door.storefront.recessed",
+          moduleId: "storefront.door.recessed",
+          facade: "front",
+          floorIndex: 0,
+          layer: "opening"
+        }),
+        expect.objectContaining({
+          moduleId: "storefront.bulkhead.panel",
+          facade: "front",
+          floorIndex: 0,
+          layer: "trim"
+        }),
+        expect.objectContaining({
+          moduleId: "storefront.lintel.band",
+          facade: "front",
+          floorIndex: 0,
+          layer: "trim"
+        }),
+        expect.objectContaining({
+          moduleId: "storefront.glazing.bay",
           facade: "front",
           floorIndex: 0,
           layer: "opening"

@@ -56,7 +56,7 @@ describe("buildModuleInstanceSet", () => {
     expect(first.instances.length).toBe(plan.placements.length);
     expect(first.sourcePlanHash.length).toBeGreaterThan(8);
     expect(first.instances.some((instance) => instance.layer === "opening")).toBe(true);
-    expect(first.instances.some((instance) => instance.moduleId === "door.storefront.recessed")).toBe(true);
+    expect(first.instances.some((instance) => instance.moduleId === "storefront.door.recessed")).toBe(true);
     expect(first.instances.every((instance) => instance.transform.length === 16)).toBe(true);
   });
 
