@@ -2,10 +2,11 @@
 
 ## Implementation plan
 
-**Status:** in progress — M1–M11 landed (Phase C complete); next M12 WFC facade solver  
+**Status:** in progress — M1–M11 landed (Phase C complete); **geometry quality track G1–G8 runs before WFC** (see below)  
 **Date:** 2026-07-12  
 **Depends on:** MVP vertical slice (Milestones 0–7) complete; art-fidelity Slice 1 (`ArtKitManifest` + `late19cApartmentKit`) complete; visual-truth Assembly Hall prerequisite  
 **UTDG note:** UTDG is **not** a live subsystem. A prepared research brief lives at `docs/research/utdg-late19c-brief.md` + `docs/research/utdg-late19c-v0.1.json` and can be validated via `injectTextureDescriptionBrief()` in `src/features/building-family/utdg/`. Material consumers (Phase E2) inject that brief; they do not invent structure.  
+**Geometry quality track:** `docs/plans/geometry-node-quality-packets.md` (G1–G8). Do **not** start M12 WFC until G8 clay gate exits unless product explicitly trades form for layout.  
 **Related plans:**
 
 | Plan | Role |
@@ -20,6 +21,8 @@
 | `docs/superpowers/plans/2026-07-12-art-fidelity-mode.md` | Detailed task plan for Phase C2 / M9 |
 | `docs/superpowers/plans/2026-07-12-art-kit-lab-gallery.md` | Detailed task plan for Phase C3 / M10 |
 | `docs/superpowers/plans/2026-07-12-visual-qa-packet.md` | Detailed task plan for Phase C4 / M11 |
+| `docs/plans/geometry-node-quality-packets.md` | Multi-packet geometry-node quality track (G1–G8) before WFC |
+| `docs/research/geometry-nodes-building-adaptation.md` | GN/CGA research mapping |
 
 **Delivery mode:** small, reviewable milestones. Do not combine phases or merge independent intermediate artifacts without explicit instruction. Preserve all `AGENTS.md` Dynamic Building Family rules.
 

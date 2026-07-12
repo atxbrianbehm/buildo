@@ -2,6 +2,7 @@
 
 **Status:** research guidance for geometry quality (not a product plan rewrite)  
 **Date:** 2026-07-12  
+**Implementation plan:** `docs/plans/geometry-node-quality-packets.md` (packets G1–G8)  
 **Sources:** Blender Geometry Nodes building generators (Kammerbild, Buildify-style module assembly, face-driven facade grids); CGA shape (Müller et al. 2006) mass → facade → detail hierarchy.
 
 ## What the tutorials/literature actually do
