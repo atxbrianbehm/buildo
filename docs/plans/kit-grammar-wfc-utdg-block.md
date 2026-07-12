@@ -5,6 +5,7 @@
 **Status:** in progress — M1–M11 landed (Phase C complete); next M12 WFC facade solver  
 **Date:** 2026-07-12  
 **Depends on:** MVP vertical slice (Milestones 0–7) complete; art-fidelity Slice 1 (`ArtKitManifest` + `late19cApartmentKit`) complete; visual-truth Assembly Hall prerequisite  
+**UTDG note:** UTDG is **not** a live subsystem. A prepared research brief lives at `docs/research/utdg-late19c-brief.md` + `docs/research/utdg-late19c-v0.1.json` and can be validated via `injectTextureDescriptionBrief()` in `src/features/building-family/utdg/`. Material consumers (Phase E2) inject that brief; they do not invent structure.  
 **Related plans:**
 
 | Plan | Role |
@@ -105,7 +106,7 @@ Already landed and must remain stable:
 | Flat geometry | Cornice/openings/trim are orthographic boxes | B1–B2 |
 | Material scale soft | Roles exist; kit-level scale discipline incomplete | C1 |
 | No WFC | Placement is fixed/greedy only | D1–D2 |
-| No UTDG | No historical texture-description graph or trim-sheet compiler | E1–E2 |
+| No UTDG consumer | Research brief exists; materials do not yet inject it | E1–E2 |
 | No block grammar | Family stress view only, not parcel composition | F1–F2 |
 
 ---
@@ -665,59 +666,47 @@ WFC is a drop-in planner producing the same `FacadeModulePlan` consumed by A2. N
 
 ---
 
-## 10. Phase E — UTDG and dynamic trim sheets
+## 10. Phase E — UTDG research brief injection + trim sheets
+
+**Current state (2026-07-12):** UTDG does **not** exist as a meaningful runtime system. What exists is a **prepared research brief** that is injected (validated + content-hashed) and later consumed by materials:
+
+| Artifact | Path |
+|---|---|
+| Research brief (prose) | `docs/research/utdg-late19c-brief.md` |
+| Injectable seed graph | `docs/research/utdg-late19c-v0.1.json` |
+| Pure inject/parse contract | `src/features/building-family/utdg/textureDescriptionContracts.ts` |
+
+Do not schedule greenfield UTDG architecture work that ignores these files. Extend the brief, re-validate, then wire consumers.
 
 ### E1 — Texture description contracts + historical tags
 
 #### Intent
 
-Introduce a minimal Universal Texture Description Graph **consumer contract** (not a full authoring product):
+Ship / harden a minimal Universal Texture Description Graph **consumer contract** for research-brief injection (not a full authoring product). Style packs and art-kit material roles may reference node ids. Structure remains forbidden output.
 
-```ts
-export interface TextureDescriptionNode {
-  id: string;
-  role: string; // e.g. masonry.brick.running, stone.trim.cast
-  channels: Array<"baseColor" | "normal" | "orm" | "height" | "opacity" | "mask">;
-  metersPerTile: number;
-  historicalTags: string[]; // period, region, material family
-  generationHints: {
-    proceduralSource?: string;
-    remotePromptFragment?: string;
-    weathering?: string;
-  };
-}
-
-export interface TextureDescriptionGraph {
-  schemaVersion: "0.1.0";
-  id: string;
-  nodes: TextureDescriptionNode[];
-  edges: Array<{ from: string; to: string; relation: "pairs-with" | "weathers-to" | "trims" | "overlays" }>;
-}
-```
-
-Style packs and art-kit material roles reference node ids. Structure remains forbidden output.
-
-#### Files (proposed)
+#### Files
 
 | Action | Path |
 |---|---|
-| Create | `src/features/building-family/utdg/textureDescriptionContracts.ts` |
-| Create | `src/features/building-family/utdg/late19cTextureGraph.ts` (demo draft) |
-| Create | tests for validation, pairing rules, scale positivity |
+| Research | `docs/research/utdg-late19c-brief.md` |
+| Research seed | `docs/research/utdg-late19c-v0.1.json` |
+| Create / maintain | `src/features/building-family/utdg/textureDescriptionContracts.ts` |
+| Create / maintain | `src/features/building-family/tests/utdgResearchBrief.test.ts` |
 
 #### Acceptance
 
-- [ ] Demo graph validates  
-- [ ] Invalid pairs / missing scales diagnose  
-- [ ] No geometry imports  
+- [x] Prepared late-19c research JSON validates via `injectTextureDescriptionBrief`  
+- [x] Invalid edges / non-positive scale diagnose  
+- [x] No geometry / React / Three imports in `utdg/`  
+- [ ] Run diagnostics can record injected brief id + content hash when a material consumer opts in  
 
 ---
 
-### E2 — Trim sheet planner / packer
+### E2 — Trim sheet planner / packer (consumer of the brief)
 
 #### Intent
 
-From selected modules + UTDG roles, emit a `TrimSheetPlan` that drives atlas packing for:
+From selected modules + **injected** UTDG brief roles, emit a `TrimSheetPlan` that drives atlas packing for:
 
 - wall field tiles  
 - frame / sill / lintel  
@@ -729,21 +718,22 @@ Remote overlays remain composited on procedural height authority (existing Miles
 
 #### Acceptance
 
-- [ ] Trim sheet plan is deterministic for fixed module instance set + material seed  
+- [ ] Trim sheet plan is deterministic for fixed module instance set + material seed + brief hash  
 - [ ] Structural IR hash unchanged when only UTDG weathering changes (if structure bindings unchanged)  
 - [ ] Atlas Lab can show trim-sheet slots  
 
 #### Validation
 
 ```powershell
-npm.cmd run test -- textureDescriptionContracts trimSheetPlanner atlasPlanner atlasPacker
+npm.cmd run test -- utdgResearchBrief trimSheetPlanner atlasPlanner atlasPacker
 npm.cmd run typecheck
 ```
 
 #### Non-goals for Phase E
 
+- Treating UTDG as an always-on subsystem before a material consumer exists  
 - Full historical research database  
-- Claiming academic authority (keep `demo` / `draft` labels)  
+- Claiming academic authority (keep `research-draft` labels)  
 - Using UTDG to invent floors, bays, or openings  
 
 ---
@@ -845,7 +835,7 @@ Execute in order. Each row is one reviewable PR-sized milestone unless noted.
 | M11 | Visual QA packet | C4 | QA schema + docs | done 2026-07-12 |
 | M12 | WFC constraint model + solver | D1 | pure WFC tests | pending |
 | M13 | WFC planner wiring + invalidation | D2 | controller + invalidation | pending |
-| M14 | UTDG contracts + demo graph | E1 | contract tests | pending |
+| M14 | UTDG research-brief inject contracts (seed JSON) | E1 | `utdgResearchBrief` | partial 2026-07-12 (brief + inject; no material consumer) |
 | M15 | Trim sheet planner integration | E2 | atlas + trim sheet | pending |
 | M16 | Parcel plan + block seeds | F1 | parcel tests | pending |
 | M17 | Street segment assembly view | F2 | block UI + perf smoke | pending |
