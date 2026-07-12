@@ -762,7 +762,17 @@ export function App() {
           role="tabpanel"
         >
           {fixture ? (
-            <SampleBuildingGallery fixture={fixture} />
+            <SampleBuildingGallery
+              fixture={fixture}
+              onOpenInAssemblyHall={({ buildingSeed }) => {
+                const nextPrompt = promptWithPatch(promptControls, {
+                  seeds: { building: buildingSeed }
+                });
+                updatePromptControls({ seeds: { building: buildingSeed } });
+                selectRoutedRoom("assemblyHall");
+                startRun(nextPrompt);
+              }}
+            />
           ) : (
             <div className="room-panel__loading" role={runState.error ? "alert" : "status"}>
               {runState.error ?? "Preparing sample buildings"}

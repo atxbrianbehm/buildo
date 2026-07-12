@@ -1,13 +1,17 @@
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
+import { vi } from "vitest";
 import { createAssemblyHallFixture } from "../ui/assemblyHallFixture";
 import { SampleBuildingGallery } from "../ui/SampleBuildingGallery";
 
 describe("SampleBuildingGallery", () => {
   it("renders generated family variants as inspectable HTML sample cards", async () => {
     const fixture = await createAssemblyHallFixture();
+    const onOpenInAssemblyHall = vi.fn();
 
     try {
-      render(<SampleBuildingGallery fixture={fixture} />);
+      render(
+        <SampleBuildingGallery fixture={fixture} onOpenInAssemblyHall={onOpenInAssemblyHall} />
+      );
 
       expect(screen.getByRole("heading", { name: "Sample Buildings" })).toBeInTheDocument();
       expect(screen.getByLabelText("Generated sample building gallery")).toBeInTheDocument();
@@ -30,10 +34,11 @@ describe("SampleBuildingGallery", () => {
 
       const eighthSample = screen.getByLabelText("Generated building sample 8");
       expect(eighthSample).toHaveTextContent("building-seed-variant-07");
-      expect(within(eighthSample).getByRole("link", { name: "Open in Assembly Hall" })).toHaveAttribute(
-        "href",
-        "#room=assemblyHall"
-      );
+      fireEvent.click(within(eighthSample).getByRole("button", { name: "Open in Assembly Hall" }));
+      expect(onOpenInAssemblyHall).toHaveBeenCalledWith({
+        buildingSeed: "building-seed-variant-07",
+        sampleNumber: 8
+      });
     } finally {
       fixture.familyRuntime.dispose();
     }

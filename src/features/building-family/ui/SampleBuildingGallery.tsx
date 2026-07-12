@@ -7,6 +7,11 @@ import type {
 export interface SampleBuildingGalleryProps {
   fixture: AssemblyHallFixture;
   sampleCount?: number;
+  /**
+   * Open a sample in Assembly Hall by regenerating with that sample's building seed.
+   * When omitted, links only switch rooms and keep the active fixture seed.
+   */
+  onOpenInAssemblyHall?: (input: { buildingSeed: string; sampleNumber: number }) => void;
 }
 
 interface SampleBuildingCard {
@@ -136,7 +141,11 @@ function BuildingFacadePreview({
   );
 }
 
-export function SampleBuildingGallery({ fixture, sampleCount = 8 }: SampleBuildingGalleryProps) {
+export function SampleBuildingGallery({
+  fixture,
+  sampleCount = 8,
+  onOpenInAssemblyHall
+}: SampleBuildingGalleryProps) {
   const samples = sampleCardsForFixture(fixture, sampleCount);
   const baseColorChannel = fixture.debugExport.channels.find((channel) => channel.name === "baseColor");
   const floorLabel = `${fixture.spec.massing.floorCount} floors`;
@@ -233,9 +242,27 @@ export function SampleBuildingGallery({ fixture, sampleCount = 8 }: SampleBuildi
                   <dd>{shortHash(fixture.packedAtlas.contentHash)}</dd>
                 </div>
               </dl>
-              <a className="sample-gallery__link" href="#room=assemblyHall">
-                Open in Assembly Hall
-              </a>
+              {onOpenInAssemblyHall ? (
+                <button
+                  type="button"
+                  className="sample-gallery__link"
+                  onClick={() =>
+                    onOpenInAssemblyHall({
+                      buildingSeed: sample.variant.buildingSeed,
+                      sampleNumber: sample.sampleNumber
+                    })
+                  }
+                >
+                  Open in Assembly Hall
+                </button>
+              ) : (
+                <a
+                  className="sample-gallery__link"
+                  href={`#room=assemblyHall&buildingSeed=${encodeURIComponent(sample.variant.buildingSeed)}`}
+                >
+                  Open in Assembly Hall
+                </a>
+              )}
             </div>
           </article>
         ))}

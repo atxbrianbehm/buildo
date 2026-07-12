@@ -1632,16 +1632,25 @@ h1 {
 
 .sample-gallery__link {
   display: inline-flex;
+  width: 100%;
   min-height: 38px;
   align-items: center;
   justify-content: center;
+  margin: 0;
   padding: 9px 12px;
+  border: 0;
   border-radius: 6px;
   color: #f9fbf6;
   background: #263c31;
+  font: inherit;
   font-size: 0.84rem;
   font-weight: 800;
   text-decoration: none;
+  cursor: pointer;
+}
+
+.sample-gallery__link:hover {
+  background: #1f3229;
 }
 
 .sample-gallery__link:focus-visible {
