@@ -163,8 +163,9 @@ describe("AssemblyHall", () => {
     const canvas = await within(viewport).findByTestId("assembly-renderer-canvas");
     expect(canvas).toBeInTheDocument();
     expect(canvas).toHaveAttribute("data-orbit-controls", "true");
-    expect(screen.getByRole("button", { name: "Reset camera" })).toBeInTheDocument();
-    expect(screen.getByText(/Drag to orbit/i)).toBeInTheDocument();
+    expect(canvas).toHaveAttribute("data-light-orbit", "true");
+    expect(screen.getByRole("button", { name: "Reset view" })).toBeInTheDocument();
+    expect(screen.getByText(/Shift-drag light/i)).toBeInTheDocument();
     expect(screen.getByText(fixture.prompt)).toBeInTheDocument();
     expect(screen.getByLabelText("Assembly Hall renderer metrics")).toHaveTextContent(
       String(fixture.metrics.drawCallCount)

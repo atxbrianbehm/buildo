@@ -13,6 +13,7 @@ import {
   PlaneGeometry,
   RGBAFormat,
   Scene,
+  Spherical,
   SRGBColorSpace,
   UnsignedByteType,
   Vector3,
@@ -85,8 +86,12 @@ interface PreparedAssemblyScene {
   scene: Scene;
   camera: PerspectiveCamera;
   clayMaterial: MeshStandardMaterial;
+  keyLight: DirectionalLight;
+  fillLight: DirectionalLight;
   orbitTarget: Vector3;
   defaultCameraPosition: Vector3;
+  defaultKeyLightOffset: Vector3;
+  defaultFillLightOffset: Vector3;
   maxDimension: number;
   dispose(): void;
 }
@@ -362,24 +367,44 @@ function prepareScene(root: Object3D): PreparedAssemblyScene {
   scene.add(new AmbientLight("#f4f0e4", 0.38));
   scene.add(new HemisphereLight("#f5f7f2", "#5f695f", 1.45));
 
+  const { center, size, maxDimension } = sceneBounds(root);
+  const orbitTarget = new Vector3(center.x, center.y + size.y * 0.1, center.z);
+  const lightRadius = Math.max(18, maxDimension * 1.35);
+  const defaultKeyLightOffset = new Vector3(
+    lightRadius * 0.55,
+    lightRadius * 0.85,
+    lightRadius * 0.65
+  );
+  const defaultFillLightOffset = new Vector3(
+    -lightRadius * 0.65,
+    lightRadius * 0.45,
+    -lightRadius * 0.35
+  );
+
   const keyLight = new DirectionalLight("#fff3d6", 4.2);
-  keyLight.position.set(12, 18, 14);
+  keyLight.name = "assembly-hall.key-light";
+  keyLight.position.copy(orbitTarget).add(defaultKeyLightOffset);
+  keyLight.target.position.copy(orbitTarget);
   keyLight.castShadow = true;
   keyLight.shadow.mapSize.set(2048, 2048);
-  keyLight.shadow.camera.left = -32;
-  keyLight.shadow.camera.right = 32;
-  keyLight.shadow.camera.top = 32;
-  keyLight.shadow.camera.bottom = -32;
+  const shadowExtent = Math.max(24, maxDimension * 1.6);
+  keyLight.shadow.camera.left = -shadowExtent;
+  keyLight.shadow.camera.right = shadowExtent;
+  keyLight.shadow.camera.top = shadowExtent;
+  keyLight.shadow.camera.bottom = -shadowExtent;
   keyLight.shadow.camera.near = 0.5;
-  keyLight.shadow.camera.far = 90;
+  keyLight.shadow.camera.far = Math.max(90, maxDimension * 6);
   keyLight.shadow.bias = -0.00015;
   scene.add(keyLight);
+  scene.add(keyLight.target);
 
   const fillLight = new DirectionalLight("#cde4f0", 0.72);
-  fillLight.position.set(-14, 10, -8);
+  fillLight.name = "assembly-hall.fill-light";
+  fillLight.position.copy(orbitTarget).add(defaultFillLightOffset);
+  fillLight.target.position.copy(orbitTarget);
   scene.add(fillLight);
+  scene.add(fillLight.target);
 
-  const { center, size, maxDimension } = sceneBounds(root);
   root.traverse((object) => {
     const renderable = object as Mesh;
     if (!renderable.isMesh) {
@@ -429,7 +454,6 @@ function prepareScene(root: Object3D): PreparedAssemblyScene {
   });
   clayMaterial.name = "assembly-hall.clay-inspection";
   let disposed = false;
-  const orbitTarget = new Vector3(center.x, center.y + size.y * 0.1, center.z);
   const defaultCameraPosition = new Vector3(
     center.x + maxDimension * 0.85,
     center.y + size.y * 0.45,
@@ -443,8 +467,12 @@ function prepareScene(root: Object3D): PreparedAssemblyScene {
     scene,
     camera,
     clayMaterial,
+    keyLight,
+    fillLight,
     orbitTarget,
     defaultCameraPosition,
+    defaultKeyLightOffset: defaultKeyLightOffset.clone(),
+    defaultFillLightOffset: defaultFillLightOffset.clone(),
     maxDimension,
     dispose: () => {
       if (disposed) {
@@ -777,6 +805,11 @@ export function AssemblyHall({
     let needsRender = true;
     let pointerActive = false;
     let loopScheduled = false;
+    let lightDragging = false;
+    let lightDragLastX = 0;
+    let lightDragLastY = 0;
+    const lightSpherical = new Spherical();
+    const lightOffset = new Vector3();
 
     const renderFrame = () => {
       if (!renderer || !scene || !camera) {
@@ -791,6 +824,7 @@ export function AssemblyHall({
       renderer.render(scene, camera);
       renderer.domElement.dataset.rendered = "true";
       renderer.domElement.dataset.orbitControls = "true";
+      renderer.domElement.dataset.lightOrbit = "true";
       renderer.domElement.dataset.revealThroughStage = revealThroughStageRef.current;
       renderer.domElement.dataset.presentationMode = presentationModeRef.current;
     };
@@ -814,7 +848,7 @@ export function AssemblyHall({
           needsRender = false;
           renderFrame();
         }
-        if (pointerActive || dampingMoved) {
+        if (pointerActive || lightDragging || dampingMoved) {
           scheduleFrame();
         }
       });
@@ -825,6 +859,20 @@ export function AssemblyHall({
       scheduleFrame();
     };
 
+    const applyKeyLightSpherical = (prepared: PreparedAssemblyScene) => {
+      lightOffset.setFromSpherical(lightSpherical);
+      prepared.keyLight.position.copy(prepared.orbitTarget).add(lightOffset);
+      prepared.keyLight.target.position.copy(prepared.orbitTarget);
+      prepared.keyLight.target.updateMatrixWorld();
+      // Keep fill roughly opposite so clay form stays readable.
+      prepared.fillLight.position
+        .copy(prepared.orbitTarget)
+        .addScaledVector(lightOffset, -0.55)
+        .setY(prepared.orbitTarget.y + Math.abs(lightOffset.y) * 0.45);
+      prepared.fillLight.target.position.copy(prepared.orbitTarget);
+      prepared.fillLight.target.updateMatrixWorld();
+    };
+
     const resetCamera = () => {
       if (!camera || !preparedScene || !orbitControls) {
         return;
@@ -832,9 +880,69 @@ export function AssemblyHall({
       camera.position.copy(preparedScene.defaultCameraPosition);
       orbitControls.target.copy(preparedScene.orbitTarget);
       orbitControls.update();
+      preparedScene.keyLight.position.copy(preparedScene.orbitTarget).add(preparedScene.defaultKeyLightOffset);
+      preparedScene.fillLight.position.copy(preparedScene.orbitTarget).add(preparedScene.defaultFillLightOffset);
+      preparedScene.keyLight.target.position.copy(preparedScene.orbitTarget);
+      preparedScene.fillLight.target.position.copy(preparedScene.orbitTarget);
+      preparedScene.keyLight.target.updateMatrixWorld();
+      preparedScene.fillLight.target.updateMatrixWorld();
+      lightOffset.copy(preparedScene.defaultKeyLightOffset);
+      lightSpherical.setFromVector3(lightOffset);
       requestRender();
     };
     resetCameraRef.current = resetCamera;
+
+    const onLightPointerDown = (event: PointerEvent) => {
+      if (!preparedScene || !orbitControls || event.button !== 0 || !event.shiftKey) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      lightDragging = true;
+      lightDragLastX = event.clientX;
+      lightDragLastY = event.clientY;
+      lightOffset.copy(preparedScene.keyLight.position).sub(preparedScene.orbitTarget);
+      lightSpherical.setFromVector3(lightOffset);
+      orbitControls.enabled = false;
+      pointerActive = true;
+      (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+      scheduleFrame();
+    };
+
+    const onLightPointerMove = (event: PointerEvent) => {
+      if (!lightDragging || !preparedScene) {
+        return;
+      }
+      event.preventDefault();
+      const dx = event.clientX - lightDragLastX;
+      const dy = event.clientY - lightDragLastY;
+      lightDragLastX = event.clientX;
+      lightDragLastY = event.clientY;
+      lightSpherical.theta -= dx * 0.01;
+      lightSpherical.phi = Math.min(
+        Math.PI * 0.48,
+        Math.max(0.12, lightSpherical.phi + dy * 0.01)
+      );
+      applyKeyLightSpherical(preparedScene);
+      requestRender();
+    };
+
+    const endLightDrag = (event: PointerEvent) => {
+      if (!lightDragging) {
+        return;
+      }
+      lightDragging = false;
+      pointerActive = false;
+      if (orbitControls) {
+        orbitControls.enabled = true;
+      }
+      try {
+        (event.currentTarget as HTMLElement).releasePointerCapture(event.pointerId);
+      } catch {
+        // Capture may already be released.
+      }
+      scheduleFrame();
+    };
 
     const activateRenderer = async () => {
       try {
@@ -845,6 +953,8 @@ export function AssemblyHall({
         sceneRef.current = prepared.scene;
         clayMaterialRef.current = prepared.clayMaterial;
         applyPresentationMode(fixture, prepared.clayMaterial, presentationModeRef.current);
+        lightOffset.copy(prepared.defaultKeyLightOffset);
+        lightSpherical.setFromVector3(lightOffset);
         const activation = await rendererFactory({ backendSupport: fixture.backendSupport });
         if (cancelled) {
           prepared.scene.remove(fixture.familyRuntime.root);
@@ -874,10 +984,16 @@ export function AssemblyHall({
         controls.maxPolarAngle = Math.PI * 0.495;
         controls.target.copy(prepared.orbitTarget);
         controls.addEventListener("start", () => {
+          if (lightDragging) {
+            return;
+          }
           pointerActive = true;
           scheduleFrame();
         });
         controls.addEventListener("end", () => {
+          if (lightDragging) {
+            return;
+          }
           pointerActive = false;
           scheduleFrame();
         });
@@ -886,6 +1002,12 @@ export function AssemblyHall({
         });
         controls.update();
         orbitControls = controls;
+
+        renderer.domElement.addEventListener("pointerdown", onLightPointerDown);
+        renderer.domElement.addEventListener("pointermove", onLightPointerMove);
+        renderer.domElement.addEventListener("pointerup", endLightDrag);
+        renderer.domElement.addEventListener("pointercancel", endLightDrag);
+
         // Paint once immediately so first frame does not wait on rAF (tests + first paint).
         needsRender = false;
         renderFrame();
@@ -912,6 +1034,12 @@ export function AssemblyHall({
       cancelAnimationFrame(animationFrame);
       loopScheduled = false;
       resizeObserver?.disconnect();
+      if (renderer?.domElement) {
+        renderer.domElement.removeEventListener("pointerdown", onLightPointerDown);
+        renderer.domElement.removeEventListener("pointermove", onLightPointerMove);
+        renderer.domElement.removeEventListener("pointerup", endLightDrag);
+        renderer.domElement.removeEventListener("pointercancel", endLightDrag);
+      }
       orbitControls?.dispose();
       orbitControls = null;
       resetCameraRef.current = null;
@@ -949,13 +1077,15 @@ export function AssemblyHall({
           aria-roledescription="3D building viewer"
         >
           <div className="assembly-hall__viewport-chrome">
-            <p className="assembly-hall__viewport-hint">Drag to orbit · scroll to zoom · right-drag to pan</p>
+            <p className="assembly-hall__viewport-hint">
+              Drag to orbit · Shift-drag light · scroll zoom · right-drag pan
+            </p>
             <button
               type="button"
               className="assembly-hall__reset-camera"
               onClick={() => resetCameraRef.current?.()}
             >
-              Reset camera
+              Reset view
             </button>
           </div>
           {renderError ? (
