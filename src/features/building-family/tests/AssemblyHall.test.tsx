@@ -176,6 +176,48 @@ describe("AssemblyHall", () => {
     );
   });
 
+  it("switches the live renderer between textured and clay inspection modes", async () => {
+    const fixture = await createAssemblyHallFixture();
+    const renderFrame = vi.fn();
+    const rendererFactory = async (): Promise<AssemblyRendererActivation> => {
+      const canvas = document.createElement("canvas");
+      canvas.setAttribute("data-testid", "assembly-renderer-canvas");
+      return {
+        activeBackend: "webgl",
+        renderer: {
+          domElement: canvas,
+          dispose: vi.fn(),
+          render: renderFrame,
+          setPixelRatio: vi.fn(),
+          setSize: vi.fn()
+        }
+      };
+    };
+
+    render(<AssemblyHall fixture={fixture} rendererFactory={rendererFactory} />);
+
+    const viewport = screen.getByRole("img", { name: "Rendered generated building fixture" });
+    const canvas = await within(viewport).findByTestId("assembly-renderer-canvas");
+    const presentation = screen.getByRole("combobox", { name: "Presentation mode" });
+    expect(presentation).toHaveValue("textured");
+    expect(canvas).toHaveAttribute("data-presentation-mode", "textured");
+    expect(fixture.buildingRuntime.renderables[0].material.name).toContain("building-atlas.");
+
+    fireEvent.change(presentation, { target: { value: "clay" } });
+
+    await waitFor(() => {
+      expect(canvas).toHaveAttribute("data-presentation-mode", "clay");
+      expect(fixture.buildingRuntime.renderables[0].material.name).toBe("assembly-hall.clay-inspection");
+    });
+
+    fireEvent.change(presentation, { target: { value: "textured" } });
+
+    await waitFor(() => {
+      expect(canvas).toHaveAttribute("data-presentation-mode", "textured");
+      expect(fixture.buildingRuntime.renderables[0].material.name).toContain("building-atlas.");
+    });
+  });
+
   it("exposes the sixteen-variant shared-family stress summary", async () => {
     const fixture = await createAssemblyHallFixture();
 

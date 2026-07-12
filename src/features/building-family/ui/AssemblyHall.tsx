@@ -3,9 +3,18 @@ import {
   AmbientLight,
   Box3,
   Color,
+  DataTexture,
   DirectionalLight,
+  HemisphereLight,
+  Mesh,
+  MeshStandardMaterial,
+  NoColorSpace,
   PerspectiveCamera,
+  PlaneGeometry,
+  RGBAFormat,
   Scene,
+  SRGBColorSpace,
+  UnsignedByteType,
   Vector3,
   type Object3D
 } from "three";
@@ -66,6 +75,15 @@ interface StageRevealSummary {
   visible: boolean;
   objectCount: number;
   semanticPathCount: number;
+}
+
+export type AssemblyPresentationMode = "textured" | "clay";
+
+interface PreparedAssemblyScene {
+  scene: Scene;
+  camera: PerspectiveCamera;
+  clayMaterial: MeshStandardMaterial;
+  dispose(): void;
 }
 
 type BenchmarkStatus = "idle" | "running" | "complete" | "failed";
@@ -304,25 +322,125 @@ function sceneBounds(root: Object3D): { center: Vector3; size: Vector3; maxDimen
   };
 }
 
-function prepareScene(root: Object3D): { scene: Scene; camera: PerspectiveCamera } {
-  const scene = new Scene();
-  scene.background = new Color("#edf0e8");
-  scene.add(new AmbientLight("#f4f0e4", 1.9));
+function applyPresentationMode(
+  fixture: AssemblyHallFixture,
+  clayMaterial: MeshStandardMaterial,
+  presentationMode: AssemblyPresentationMode
+): void {
+  for (const renderable of fixture.buildingRuntime.renderables) {
+    renderable.material =
+      presentationMode === "clay"
+        ? clayMaterial
+        : fixture.buildingRuntime.materialRegistry.getMaterial(renderable.userData.materialSlotId);
+  }
+}
 
-  const keyLight = new DirectionalLight("#fff4dd", 3);
+function createSolidPresentationTexture(
+  name: string,
+  rgba: [number, number, number, number],
+  colorSpace: typeof SRGBColorSpace | typeof NoColorSpace
+): DataTexture {
+  const texture = new DataTexture(new Uint8Array(rgba), 1, 1, RGBAFormat, UnsignedByteType);
+  texture.name = name;
+  texture.colorSpace = colorSpace;
+  texture.needsUpdate = true;
+  return texture;
+}
+
+function prepareScene(root: Object3D): PreparedAssemblyScene {
+  const scene = new Scene();
+  scene.background = new Color("#dfe5df");
+  scene.add(new AmbientLight("#f4f0e4", 0.38));
+  scene.add(new HemisphereLight("#f5f7f2", "#5f695f", 1.45));
+
+  const keyLight = new DirectionalLight("#fff3d6", 4.2);
   keyLight.position.set(12, 18, 14);
+  keyLight.castShadow = true;
+  keyLight.shadow.mapSize.set(2048, 2048);
+  keyLight.shadow.camera.left = -32;
+  keyLight.shadow.camera.right = 32;
+  keyLight.shadow.camera.top = 32;
+  keyLight.shadow.camera.bottom = -32;
+  keyLight.shadow.camera.near = 0.5;
+  keyLight.shadow.camera.far = 90;
+  keyLight.shadow.bias = -0.00015;
   scene.add(keyLight);
 
-  const fillLight = new DirectionalLight("#d7f0ff", 1.1);
+  const fillLight = new DirectionalLight("#cde4f0", 0.72);
   fillLight.position.set(-14, 10, -8);
   scene.add(fillLight);
 
   const { center, size, maxDimension } = sceneBounds(root);
+  root.traverse((object) => {
+    const renderable = object as Mesh;
+    if (!renderable.isMesh) {
+      return;
+    }
+    renderable.castShadow = true;
+    renderable.receiveShadow = true;
+  });
+
+  const groundGeometry = new PlaneGeometry(maxDimension * 4.5, maxDimension * 4.5);
+  const groundMaterial = new MeshStandardMaterial({ color: "#aeb7ab", roughness: 0.96, metalness: 0 });
+  const ground = new Mesh(groundGeometry, groundMaterial);
+  ground.name = "assembly-hall.ground";
+  ground.rotation.x = -Math.PI / 2;
+  ground.position.set(center.x, -0.025, center.z);
+  ground.receiveShadow = true;
+  ground.userData.rendererBoundary = "building-family-presentation";
+  scene.add(ground);
+
+  const clayTextures = {
+    baseColor: createSolidPresentationTexture(
+      "assembly-hall.clay.base-color",
+      [189, 185, 173, 255],
+      SRGBColorSpace
+    ),
+    normal: createSolidPresentationTexture(
+      "assembly-hall.clay.normal",
+      [128, 128, 255, 255],
+      NoColorSpace
+    ),
+    orm: createSolidPresentationTexture("assembly-hall.clay.orm", [255, 200, 0, 255], NoColorSpace),
+    opacity: createSolidPresentationTexture(
+      "assembly-hall.clay.opacity",
+      [255, 255, 255, 255],
+      NoColorSpace
+    )
+  };
+  const clayMaterial = new MeshStandardMaterial({
+    color: "#ffffff",
+    roughness: 0.78,
+    metalness: 0,
+    map: clayTextures.baseColor,
+    normalMap: clayTextures.normal,
+    roughnessMap: clayTextures.orm,
+    metalnessMap: clayTextures.orm,
+    alphaMap: clayTextures.opacity
+  });
+  clayMaterial.name = "assembly-hall.clay-inspection";
+  let disposed = false;
   const camera = new PerspectiveCamera(42, 16 / 9, 0.1, maxDimension * 10);
-  camera.position.set(center.x + maxDimension * 0.85, center.y + size.y * 0.45, center.z + maxDimension * 1.35);
+  camera.position.set(center.x + maxDimension * 0.85, center.y + size.y * 0.45, center.z - maxDimension * 1.35);
   camera.lookAt(center.x, center.y + size.y * 0.1, center.z);
   scene.add(root);
-  return { scene, camera };
+  return {
+    scene,
+    camera,
+    clayMaterial,
+    dispose: () => {
+      if (disposed) {
+        return;
+      }
+      disposed = true;
+      groundGeometry.dispose();
+      groundMaterial.dispose();
+      clayMaterial.dispose();
+      for (const texture of Object.values(clayTextures)) {
+        texture.dispose();
+      }
+    }
+  };
 }
 
 function galleryRows(fixture: AssemblyHallFixture) {
@@ -361,8 +479,11 @@ export function AssemblyHall({
 }: AssemblyHallProps) {
   const selectionId = useId();
   const revealId = useId();
+  const presentationId = useId();
   const mountRef = useRef<HTMLDivElement | null>(null);
   const renderFrameRef = useRef<(() => void) | null>(null);
+  const sceneRef = useRef<Scene | null>(null);
+  const clayMaterialRef = useRef<MeshStandardMaterial | null>(null);
   const benchmarkRunIdRef = useRef(0);
   const benchmarkAbortRef = useRef<AbortController | null>(null);
   const orbitBenchmarkRunIdRef = useRef(0);
@@ -375,6 +496,7 @@ export function AssemblyHall({
   );
   const [backendFallbackReason, setBackendFallbackReason] = useState<string | null>(null);
   const [revealThroughStage, setRevealThroughStage] = useState<AssemblyStage>("roof");
+  const [presentationMode, setPresentationMode] = useState<AssemblyPresentationMode>("textured");
   const [benchmarkState, setBenchmarkState] = useState<BenchmarkState>(() => ({
     fixture,
     status: "idle",
@@ -388,6 +510,7 @@ export function AssemblyHall({
     error: null
   }));
   const revealThroughStageRef = useRef<AssemblyStage>(revealThroughStage);
+  const presentationModeRef = useRef<AssemblyPresentationMode>(presentationMode);
   const rows = useMemo(() => galleryRows(fixture), [fixture]);
   const variants = useMemo(() => stressRows(fixture), [fixture]);
   const selectionOptions = useMemo(() => semanticSelectionOptions(fixture), [fixture]);
@@ -459,6 +582,14 @@ export function AssemblyHall({
     applyStageReveal(fixture, revealThroughStage);
     renderFrameRef.current?.();
   }, [fixture, revealThroughStage]);
+
+  useEffect(() => {
+    presentationModeRef.current = presentationMode;
+    if (sceneRef.current && clayMaterialRef.current) {
+      applyPresentationMode(fixture, clayMaterialRef.current, presentationMode);
+    }
+    renderFrameRef.current?.();
+  }, [fixture, presentationMode]);
 
   const runBenchmark = async () => {
     const runId = benchmarkRunIdRef.current + 1;
@@ -596,6 +727,7 @@ export function AssemblyHall({
     let animationFrame = 0;
     let scene: Scene | null = null;
     let camera: PerspectiveCamera | null = null;
+    let preparedScene: PreparedAssemblyScene | null = null;
     let cancelled = false;
 
     const renderFrame = () => {
@@ -611,17 +743,23 @@ export function AssemblyHall({
       renderer.render(scene, camera);
       renderer.domElement.dataset.rendered = "true";
       renderer.domElement.dataset.revealThroughStage = revealThroughStageRef.current;
+      renderer.domElement.dataset.presentationMode = presentationModeRef.current;
     };
     renderFrameRef.current = renderFrame;
 
     const activateRenderer = async () => {
       try {
         const prepared = prepareScene(fixture.familyRuntime.root);
+        preparedScene = prepared;
         scene = prepared.scene;
         camera = prepared.camera;
+        sceneRef.current = prepared.scene;
+        clayMaterialRef.current = prepared.clayMaterial;
+        applyPresentationMode(fixture, prepared.clayMaterial, presentationModeRef.current);
         const activation = await rendererFactory({ backendSupport: fixture.backendSupport });
         if (cancelled) {
           prepared.scene.remove(fixture.familyRuntime.root);
+          prepared.dispose();
           activation.renderer.dispose();
           return;
         }
@@ -658,9 +796,17 @@ export function AssemblyHall({
       cancelled = true;
       cancelAnimationFrame(animationFrame);
       resizeObserver?.disconnect();
+      if (clayMaterialRef.current) {
+        applyPresentationMode(fixture, clayMaterialRef.current, "textured");
+      }
       scene?.remove(fixture.familyRuntime.root);
+      preparedScene?.dispose();
       renderer?.domElement.remove();
       renderer?.dispose();
+      if (sceneRef.current === scene) {
+        sceneRef.current = null;
+        clayMaterialRef.current = null;
+      }
       if (renderFrameRef.current === renderFrame) {
         renderFrameRef.current = null;
       }
@@ -697,6 +843,16 @@ export function AssemblyHall({
           <section className="assembly-hall__reveal" aria-labelledby="assembly-stage-reveal-heading">
             <div className="assembly-hall__reveal-header">
               <h3 id="assembly-stage-reveal-heading">Stage Reveal</h3>
+              <label htmlFor={presentationId}>Presentation mode</label>
+              <select
+                id={presentationId}
+                aria-label="Presentation mode"
+                value={presentationMode}
+                onChange={(event) => setPresentationMode(event.currentTarget.value as AssemblyPresentationMode)}
+              >
+                <option value="textured">Textured</option>
+                <option value="clay">Clay inspection</option>
+              </select>
               <label htmlFor={revealId}>Reveal through stage</label>
               <select
                 id={revealId}

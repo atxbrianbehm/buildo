@@ -96,6 +96,9 @@ describe("completed family persistence", () => {
     expect(restored.familyRuntime.textureSet.contentHash).toBe(packet.artifacts.atlasContentHash);
     expect(restored.buildingRuntime.materialRegistry).toBe(restored.familyRuntime.materialRegistry);
     expect(wallObject.material.map).toBe(restored.familyRuntime.textureSet.textures.baseColor);
+    expect(wallObject.geometry.userData.atlasSlotUvRect).toEqual(
+      wallObject.material.userData.atlasSlot.uvRect
+    );
     expect(restored.componentGallery).toEqual(packet.artifacts.componentGallery);
     expect(restored.metrics).toMatchObject({
       activeBackend: "pending",

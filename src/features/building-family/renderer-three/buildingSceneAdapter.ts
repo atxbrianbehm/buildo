@@ -124,7 +124,7 @@ function createMeshGeometry(batch: MeshBatchIR): BufferGeometry {
     geometry.setAttribute("normal", new BufferAttribute(batch.normals, 3));
   }
   if (batch.uvs) {
-    geometry.setAttribute("uv", new BufferAttribute(batch.uvs, 2));
+    geometry.setAttribute("uv", new BufferAttribute(batch.uvs.slice() as Float32Array<ArrayBuffer>, 2));
   }
   if (batch.indices) {
     geometry.setIndex(new BufferAttribute(batch.indices, 1));
@@ -132,6 +132,26 @@ function createMeshGeometry(batch: MeshBatchIR): BufferGeometry {
 
   geometry.computeBoundingBox();
   return geometry;
+}
+
+function remapGeometryUvsToAtlasSlot(geometry: BufferGeometry, material: MeshStandardMaterial): void {
+  const uvRect = material.userData.atlasSlot?.uvRect as
+    | { x: number; y: number; width: number; height: number }
+    | undefined;
+  const uv = geometry.getAttribute("uv");
+  if (!uvRect || !uv) {
+    return;
+  }
+
+  for (let index = 0; index < uv.count; index += 1) {
+    uv.setXY(
+      index,
+      uvRect.x + uv.getX(index) * uvRect.width,
+      uvRect.y + uv.getY(index) * uvRect.height
+    );
+  }
+  uv.needsUpdate = true;
+  geometry.userData.atlasSlotUvRect = { ...uvRect };
 }
 
 function createRecipeGeometry(recipe: ComponentRecipe): BufferGeometry {
@@ -243,7 +263,10 @@ export function createBuildingSceneRuntime(input: CreateBuildingSceneRuntimeInpu
   for (const batch of input.ir.meshBatches) {
     const stage = stageForBatch(input.ir, batch.batchId);
     const materialSlotId = batch.materialSlotId ?? "utility.mask";
-    const mesh = new Mesh(createMeshGeometry(batch), input.materialRegistry.getMaterial(materialSlotId)) as BuildingRenderable;
+    const material = input.materialRegistry.getMaterial(materialSlotId);
+    const geometry = createMeshGeometry(batch);
+    remapGeometryUvsToAtlasSlot(geometry, material);
+    const mesh = new Mesh(geometry, material) as BuildingRenderable;
     mesh.name = batch.batchId;
     mesh.userData = {
       batchId: batch.batchId,
@@ -261,9 +284,12 @@ export function createBuildingSceneRuntime(input: CreateBuildingSceneRuntimeInpu
   for (const batch of input.ir.instanceBatches) {
     const recipe = recipeById(input.catalog, batch.recipeId);
     const stage = stageForBatch(input.ir, batch.batchId);
+    const material = input.materialRegistry.getMaterial(batch.materialSlotId);
+    const geometry = createRecipeGeometry(recipe);
+    remapGeometryUvsToAtlasSlot(geometry, material);
     const mesh = new InstancedMesh(
-      createRecipeGeometry(recipe),
-      input.materialRegistry.getMaterial(batch.materialSlotId),
+      geometry,
+      material,
       batch.count
     ) as BuildingRenderable;
     mesh.name = batch.batchId;

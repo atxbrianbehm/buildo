@@ -1,6 +1,7 @@
 import { vi } from "vitest";
 import type { RendererBackendSupport } from "../renderer-three/buildingSceneAdapter";
 import {
+  configureAssemblyRendererPresentation,
   createAssemblyRenderer,
   type AssemblyRenderer,
   type AssemblyRendererActivation
@@ -35,6 +36,24 @@ function fakeRenderer(label: string): AssemblyRenderer {
 }
 
 describe("assembly renderer factory", () => {
+  it("configures the shared renderer presentation baseline", () => {
+    const renderer = fakeRenderer("presentation") as AssemblyRenderer & {
+      outputColorSpace?: string;
+      shadowMap: { enabled: boolean; type?: number };
+      toneMapping?: number;
+      toneMappingExposure?: number;
+    };
+    renderer.shadowMap = { enabled: false };
+
+    configureAssemblyRendererPresentation(renderer);
+
+    expect(renderer.outputColorSpace).toBe("srgb");
+    expect(renderer.toneMapping).toBeDefined();
+    expect(renderer.toneMappingExposure).toBe(1.05);
+    expect(renderer.shadowMap.enabled).toBe(true);
+    expect(renderer.shadowMap.type).toBeDefined();
+  });
+
   it("activates WebGPU first when support prefers WebGPU and initialization succeeds", async () => {
     const webgpu = fakeRenderer("webgpu");
     const createWebGpuRenderer = vi.fn(async () => webgpu);

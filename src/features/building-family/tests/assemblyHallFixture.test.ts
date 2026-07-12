@@ -113,6 +113,9 @@ describe("assembly hall fixture", () => {
     );
     expect(fixture.buildingRuntime.materialRegistry).toBe(fixture.familyRuntime.materialRegistry);
     expect(wallObject.material.map).toBe(fixture.familyRuntime.textureSet.textures.baseColor);
+    expect(wallObject.geometry.userData.atlasSlotUvRect).toEqual(
+      wallObject.material.userData.atlasSlot.uvRect
+    );
     expect(windowObject.isInstancedMesh).toBe(true);
     expect(fixture.componentGallery.entries.length).toBeGreaterThan(0);
     expect(fixture.metrics).toMatchObject({

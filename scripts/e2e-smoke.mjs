@@ -336,6 +336,17 @@ try {
       !!canvas.dataset.rendererBackend
     );
   });
+  const presentationMode = page.getByRole("combobox", { name: "Presentation mode" });
+  await presentationMode.selectOption("clay");
+  await page.waitForFunction(() => {
+    const canvas = document.querySelector('canvas[aria-label="Assembly Hall Three.js canvas"]');
+    return canvas instanceof HTMLCanvasElement && canvas.dataset.presentationMode === "clay";
+  });
+  await presentationMode.selectOption("textured");
+  await page.waitForFunction(() => {
+    const canvas = document.querySelector('canvas[aria-label="Assembly Hall Three.js canvas"]');
+    return canvas instanceof HTMLCanvasElement && canvas.dataset.presentationMode === "textured";
+  });
   const activeBackend = await assemblyCanvas.getAttribute("data-renderer-backend");
   if (activeBackend !== "webgpu" && activeBackend !== "webgl") {
     throw new Error(`Unexpected Assembly Hall renderer backend: ${activeBackend}`);

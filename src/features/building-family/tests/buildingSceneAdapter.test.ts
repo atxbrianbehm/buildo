@@ -9,6 +9,7 @@ import {
   disposeBuildingSceneRuntime
 } from "../renderer-three/buildingSceneAdapter";
 import { createAtlasMaterialRegistry } from "../renderer-three/buildingAtlasMaterialFactory";
+import { createAtlasTextureSet, slotTextureWindow } from "../renderer-three/buildingAtlasTextureFactory";
 import { normalizeBuildingSpec } from "../core/specNormalizer";
 import { createAtlasDebugExport } from "../materials/atlasDebugExport";
 import { packAtlas } from "../materials/atlasPacker";
@@ -96,17 +97,24 @@ describe("building scene adapter", () => {
 
   it("converts RuntimeBuildingIR mesh batches into BufferGeometry meshes grouped by assembly stage", async () => {
     const { catalog, ir, packedAtlas, debugExport } = await fixtureRuntimeInputs();
+    const textureSet = createAtlasTextureSet({ packedAtlas, debugExport });
+    const wallBatch = ir.meshBatches.find((batch) => batch.batchId === "mesh.wall-panels")!;
+    const sourceUvs = Array.from(wallBatch.uvs!);
     const runtime = createBuildingSceneRuntime({
       ir,
       catalog,
       materialRegistry: createAtlasMaterialRegistry({
         atlasId: packedAtlas.atlasId,
         atlasContentHash: packedAtlas.contentHash,
-        debugExport
+        debugExport,
+        textureSet
       })
     });
     const wallObject = runtime.objectsByBatchId.get("mesh.wall-panels");
-    const wallBatch = ir.meshBatches.find((batch) => batch.batchId === "mesh.wall-panels")!;
+    const wallWindow = slotTextureWindow(textureSet, "wall.primary");
+    const renderedUvs = Array.from(wallObject!.geometry.getAttribute("uv").array as ArrayLike<number>);
+    const renderedU = renderedUvs.filter((_, index) => index % 2 === 0);
+    const renderedV = renderedUvs.filter((_, index) => index % 2 === 1);
 
     expect(runtime.root.type).toBe("Group");
     expect(runtime.stageGroups.map((group) => group.stage)).toEqual(["massing", "facade", "openings", "trim", "roof"]);
@@ -120,8 +128,15 @@ describe("building scene adapter", () => {
     expect(wallObject?.geometry.getAttribute("position").count).toBe(wallBatch.positions!.length / 3);
     expect(wallObject?.geometry.getAttribute("normal").count).toBe(wallBatch.normals!.length / 3);
     expect(wallObject?.geometry.getAttribute("uv").count).toBe(wallBatch.uvs!.length / 2);
+    expect(Math.min(...renderedU)).toBeCloseTo(wallWindow.uvRect.x);
+    expect(Math.max(...renderedU)).toBeCloseTo(wallWindow.uvRect.x + wallWindow.uvRect.width);
+    expect(Math.min(...renderedV)).toBeCloseTo(wallWindow.uvRect.y);
+    expect(Math.max(...renderedV)).toBeCloseTo(wallWindow.uvRect.y + wallWindow.uvRect.height);
+    expect(Array.from(wallBatch.uvs!)).toEqual(sourceUvs);
     expect(wallObject?.geometry.index?.count).toBe(wallBatch.indices!.length);
     expect(runtime.metrics.meshCount).toBe(ir.meshBatches.length);
+
+    disposeBuildingSceneRuntime(runtime);
   });
 
   it("uses InstancedMesh for repeated component batches and applies compiler transforms", async () => {

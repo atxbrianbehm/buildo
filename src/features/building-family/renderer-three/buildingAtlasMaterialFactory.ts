@@ -1,4 +1,4 @@
-import { Color, MeshStandardMaterial } from "three";
+import { Color, MeshStandardMaterial, Vector2 } from "three";
 import type { AtlasDebugExport } from "../materials/atlasDebugExport";
 import { slotTextureWindow, type AtlasTextureSet } from "./buildingAtlasTextureFactory";
 
@@ -41,18 +41,22 @@ export function createAtlasMaterialRegistry(input: AtlasMaterialRegistryInput): 
     }
 
     const material = new MeshStandardMaterial({
-      color: colorFromSlotId(slotId),
-      roughness: 0.82,
+      color: input.textureSet ? "#ffffff" : colorFromSlotId(slotId),
+      roughness: slotId.includes("glass") ? 0.22 : 0.82,
       metalness: slotId.includes("frame") || slotId.includes("trim") ? 0.12 : 0
     });
     const atlasSlot = input.textureSet ? slotTextureWindow(input.textureSet, slotId) : undefined;
     if (input.textureSet) {
       material.map = input.textureSet.textures.baseColor;
       material.normalMap = input.textureSet.textures.normal;
+      material.normalScale = new Vector2(0.65, 0.65);
       material.roughnessMap = input.textureSet.textures.orm;
       material.metalnessMap = input.textureSet.textures.orm;
       material.alphaMap = input.textureSet.textures.opacity;
-      material.transparent = true;
+      material.transparent = slotId.includes("glass") || slotId.includes("ornament");
+      material.opacity = slotId.includes("glass") ? 0.82 : 1;
+      material.depthWrite = !slotId.includes("glass");
+      material.alphaTest = slotId.includes("ornament") ? 0.2 : 0;
       material.needsUpdate = true;
     }
 

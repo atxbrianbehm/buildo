@@ -6,8 +6,10 @@ The first target is a browser vertical slice that resolves Prompt Spaghetti inte
 
 ## Project Docs
 
-- `docs/plans/dynamic-building-family.md` - source implementation plan.
+- `docs/plans/dynamic-building-family.md` - source MVP implementation plan.
+- `docs/plans/kit-grammar-wfc-utdg-block.md` - post-MVP kit grammar, WFC, UTDG, and block generation plan.
 - `docs/architecture/dynamic-building-family-integration.md` - repository-specific integration map.
+- `docs/superpowers/plans/2026-06-25-dynamic-building-family-art-fidelity-bridge.md` - art-fidelity bridge slices.
 
 ## Local Commands
 

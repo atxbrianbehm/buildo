@@ -79,6 +79,9 @@ describe("building family runtime", () => {
     expect(family.root.children).toContain(building.root);
     expect(building.materialRegistry).toBe(family.materialRegistry);
     expect(wallObject.material.map).toBe(family.textureSet.textures.baseColor);
+    expect(wallObject.geometry.userData.atlasSlotUvRect).toEqual(
+      wallObject.material.userData.atlasSlot.uvRect
+    );
     expect(wallObject.material.userData.channelHashes).toEqual(family.textureSet.channelHashes);
     expect(family.metrics).toMatchObject({
       buildingCount: 1,

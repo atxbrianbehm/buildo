@@ -2,6 +2,9 @@
 
 ## Goal
 
+**Parent implementation plan (post-MVP sequencing, WFC, UTDG, block generation):**  
+`docs/plans/kit-grammar-wfc-utdg-block.md`
+
 Move the Dynamic Building Family from a readable procedural proof of concept toward a stylized modular apartment-kit level of fidelity while preserving the core Buildo rules:
 
 - geometry remains generated from typed component and building contracts;
@@ -68,6 +71,16 @@ Buildo already has the foundation that an art-fidelity pass should build on:
 - persistence, export/import, benchmark, low-detail, provider proof, and sample-gallery evidence already landed.
 
 The fidelity gap is mostly not architecture. It is missing art-kit vocabulary, richer profile geometry, material-scale discipline, facade module QA, and a presentation surface that demonstrates the generated result in clay, wireframe, and textured modes.
+
+### Visual Truth Prerequisite
+
+Status: implemented on 2026-07-10. Before art-kit geometry expands, Assembly Hall now remaps copied renderer-side geometry UVs into each material's semantic atlas slot instead of sampling the whole atlas, preserving the shared five-texture family contract and immutable compiler IR. It also uses an explicit sRGB/ACES/shadow presentation baseline, frames the authored front facade by default, and exposes textured versus clay inspection modes. The clay path uses renderer-safe neutral PBR textures so WebGPU and WebGL retain equivalent material structure while switching modes.
+
+This prerequisite deliberately makes current geometry limitations more visible. It does not claim improved component fidelity by itself; it provides the honest review surface for the facade planner, profiled geometry, and high-fidelity opening slices.
+
+## Product North Star
+
+The staged bridge begins with a stylized apartment-kit readability target, but Buildo's product north star is photorealistic, Geometry-Nodes-like procedural building kits. Later slices should therefore prefer executable component geometry, authored profile data, physically scaled tileable materials, trim/decal atlases, and close-range visual QA over treating the initial stylized threshold as the endpoint.
 
 ## Fidelity Target
 

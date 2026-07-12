@@ -1,4 +1,11 @@
-import { WebGLRenderer, type Camera, type Scene } from "three";
+import {
+  ACESFilmicToneMapping,
+  PCFSoftShadowMap,
+  SRGBColorSpace,
+  WebGLRenderer,
+  type Camera,
+  type Scene
+} from "three";
 import type { RendererBackendSupport } from "./buildingSceneAdapter";
 
 export type AssemblyRendererBackend = "webgpu" | "webgl";
@@ -38,6 +45,25 @@ type WebGpuRendererConstructor = new (parameters?: {
 
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
+}
+
+export function configureAssemblyRendererPresentation(renderer: AssemblyRenderer): void {
+  const configurable = renderer as AssemblyRenderer & {
+    outputColorSpace?: typeof SRGBColorSpace;
+    shadowMap?: {
+      enabled: boolean;
+      type: typeof PCFSoftShadowMap;
+    };
+    toneMapping?: typeof ACESFilmicToneMapping;
+    toneMappingExposure?: number;
+  };
+  configurable.outputColorSpace = SRGBColorSpace;
+  configurable.toneMapping = ACESFilmicToneMapping;
+  configurable.toneMappingExposure = 1.05;
+  if (configurable.shadowMap) {
+    configurable.shadowMap.enabled = true;
+    configurable.shadowMap.type = PCFSoftShadowMap;
+  }
 }
 
 export function createWebGlAssemblyRenderer(): AssemblyRenderer {
@@ -87,8 +113,10 @@ export async function createAssemblyRenderer(
 
   if (shouldTryWebGpu) {
     try {
+      const renderer = await createWebGpuRenderer();
+      configureAssemblyRendererPresentation(renderer);
       return {
-        renderer: await createWebGpuRenderer(),
+        renderer,
         activeBackend: "webgpu"
       };
     } catch (error) {
@@ -98,8 +126,10 @@ export async function createAssemblyRenderer(
         });
       }
 
+      const renderer = createWebGlRenderer();
+      configureAssemblyRendererPresentation(renderer);
       return {
-        renderer: createWebGlRenderer(),
+        renderer,
         activeBackend: "webgl",
         fallbackReason: `WebGPU renderer activation failed: ${errorMessage(error)}. Using WebGL fallback.`
       };
@@ -110,8 +140,10 @@ export async function createAssemblyRenderer(
     throw new Error("No Assembly Hall renderer backend is available.");
   }
 
+  const renderer = createWebGlRenderer();
+  configureAssemblyRendererPresentation(renderer);
   return {
-    renderer: createWebGlRenderer(),
+    renderer,
     activeBackend: "webgl"
   };
 }
