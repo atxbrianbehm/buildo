@@ -1583,6 +1583,12 @@ h1 {
   stroke-width: 2;
 }
 
+.sample-gallery__window--arched {
+  fill: #c5e4ef;
+  stroke: rgba(27, 49, 49, 0.8);
+  stroke-width: 2;
+}
+
 .sample-gallery__storefront {
   fill: #cfebef;
 }

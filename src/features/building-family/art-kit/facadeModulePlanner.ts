@@ -260,9 +260,10 @@ function chooseWindowModule(
     (module) => module.id === "opening.window.arched" && moduleSupportsZone(module, zone)
   );
 
+  // Balanced weights so building-seed samples visibly differ (not always rectangular).
   const weighted = [
-    rectangular ? { value: rectangular, weight: 3 } : undefined,
-    arched ? { value: arched, weight: cell.zone === "ground" ? 2 : 1 } : undefined
+    rectangular ? { value: rectangular, weight: 2 } : undefined,
+    arched ? { value: arched, weight: 3 } : undefined
   ].filter((item): item is { value: ArtKitModule; weight: number } => item !== undefined);
 
   if (weighted.length === 0) {
@@ -282,7 +283,18 @@ export function planFacadeModules(input: PlanFacadeModulesInput): FacadeModulePl
   // Building seed drives per-building facade choices so sample gallery variants
   // and Assembly Hall opens are not identical for a shared family seed.
   const seedTree = createSeedTree(spec.seeds.building).fork("art-kit/facades");
-  const doorBay = Math.floor(spec.facade.frontBayCount / 2);
+  const centerDoorBay = Math.floor(spec.facade.frontBayCount / 2);
+  const doorBayCandidates = [centerDoorBay - 1, centerDoorBay, centerDoorBay + 1].filter(
+    (bay) => bay >= 0 && bay < spec.facade.frontBayCount
+  );
+  const doorBay = seedTree.chooseWeighted(
+    doorBayCandidates.map((bay) => ({
+      value: bay,
+      // Prefer center, allow ±1 for visible sample variety.
+      weight: bay === centerDoorBay ? 3 : 1
+    })),
+    "door-bay"
+  );
 
   for (const cell of cells) {
     const wallModule = resolveWallModule(kit, cell, diagnostics);
@@ -368,7 +380,7 @@ export function planFacadeModules(input: PlanFacadeModulesInput): FacadeModulePl
     if (
       (cell.facade === "left" || cell.facade === "right") &&
       cell.zone === "body" &&
-      (cell.bayIndex + cell.floorIndex) % 2 === 0
+      seedTree.float01(`side-opening/${cell.facade}/${cell.floorIndex}/${cell.bayIndex}`) < 0.55
     ) {
       const sideWindow =
         kit.modules.find((module) => module.id === "opening.window.rectangular") ??

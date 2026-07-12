@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+import { late19cApartmentKit, planFacadeModules, type FacadeModulePlacement } from "../art-kit";
 import type { BuildingFamilySpec } from "../contracts/buildingFamilySpec";
 import type {
   AssemblyHallFixture,
@@ -17,7 +19,14 @@ export interface SampleBuildingGalleryProps {
 interface SampleBuildingCard {
   sampleNumber: number;
   variant: AssemblyHallVariantStressVariant;
+  frontOpenings: FacadeModulePlacement[];
+  facadeSignature: string;
+  archedCount: number;
+  rectangularCount: number;
+  doorBayIndex: number | null;
 }
+
+type OpeningVisualKind = "door" | "arched" | "rectangular" | "storefront";
 
 function formatNumber(value: number): string {
   return new Intl.NumberFormat("en-US").format(value);
@@ -27,11 +36,64 @@ function shortHash(value: string): string {
   return value.slice(0, 12);
 }
 
+function openingVisualKind(moduleId: string, floorIndex: number): OpeningVisualKind {
+  if (moduleId.includes("door")) {
+    return "door";
+  }
+  if (moduleId.includes("arch")) {
+    return "arched";
+  }
+  if (floorIndex === 0) {
+    return "storefront";
+  }
+  return "rectangular";
+}
+
+function facadeSignatureFor(frontOpenings: FacadeModulePlacement[]): string {
+  return frontOpenings
+    .slice()
+    .sort((a, b) => a.floorIndex - b.floorIndex || a.bayIndex - b.bayIndex)
+    .map((placement) => `${placement.floorIndex}:${placement.bayIndex}:${placement.moduleId}`)
+    .join("|");
+}
+
 function sampleCardsForFixture(fixture: AssemblyHallFixture, sampleCount: number): SampleBuildingCard[] {
-  return fixture.variantStress.variants.slice(0, sampleCount).map((variant, index) => ({
-    sampleNumber: index + 1,
-    variant
-  }));
+  return fixture.variantStress.variants.slice(0, sampleCount).map((variant, index) => {
+    const variantSpec: BuildingFamilySpec = {
+      ...fixture.spec,
+      seeds: {
+        ...fixture.spec.seeds,
+        building: variant.buildingSeed
+      }
+    };
+    const plan =
+      fixture.fidelityMode === "kit"
+        ? planFacadeModules({
+            spec: variantSpec,
+            kit: late19cApartmentKit
+          })
+        : null;
+    const frontOpenings =
+      plan?.placements.filter(
+        (placement) => placement.facade === "front" && placement.layer === "opening"
+      ) ?? [];
+    const door = frontOpenings.find((placement) => placement.moduleId.includes("door"));
+    const archedCount = frontOpenings.filter((placement) => placement.moduleId.includes("arch")).length;
+    const rectangularCount = frontOpenings.filter(
+      (placement) =>
+        placement.moduleId.includes("window") && !placement.moduleId.includes("arch")
+    ).length;
+
+    return {
+      sampleNumber: index + 1,
+      variant,
+      frontOpenings,
+      facadeSignature: facadeSignatureFor(frontOpenings),
+      archedCount,
+      rectangularCount,
+      doorBayIndex: door?.bayIndex ?? null
+    };
+  });
 }
 
 function sampleFacadeFill(sampleNumber: number): string {
@@ -63,11 +125,19 @@ function BuildingFacadePreview({
         } ${topY + 18} Z`
       : `M ${leftX - 8} ${topY + 16} H ${leftX + buildingWidth + 8} V ${topY + 38} H ${leftX - 8} Z`;
 
+  const openingsByCell = new Map(
+    sample.frontOpenings.map((placement) => [
+      `${placement.floorIndex}:${placement.bayIndex}`,
+      placement
+    ])
+  );
+
   return (
     <svg
       aria-label={`Facade preview for generated building sample ${sample.sampleNumber}`}
       className="sample-gallery__facade"
       role="img"
+      data-facade-signature={sample.facadeSignature}
       viewBox="0 0 320 390"
     >
       <rect className="sample-gallery__sky" height="390" rx="8" width="320" x="0" y="0" />
@@ -102,35 +172,75 @@ function BuildingFacadePreview({
       ))}
       {Array.from({ length: floorCount }, (_, floorIndex) =>
         Array.from({ length: bayCount }, (_, bayIndex) => {
-          const windowWidth = Math.min(18, bayWidth * 0.46);
-          const windowHeight = Math.min(28, floorHeight * 0.48);
-          const x = leftX + bayIndex * bayWidth + (bayWidth - windowWidth) / 2;
-          const y = baseY - (floorIndex + 1) * floorHeight + (floorHeight - windowHeight) / 2;
-          const isGroundCenter = floorIndex === 0 && bayIndex === Math.floor(bayCount / 2);
+          const placement = openingsByCell.get(`${floorIndex}:${bayIndex}`);
+          if (!placement) {
+            return null;
+          }
+          const kind = openingVisualKind(placement.moduleId, floorIndex);
+          const cellLeft = leftX + bayIndex * bayWidth;
+          const cellBottom = baseY - floorIndex * floorHeight;
+          const cellTop = cellBottom - floorHeight;
 
-          if (isGroundCenter) {
+          if (kind === "door") {
+            const doorWidth = Math.min(26, bayWidth * 0.58);
+            const doorHeight = Math.max(36, floorHeight * 0.68);
             return (
               <rect
                 className="sample-gallery__door"
-                height={Math.max(34, floorHeight * 0.62)}
+                data-opening-kind="door"
+                height={doorHeight}
                 key={`door-${floorIndex}-${bayIndex}`}
                 rx="2"
-                width={Math.min(24, bayWidth * 0.56)}
-                x={leftX + bayIndex * bayWidth + (bayWidth - Math.min(24, bayWidth * 0.56)) / 2}
-                y={baseY - Math.max(34, floorHeight * 0.62)}
+                width={doorWidth}
+                x={cellLeft + (bayWidth - doorWidth) / 2}
+                y={cellBottom - doorHeight}
               />
             );
           }
 
+          if (kind === "arched") {
+            const windowWidth = Math.min(20, bayWidth * 0.48);
+            const windowHeight = Math.min(30, floorHeight * 0.5);
+            const x = cellLeft + (bayWidth - windowWidth) / 2;
+            const y = cellTop + (floorHeight - windowHeight) / 2 + 2;
+            const archRadius = windowWidth / 2;
+            return (
+              <g key={`window-arch-${floorIndex}-${bayIndex}`} data-opening-kind="arched">
+                <path
+                  className="sample-gallery__window sample-gallery__window--arched"
+                  d={`M ${x} ${y + archRadius}
+                     L ${x} ${y + windowHeight}
+                     L ${x + windowWidth} ${y + windowHeight}
+                     L ${x + windowWidth} ${y + archRadius}
+                     A ${archRadius} ${archRadius} 0 0 0 ${x} ${y + archRadius}
+                     Z`}
+                />
+              </g>
+            );
+          }
+
+          const windowWidth =
+            kind === "storefront" ? Math.min(24, bayWidth * 0.6) : Math.min(18, bayWidth * 0.46);
+          const windowHeight =
+            kind === "storefront" ? Math.max(22, floorHeight * 0.42) : Math.min(26, floorHeight * 0.46);
+          const x = cellLeft + (bayWidth - windowWidth) / 2;
+          const y =
+            kind === "storefront"
+              ? cellBottom - floorHeight * 0.68
+              : cellTop + (floorHeight - windowHeight) / 2;
+
           return (
             <rect
-              className={floorIndex === 0 ? "sample-gallery__storefront" : "sample-gallery__window"}
-              height={floorIndex === 0 ? Math.max(22, floorHeight * 0.42) : windowHeight}
+              className={
+                kind === "storefront" ? "sample-gallery__storefront" : "sample-gallery__window"
+              }
+              data-opening-kind={kind}
+              height={windowHeight}
               key={`window-${floorIndex}-${bayIndex}`}
-              rx={floorIndex === 0 ? "2" : "7"}
-              width={floorIndex === 0 ? Math.min(24, bayWidth * 0.6) : windowWidth}
-              x={floorIndex === 0 ? leftX + bayIndex * bayWidth + (bayWidth - Math.min(24, bayWidth * 0.6)) / 2 : x}
-              y={floorIndex === 0 ? baseY - floorHeight * 0.68 : y}
+              rx={kind === "storefront" ? "2" : "3"}
+              width={windowWidth}
+              x={x}
+              y={y}
             />
           );
         })
@@ -146,7 +256,14 @@ export function SampleBuildingGallery({
   sampleCount = 8,
   onOpenInAssemblyHall
 }: SampleBuildingGalleryProps) {
-  const samples = sampleCardsForFixture(fixture, sampleCount);
+  const samples = useMemo(
+    () => sampleCardsForFixture(fixture, sampleCount),
+    [fixture, sampleCount]
+  );
+  const distinctFacadeSignatures = useMemo(
+    () => new Set(samples.map((sample) => sample.facadeSignature)).size,
+    [samples]
+  );
   const baseColorChannel = fixture.debugExport.channels.find((channel) => channel.name === "baseColor");
   const floorLabel = `${fixture.spec.massing.floorCount} floors`;
   const bayLabel = `${fixture.spec.facade.frontBayCount} bays`;
@@ -176,6 +293,10 @@ export function SampleBuildingGallery({
             <dd>{formatNumber(fixture.variantStress.variantCount)}</dd>
           </div>
           <div>
+            <dt>Distinct facades</dt>
+            <dd aria-label="Sample gallery distinct facade count">{formatNumber(distinctFacadeSignatures)}</dd>
+          </div>
+          <div>
             <dt>Shape</dt>
             <dd>
               {floorLabel} / {bayLabel}
@@ -186,7 +307,7 @@ export function SampleBuildingGallery({
 
       <p className="sample-gallery__fidelity-banner" aria-label="Sample gallery fidelity banner">
         {fixture.fidelityMode === "kit"
-          ? "Showing kit-mode variants (art-kit facade planner + plan-driven openings)."
+          ? "Showing kit-mode variants (art-kit facade planner + plan-driven openings). Each card uses its building seed plan."
           : "Showing proof-mode variants (legacy front-only openings, no art-kit plan node)."}
       </p>
 
@@ -204,6 +325,7 @@ export function SampleBuildingGallery({
             aria-label={`Generated building sample ${sample.sampleNumber}`}
             className="sample-gallery__card"
             key={sample.variant.buildingId}
+            data-facade-signature={sample.facadeSignature}
           >
             <BuildingFacadePreview sample={sample} spec={fixture.spec} />
             <div className="sample-gallery__card-body">
@@ -219,6 +341,13 @@ export function SampleBuildingGallery({
                   <dt>Shape</dt>
                   <dd>
                     {floorLabel} / {bayLabel}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Front openings</dt>
+                  <dd aria-label={`Sample ${sample.sampleNumber} opening mix`}>
+                    {sample.archedCount} arch / {sample.rectangularCount} rect
+                    {sample.doorBayIndex === null ? "" : ` · door bay ${sample.doorBayIndex + 1}`}
                   </dd>
                 </div>
                 <div>

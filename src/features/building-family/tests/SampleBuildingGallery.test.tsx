@@ -31,6 +31,16 @@ describe("SampleBuildingGallery", () => {
       expect(screen.getByLabelText("Sample 1 fidelity mode")).toHaveTextContent(
         fixture.fidelityMode === "kit" ? "kit mode" : "proof mode"
       );
+      expect(screen.getByLabelText("Sample 1 opening mix")).toBeInTheDocument();
+
+      const signatures = screen
+        .getAllByRole("img", { name: /^Facade preview for generated building sample / })
+        .map((node) => node.getAttribute("data-facade-signature"));
+      const distinctSignatures = new Set(signatures.filter((value): value is string => Boolean(value)));
+      expect(distinctSignatures.size).toBeGreaterThan(1);
+      expect(Number(screen.getByLabelText("Sample gallery distinct facade count").textContent)).toBe(
+        distinctSignatures.size
+      );
 
       const eighthSample = screen.getByLabelText("Generated building sample 8");
       expect(eighthSample).toHaveTextContent("building-seed-variant-07");

@@ -77,13 +77,22 @@ describe("facade module planner", () => {
     });
 
     expect(seedA).toEqual(seedAAgain);
-    const frontWindowsA = seedA.placements
+    const frontOpeningsA = seedA.placements
       .filter((placement) => placement.facade === "front" && placement.layer === "opening")
-      .map((placement) => placement.moduleId);
-    const frontWindowsB = seedB.placements
+      .map((placement) => `${placement.floorIndex}:${placement.bayIndex}:${placement.moduleId}`);
+    const frontOpeningsB = seedB.placements
       .filter((placement) => placement.facade === "front" && placement.layer === "opening")
-      .map((placement) => placement.moduleId);
-    expect(frontWindowsA).not.toEqual(frontWindowsB);
+      .map((placement) => `${placement.floorIndex}:${placement.bayIndex}:${placement.moduleId}`);
+    expect(frontOpeningsA).not.toEqual(frontOpeningsB);
+
+    const doorA = seedA.placements.find(
+      (placement) => placement.facade === "front" && placement.moduleId.includes("door")
+    );
+    const doorB = seedB.placements.find(
+      (placement) => placement.facade === "front" && placement.moduleId.includes("door")
+    );
+    expect(doorA).toBeDefined();
+    expect(doorB).toBeDefined();
   });
 
   it("returns a deterministic empty-diagnostic plan for the fixture art kit", () => {
