@@ -1,3 +1,5 @@
+import type { ArtKitFacadePlanSummary } from "../art-kit";
+import { emptyArtKitFacadePlanSummary } from "../art-kit";
 import type { GenerationRun, GenerationRunEvent } from "../contracts/generationRun";
 import type { BuildingArtifactMetadata } from "../state/artifactRegistry";
 import type { BuildingArtifactSliceState } from "../state/buildingStore";
@@ -6,6 +8,7 @@ export interface ArtifactTracePanelProps {
   activeArtifactId?: string;
   artifacts: BuildingArtifactSliceState;
   run: GenerationRun | null;
+  artKitFacadePlan?: ArtKitFacadePlanSummary;
 }
 
 function artifactRows(artifacts: BuildingArtifactSliceState): BuildingArtifactMetadata[] {
@@ -40,10 +43,24 @@ function dependencyLabel(dependencies: string[]): string {
   return dependencies.length ? dependencies.join(", ") : "none";
 }
 
-export function ArtifactTracePanel({ activeArtifactId, artifacts, run }: ArtifactTracePanelProps) {
+function facadeCountLabel(counts: Record<string, number>): string {
+  const entries = Object.entries(counts).sort(([left], [right]) => left.localeCompare(right));
+  if (entries.length === 0) {
+    return "none";
+  }
+  return entries.map(([facade, count]) => `${facade}:${count}`).join(" · ");
+}
+
+export function ArtifactTracePanel({
+  activeArtifactId,
+  artifacts,
+  run,
+  artKitFacadePlan
+}: ArtifactTracePanelProps) {
   const rows = artifactRows(artifacts);
   const events = eventRows(run);
   const activeArtifact = activeArtifactId ? artifacts.byId[activeArtifactId] : undefined;
+  const plan = artKitFacadePlan ?? emptyArtKitFacadePlanSummary();
 
   return (
     <section className="artifact-trace" aria-labelledby="artifact-trace-heading">
@@ -67,6 +84,48 @@ export function ArtifactTracePanel({ activeArtifactId, artifacts, run }: Artifac
           </div>
         </dl>
       </div>
+
+      <section className="artifact-trace__art-kit" aria-labelledby="art-kit-facade-plan-heading">
+        <h3 id="art-kit-facade-plan-heading">Art-Kit Facade Plan</h3>
+        <dl className="artifact-trace__summary" aria-label="Art-kit facade plan summary">
+          <div>
+            <dt>Manifest</dt>
+            <dd>{plan.present ? (plan.artKitManifestId ?? "unknown") : "not present"}</dd>
+          </div>
+          <div>
+            <dt>Planner</dt>
+            <dd>{plan.plannerId ?? "—"}</dd>
+          </div>
+          <div>
+            <dt>Cells</dt>
+            <dd>{plan.cellCount}</dd>
+          </div>
+          <div>
+            <dt>Placements</dt>
+            <dd>{plan.placementCount}</dd>
+          </div>
+          <div>
+            <dt>By facade</dt>
+            <dd>{facadeCountLabel(plan.placementsByFacade)}</dd>
+          </div>
+          <div>
+            <dt>Diagnostics</dt>
+            <dd>{plan.diagnostics.length}</dd>
+          </div>
+        </dl>
+
+        {plan.diagnostics.length > 0 ? (
+          <ul aria-label="Art-kit facade plan diagnostics">
+            {plan.diagnostics.map((diagnostic, index) => (
+              <li key={`${diagnostic.code}-${index}`}>
+                <strong>{diagnostic.severity}</strong> {diagnostic.code}: {diagnostic.message}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p aria-label="Art-kit facade plan diagnostics">No art-kit plan diagnostics.</p>
+        )}
+      </section>
 
       <div className="artifact-trace__tables">
         <div className="artifact-trace__table-scroll">

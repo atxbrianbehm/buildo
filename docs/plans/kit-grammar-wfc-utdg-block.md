@@ -2,7 +2,7 @@
 
 ## Implementation plan
 
-**Status:** in progress — Phase A through A2 opening consumption (M1–M4); next M5 diagnostics / M5b variant swap / B1 profiled trim  
+**Status:** in progress — M1–M6 landed; next M7 high-fidelity openings  
 **Date:** 2026-07-12  
 **Depends on:** MVP vertical slice (Milestones 0–7) complete; art-fidelity Slice 1 (`ArtKitManifest` + `late19cApartmentKit`) complete; visual-truth Assembly Hall prerequisite  
 **Related plans:**
@@ -830,9 +830,9 @@ Execute in order. Each row is one reviewable PR-sized milestone unless noted.
 | M2 | Seeded-greedy facade planner + graph Group node | A1 | `facadeModulePlanner`, graph tests | done 2026-07-12 |
 | M3 | `ModuleInstanceSet` builder | A2 | pure instance builder tests | done 2026-07-12 |
 | M4 | Compiler consumes plan/instances; keep proof fallback | A2 | compiler + worker | done 2026-07-12 (openings; walls/trim still hybrid) |
-| M5 | Plan diagnostics in trace/Assembly Hall | A3 | UI tests | pending |
-| M5b | Thin Forge/Assembly variant swap | A0 | ComponentForge + invalidation | pending (after M2; may slip after M4) |
-| M6 | Profiled trim recipes + geometry | B1 | trim/quoin/compiler | pending |
+| M5 | Plan diagnostics in trace/Assembly Hall | A3 | UI tests | done 2026-07-12 |
+| M5b | Thin Forge/Assembly variant swap | A0 | ComponentForge + invalidation | done 2026-07-12 |
+| M6 | Profiled trim recipes + geometry | B1 | trim/quoin/compiler | done 2026-07-12 |
 | M7 | High-fidelity openings | B2 | opening geometry + forge | pending |
 | M8 | Art-kit material set + scale | C1 | atlas + materials | pending |
 | M9 | Fidelity mode proof/kit in run + export | C2 | persistence/export | pending |

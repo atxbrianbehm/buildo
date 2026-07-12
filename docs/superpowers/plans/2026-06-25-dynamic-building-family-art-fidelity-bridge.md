@@ -281,6 +281,8 @@ npm.cmd run typecheck
 
 ### Slice 3: Profiled Trim And Cornice Geometry
 
+Status: implemented on 2026-07-12. High-detail compiler output now includes layered cornice, belt-course, roof-cap, and corner-quoin mesh batches; low detail continues to omit decorative trim.
+
 Implementation plan: `docs/superpowers/plans/2026-06-25-profiled-trim-cornice-geometry.md`.
 
 Upgrade component generation with reusable profile geometry:

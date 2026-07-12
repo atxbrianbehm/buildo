@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useStore } from "zustand";
 import "./App.css";
 import { AtlasLab } from "../features/building-family/ui/AtlasLab";
+import { summarizeArtKitFacadePlanFromGraph } from "../features/building-family/art-kit";
 import { ArtifactTracePanel } from "../features/building-family/ui/ArtifactTracePanel";
 import { AssemblyHall } from "../features/building-family/ui/AssemblyHall";
 import { ComponentForge } from "../features/building-family/ui/ComponentForge";
@@ -635,7 +636,14 @@ export function App() {
               )}
             </ol>
           </section>
-          <ArtifactTracePanel activeArtifactId={activeFixtureArtifactId} artifacts={artifacts} run={currentRun} />
+          <ArtifactTracePanel
+            activeArtifactId={activeFixtureArtifactId}
+            artifacts={artifacts}
+            run={currentRun}
+            artKitFacadePlan={
+              fixture ? summarizeArtKitFacadePlanFromGraph(fixture.graph) : undefined
+            }
+          />
           {fixture ? <PromptTracePanel trace={fixture.promptTrace} /> : null}
         </section>
       ) : null}
@@ -694,7 +702,14 @@ export function App() {
             <ComponentForge
               fixture={fixture}
               lockedComponentKeys={promptControls.lockedComponentKeys}
+              windowFamily={promptControls.windowFamily}
+              corniceFamily={promptControls.corniceFamily}
               onToggleComponentLock={toggleComponentLock}
+              onComponentFamilyChange={(key, value) => {
+                const nextPrompt = promptWithPatch(promptControls, { [key]: value });
+                updatePromptControls({ [key]: value });
+                void startRun(nextPrompt);
+              }}
             />
           ) : (
             <div className="room-panel__loading" role={runState.error ? "alert" : "status"}>

@@ -48,6 +48,8 @@ describe("buildComponentCatalog", () => {
       "recipe.trim.pressed-metal.horizontal",
       "recipe.trim.pressed-metal.vertical",
       "recipe.cornice.bracketed-metal.primary",
+      "recipe.roof-cap.flat-membrane.profiled",
+      "recipe.quoin.pressed-metal.corner",
       "recipe.roof.flat-membrane"
     ]);
 
@@ -69,7 +71,7 @@ describe("buildComponentCatalog", () => {
     expect(cornice).toBeDefined();
     expect(cornice?.kind).toBe("profileSweep");
     expect(cornice?.atlasSlotIds).toEqual(["cornice.primary"]);
-    expect(cornice?.profileRecipeId).toBe("profile.cornice.bracketed-metal.primary");
+    expect(cornice?.profileRecipeId).toBe("profile.cornice.bracketed-metal.layered");
     expect(cornice?.variationScope).toBe("family");
   });
 

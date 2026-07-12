@@ -2,12 +2,18 @@ import { useId, useMemo, useState } from "react";
 import type { ComponentGalleryEntry } from "../compiler/componentGalleryBuilder";
 import type { AtlasSlot } from "../contracts/atlasManifest";
 import type { ComponentRecipe } from "../contracts/componentRecipe";
+import stylePack from "../style-packs/late-19c-commercial-demo.json";
 import type { AssemblyHallFixture } from "./assemblyHallFixture";
+
+export type ComponentFamilyControlKey = "windowFamily" | "corniceFamily";
 
 export interface ComponentForgeProps {
   fixture: AssemblyHallFixture;
   lockedComponentKeys?: string[];
   onToggleComponentLock?: (componentKey: string) => void;
+  windowFamily?: string;
+  corniceFamily?: string;
+  onComponentFamilyChange?: (key: ComponentFamilyControlKey, value: string) => void;
 }
 
 function formatMeters(value: number): string {
@@ -39,12 +45,36 @@ function atlasSlotsForEntry(entry: ComponentGalleryEntry | undefined, slots: Atl
   return slots.filter((slot) => selectedSlotIds.has(slot.id));
 }
 
+function familyControlForRole(
+  role: string | undefined
+): { key: ComponentFamilyControlKey; options: string[]; label: string } | undefined {
+  if (role === "window") {
+    return {
+      key: "windowFamily",
+      options: stylePack.componentFamilies.windows,
+      label: "Window family"
+    };
+  }
+  if (role === "cornice") {
+    return {
+      key: "corniceFamily",
+      options: stylePack.componentFamilies.cornices,
+      label: "Cornice family"
+    };
+  }
+  return undefined;
+}
+
 export function ComponentForge({
   fixture,
   lockedComponentKeys = [],
-  onToggleComponentLock
+  onToggleComponentLock,
+  windowFamily,
+  corniceFamily,
+  onComponentFamilyChange
 }: ComponentForgeProps) {
   const selectorId = useId();
+  const familyId = useId();
   const [selectedEntryId, setSelectedEntryId] = useState(fixture.componentGallery.entries[0]?.id ?? "");
   const [showWireframe, setShowWireframe] = useState(false);
   const [showUvOverlay, setShowUvOverlay] = useState(false);
@@ -63,6 +93,13 @@ export function ComponentForge({
   const selectedComponentKey = selectedRecipe?.id ?? selectedEntry?.recipeId;
   const selectedIsLocked = selectedComponentKey ? lockedComponentKeys.includes(selectedComponentKey) : false;
   const lockedLabel = lockedComponentKeys.length ? lockedComponentKeys.join(", ") : "none";
+  const familyControl = familyControlForRole(selectedRecipe?.role);
+  const selectedFamilyValue =
+    familyControl?.key === "windowFamily"
+      ? (windowFamily ?? fixture.spec.selectedFamilies.window)
+      : familyControl?.key === "corniceFamily"
+        ? (corniceFamily ?? fixture.spec.selectedFamilies.cornice)
+        : undefined;
 
   return (
     <section className="component-forge" aria-labelledby="component-forge-heading">
@@ -131,6 +168,30 @@ export function ComponentForge({
             </button>
             <p aria-label="Component lock status">{lockedLabel}</p>
           </div>
+
+          {familyControl && selectedFamilyValue ? (
+            <label className="component-forge__selector" htmlFor={familyId}>
+              <span>{familyControl.label}</span>
+              <select
+                id={familyId}
+                aria-label={familyControl.label}
+                value={selectedFamilyValue}
+                disabled={!onComponentFamilyChange}
+                onChange={(event) => {
+                  onComponentFamilyChange?.(familyControl.key, event.currentTarget.value);
+                }}
+              >
+                {familyControl.options.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+              <small aria-label="Component family swap note">
+                Swap recompiles catalog and geometry without regenerating materials.
+              </small>
+            </label>
+          ) : null}
         </div>
       </div>
 

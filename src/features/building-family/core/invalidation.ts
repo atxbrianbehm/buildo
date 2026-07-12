@@ -35,6 +35,8 @@ export type BuildingControlName =
   | "detailLevel"
   | "roofType"
   | "trimDensity"
+  | "windowFamily"
+  | "corniceFamily"
   | "localComponentLock"
   | "remoteMaterial"
   | "weathering";
@@ -48,6 +50,8 @@ export interface BuildingControlSnapshot {
   detailLevel?: string;
   roofType: string;
   trimDensity: string;
+  windowFamily?: string;
+  corniceFamily?: string;
   remoteMaterialEnabled?: boolean;
   weathering?: number;
   lockedComponentKeys?: string[];
@@ -170,6 +174,22 @@ const controlImpactMatrix: Record<BuildingControlName, Record<BuildingInvalidati
     runtimeBuildingIr: "full",
     gpuScene: "full"
   },
+  windowFamily: {
+    ...noImpact,
+    normalizedSpec: "partial",
+    componentCatalog: "full",
+    buildingGraph: "full",
+    runtimeBuildingIr: "full",
+    gpuScene: "full"
+  },
+  corniceFamily: {
+    ...noImpact,
+    normalizedSpec: "partial",
+    componentCatalog: "full",
+    buildingGraph: "full",
+    runtimeBuildingIr: "full",
+    gpuScene: "full"
+  },
   localComponentLock: {
     ...noImpact,
     normalizedSpec: "partial",
@@ -243,6 +263,8 @@ function changedControls(previous: BuildingControlSnapshot, next: BuildingContro
   if ((previous.detailLevel ?? "high") !== (next.detailLevel ?? "high")) changed.push("detailLevel");
   if (previous.roofType !== next.roofType) changed.push("roofType");
   if (previous.trimDensity !== next.trimDensity) changed.push("trimDensity");
+  if ((previous.windowFamily ?? "") !== (next.windowFamily ?? "")) changed.push("windowFamily");
+  if ((previous.corniceFamily ?? "") !== (next.corniceFamily ?? "")) changed.push("corniceFamily");
   if (Boolean(previous.remoteMaterialEnabled) !== Boolean(next.remoteMaterialEnabled)) {
     changed.push("remoteMaterial");
   }

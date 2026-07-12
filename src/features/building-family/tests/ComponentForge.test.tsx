@@ -46,6 +46,31 @@ describe("ComponentForge", () => {
     fixture.familyRuntime.dispose();
   });
 
+  it("offers style-pack window family variants and reports swaps to the parent", async () => {
+    const fixture = await createAssemblyHallFixture();
+    const onComponentFamilyChange = vi.fn();
+
+    render(
+      <ComponentForge
+        fixture={fixture}
+        windowFamily={fixture.spec.selectedFamilies.window}
+        corniceFamily={fixture.spec.selectedFamilies.cornice}
+        onComponentFamilyChange={onComponentFamilyChange}
+      />
+    );
+
+    fireEvent.change(screen.getByRole("combobox", { name: "Component selector" }), {
+      target: { value: "component-gallery.recipe.window.tall-arched.frame" }
+    });
+
+    const familySelect = screen.getByRole("combobox", { name: "Window family" });
+    expect(familySelect).toHaveValue("tall-arched");
+    fireEvent.change(familySelect, { target: { value: "tall-rectangular" } });
+    expect(onComponentFamilyChange).toHaveBeenCalledWith("windowFamily", "tall-rectangular");
+
+    fixture.familyRuntime.dispose();
+  });
+
   it("locks and unlocks the selected component recipe through the parent control surface", async () => {
     const fixture = await createAssemblyHallFixture();
     const lockedComponentKeys: string[] = [];

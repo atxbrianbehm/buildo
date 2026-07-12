@@ -110,7 +110,7 @@ describe("compileBuilding", () => {
     expect(ir.bounds.min[1]).toBe(0);
     expect(ir.bounds.min[2]).toBeLessThanOrEqual(-spec.massing.depthM / 2);
     expect(ir.bounds.max[0]).toBeGreaterThanOrEqual(spec.massing.widthM / 2);
-    expect(ir.bounds.max[1]).toBeCloseTo(
+    expect(ir.bounds.max[1]).toBeGreaterThanOrEqual(
       spec.massing.floorHeightsM.reduce((total, height) => total + height, 0) + spec.massing.parapetHeightM
     );
     expect(ir.bounds.max[2]).toBeGreaterThanOrEqual(spec.massing.depthM / 2);
@@ -184,10 +184,13 @@ describe("compileBuilding", () => {
     );
     expect(ir.semanticIndex).toContainEqual(
       expect.objectContaining({
-        semanticPath: `building/${spec.familyId}/facade/front/cornice/primary`,
+        semanticPath: expect.stringContaining(`building/${spec.familyId}/facade/front/cornice/`),
         batchId: "mesh.cornice",
         stage: "trim"
       })
+    );
+    expect(ir.meshBatches.map((batch) => batch.batchId)).toEqual(
+      expect.arrayContaining(["mesh.cornice", "mesh.belt-course", "mesh.roof-cap", "mesh.corner-quoins"])
     );
     expect(ir.semanticIndex.filter((entry) => entry.batchId === "mesh.wall-panels")).toHaveLength(
       expectedWallPanelCount

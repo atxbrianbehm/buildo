@@ -11,7 +11,8 @@ import {
   buildWindowFrameRecipe,
   buildWindowRecessRecipe
 } from "./frameBuilder";
-import { buildCorniceRecipe } from "./profileSweepBuilder";
+import { buildCorniceRecipe, buildProfiledRoofCapRecipe } from "./profiledTrimBuilder";
+import { buildCornerQuoinRecipe } from "./quoinBuilder";
 import { buildRoofRecipe } from "./roofBuilder";
 
 export const ComponentCatalogSchema = z.object({
@@ -68,6 +69,8 @@ export async function buildComponentCatalog(
     buildDoorRecipe(spec),
     ...buildTrimRecipes(spec),
     buildCorniceRecipe(spec),
+    buildProfiledRoofCapRecipe(spec),
+    buildCornerQuoinRecipe(spec),
     buildRoofRecipe(spec)
   ];
   const diagnostics = validateRecipeSlots(recipes, manifest);

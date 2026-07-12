@@ -25,6 +25,8 @@ export interface BuildingPromptControls {
   detailLevel: BuildingDetailLevel;
   roofType: BuildingRoofType;
   trimDensity: BuildingTrimDensity;
+  windowFamily: string;
+  corniceFamily: string;
   remoteMaterialEnabled: boolean;
   lockedComponentKeys: string[];
 }
@@ -96,6 +98,8 @@ export const defaultBuildingPromptControls: BuildingPromptControls = {
   detailLevel: "high",
   roofType: "flat",
   trimDensity: "ornate",
+  windowFamily: "tall-arched",
+  corniceFamily: "bracketed-metal",
   remoteMaterialEnabled: false,
   lockedComponentKeys: []
 };

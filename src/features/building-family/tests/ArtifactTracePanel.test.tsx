@@ -1,4 +1,5 @@
 import { render, screen, within } from "@testing-library/react";
+import type { ArtKitFacadePlanSummary } from "../art-kit";
 import type { GenerationRun } from "../contracts/generationRun";
 import type { BuildingArtifactSliceState } from "../state/buildingStore";
 import { ArtifactTracePanel } from "../ui/ArtifactTracePanel";
@@ -73,6 +74,26 @@ const artifacts: BuildingArtifactSliceState = {
   }
 };
 
+const artKitFacadePlan: ArtKitFacadePlanSummary = {
+  schemaVersion: "0.1.0",
+  present: true,
+  artKitManifestId: "late-19c-apartment-kit",
+  plannerId: "seeded-greedy",
+  unitMeters: 1,
+  cellCount: 12,
+  placementCount: 20,
+  placementsByFacade: { front: 10, rear: 6, left: 2, right: 2 },
+  diagnostics: [
+    {
+      code: "artKit.facadePlanner.missingModule",
+      message: "No cornice module for zone.",
+      severity: "error",
+      path: "modules.cornice"
+    }
+  ],
+  samplePlacements: []
+};
+
 describe("ArtifactTracePanel", () => {
   it("renders run-event artifact lineage and registered artifact metadata", () => {
     render(
@@ -80,6 +101,7 @@ describe("ArtifactTracePanel", () => {
         activeArtifactId="assembly-hall-fixture:building-demo:atlas-hash"
         artifacts={artifacts}
         run={completedRun}
+        artKitFacadePlan={artKitFacadePlan}
       />
     );
 
@@ -100,5 +122,14 @@ describe("ArtifactTracePanel", () => {
     const active = screen.getByLabelText("Active artifact provenance");
     expect(active).toHaveTextContent("assembly-hall-fixture");
     expect(active).toHaveTextContent("graph-hash");
+
+    const planSummary = screen.getByLabelText("Art-kit facade plan summary");
+    expect(planSummary).toHaveTextContent("late-19c-apartment-kit");
+    expect(planSummary).toHaveTextContent("seeded-greedy");
+    expect(planSummary).toHaveTextContent("20");
+    expect(planSummary).toHaveTextContent("front:10");
+    expect(screen.getByLabelText("Art-kit facade plan diagnostics")).toHaveTextContent(
+      "artKit.facadePlanner.missingModule"
+    );
   });
 });

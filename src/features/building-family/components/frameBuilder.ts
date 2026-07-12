@@ -75,33 +75,4 @@ export function buildDoorRecipe(spec: BuildingFamilySpec) {
   });
 }
 
-export function buildTrimRecipes(spec: BuildingFamilySpec) {
-  return [
-    makeComponentRecipe({
-      id: `recipe.trim.${spec.selectedFamilies.trim}.horizontal`,
-      kind: "profileSweep",
-      role: "horizontalTrim",
-      dimensionsM: { width: spec.massing.widthM, height: 0.34, depth: 0.16 },
-      atlasSlotIds: ["trim.horizontal.primary"],
-      uvBehavior: "cap-repeat-cap",
-      variationScope: spec.variationPolicy.trim ?? "family",
-      attachmentPlane: "facade.front",
-      parameterRanges: {
-        projectionM: { min: 0.08, max: 0.24 }
-      }
-    }),
-    makeComponentRecipe({
-      id: `recipe.trim.${spec.selectedFamilies.trim}.vertical`,
-      kind: "profileSweep",
-      role: "verticalTrim",
-      dimensionsM: { width: 0.34, height: typicalFloorHeight(spec.massing.floorHeightsM), depth: 0.14 },
-      atlasSlotIds: ["trim.vertical.primary"],
-      uvBehavior: "cap-repeat-cap",
-      variationScope: spec.variationPolicy.trim ?? "family",
-      attachmentPlane: "facade.front",
-      parameterRanges: {
-        projectionM: { min: 0.06, max: 0.18 }
-      }
-    })
-  ];
-}
+export { buildTrimRecipes } from "./profiledTrimBuilder";

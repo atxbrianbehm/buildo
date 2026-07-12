@@ -29,6 +29,12 @@ import {
   type PrimitiveGeometry,
   type Vec3
 } from "./primitiveGeometry";
+import {
+  buildCorniceProfilePrimitives,
+  buildCornerQuoinPrimitives,
+  buildHorizontalBeltCoursePrimitives,
+  buildRoofCapPrimitives
+} from "./profiledTrimGeometry";
 
 export type BuildingComponentDetailLevel = "high" | "low";
 export type BuildingFidelityMode = "proof" | "kit";
@@ -192,26 +198,83 @@ function createWallMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCatalog)
 
 function createCorniceMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCatalog): MeshPlan {
   const recipe = recipeByRole(catalog, "cornice");
-  const center: Vec3 = [
-    0,
-    sum(spec.massing.floorHeightsM) - recipe.dimensionsM.height / 2,
-    -spec.massing.depthM / 2 + recipe.dimensionsM.depth / 2
-  ];
+  const primitives = buildCorniceProfilePrimitives(spec, recipe);
 
   return {
     batchId: "mesh.cornice",
     role: "cornice",
     materialSlotId: firstAtlasSlot(recipe),
     stage: "trim",
-    primitives: [buildBoxPrimitive({ center, size: [recipe.dimensionsM.width, recipe.dimensionsM.height, recipe.dimensionsM.depth] })],
-    semanticEntries: [
-      {
-        semanticPath: semanticPath(spec, "facade/front/cornice/primary"),
-        batchId: "mesh.cornice",
-        elementIndex: 0,
-        stage: "trim"
-      }
-    ]
+    primitives,
+    semanticEntries: primitives.map((_, elementIndex) => ({
+      semanticPath: semanticPath(spec, `facade/front/cornice/layer/${elementIndex}`),
+      batchId: "mesh.cornice",
+      elementIndex,
+      stage: "trim" as const
+    }))
+  };
+}
+
+function createHorizontalBeltMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCatalog): MeshPlan | undefined {
+  const recipe = catalog.recipes.find((candidate) => candidate.role === "horizontalTrim");
+  if (!recipe) {
+    return undefined;
+  }
+  const primitives = buildHorizontalBeltCoursePrimitives(spec, recipe);
+  return {
+    batchId: "mesh.belt-course",
+    role: "horizontalTrim",
+    materialSlotId: firstAtlasSlot(recipe),
+    stage: "trim",
+    primitives,
+    semanticEntries: primitives.map((_, elementIndex) => ({
+      semanticPath: semanticPath(spec, `facade/front/belt-course/layer/${elementIndex}`),
+      batchId: "mesh.belt-course",
+      elementIndex,
+      stage: "trim" as const
+    }))
+  };
+}
+
+function createRoofCapMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCatalog): MeshPlan | undefined {
+  const recipe = catalog.recipes.find((candidate) => candidate.role === "roofCap");
+  if (!recipe) {
+    return undefined;
+  }
+  const primitives = buildRoofCapPrimitives(spec, recipe);
+  return {
+    batchId: "mesh.roof-cap",
+    role: "roofCap",
+    materialSlotId: firstAtlasSlot(recipe),
+    stage: "trim",
+    primitives,
+    semanticEntries: primitives.map((_, elementIndex) => ({
+      semanticPath: semanticPath(spec, `roof/cap/layer/${elementIndex}`),
+      batchId: "mesh.roof-cap",
+      elementIndex,
+      stage: "trim" as const
+    }))
+  };
+}
+
+function createCornerQuoinMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCatalog): MeshPlan | undefined {
+  const recipe = catalog.recipes.find((candidate) => candidate.role === "cornerQuoin");
+  if (!recipe) {
+    return undefined;
+  }
+  const primitives = buildCornerQuoinPrimitives(spec, recipe);
+  return {
+    batchId: "mesh.corner-quoins",
+    role: "cornerQuoin",
+    materialSlotId: firstAtlasSlot(recipe),
+    stage: "trim",
+    primitives,
+    semanticEntries: primitives.map((_, elementIndex) => ({
+      semanticPath: semanticPath(spec, `facade/corner/quoin/${elementIndex}`),
+      batchId: "mesh.corner-quoins",
+      elementIndex,
+      stage: "trim" as const
+    }))
   };
 }
 
@@ -508,9 +571,17 @@ export async function compileBuilding(input: CompileBuildingInput): Promise<Runt
   const detailLevel = input.detailLevel ?? "high";
   const highDetail = detailLevel === "high";
   const moduleInstances = await resolveModuleInstances(input);
+  const highDetailMeshPlans = highDetail
+    ? [
+        createCorniceMeshPlan(input.spec, input.catalog),
+        createHorizontalBeltMeshPlan(input.spec, input.catalog),
+        createRoofCapMeshPlan(input.spec, input.catalog),
+        createCornerQuoinMeshPlan(input.spec, input.catalog)
+      ].filter((plan): plan is MeshPlan => plan !== undefined)
+    : [];
   const meshPlans = [
     createWallMeshPlan(input.spec, input.catalog),
-    ...(highDetail ? [createCorniceMeshPlan(input.spec, input.catalog)] : []),
+    ...highDetailMeshPlans,
     createRoofMeshPlan(input.spec, input.catalog)
   ];
   const openingPlans = moduleInstances

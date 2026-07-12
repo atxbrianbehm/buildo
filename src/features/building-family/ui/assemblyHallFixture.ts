@@ -55,6 +55,8 @@ const defaultFixturePromptControls: BuildingPromptControls = {
   detailLevel: "high",
   roofType: "flat",
   trimDensity: "ornate",
+  windowFamily: "tall-arched",
+  corniceFamily: "bracketed-metal",
   remoteMaterialEnabled: false,
   lockedComponentKeys: [],
   seeds: {
@@ -368,7 +370,9 @@ export async function createAssemblyHallFixture(
       floorCount: controls.floorCount,
       bayCount: controls.bayCount,
       roofType: controls.roofType,
-      trimDensity: controls.trimDensity
+      trimDensity: controls.trimDensity,
+      windowFamily: controls.windowFamily,
+      corniceFamily: controls.corniceFamily
     }
   });
   const spec = (await normalizeBuildingSpec(adapted.intent, stylePack)).spec;
