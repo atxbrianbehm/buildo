@@ -250,15 +250,15 @@ Side/rear ground can stay simpler.
 
 #### Acceptance
 
-- [ ] Ground front bay with door: bulkhead + door slot + lintel pieces present  
-- [ ] Ground front bay with window: same structure with window slot  
-- [ ] Upper floors unchanged in contract (body zone)  
-- [ ] Split hash changes when ground floor height changes  
+- [x] Ground front bay with door: bulkhead + door slot + lintel pieces present  
+- [x] Ground front bay with window: same structure with window slot  
+- [x] Upper floors unchanged in contract (body zone)  
+- [x] Split hash changes when ground floor height changes  
 
 #### Validation
 
 ```powershell
-npm.cmd run test -- facadeSplitPlan facadeWallSubdivision buildingCompiler
+npm.cmd run test -- facadeSplitPlan facadeWallSubdivision buildingCompiler storefrontScopeSplit
 npm.cmd run typecheck
 ```
 
@@ -577,5 +577,6 @@ Start **G1** only:
 | | Prior unplanned quality commits: seeds, openings, profiles, pilasters, split walls, split plan. |
 | 2026-07-12 | **G1 landed:** kit openings only from split; proof front-only split defaults; 1:1 assert in compiler. |
 | 2026-07-12 | **G2 landed:** `openingSlotBinding` locks frame scale + pocket AABB to split slots; oversize diagnostics. |
+| 2026-07-12 | **G3 landed:** ground front storefront vertical split (bulkhead/glazing/lintel); proud hierarchy from scopes. |
 
-**Next packet to implement:** G3 — Storefront scope split.
+**Next packet to implement:** G4 — Storefront kit modules.

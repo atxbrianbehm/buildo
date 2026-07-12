@@ -569,10 +569,15 @@ function createOpeningPocketMeshPlan(
   };
 }
 
-/** Ground-floor storefront bulkhead + continuous lintel band. */
+/**
+ * Proud storefront bulkhead/lintel/fascia from ground-front split scopes (G3).
+ * Structural bulkhead/lintel already live in subdivided wall pieces; this batch
+ * adds slightly proud hierarchy so clay reads as a storefront system.
+ */
 function createStorefrontHierarchyMeshPlan(
   spec: BuildingFamilySpec,
-  catalog: ComponentCatalog
+  catalog: ComponentCatalog,
+  split: FacadeSplitPlan
 ): MeshPlan | undefined {
   if (spec.massing.floorCount < 1) {
     return undefined;
@@ -582,28 +587,65 @@ function createStorefrontHierarchyMeshPlan(
   if (!wallRecipe) {
     return undefined;
   }
-  const groundHeight = spec.massing.floorHeightsM[0] ?? 4;
-  const width = spec.massing.widthM;
-  const bulkheadHeight = Math.min(0.85, groundHeight * 0.2);
-  const lintelHeight = Math.min(0.35, groundHeight * 0.08);
-  const zBulk = -spec.massing.depthM / 2 + wallRecipe.dimensionsM.depth * 0.55;
-  const primitives: PrimitiveGeometry[] = [
-    // Bulkhead / base under storefront glazing.
-    buildBoxPrimitive({
-      center: [0, bulkheadHeight / 2 + 0.02, zBulk],
-      size: [width * 0.98, bulkheadHeight, wallRecipe.dimensionsM.depth * 0.55]
-    }),
-    // Continuous storefront lintel below 2nd floor.
-    buildBoxPrimitive({
-      center: [0, groundHeight - lintelHeight / 2 - 0.04, zBulk + 0.04],
-      size: [width * 0.99, lintelHeight, wallRecipe.dimensionsM.depth * 0.7]
-    }),
-    // Slightly proud fascia above lintel.
-    buildBoxPrimitive({
-      center: [0, groundHeight - lintelHeight * 0.15, zBulk + 0.08],
-      size: [width + 0.06, lintelHeight * 0.35, wallRecipe.dimensionsM.depth * 0.45]
-    })
-  ];
+  const groundFront = split.scopes.filter(
+    (scope) => scope.facade === "front" && scope.zone === "ground" && scope.storefront
+  );
+  if (groundFront.length === 0) {
+    return undefined;
+  }
+  const wallDepth = wallRecipe.dimensionsM.depth;
+  const primitives: PrimitiveGeometry[] = [];
+  const semanticEntries: SemanticIndexEntry[] = [];
+
+  for (const scope of groundFront) {
+    const sf = scope.storefront!;
+    const [ox, , oz] = scope.originM;
+    const sx = scope.sizeM[0];
+    const bayCenterX = ox + sx / 2;
+    // Slightly proud of structural wall face.
+    const zProud = oz - 0.02;
+    const proudDepth = Math.max(0.08, wallDepth * 0.45);
+
+    primitives.push(
+      buildBoxPrimitive({
+        center: [bayCenterX, sf.bulkheadCenterYM, zProud + proudDepth * 0.35],
+        size: [sx * 0.98, sf.bulkheadHeightM * 0.92, proudDepth]
+      })
+    );
+    semanticEntries.push({
+      semanticPath: semanticPath(spec, `facade/front/bay/${scope.bayIndex}/storefront/bulkhead`),
+      batchId: "mesh.storefront-hierarchy",
+      elementIndex: semanticEntries.length,
+      stage: "facade"
+    });
+
+    primitives.push(
+      buildBoxPrimitive({
+        center: [bayCenterX, sf.lintelCenterYM, zProud + proudDepth * 0.4],
+        size: [sx * 0.99, sf.lintelHeightM, proudDepth * 1.1]
+      })
+    );
+    semanticEntries.push({
+      semanticPath: semanticPath(spec, `facade/front/bay/${scope.bayIndex}/storefront/lintel`),
+      batchId: "mesh.storefront-hierarchy",
+      elementIndex: semanticEntries.length,
+      stage: "facade"
+    });
+
+    primitives.push(
+      buildBoxPrimitive({
+        center: [bayCenterX, sf.lintelCenterYM + sf.lintelHeightM * 0.35, zProud + proudDepth * 0.55],
+        size: [sx + 0.04, sf.lintelHeightM * 0.35, proudDepth * 0.7]
+      })
+    );
+    semanticEntries.push({
+      semanticPath: semanticPath(spec, `facade/front/bay/${scope.bayIndex}/storefront/fascia`),
+      batchId: "mesh.storefront-hierarchy",
+      elementIndex: semanticEntries.length,
+      stage: "facade"
+    });
+  }
+
   const materialSlotId = trimRecipe ? firstAtlasSlot(trimRecipe) : firstAtlasSlot(wallRecipe);
   return {
     batchId: "mesh.storefront-hierarchy",
@@ -611,12 +653,7 @@ function createStorefrontHierarchyMeshPlan(
     materialSlotId,
     stage: "facade",
     primitives,
-    semanticEntries: primitives.map((_, elementIndex) => ({
-      semanticPath: semanticPath(spec, `facade/front/storefront/layer/${elementIndex}`),
-      batchId: "mesh.storefront-hierarchy",
-      elementIndex,
-      stage: "facade" as const
-    }))
+    semanticEntries
   };
 }
 
@@ -725,7 +762,7 @@ export async function compileBuilding(input: CompileBuildingInput): Promise<Runt
   const highDetailMeshPlans = highDetail
     ? [
         createBasePlinthMeshPlan(input.spec, input.catalog),
-        createStorefrontHierarchyMeshPlan(input.spec, input.catalog),
+        createStorefrontHierarchyMeshPlan(input.spec, input.catalog, facadeSplit),
         createCorniceMeshPlan(input.spec, input.catalog),
         createHorizontalBeltMeshPlan(input.spec, input.catalog),
         createVerticalPilasterMeshPlan(input.spec, input.catalog),

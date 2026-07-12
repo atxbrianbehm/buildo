@@ -186,7 +186,14 @@ export async function buildFacadeSplitPlan(
       floorIndex: scope.floorIndex,
       bayIndex: scope.bayIndex,
       zone: scope.zone,
-      opening: scope.opening
+      opening: scope.opening,
+      storefront: scope.storefront
+        ? {
+            bulkheadHeightM: scope.storefront.bulkheadHeightM,
+            glazingHeightM: scope.storefront.glazingHeightM,
+            lintelHeightM: scope.storefront.lintelHeightM
+          }
+        : undefined
     })),
     openings: openings.map((opening) => ({
       facade: opening.facade,

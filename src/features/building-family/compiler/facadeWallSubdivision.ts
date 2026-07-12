@@ -1,5 +1,10 @@
 import type { BuildingFamilySpec } from "../contracts/buildingFamilySpec";
 import { buildBoxPrimitive, type PrimitiveGeometry, type Vec3 } from "./primitiveGeometry";
+import {
+  clampOpeningToGlazingBand,
+  splitGroundStorefrontVertical,
+  type StorefrontVerticalSplit
+} from "./storefrontScopeSplit";
 
 /**
  * CGA / Geometry-Nodes-inspired facade wall subdivision.
@@ -7,6 +12,9 @@ import { buildBoxPrimitive, type PrimitiveGeometry, type Vec3 } from "./primitiv
  * Instead of one slab per bay, each bay splits into structural wall scopes:
  * left pier | right pier | sill wall | head wall | (optional mid rail).
  * Opening centers stay empty for frame instances — closer to GN "grid + module".
+ *
+ * Ground front bays also carry an explicit storefront vertical split (G3):
+ * bulkhead | glazing | lintel.
  */
 
 export type WallFacadeName = "front" | "rear" | "left" | "right";
@@ -30,6 +38,8 @@ export interface FacadeBayScope {
   sizeM: Vec3;
   zone: "ground" | "body";
   opening?: OpeningSlot;
+  /** Present on ground front (and optional later) bays — storefront vertical bands. */
+  storefront?: StorefrontVerticalSplit;
 }
 
 export interface SubdivideFacadeWallsInput {
@@ -106,31 +116,43 @@ export function buildFacadeBayScopes(input: SubdivideFacadeWallsInput): FacadeBa
             ? facade === "front"
             : facade === "front" || (facade === "rear" && zone === "body"));
         const doorBay = Math.floor(spec.facade.frontBayCount / 2);
-        const opening =
-          openingSpec !== undefined
-            ? {
-                widthM: openingSpec.widthM,
-                heightM: openingSpec.heightM,
-                centerYM: y0 + floorHeight * (zone === "ground" ? 0.52 : 0.55),
-                centerAlongM: x0 + frontBayWidth / 2,
-                kind: openingSpec.kind
-              }
-            : hasDefaultOpening
-              ? {
-                  widthM:
-                    floor === 0 && bay === doorBay && facade === "front"
-                      ? Math.min(frontBayWidth * 0.7, 2.0)
-                      : defaultOpenW,
-                  heightM:
-                    floor === 0 && bay === doorBay && facade === "front"
-                      ? Math.min(floorHeight * 0.72, 3.0)
-                      : defaultOpenH,
-                  centerYM: y0 + floorHeight * (zone === "ground" ? 0.52 : 0.55),
-                  centerAlongM: x0 + frontBayWidth / 2,
-                  kind:
-                    floor === 0 && bay === doorBay && facade === "front" ? ("door" as const) : ("window" as const)
-                }
-              : undefined;
+        const storefront =
+          facade === "front" && zone === "ground"
+            ? splitGroundStorefrontVertical(y0, floorHeight)
+            : undefined;
+        let opening: OpeningSlot | undefined;
+        if (openingSpec !== undefined) {
+          const kind = openingSpec.kind ?? "window";
+          const raw = {
+            widthM: openingSpec.widthM,
+            heightM: openingSpec.heightM,
+            centerYM: y0 + floorHeight * (zone === "ground" ? 0.52 : 0.55),
+            centerAlongM: x0 + frontBayWidth / 2,
+            kind
+          };
+          if (storefront) {
+            const clamped = clampOpeningToGlazingBand(raw, storefront, kind);
+            opening = { ...raw, heightM: clamped.heightM, centerYM: clamped.centerYM };
+          } else {
+            opening = raw;
+          }
+        } else if (hasDefaultOpening) {
+          const isDoor = floor === 0 && bay === doorBay && facade === "front";
+          const kind = isDoor ? ("door" as const) : ("window" as const);
+          const raw = {
+            widthM: isDoor ? Math.min(frontBayWidth * 0.7, 2.0) : defaultOpenW,
+            heightM: isDoor ? Math.min(floorHeight * 0.72, 3.0) : defaultOpenH,
+            centerYM: y0 + floorHeight * (zone === "ground" ? 0.52 : 0.55),
+            centerAlongM: x0 + frontBayWidth / 2,
+            kind
+          };
+          if (storefront) {
+            const clamped = clampOpeningToGlazingBand(raw, storefront, kind);
+            opening = { ...raw, heightM: clamped.heightM, centerYM: clamped.centerYM };
+          } else {
+            opening = raw;
+          }
+        }
 
         scopes.push({
           facade,
@@ -139,7 +161,8 @@ export function buildFacadeBayScopes(input: SubdivideFacadeWallsInput): FacadeBa
           originM: [x0, y0, z0],
           sizeM: [frontBayWidth, floorHeight, depth],
           zone,
-          opening
+          opening,
+          storefront
         });
       }
     }
@@ -215,6 +238,50 @@ export function expandBayWallPrimitives(scope: FacadeBayScope): PrimitiveGeometr
   const headHeight = Math.max(0.08, oy + sy - openTop);
 
   if (!isSide) {
+    const sf = scope.storefront;
+    // Storefront ground front: full-width bulkhead + lintel bands, then piers beside glazing.
+    if (sf && scope.zone === "ground" && scope.facade === "front") {
+      // Bulkhead (full bay width)
+      primitives.push(
+        buildBoxPrimitive({
+          center: [ox + sx / 2, sf.bulkheadCenterYM, oz + sz / 2],
+          size: [sx, sf.bulkheadHeightM, sz]
+        })
+      );
+      // Lintel band (full bay width under 2nd floor)
+      primitives.push(
+        buildBoxPrimitive({
+          center: [ox + sx / 2, sf.lintelCenterYM, oz + sz / 2],
+          size: [sx, sf.lintelHeightM, sz]
+        })
+      );
+      // Left / right piers only within glazing band height
+      if (leftWidth > 0.05) {
+        primitives.push(
+          buildBoxPrimitive({
+            center: [alongMin + leftWidth / 2, sf.glazingCenterYM, oz + sz / 2],
+            size: [leftWidth, sf.glazingHeightM, sz]
+          })
+        );
+      }
+      if (rightWidth > 0.05) {
+        primitives.push(
+          buildBoxPrimitive({
+            center: [openAlong + openHalf + rightWidth / 2, sf.glazingCenterYM, oz + sz / 2],
+            size: [rightWidth, sf.glazingHeightM, sz]
+          })
+        );
+      }
+      // Inner reveal at glazing slot
+      primitives.push(
+        buildBoxPrimitive({
+          center: [openAlong, open.centerYM, oz + sz * 0.22],
+          size: [open.widthM + 0.1, open.heightM + 0.1, sz * 0.28]
+        })
+      );
+      return primitives;
+    }
+
     // Left pier
     if (leftWidth > 0.05) {
       primitives.push(
