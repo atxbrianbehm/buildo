@@ -159,8 +159,12 @@ describe("AssemblyHall", () => {
     render(<AssemblyHall fixture={fixture} rendererFactory={fakeRendererFactory()} />);
 
     expect(screen.getByRole("heading", { name: "Assembly Hall" })).toBeInTheDocument();
-    const viewport = screen.getByRole("img", { name: "Rendered generated building fixture" });
-    expect(await within(viewport).findByTestId("assembly-renderer-canvas")).toBeInTheDocument();
+    const viewport = screen.getByRole("application", { name: "Interactive generated building viewer" });
+    const canvas = await within(viewport).findByTestId("assembly-renderer-canvas");
+    expect(canvas).toBeInTheDocument();
+    expect(canvas).toHaveAttribute("data-orbit-controls", "true");
+    expect(screen.getByRole("button", { name: "Reset camera" })).toBeInTheDocument();
+    expect(screen.getByText(/Drag to orbit/i)).toBeInTheDocument();
     expect(screen.getByText(fixture.prompt)).toBeInTheDocument();
     expect(screen.getByLabelText("Assembly Hall renderer metrics")).toHaveTextContent(
       String(fixture.metrics.drawCallCount)
@@ -200,7 +204,7 @@ describe("AssemblyHall", () => {
 
     render(<AssemblyHall fixture={fixture} rendererFactory={rendererFactory} />);
 
-    const viewport = screen.getByRole("img", { name: "Rendered generated building fixture" });
+    const viewport = screen.getByRole("application", { name: "Interactive generated building viewer" });
     const canvas = await within(viewport).findByTestId("assembly-renderer-canvas");
     const presentation = screen.getByRole("combobox", { name: "Presentation mode" });
     expect(presentation).toHaveValue("textured");
@@ -454,8 +458,15 @@ describe("AssemblyHall", () => {
 
   it("runs and surfaces the 100-building benchmark report from Assembly Hall", async () => {
     const fixture = await createAssemblyHallFixture();
+    const benchmarkSceneFactory = vi.fn(async () => fakeConstructionBenchmarkSceneFor(fixture));
 
-    render(<AssemblyHall fixture={fixture} rendererFactory={fakeRendererFactory()} />);
+    render(
+      <AssemblyHall
+        fixture={fixture}
+        rendererFactory={fakeRendererFactory()}
+        benchmarkSceneFactory={benchmarkSceneFactory}
+      />
+    );
 
     const benchmarkReport = screen.getByLabelText("100-building benchmark report");
     expect(benchmarkReport).toHaveTextContent("Not run");
@@ -463,6 +474,7 @@ describe("AssemblyHall", () => {
     fireEvent.click(screen.getByRole("button", { name: "Run 100-building benchmark" }));
 
     expect(await screen.findByText("shared-family-100-building-scene")).toBeInTheDocument();
+    expect(benchmarkSceneFactory).toHaveBeenCalledTimes(1);
     expect(benchmarkReport).toHaveTextContent("100 buildings");
     expect(benchmarkReport).toHaveTextContent(fixture.packedAtlas.contentHash);
     expect(benchmarkReport).toHaveTextContent(fixture.ir.metrics.triangleCount.toLocaleString("en-US"));
@@ -544,7 +556,11 @@ describe("AssemblyHall", () => {
     );
 
     const metrics = screen.getByLabelText("Assembly Hall renderer metrics");
-    expect(await within(screen.getByRole("img", { name: "Rendered generated building fixture" })).findByTestId("assembly-renderer-canvas")).toBeInTheDocument();
+    expect(
+      await within(screen.getByRole("application", { name: "Interactive generated building viewer" })).findByTestId(
+        "assembly-renderer-canvas"
+      )
+    ).toBeInTheDocument();
     expect(metrics).toHaveTextContent("webgl active / webgpu preferred");
     expect(screen.getByRole("status")).toHaveTextContent("adapter unavailable");
   });

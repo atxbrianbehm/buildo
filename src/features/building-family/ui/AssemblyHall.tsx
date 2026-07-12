@@ -18,6 +18,7 @@ import {
   Vector3,
   type Object3D
 } from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import type { ComponentGalleryEntry } from "../compiler/componentGalleryBuilder";
 import type { Diagnostic } from "../core/diagnostics";
 import type { AssemblyStage } from "../contracts/shared";
@@ -84,6 +85,9 @@ interface PreparedAssemblyScene {
   scene: Scene;
   camera: PerspectiveCamera;
   clayMaterial: MeshStandardMaterial;
+  orbitTarget: Vector3;
+  defaultCameraPosition: Vector3;
+  maxDimension: number;
   dispose(): void;
 }
 
@@ -425,14 +429,23 @@ function prepareScene(root: Object3D): PreparedAssemblyScene {
   });
   clayMaterial.name = "assembly-hall.clay-inspection";
   let disposed = false;
+  const orbitTarget = new Vector3(center.x, center.y + size.y * 0.1, center.z);
+  const defaultCameraPosition = new Vector3(
+    center.x + maxDimension * 0.85,
+    center.y + size.y * 0.45,
+    center.z - maxDimension * 1.35
+  );
   const camera = new PerspectiveCamera(42, 16 / 9, 0.1, maxDimension * 10);
-  camera.position.set(center.x + maxDimension * 0.85, center.y + size.y * 0.45, center.z - maxDimension * 1.35);
-  camera.lookAt(center.x, center.y + size.y * 0.1, center.z);
+  camera.position.copy(defaultCameraPosition);
+  camera.lookAt(orbitTarget);
   scene.add(root);
   return {
     scene,
     camera,
     clayMaterial,
+    orbitTarget,
+    defaultCameraPosition,
+    maxDimension,
     dispose: () => {
       if (disposed) {
         return;
@@ -487,6 +500,7 @@ export function AssemblyHall({
   const presentationId = useId();
   const mountRef = useRef<HTMLDivElement | null>(null);
   const renderFrameRef = useRef<(() => void) | null>(null);
+  const resetCameraRef = useRef<(() => void) | null>(null);
   const sceneRef = useRef<Scene | null>(null);
   const clayMaterialRef = useRef<MeshStandardMaterial | null>(null);
   const benchmarkRunIdRef = useRef(0);
@@ -753,12 +767,16 @@ export function AssemblyHall({
     }
 
     let renderer: AssemblyRenderer | null = null;
+    let orbitControls: OrbitControls | null = null;
     let resizeObserver: ResizeObserver | null = null;
     let animationFrame = 0;
     let scene: Scene | null = null;
     let camera: PerspectiveCamera | null = null;
     let preparedScene: PreparedAssemblyScene | null = null;
     let cancelled = false;
+    let needsRender = true;
+    let pointerActive = false;
+    let loopScheduled = false;
 
     const renderFrame = () => {
       if (!renderer || !scene || !camera) {
@@ -772,10 +790,51 @@ export function AssemblyHall({
       camera.updateProjectionMatrix();
       renderer.render(scene, camera);
       renderer.domElement.dataset.rendered = "true";
+      renderer.domElement.dataset.orbitControls = "true";
       renderer.domElement.dataset.revealThroughStage = revealThroughStageRef.current;
       renderer.domElement.dataset.presentationMode = presentationModeRef.current;
     };
     renderFrameRef.current = renderFrame;
+
+    const scheduleFrame = () => {
+      if (cancelled || loopScheduled) {
+        return;
+      }
+      loopScheduled = true;
+      animationFrame = requestAnimationFrame(() => {
+        loopScheduled = false;
+        if (cancelled) {
+          return;
+        }
+        let dampingMoved = false;
+        if (orbitControls) {
+          dampingMoved = orbitControls.update();
+        }
+        if (needsRender || dampingMoved) {
+          needsRender = false;
+          renderFrame();
+        }
+        if (pointerActive || dampingMoved) {
+          scheduleFrame();
+        }
+      });
+    };
+
+    const requestRender = () => {
+      needsRender = true;
+      scheduleFrame();
+    };
+
+    const resetCamera = () => {
+      if (!camera || !preparedScene || !orbitControls) {
+        return;
+      }
+      camera.position.copy(preparedScene.defaultCameraPosition);
+      orbitControls.target.copy(preparedScene.orbitTarget);
+      orbitControls.update();
+      requestRender();
+    };
+    resetCameraRef.current = resetCamera;
 
     const activateRenderer = async () => {
       try {
@@ -804,11 +863,37 @@ export function AssemblyHall({
         renderer.domElement.setAttribute("aria-label", "Assembly Hall Three.js canvas");
         renderer.domElement.className = "assembly-hall__canvas";
         mount.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.08;
+        controls.enablePan = true;
+        controls.screenSpacePanning = true;
+        controls.minDistance = Math.max(1, prepared.maxDimension * 0.35);
+        controls.maxDistance = prepared.maxDimension * 4.5;
+        controls.maxPolarAngle = Math.PI * 0.495;
+        controls.target.copy(prepared.orbitTarget);
+        controls.addEventListener("start", () => {
+          pointerActive = true;
+          scheduleFrame();
+        });
+        controls.addEventListener("end", () => {
+          pointerActive = false;
+          scheduleFrame();
+        });
+        controls.addEventListener("change", () => {
+          requestRender();
+        });
+        controls.update();
+        orbitControls = controls;
+        // Paint once immediately so first frame does not wait on rAF (tests + first paint).
+        needsRender = false;
         renderFrame();
+        scheduleFrame();
+
         if ("ResizeObserver" in window) {
           resizeObserver = new ResizeObserver(() => {
-            cancelAnimationFrame(animationFrame);
-            animationFrame = requestAnimationFrame(renderFrame);
+            requestRender();
           });
           resizeObserver.observe(mount);
         }
@@ -825,7 +910,11 @@ export function AssemblyHall({
     return () => {
       cancelled = true;
       cancelAnimationFrame(animationFrame);
+      loopScheduled = false;
       resizeObserver?.disconnect();
+      orbitControls?.dispose();
+      orbitControls = null;
+      resetCameraRef.current = null;
       if (clayMaterialRef.current) {
         applyPresentationMode(fixture, clayMaterialRef.current, "textured");
       }
@@ -855,9 +944,20 @@ export function AssemblyHall({
         <div
           className="assembly-hall__viewport"
           ref={mountRef}
-          role="img"
-          aria-label="Rendered generated building fixture"
+          role="application"
+          aria-label="Interactive generated building viewer"
+          aria-roledescription="3D building viewer"
         >
+          <div className="assembly-hall__viewport-chrome">
+            <p className="assembly-hall__viewport-hint">Drag to orbit · scroll to zoom · right-drag to pan</p>
+            <button
+              type="button"
+              className="assembly-hall__reset-camera"
+              onClick={() => resetCameraRef.current?.()}
+            >
+              Reset camera
+            </button>
+          </div>
           {renderError ? (
             <p className="assembly-hall__render-error" role="status">
               Renderer fallback: {renderError}

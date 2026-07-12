@@ -163,7 +163,7 @@ describe("App", () => {
     selectRoom("Assembly Hall");
     expect(await screen.findByRole("heading", { name: "Assembly Hall" })).toBeInTheDocument();
     expect(screen.getByRole("combobox", { name: "Reveal through stage" })).toBeInTheDocument();
-    expect(screen.getByRole("img", { name: "Rendered generated building fixture" })).toBeInTheDocument();
+    expect(screen.getByRole("application", { name: "Interactive generated building viewer" })).toBeInTheDocument();
     expect(screen.getByLabelText("Assembly Hall renderer metrics")).toHaveTextContent("Draw calls");
   });
 
