@@ -6,6 +6,7 @@ import type { AssemblyHallFixture } from "../ui/assemblyHallFixture";
 import {
   createModuleQualityReport,
   ModuleQualityReportSchema,
+  parseModuleQualityReport,
   type CreateModuleQualityReportInput,
   type ModuleQualityReport
 } from "./moduleQualityReport";
@@ -13,6 +14,11 @@ import {
   buildFacadeSplitObservabilitySummary,
   type FacadeSplitObservabilitySummary
 } from "./facadeSplitObservability";
+import {
+  clayGateToQualityChecklistItems,
+  evaluateClayQualityGate,
+  type ClayQualityGateReport
+} from "./clayQualityGate";
 
 export const VISUAL_QA_PACKET_KIND = "dynamic-building-family-visual-qa";
 
@@ -51,6 +57,30 @@ export const VisualQaPacketSchema = z.object({
     facadeSplitContentHash: z.string().min(1).optional()
   }),
   facadeSplit: FacadeSplitSummarySchema.optional(),
+  clayQualityGate: z
+    .object({
+      schemaVersion: z.literal("0.1.0"),
+      reportKind: z.literal("dynamic-building-family-clay-quality-gate"),
+      familyId: z.string().min(1),
+      buildingId: z.string().min(1),
+      fidelityMode: z.enum(["proof", "kit"]),
+      criteria: z.array(
+        z.object({
+          id: z.string().min(1),
+          label: z.string().min(1),
+          status: z.enum(["pass", "fail", "estimated", "not-captured"]),
+          evidence: z.string().min(1),
+          measuredValue: z.unknown().optional()
+        })
+      ),
+      summary: z.object({
+        passCount: z.number().int().nonnegative(),
+        failCount: z.number().int().nonnegative(),
+        estimatedCount: z.number().int().nonnegative()
+      }),
+      gateOpen: z.boolean()
+    })
+    .optional(),
   qualityReport: ModuleQualityReportSchema,
   knownGaps: z.array(z.string().min(1)),
   benchmarkProfileId: z.string().min(1).optional(),
@@ -117,7 +147,32 @@ export async function createVisualQaPacket(input: CreateVisualQaPacketInput): Pr
       windowCount: splitSummary.windowCount
     }
   };
-  const qualityReport = input.qualityReport ?? createModuleQualityReport(qualityInput);
+  // Seed variety ≥6 is enforced by buildingSeedVariation unit tests; gate records that floor.
+  const clayQualityGate: ClayQualityGateReport = evaluateClayQualityGate({
+    fixture: input.fixture,
+    split: splitSummary,
+    detailLevel: input.detailLevel ?? "high",
+    seedCompositionCount: 6
+  });
+  const baseQualityReport = input.qualityReport ?? createModuleQualityReport(qualityInput);
+  const qualityReport =
+    input.qualityReport ??
+    parseModuleQualityReport({
+      ...baseQualityReport,
+      checklist: [...baseQualityReport.checklist, ...clayGateToQualityChecklistItems(clayQualityGate)],
+      summary: {
+        passCount:
+          baseQualityReport.summary.passCount +
+          clayQualityGate.criteria.filter((c) => c.status === "pass").length,
+        failCount:
+          baseQualityReport.summary.failCount +
+          clayQualityGate.criteria.filter((c) => c.status === "fail").length,
+        estimatedCount:
+          baseQualityReport.summary.estimatedCount +
+          clayQualityGate.criteria.filter((c) => c.status === "estimated").length,
+        notCapturedCount: baseQualityReport.summary.notCapturedCount
+      }
+    });
   const seeds = input.seeds ?? input.fixture.spec.seeds;
   const createdAt = (input.now ?? (() => new Date()))().toISOString();
   const contentFingerprint = await hashCanonicalJson({
@@ -127,6 +182,7 @@ export async function createVisualQaPacket(input: CreateVisualQaPacketInput): Pr
     atlasContentHash: input.fixture.packedAtlas.contentHash,
     sourceGraphHash: input.fixture.ir.sourceGraphHash,
     facadeSplitContentHash: splitSummary.contentHash,
+    clayGateOpen: clayQualityGate.gateOpen,
     qualitySummary: qualityReport.summary
   });
 
@@ -153,8 +209,12 @@ export async function createVisualQaPacket(input: CreateVisualQaPacketInput): Pr
       facadeSplitContentHash: splitSummary.contentHash
     },
     facadeSplit: splitSummary,
+    clayQualityGate,
     qualityReport,
-    knownGaps: qualityReport.knownGaps,
+    knownGaps: [
+      ...qualityReport.knownGaps,
+      "G8 clay orbit / Shift-light rows are estimated until browser screenshot capture is automated."
+    ],
     benchmarkProfileId: input.benchmarkProfileId,
     fieldCoverage: fieldCoverageFromReport(qualityReport)
   });

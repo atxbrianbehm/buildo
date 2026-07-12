@@ -2,11 +2,11 @@
 
 ## Implementation plan
 
-**Status:** in progress — M1–M11 landed (Phase C complete); **geometry quality track G1–G8 runs before WFC** (see below)  
+**Status:** in progress — M1–M11 landed (Phase C complete); **geometry quality track G1–G8 exited** (2026-07-12)  
 **Date:** 2026-07-12  
 **Depends on:** MVP vertical slice (Milestones 0–7) complete; art-fidelity Slice 1 (`ArtKitManifest` + `late19cApartmentKit`) complete; visual-truth Assembly Hall prerequisite  
 **UTDG note:** UTDG is **not** a live subsystem. A prepared research brief lives at `docs/research/utdg-late19c-brief.md` + `docs/research/utdg-late19c-v0.1.json` and can be validated via `injectTextureDescriptionBrief()` in `src/features/building-family/utdg/`. Material consumers (Phase E2) inject that brief; they do not invent structure.  
-**Geometry quality track:** `docs/plans/geometry-node-quality-packets.md` (G1–G8). Do **not** start M12 WFC until G8 clay gate exits unless product explicitly trades form for layout.  
+**Geometry quality track:** `docs/plans/geometry-node-quality-packets.md` — **G1–G8 complete / paused**. Geometry is ready enough that **M12 WFC** and **M14 UTDG material consumer** may proceed.  
 **Related plans:**
 
 | Plan | Role |

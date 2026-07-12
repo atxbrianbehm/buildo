@@ -1,8 +1,8 @@
 # Geometry-Node Quality Packets
 
-**Status:** active planning — geometry fidelity track (post–vertical-slice, post–kit M1–M11)  
+**Status:** **exited** — G1–G8 complete (2026-07-12); geometry track paused  
 **Date:** 2026-07-12  
-**Branch baseline:** `main` @ `92ce977` (facade split plan reconvergence)  
+**Branch baseline:** `main` @ `92ce977` (facade split plan reconvergence); exit commits G1–G8 on `main`  
 **Owner track:** Dynamic Building Family geometry expanders + kit split  
 **Related:**
 
@@ -444,14 +444,14 @@ Formal exit for the geometry-node quality track.
 
 #### Deliverables
 
-- [ ] Checklist recorded in Visual QA packet categories (or module quality) as automated where possible + manual notes for pure visual rows  
-- [ ] Short “G8 exit” note in this plan status section  
-- [ ] Parent kit plan updated: geometry track ready for WFC/materials  
+- [x] Checklist recorded in Visual QA packet categories (or module quality) as automated where possible + manual notes for pure visual rows  
+- [x] Short “G8 exit” note in this plan status section  
+- [x] Parent kit plan updated: geometry track ready for WFC/materials  
 
 #### Validation
 
 ```powershell
-npm.cmd run test -- facadeSplitPlan buildingCompiler moduleQualityReport visualQaPacket AssemblyHall
+npm.cmd run test -- facadeSplitPlan buildingCompiler moduleQualityReport visualQaPacket clayQualityGate AssemblyHall
 npm.cmd run test:e2e
 npm.cmd run typecheck
 ```
@@ -582,5 +582,20 @@ Start **G1** only:
 | 2026-07-12 | **G5 landed:** split hash + counts in Visual QA / quality checklist / Artifact Trace / Assembly Hall. |
 | 2026-07-12 | **G6 landed:** expanders barrel (`expandOpeningFromSlot` / `expandProfileRun`), kit mesh batch id list, worker parity. |
 | 2026-07-12 | **G7 landed:** restrained cornice profile + seed-selected profileRecipeId lookup (no style forks). |
+| 2026-07-12 | **G8 exit:** clay quality gate report + Visual QA integration; geometry track paused; WFC/materials unblocked. |
 
-**Next packet to implement:** G8 — Clay quality gate.
+### G8 exit note
+
+Geometry-node quality track (G1–G8) is **complete and paused**. Default late-19c kit compile has:
+
+- single split opening authority (G1)
+- slot-locked frames/pockets (G2)
+- storefront vertical scopes + kit modules (G3–G4)
+- split hash in QA/trace (G5)
+- expander barrel + worker parity (G6)
+- alternate profile stress (G7)
+- automated clay gate + estimated manual clay row (G8)
+
+**Parent roadmap may resume M12 WFC / M14 UTDG material consumer** without waiting on further GN packets unless product reopens this track.
+
+**Next packet to implement:** none on this track — return to parent plan (WFC M12 or product priority).

@@ -36,6 +36,8 @@ describe("visualQaPacket", () => {
       expect(
         packet.qualityReport.checklist.some((item) => item.label.includes("Facade split plan"))
       ).toBe(true);
+      expect(packet.clayQualityGate?.gateOpen).toBe(true);
+      expect(packet.clayQualityGate?.criteria.some((row) => row.id === "split-hash-qa")).toBe(true);
       expect(packet.fieldCoverage.measured.length).toBeGreaterThan(0);
       expect(packet.benchmarkProfileId).toBe("profile-demo");
       expect(parseVisualQaPacket(packet)).toEqual(packet);
