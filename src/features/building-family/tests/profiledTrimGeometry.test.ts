@@ -120,4 +120,23 @@ describe("profiled trim geometry", () => {
     expect(beltMinZ).toBeLessThan(frontZ - 0.05);
     expect(plinthMinZ).toBeLessThan(frontZ - 0.05);
   });
+
+  it("builds a heavy layered crown that overhangs far enough for V2 silhouette (Marx target)", () => {
+    const spec = {
+      ...fixtureSpec(),
+      facade: { ...fixtureSpec().facade, corniceHeightM: 1.7 },
+      selectedFamilies: { ...fixtureSpec().selectedFamilies, cornice: "bracketed-metal" as const }
+    };
+    const recipe = {
+      ...buildCorniceRecipe(spec),
+      profileRecipeId: "profile.cornice.late19c.layered"
+    };
+    const cornice = buildCorniceProfilePrimitives(spec, recipe);
+    const frontZ = -spec.massing.depthM / 2;
+    const corniceMinZ = Math.min(...cornice.map((primitive) => primitive.bounds.min[2]));
+    const overhang = frontZ - corniceMinZ;
+    // ~0.7 m+ outward so skyline reads without forensic lighting.
+    expect(overhang).toBeGreaterThanOrEqual(0.7);
+    expect(cornice.length).toBeGreaterThanOrEqual(8);
+  });
 });

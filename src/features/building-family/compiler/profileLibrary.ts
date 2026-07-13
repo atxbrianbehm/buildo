@@ -29,42 +29,46 @@ function validateProfile(profile: ProfileDefinition): void {
   }
 }
 
-/** Late-19c layered cornice section (u up from bed, d out from facade). */
+/**
+ * Late-19c layered cornice section (u up from bed, d out from facade).
+ * V2: deeper crown so clay silhouette sells before openings are inspected.
+ */
 export const late19cCorniceProfile: ProfileDefinition = {
   id: "profile.cornice.late19c.layered",
   label: "Late 19c layered cornice",
   points: [
-    { u: 0.0, d: 0.08 },
-    { u: 0.06, d: 0.1 },
-    { u: 0.1, d: 0.18 },
-    { u: 0.22, d: 0.2 },
-    { u: 0.28, d: 0.32 },
-    { u: 0.4, d: 0.34 },
-    { u: 0.48, d: 0.42 },
-    { u: 0.58, d: 0.48 },
-    { u: 0.68, d: 0.55 },
-    { u: 0.78, d: 0.62 },
-    { u: 0.88, d: 0.58 },
-    { u: 1.0, d: 0.7 }
+    { u: 0.0, d: 0.12 },
+    { u: 0.06, d: 0.18 },
+    { u: 0.12, d: 0.28 },
+    { u: 0.22, d: 0.34 },
+    { u: 0.3, d: 0.48 },
+    { u: 0.42, d: 0.55 },
+    { u: 0.52, d: 0.68 },
+    { u: 0.62, d: 0.78 },
+    { u: 0.72, d: 0.9 },
+    { u: 0.82, d: 1.0 },
+    { u: 0.92, d: 0.95 },
+    { u: 1.0, d: 1.08 }
   ]
 };
 
 /**
  * Shallower alternate cornice (G7 stress) — same expand path, different profile id.
  * Selected via recipe.profileRecipeId / seed, not a compiler style fork.
+ * Still deeper than pre-V2 so restrained seed keeps a readable crown.
  */
 export const late19cRestrainedCorniceProfile: ProfileDefinition = {
   id: "profile.cornice.late19c.restrained",
   label: "Late 19c restrained cornice",
   points: [
-    { u: 0.0, d: 0.05 },
-    { u: 0.08, d: 0.08 },
-    { u: 0.18, d: 0.12 },
-    { u: 0.32, d: 0.16 },
-    { u: 0.48, d: 0.2 },
-    { u: 0.65, d: 0.22 },
-    { u: 0.82, d: 0.24 },
-    { u: 1.0, d: 0.26 }
+    { u: 0.0, d: 0.08 },
+    { u: 0.08, d: 0.12 },
+    { u: 0.18, d: 0.18 },
+    { u: 0.32, d: 0.24 },
+    { u: 0.48, d: 0.3 },
+    { u: 0.65, d: 0.34 },
+    { u: 0.82, d: 0.38 },
+    { u: 1.0, d: 0.42 }
   ]
 };
 
@@ -167,6 +171,23 @@ export function scaleProfileToHeight(profile: ProfileDefinition, heightM: number
     points: profile.points.map((point) => ({
       u: (point.u - u0) * scale,
       d: point.d * Math.min(1.35, 0.85 + scale * 0.15)
+    }))
+  };
+}
+
+/** Scale only outward projection `d` (V2 crown weight without changing height span). */
+export function scaleProfileProjection(
+  profile: ProfileDefinition,
+  projectionScale: number
+): ProfileDefinition {
+  validateProfile(profile);
+  const scale = Math.max(0.05, projectionScale);
+  return {
+    ...profile,
+    id: `${profile.id}.proj-${scale.toFixed(2)}`,
+    points: profile.points.map((point) => ({
+      u: point.u,
+      d: point.d * scale
     }))
   };
 }

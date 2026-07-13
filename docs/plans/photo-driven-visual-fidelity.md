@@ -1,6 +1,6 @@
 # Photo-Driven Visual Fidelity Packets
 
-**Status:** active — V1 (commercial base) landed 2026-07-13; next V2  
+**Status:** active — V1–V2 landed 2026-07-13; next V3  
 **Date:** 2026-07-13  
 **Parent tracks:** G1–G8 geometry quality (exited), kit-grammar roadmap, Period Ref Lab  
 **Primary refs:** `docs/ref/` + `docs/research/period-reference/` via `#room=periodRef`  
@@ -82,11 +82,11 @@ npm.cmd run typecheck
 
 Clay: ground band visibly taller than floor above at default camera (no zoom).
 
-### V2 — Cornice crown weight
+### V2 — Cornice crown weight — **done 2026-07-13**
 
 **Gap:** P0 made cornice present; amplitude still light vs Marx.  
-**Levers:** Profile `d` scale, corniceHeightM, bracket size—not new mesh libraries.  
-**Exit:** 3/4 clay skyline reads “has a cornice” before openings are inspected.
+**Levers:** Deeper layered/restrained profiles, `scaleProfileProjection`, taller corniceHeightM, larger brackets + fascia bar.  
+**Exit:** 3/4 clay skyline reads “has a cornice” before openings are inspected (≥ ~0.7 m overhang on layered).
 
 ### V3 — Punched opening amplitude
 
@@ -130,6 +130,7 @@ Re-score Marx + Vanderbilt packets; archive captures; link from kit-grammar Phas
 | 2026-07-12 | Period Ref Lab + first-pass FINDINGS (P0–P4 backlog) |
 | 2026-07-13 | P0 outward trim, P1 opening orientation |
 | 2026-07-13 | This plan; **V1 commercial base** landed (5.6 m ground vs ~3.5 m body) |
+| 2026-07-13 | **V2 cornice crown weight** landed (deeper profile + brackets + fascia) |
 
 ---
 

@@ -35,7 +35,7 @@ Silhouette + trim layering were **fail** because front moldings used `facadeSign
 
 ## Ranked geometry follow-ups (photo-driven)
 
-### P0 — Cornice crown readable in clay — **done 2026-07-13**
+### P0 — Cornice placement outward — **done 2026-07-13** (amplitude raised in V2)
 
 **Root cause:** Front cornice/belt/plinth/pilaster/spandrel/quoin placement swept profile `d` **into** the building (+Z) instead of outward (-Z).  
 **Fix:** `profiledTrimGeometry.ts` anchors on `frontFacadeExteriorZM` and uses `facadeSign: -1` for front moldings; proud boxes move to -Z.  
@@ -87,10 +87,16 @@ Silhouette + trim layering were **fail** because front moldings used `facadeSign
 
 Stage metrics from page capture (illustrative): facade 4 objects, openings 5, trim present — after P0/P1 clay readability improved for crown and opening throat.
 
+### V2 — Cornice crown weight — **done 2026-07-13**
+
+**Plan:** photo-driven V2  
+**Fix:** Deeper layered profile (max d ~1.08 m), projectionScale, taller corniceHeightM, larger brackets + continuous fascia bar.  
+**Exit:** Layered crown overhang ≥ ~0.7 m past front face.
+
 ## Next actions
 
-1. ~~P0 cornice outward placement~~ **landed**  
-2. ~~P1 punched opening orientation + throat~~ **landed**  
-3. ~~P2 / V1 commercial base band~~ **landed**  
-4. **V2** cornice crown weight (next — `docs/plans/photo-driven-visual-fidelity.md`)  
-5. Optional: Shift-drag raking frames in capture script  
+1. ~~P0–P1 placement~~ **landed**  
+2. ~~V1 commercial base~~ **landed**  
+3. ~~V2 cornice crown weight~~ **landed**  
+4. **V3** punched opening amplitude (next)  
+

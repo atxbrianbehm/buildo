@@ -50,8 +50,8 @@ Clay vs photo scores and ranked geometry follow-ups:
 - Capture script: `node scripts/capture-period-compare.mjs`
 
 **Photo-driven plan:** `docs/plans/photo-driven-visual-fidelity.md` (packets V1–V6).  
-**Landed:** P0 outward trim · P1 opening orientation · **V1 commercial base**.  
-**Next:** V2 cornice crown weight.
+**Landed:** P0 · P1 · **V1 commercial base** · **V2 cornice crown**.  
+**Next:** V3 punched opening amplitude.
 
 ## Related
 

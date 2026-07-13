@@ -7,6 +7,7 @@ import {
   late19cPilasterProfile,
   late19cRoofCapProfile,
   getProfileDefinition,
+  scaleProfileProjection,
   scaleProfileToHeight
 } from "./profileLibrary";
 import { densifyProfile, horizontalMoldingFromProfile, sweepProfileToBoxPrimitives } from "./profileSweepGeometry";
@@ -71,40 +72,63 @@ export function buildCorniceProfilePrimitives(
   recipe: ComponentRecipe
 ): PrimitiveGeometry[] {
   const width = recipe.dimensionsM.width;
-  const height = Math.max(0.55, recipe.dimensionsM.height);
+  const height = Math.max(0.7, recipe.dimensionsM.height);
   const totalHeight = spec.massing.floorHeightsM.reduce((total, value) => total + value, 0);
   // Profile id is the style switch — no per-style compiler branches (G7).
   const profileDef =
     (recipe.profileRecipeId ? getProfileDefinition(recipe.profileRecipeId) : undefined) ??
     late19cCorniceProfile;
-  const profile = densifyProfile(scaleProfileToHeight(profileDef, height), 2);
+  const isRestrained = profileDef.id.includes("restrained");
+  const projectionScale = rangeValue(recipe, "projectionScale", isRestrained ? 1.1 : 1.32);
+  const profile = densifyProfile(
+    scaleProfileProjection(scaleProfileToHeight(profileDef, height), projectionScale),
+    3
+  );
   const maxD = Math.max(...profile.points.map((point) => point.d));
   const frontZ = frontFacadeExteriorZM(spec);
   // Anchor on the exterior face; sweep `d` outward so crown is clay-visible.
-  const center: Vec3 = [0, totalHeight - height / 2, frontZ];
+  // Sit the band so its top meets the roof line and most mass hangs as a crown.
+  const center: Vec3 = [0, totalHeight - height * 0.42, frontZ];
   const primitives = horizontalMoldingFromProfile({
     profile,
     center,
-    widthM: width + 0.12,
+    widthM: width + 0.2,
     facadeSign: FRONT_FACADE_SIGN
   });
 
-  // Restrained profiles skip heavy brackets (shallower read).
-  const isRestrained = profileDef.id.includes("restrained");
-  if (!isRestrained) {
-    const bracketSpacing = rangeValue(recipe, "bracketSpacingM", 0.95);
-    const bracketCount = Math.max(3, Math.floor(width / bracketSpacing));
-    for (let index = 0; index < bracketCount; index += 1) {
-      const t = bracketCount === 1 ? 0.5 : index / (bracketCount - 1);
-      const x = -width / 2 + 0.28 + t * (width - 0.56);
+  // Brackets under the crown (layered always; restrained gets a lighter row for clay read).
+  const bracketSpacing = rangeValue(recipe, "bracketSpacingM", isRestrained ? 1.15 : 0.8);
+  const bracketCount = Math.max(isRestrained ? 3 : 4, Math.floor(width / bracketSpacing));
+  const bracketDepth = maxD * (isRestrained ? 0.42 : 0.55);
+  const bracketHeight = height * (isRestrained ? 0.28 : 0.38);
+  const bracketWidth = isRestrained ? 0.14 : 0.2;
+  for (let index = 0; index < bracketCount; index += 1) {
+    const t = bracketCount === 1 ? 0.5 : index / (bracketCount - 1);
+    const x = -width / 2 + 0.32 + t * (width - 0.64);
+    primitives.push(
+      buildBoxPrimitive({
+        center: [x, center[1] - height * 0.22, frontZ - maxD * 0.42],
+        size: [bracketWidth, bracketHeight, bracketDepth]
+      })
+    );
+    if (!isRestrained) {
+      // Secondary step under each bracket — multi-layer shadow under the crown.
       primitives.push(
         buildBoxPrimitive({
-          center: [x, center[1] - height * 0.12, frontZ - maxD * 0.35],
-          size: [0.14, height * 0.32, maxD * 0.45]
+          center: [x, center[1] - height * 0.34, frontZ - maxD * 0.28],
+          size: [bracketWidth * 1.25, bracketHeight * 0.35, bracketDepth * 0.55]
         })
       );
     }
   }
+
+  // Continuous fascia bar under the profile — sells a dark crown band even in soft light.
+  primitives.push(
+    buildBoxPrimitive({
+      center: [0, center[1] - height * 0.38, frontZ - maxD * 0.18],
+      size: [width + 0.28, height * 0.12, Math.max(0.18, maxD * 0.28)]
+    })
+  );
 
   return primitives;
 }

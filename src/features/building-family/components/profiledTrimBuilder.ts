@@ -56,14 +56,15 @@ export function buildProfiledVerticalTrimRecipe(spec: BuildingFamilySpec) {
 export function buildCorniceRecipe(spec: BuildingFamilySpec) {
   const profileRecipeId = resolveCorniceProfileRecipeId(spec);
   const restrained = profileRecipeId.includes("restrained");
+  // V2: taller band + deeper recipe depth so crown reads before openings are inspected.
   return makeComponentRecipe({
     id: `recipe.cornice.${spec.selectedFamilies.cornice}.primary`,
     kind: "profileSweep",
     role: "cornice",
     dimensionsM: {
       width: spec.massing.widthM,
-      height: spec.facade.corniceHeightM * (restrained ? 0.85 : 1),
-      depth: restrained ? 0.42 : 0.62
+      height: spec.facade.corniceHeightM * (restrained ? 0.95 : 1.12),
+      depth: restrained ? 0.62 : 1.05
     },
     atlasSlotIds: ["cornice.primary"],
     uvBehavior: "cap-repeat-cap",
@@ -71,9 +72,11 @@ export function buildCorniceRecipe(spec: BuildingFamilySpec) {
     attachmentPlane: "facade.front",
     profileRecipeId,
     parameterRanges: {
-      projectionM: restrained ? { min: 0.12, max: 0.32 } : { min: 0.24, max: 0.68 },
-      bracketSpacingM: { min: 0.6, max: 1.4 },
-      crownHeightM: restrained ? { min: 0.1, max: 0.22 } : { min: 0.18, max: 0.4 }
+      projectionM: restrained ? { min: 0.22, max: 0.48 } : { min: 0.55, max: 1.15 },
+      bracketSpacingM: restrained ? { min: 0.85, max: 1.5 } : { min: 0.55, max: 1.05 },
+      crownHeightM: restrained ? { min: 0.16, max: 0.3 } : { min: 0.28, max: 0.55 },
+      /** Extra outward scale applied after height fit (V2 amplitude). */
+      projectionScale: restrained ? { min: 1.05, max: 1.2 } : { min: 1.2, max: 1.45 }
     }
   });
 }
