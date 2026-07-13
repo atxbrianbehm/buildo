@@ -15,6 +15,7 @@ export type BuildingRoom =
   | "componentForge"
   | "artKitLab"
   | "sampleGallery"
+  | "periodRef"
   | "assemblyHall";
 export type BuildingDetailLevel = "high" | "low";
 export type BuildingRoofType = "flat" | "gable";

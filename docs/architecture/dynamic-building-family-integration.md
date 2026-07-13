@@ -1,6 +1,6 @@
 # Dynamic Building Family Integration Map
 
-**Status:** Milestone 8 Slice 2–8 through visual QA packet export (M1–M11; Phase C complete)
+**Status:** Milestone 8 Slice 2–8 through visual QA packet export (M1–M11; Phase C complete); period photo reference lab (`#room=periodRef`) for manual clay-vs-photo compare
 **Plan source:** `docs/plans/dynamic-building-family.md`
 **Supplemental art-fidelity plan:** `docs/superpowers/plans/2026-06-25-dynamic-building-family-art-fidelity-bridge.md`
 **Post-MVP kit → WFC → UTDG → block plan:** `docs/plans/kit-grammar-wfc-utdg-block.md`
@@ -1645,10 +1645,15 @@ src/features/building-family/ui/AtlasLab.tsx
 src/features/building-family/ui/ArtifactTracePanel.tsx
 src/features/building-family/ui/ComponentForge.tsx
 src/features/building-family/ui/SampleBuildingGallery.tsx
+src/features/building-family/ui/PeriodReferenceLab.tsx
 src/features/building-family/ui/AssemblyHall.tsx
+src/features/building-family/qa/periodReferenceCatalog.ts
+docs/ref/catalog.json
+docs/ref/README.md
+server/building-family/periodReferenceStaticPlugin.ts
 ```
 
-Actual feature routing: root route with hash-addressable room panels plus an optional route-level document id. No router dependency exists yet. The root app shell now exposes a store-backed `Building rooms` tablist synchronized with `#room=<roomId>` hashes and preserves `#document=<documentId>&room=<roomId>` when a document id is present. Browser back/forward events synchronize route state back into the store. Prompt Lab contains the expanded Control Invalidation prompt-control surface, committed rerun buttons, a Cancel Run action, controller-backed Generation Run timeline with artifact cache-hit badges plus remote provider labels/diagnostic codes, Artifact Trace provenance tables, and Prompt Trace PSG/interpreter diagnostics. Atlas Lab exposes provider diagnostics, channel/slot inspection, remote material route details, and a downloadable remote-material proof packet for generated route output; Component Forge exposes local recipe lock controls; Sample Gallery exposes eight HTML/SVG generated family-variant preview cards with lineage; and Assembly Hall exposes manual stage reveal, renderer compatibility diagnostics, the app-facing 100-building benchmark report, the renderer-sampled 16-building orbit benchmark, the downloadable Milestone 7 benchmark profile packet, and the 16-variant stress summary. All room panels are backed by the same completed fixture artifact.
+Actual feature routing: root route with hash-addressable room panels plus an optional route-level document id. No router dependency exists yet. The root app shell now exposes a store-backed `Building rooms` tablist synchronized with `#room=<roomId>` hashes and preserves `#document=<documentId>&room=<roomId>` when a document id is present. Browser back/forward events synchronize route state back into the store. Prompt Lab contains the expanded Control Invalidation prompt-control surface, committed rerun buttons, a Cancel Run action, controller-backed Generation Run timeline with artifact cache-hit badges plus remote provider labels/diagnostic codes, Artifact Trace provenance tables, and Prompt Trace PSG/interpreter diagnostics. Atlas Lab exposes provider diagnostics, channel/slot inspection, remote material route details, and a downloadable remote-material proof packet for generated route output; Component Forge exposes local recipe lock controls; Sample Gallery exposes eight HTML/SVG generated family-variant preview cards with lineage; **Period Ref** (`#room=periodRef`) browses `docs/ref` + HABS photo references with a manual clay-vs-photo rubric and downloadable comparison notes (images served in dev via `/period-ref/…`); and Assembly Hall exposes manual stage reveal, renderer compatibility diagnostics, the app-facing 100-building benchmark report, the renderer-sampled 16-building orbit benchmark, the downloadable Milestone 7 benchmark profile packet, and the 16-variant stress summary. All generation room panels are backed by the same completed fixture artifact; Period Ref is catalog-driven and does not regenerate structure.
 
 Actual Three.js renderer setup:
 

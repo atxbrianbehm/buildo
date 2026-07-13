@@ -8,6 +8,7 @@ import { AssemblyHall } from "../features/building-family/ui/AssemblyHall";
 import { ComponentForge } from "../features/building-family/ui/ComponentForge";
 import { PromptTracePanel } from "../features/building-family/ui/PromptTracePanel";
 import { ArtKitLab } from "../features/building-family/ui/ArtKitLab";
+import { PeriodReferenceLab } from "../features/building-family/ui/PeriodReferenceLab";
 import { SampleBuildingGallery } from "../features/building-family/ui/SampleBuildingGallery";
 import { createIndexedDbArtifactPersistence } from "../features/building-family/materials/indexedDbArtifactPersistence";
 import {
@@ -78,6 +79,7 @@ const roomOptions: Array<{ label: string; room: BuildingRoom }> = [
   { label: "Component Forge", room: "componentForge" },
   { label: "Art Kit Lab", room: "artKitLab" },
   { label: "Sample Gallery", room: "sampleGallery" },
+  { label: "Period Ref", room: "periodRef" },
   { label: "Assembly Hall", room: "assemblyHall" }
 ];
 
@@ -778,6 +780,20 @@ export function App() {
               {runState.error ?? "Preparing sample buildings"}
             </div>
           )}
+        </section>
+      ) : null}
+      {activeRoom === "periodRef" ? (
+        <section
+          aria-labelledby="building-room-tab-periodRef"
+          className="room-panel"
+          id="building-room-panel-periodRef"
+          role="tabpanel"
+        >
+          <PeriodReferenceLab
+            fidelityMode={promptControls.fidelityMode}
+            seeds={promptControls.seeds}
+            onOpenAssemblyHall={() => selectRoutedRoom("assemblyHall")}
+          />
         </section>
       ) : null}
       {activeRoom === "assemblyHall" ? (

@@ -213,7 +213,8 @@ export async function createVisualQaPacket(input: CreateVisualQaPacketInput): Pr
     qualityReport,
     knownGaps: [
       ...qualityReport.knownGaps,
-      "G8 clay orbit / Shift-light rows are estimated until browser screenshot capture is automated."
+      "G8 clay orbit / Shift-light rows are estimated until browser screenshot capture is automated.",
+      "Period photo comparison is manual via #room=periodRef (docs/ref + HABS pack); not auto-scored in this packet."
     ],
     benchmarkProfileId: input.benchmarkProfileId,
     fieldCoverage: fieldCoverageFromReport(qualityReport)

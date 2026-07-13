@@ -40,6 +40,7 @@ describe("visualQaPacket", () => {
       expect(packet.clayQualityGate?.criteria.some((row) => row.id === "split-hash-qa")).toBe(true);
       expect(packet.fieldCoverage.measured.length).toBeGreaterThan(0);
       expect(packet.benchmarkProfileId).toBe("profile-demo");
+      expect(packet.knownGaps.some((gap) => gap.includes("periodRef"))).toBe(true);
       expect(parseVisualQaPacket(packet)).toEqual(packet);
     } finally {
       fixture.familyRuntime.dispose();
