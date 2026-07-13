@@ -121,6 +121,20 @@ describe("profiled trim geometry", () => {
     expect(plinthMinZ).toBeLessThan(frontZ - 0.05);
   });
 
+  it("builds proud belt and spandrel bands for V4 mid-facade hierarchy", () => {
+    const spec = fixtureSpec();
+    const frontZ = -spec.massing.depthM / 2;
+    const belts = buildHorizontalBeltCoursePrimitives(spec, buildProfiledHorizontalTrimRecipe(spec));
+    const spandrels = buildSpandrelBandPrimitives(spec);
+    const beltMinZ = Math.min(...belts.map((primitive) => primitive.bounds.min[2]));
+    const spandrelMinZ = Math.min(...spandrels.map((primitive) => primitive.bounds.min[2]));
+    // Belts + drips + string courses: more than one primitive per floor break.
+    expect(belts.length).toBeGreaterThanOrEqual(spec.massing.floorCount);
+    expect(spandrels.length).toBeGreaterThanOrEqual((spec.massing.floorCount - 1) * 2);
+    expect(frontZ - beltMinZ).toBeGreaterThanOrEqual(0.22);
+    expect(frontZ - spandrelMinZ).toBeGreaterThanOrEqual(0.18);
+  });
+
   it("builds a heavy layered crown that overhangs far enough for V2 silhouette (Marx target)", () => {
     const spec = {
       ...fixtureSpec(),

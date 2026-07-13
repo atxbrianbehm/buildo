@@ -50,8 +50,8 @@ Clay vs photo scores and ranked geometry follow-ups:
 - Capture script: `node scripts/capture-period-compare.mjs`
 
 **Photo-driven plan:** `docs/plans/photo-driven-visual-fidelity.md` (packets V1–V6).  
-**Landed:** P0 · P1 · V1 base · V2 cornice · **V3 opening amplitude**.  
-**Next:** V4 horizontal body hierarchy.
+**Landed:** P0 · P1 · V1–**V4** (base, cornice, openings, body belts).  
+**Next:** V5 material scale (textured).
 
 ## Related
 

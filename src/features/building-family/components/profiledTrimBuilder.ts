@@ -14,19 +14,21 @@ export function resolveCorniceProfileRecipeId(spec: BuildingFamilySpec): string 
 }
 
 export function buildProfiledHorizontalTrimRecipe(spec: BuildingFamilySpec) {
+  // V4: taller/deeper belt so mid-facade bands read without forensic lighting.
   return makeComponentRecipe({
     id: `recipe.trim.${spec.selectedFamilies.trim}.horizontal`,
     kind: "profileSweep",
     role: "horizontalTrim",
-    dimensionsM: { width: spec.massing.widthM, height: 0.34, depth: 0.2 },
+    dimensionsM: { width: spec.massing.widthM, height: 0.48, depth: 0.36 },
     atlasSlotIds: ["trim.horizontal.primary"],
     uvBehavior: "cap-repeat-cap",
     variationScope: spec.variationPolicy.trim ?? "family",
     attachmentPlane: "facade.front",
     profileRecipeId: `profile.trim.${spec.selectedFamilies.trim}.belt-course`,
     parameterRanges: {
-      projectionM: { min: 0.1, max: 0.28 },
-      capHeightM: { min: 0.05, max: 0.12 }
+      projectionM: { min: 0.22, max: 0.42 },
+      capHeightM: { min: 0.08, max: 0.16 },
+      projectionScale: { min: 1.25, max: 1.55 }
     }
   });
 }
@@ -37,9 +39,9 @@ export function buildProfiledVerticalTrimRecipe(spec: BuildingFamilySpec) {
     kind: "profileSweep",
     role: "verticalTrim",
     dimensionsM: {
-      width: 0.42,
+      width: 0.48,
       height: typicalFloorHeight(spec.massing.floorHeightsM),
-      depth: 0.28
+      depth: 0.36
     },
     atlasSlotIds: ["trim.vertical.primary"],
     uvBehavior: "cap-repeat-cap",
@@ -47,8 +49,8 @@ export function buildProfiledVerticalTrimRecipe(spec: BuildingFamilySpec) {
     attachmentPlane: "facade.front",
     profileRecipeId: `profile.trim.${spec.selectedFamilies.trim}.shallow-pilaster`,
     parameterRanges: {
-      projectionM: { min: 0.12, max: 0.28 },
-      plinthHeightM: { min: 0.28, max: 0.52 }
+      projectionM: { min: 0.18, max: 0.36 },
+      plinthHeightM: { min: 0.32, max: 0.58 }
     }
   });
 }

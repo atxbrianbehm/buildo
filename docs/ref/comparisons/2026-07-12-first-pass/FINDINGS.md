@@ -99,11 +99,15 @@ Stage metrics from page capture (illustrative): facade 4 objects, openings 5, tr
 **Fix:** Deeper window/door recipes, side/head returns, deeper glass, hoodProjection, fuller pockets.  
 **Exit:** depth ≥ 0.55 m, glass inset ≥ 0.2 m.
 
+### V4 — Horizontal body hierarchy — **done 2026-07-13**
+
+**Plan:** photo-driven V4  
+**Fix:** Deeper belts, ground-heavy first belt, drips, mid-body string courses, proud spandrels.  
+**Exit:** Base top / floor belts / cornice (+ mid strings) read as horizontal systems.
+
 ## Next actions
 
-1. ~~P0–P1 placement~~ **landed**  
-2. ~~V1 commercial base~~ **landed**  
-3. ~~V2 cornice crown~~ **landed**  
-4. ~~V3 opening amplitude~~ **landed**  
-5. **V4** horizontal body hierarchy (next)  
+1. ~~P0–P1 · V1–V4~~ **landed**  
+2. **V5** material scale (textured) — next  
+3. **V6** evidence close-out  
 

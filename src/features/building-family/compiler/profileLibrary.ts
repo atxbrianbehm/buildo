@@ -72,16 +72,19 @@ export const late19cRestrainedCorniceProfile: ProfileDefinition = {
   ]
 };
 
-/** Shallow belt-course section. */
+/**
+ * Belt-course section (V4: deeper projection for mid-facade shadow bands).
+ */
 export const late19cBeltProfile: ProfileDefinition = {
   id: "profile.trim.late19c.belt-course",
   label: "Late 19c belt course",
   points: [
-    { u: 0.0, d: 0.06 },
-    { u: 0.08, d: 0.1 },
-    { u: 0.16, d: 0.14 },
-    { u: 0.24, d: 0.16 },
-    { u: 0.3, d: 0.12 }
+    { u: 0.0, d: 0.1 },
+    { u: 0.08, d: 0.16 },
+    { u: 0.16, d: 0.22 },
+    { u: 0.24, d: 0.28 },
+    { u: 0.32, d: 0.32 },
+    { u: 0.4, d: 0.26 }
   ]
 };
 
@@ -90,11 +93,11 @@ export const late19cPilasterProfile: ProfileDefinition = {
   id: "profile.trim.late19c.pilaster",
   label: "Late 19c shallow pilaster",
   points: [
-    { u: 0.0, d: 0.06 },
-    { u: 0.06, d: 0.1 },
-    { u: 0.12, d: 0.16 },
-    { u: 0.18, d: 0.2 },
-    { u: 0.22, d: 0.18 }
+    { u: 0.0, d: 0.1 },
+    { u: 0.06, d: 0.16 },
+    { u: 0.12, d: 0.22 },
+    { u: 0.18, d: 0.28 },
+    { u: 0.24, d: 0.24 }
   ]
 };
 

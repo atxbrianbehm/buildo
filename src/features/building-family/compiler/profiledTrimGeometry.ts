@@ -135,29 +135,72 @@ export function buildCorniceProfilePrimitives(
 
 /**
  * Belt courses at each intermediate floor line from authored belt profile.
+ * V4: scaled projection + drip bar so floor lines read as horizontal shadow systems.
  */
 export function buildHorizontalBeltCoursePrimitives(
   spec: BuildingFamilySpec,
   recipe: ComponentRecipe
 ): PrimitiveGeometry[] {
-  const beltHeight = Math.max(0.22, recipe.dimensionsM.height);
+  const beltHeight = Math.max(0.32, recipe.dimensionsM.height);
   const width = recipe.dimensionsM.width;
-  const profile = densifyProfile(scaleProfileToHeight(late19cBeltProfile, beltHeight), 2);
+  const projectionScale = rangeValue(recipe, "projectionScale", 1.35);
+  const profile = densifyProfile(
+    scaleProfileProjection(scaleProfileToHeight(late19cBeltProfile, beltHeight), projectionScale),
+    3
+  );
+  const maxD = Math.max(...profile.points.map((point) => point.d));
   const primitives: PrimitiveGeometry[] = [];
 
   const frontZ = frontFacadeExteriorZM(spec);
   let floorTop = 0;
   for (let floor = 0; floor < spec.massing.floorCount - 1; floor += 1) {
     floorTop += spec.massing.floorHeightsM[floor] ?? 0;
-    const center: Vec3 = [0, floorTop - beltHeight / 2, frontZ];
+    // Ground→body belt is heavier; upper belts slightly lighter but still proud.
+    const weight = floor === 0 ? 1.15 : 1;
+    const height = beltHeight * weight;
+    const center: Vec3 = [0, floorTop - height / 2, frontZ];
+    const runProfile =
+      floor === 0
+        ? densifyProfile(
+            scaleProfileProjection(
+              scaleProfileToHeight(late19cBeltProfile, height),
+              projectionScale * 1.12
+            ),
+            3
+          )
+        : profile;
+    const runMaxD = Math.max(...runProfile.points.map((point) => point.d));
     primitives.push(
       ...horizontalMoldingFromProfile({
-        profile,
+        profile: runProfile,
         center,
-        widthM: width,
+        widthM: width + (floor === 0 ? 0.16 : 0.08),
         facadeSign: FRONT_FACADE_SIGN
       })
     );
+    // Continuous drip under the belt — sells a dark floor line in soft light.
+    primitives.push(
+      buildBoxPrimitive({
+        center: [0, center[1] - height * 0.42, frontZ - runMaxD * 0.35],
+        size: [width + 0.2, height * 0.18, Math.max(0.12, runMaxD * 0.4)]
+      })
+    );
+  }
+
+  // Mid-body string courses (between belts) on upper floors — third horizontal system.
+  floorTop = spec.massing.floorHeightsM[0] ?? 0;
+  for (let floor = 1; floor < spec.massing.floorCount; floor += 1) {
+    const floorH = spec.massing.floorHeightsM[floor] ?? 3.2;
+    const stringY = floorTop + floorH * 0.42;
+    const stringH = Math.min(0.22, floorH * 0.07);
+    const stringD = Math.max(0.14, maxD * 0.45);
+    primitives.push(
+      buildBoxPrimitive({
+        center: [0, stringY, frontZ - stringD * 0.55],
+        size: [width * 0.995, stringH, stringD]
+      })
+    );
+    floorTop += floorH;
   }
 
   return primitives;
@@ -249,15 +292,16 @@ export function buildBasePlinthPrimitives(spec: BuildingFamilySpec): PrimitiveGe
 
 /**
  * Spandrel bands between stories on the front facade — solid mass under window lines.
+ * V4: taller, more proud panels so body floors are not a flat stamp between openings.
  */
 export function buildSpandrelBandPrimitives(
   spec: BuildingFamilySpec,
   options?: { bandHeightM?: number; projectionM?: number }
 ): PrimitiveGeometry[] {
-  const bandHeight = options?.bandHeightM ?? 0.55;
-  const projection = options?.projectionM ?? 0.08;
+  const bandHeight = options?.bandHeightM ?? 0.72;
+  const projection = options?.projectionM ?? 0.16;
   const width = spec.massing.widthM;
-  const depth = 0.2 + projection;
+  const depth = 0.28 + projection;
   // Proud of the front exterior face (outward = -Z).
   const frontZ = frontFacadeExteriorZM(spec);
   const z = frontZ - depth / 2;
@@ -267,7 +311,7 @@ export function buildSpandrelBandPrimitives(
   for (let floor = 0; floor < spec.massing.floorCount - 1; floor += 1) {
     floorTop += spec.massing.floorHeightsM[floor] ?? 0;
     // Sit just above the floor line so belts and spandrels stack as separate mass.
-    const centerY = floorTop + bandHeight / 2 + 0.02;
+    const centerY = floorTop + bandHeight / 2 + 0.04;
     primitives.push(
       buildBoxPrimitive({
         center: [0, centerY, z],
@@ -276,8 +320,15 @@ export function buildSpandrelBandPrimitives(
     );
     primitives.push(
       buildBoxPrimitive({
-        center: [0, centerY - bandHeight * 0.15, z - depth * 0.12],
-        size: [width * 0.99, bandHeight * 0.35, depth * 0.45]
+        center: [0, centerY - bandHeight * 0.12, z - depth * 0.18],
+        size: [width * 0.99, bandHeight * 0.4, depth * 0.55]
+      })
+    );
+    // Upper ledge on the spandrel — second shadow edge within the body band.
+    primitives.push(
+      buildBoxPrimitive({
+        center: [0, centerY + bandHeight * 0.32, z - depth * 0.22],
+        size: [width * 0.992, bandHeight * 0.16, depth * 0.4]
       })
     );
   }

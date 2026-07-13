@@ -1,6 +1,6 @@
 # Photo-Driven Visual Fidelity Packets
 
-**Status:** active — V1–V3 landed 2026-07-13; next V4  
+**Status:** active — V1–V4 landed 2026-07-13; next V5  
 **Date:** 2026-07-13  
 **Parent tracks:** G1–G8 geometry quality (exited), kit-grammar roadmap, Period Ref Lab  
 **Primary refs:** `docs/ref/` + `docs/research/period-reference/` via `#room=periodRef`  
@@ -94,11 +94,11 @@ Clay: ground band visibly taller than floor above at default camera (no zoom).
 **Levers:** Deeper frame/door recipes, side/head returns, deeper glass, hoodProjection, fuller wall pockets.  
 **Exit:** Assembly depth ≥ ~0.55 m and glass inset ≥ ~0.2 m; throat reads under Shift-rake without hunting.
 
-### V4 — Horizontal body hierarchy
+### V4 — Horizontal body hierarchy — **done 2026-07-13**
 
 **Gap:** Floors exist; body still stamp-like.  
-**Levers:** Belt projection, spandrel pride, optional lintel-at-opening-head strips.  
-**Exit:** Three horizontal shadow systems: base top, mid belts, cornice.
+**Levers:** Deeper belt profile + projectionScale, ground→body heavy belt, drip bars, mid-body string courses, taller/prouder spandrels.  
+**Exit:** Three horizontal systems read at default camera: ground top / floor belts / cornice (plus mid-body strings).
 
 ### V5 — Material scale
 
@@ -132,6 +132,7 @@ Re-score Marx + Vanderbilt packets; archive captures; link from kit-grammar Phas
 | 2026-07-13 | This plan; **V1 commercial base** landed (5.6 m ground vs ~3.5 m body) |
 | 2026-07-13 | **V2 cornice crown weight** landed (deeper profile + brackets + fascia) |
 | 2026-07-13 | **V3 punched opening amplitude** landed (returns, deeper glass/pockets, hoods) |
+| 2026-07-13 | **V4 horizontal body hierarchy** landed (belts, drips, string courses, spandrels) |
 
 ---
 
