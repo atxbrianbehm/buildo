@@ -98,7 +98,8 @@ export function buildFacadeBayScopes(input: SubdivideFacadeWallsInput): FacadeBa
     const floorHeight = spec.massing.floorHeightsM[floor] ?? 3;
     const y0 = floorBaseY(spec, floor);
     const zone: "ground" | "body" = floor === 0 ? "ground" : "body";
-    const depth = wallDepthM + (floor === 0 ? Math.min(0.16, wallDepthM * 0.5) : 0);
+    // Ground wall slightly proud so commercial base mass reads thicker than body (V1).
+    const depth = wallDepthM + (floor === 0 ? Math.min(0.22, wallDepthM * 0.65) : 0);
 
     for (let bay = 0; bay < spec.facade.frontBayCount; bay += 1) {
       const x0 = -spec.massing.widthM / 2 + frontBayWidth * bay;
@@ -108,8 +109,11 @@ export function buildFacadeBayScopes(input: SubdivideFacadeWallsInput): FacadeBa
             ? -spec.massing.depthM / 2
             : spec.massing.depthM / 2 - depth;
         const openingSpec = openingMap.get(openingKey(facade, floor, bay));
-        const defaultOpenW = Math.min(frontBayWidth * 0.62, 1.6);
-        const defaultOpenH = Math.min(floorHeight * (zone === "ground" ? 0.58 : 0.48), 2.6);
+        const defaultOpenW = Math.min(frontBayWidth * (zone === "ground" ? 0.72 : 0.62), zone === "ground" ? 2.2 : 1.6);
+        const defaultOpenH = Math.min(
+          floorHeight * (zone === "ground" ? 0.62 : 0.48),
+          zone === "ground" ? 3.4 : 2.6
+        );
         const hasDefaultOpening =
           !strictOpenings &&
           (defaultOpeningMode === "front-only"

@@ -602,14 +602,16 @@ function createStorefrontHierarchyMeshPlan(
     const [ox, , oz] = scope.originM;
     const sx = scope.sizeM[0];
     const bayCenterX = ox + sx / 2;
-    // Slightly proud of structural wall face.
-    const zProud = oz - 0.02;
-    const proudDepth = Math.max(0.08, wallDepth * 0.45);
+    // Front outer face is oz; project hierarchy outward (−Z) so clay reads a proud base.
+    const proudDepth = Math.max(0.12, wallDepth * 0.55);
+    const bulkheadZ = oz - proudDepth * 0.55;
+    const lintelZ = oz - proudDepth * 0.65;
+    const fasciaZ = oz - proudDepth * 0.78;
 
     primitives.push(
       buildBoxPrimitive({
-        center: [bayCenterX, sf.bulkheadCenterYM, zProud + proudDepth * 0.35],
-        size: [sx * 0.98, sf.bulkheadHeightM * 0.92, proudDepth]
+        center: [bayCenterX, sf.bulkheadCenterYM, bulkheadZ],
+        size: [sx * 0.98, sf.bulkheadHeightM * 0.95, proudDepth]
       })
     );
     semanticEntries.push({
@@ -621,8 +623,8 @@ function createStorefrontHierarchyMeshPlan(
 
     primitives.push(
       buildBoxPrimitive({
-        center: [bayCenterX, sf.lintelCenterYM, zProud + proudDepth * 0.4],
-        size: [sx * 0.99, sf.lintelHeightM, proudDepth * 1.1]
+        center: [bayCenterX, sf.lintelCenterYM, lintelZ],
+        size: [sx * 0.99, sf.lintelHeightM * 1.05, proudDepth * 1.15]
       })
     );
     semanticEntries.push({
@@ -634,8 +636,8 @@ function createStorefrontHierarchyMeshPlan(
 
     primitives.push(
       buildBoxPrimitive({
-        center: [bayCenterX, sf.lintelCenterYM + sf.lintelHeightM * 0.35, zProud + proudDepth * 0.55],
-        size: [sx + 0.04, sf.lintelHeightM * 0.35, proudDepth * 0.7]
+        center: [bayCenterX, sf.lintelCenterYM + sf.lintelHeightM * 0.4, fasciaZ],
+        size: [sx + 0.06, sf.lintelHeightM * 0.42, proudDepth * 0.85]
       })
     );
     semanticEntries.push({

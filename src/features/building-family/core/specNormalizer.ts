@@ -155,6 +155,17 @@ export async function normalizeBuildingSpec(
     stylePack.massing.floorHeightM.ground,
     ...Array.from({ length: floorCount - 1 }, () => typicalFloorHeight)
   ];
+  const totalFloorHeightM = floorHeightsM.reduce((sum, height) => sum + height, 0);
+  // Derived from actual floor stack so ratio matches the taller commercial base (V1).
+  const groundFloorRatio = Number(
+    clampWithDiagnostic(
+      floorHeightsM[0]! / Math.max(0.01, totalFloorHeightM),
+      stylePack.facade.groundFloorRatio.min,
+      stylePack.facade.groundFloorRatio.max,
+      "derived.groundFloorRatio",
+      diagnostics
+    ).toFixed(4)
+  );
   const parapetHeightM = Number(
     (
       stylePack.massing.parapetHeightM.min +
@@ -218,7 +229,7 @@ export async function normalizeBuildingSpec(
     facade: {
       frontBayCount,
       sideBaySpacingM: stylePack.facade.sideBaySpacingM.min,
-      groundFloorRatio: stylePack.facade.groundFloorRatio.min,
+      groundFloorRatio,
       corniceHeightM: stylePack.facade.corniceHeightM.max,
       symmetry: clampWithDiagnostic(
         intent.requested.symmetry ?? stylePack.defaults.symmetry,

@@ -1,6 +1,6 @@
 # Dynamic Building Family Integration Map
 
-**Status:** Milestone 8 Slice 2–8 through visual QA packet export (M1–M11; Phase C complete); period photo reference lab (`#room=periodRef`) for manual clay-vs-photo compare
+**Status:** Milestone 8 Slice 2–8 through visual QA packet export (M1–M11; Phase C complete); period photo reference lab (`#room=periodRef`); photo-driven visual fidelity plan active (V1 commercial base)
 **Plan source:** `docs/plans/dynamic-building-family.md`
 **Supplemental art-fidelity plan:** `docs/superpowers/plans/2026-06-25-dynamic-building-family-art-fidelity-bridge.md`
 **Post-MVP kit → WFC → UTDG → block plan:** `docs/plans/kit-grammar-wfc-utdg-block.md`

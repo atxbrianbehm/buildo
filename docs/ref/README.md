@@ -49,8 +49,9 @@ Clay vs photo scores and ranked geometry follow-ups:
 - `docs/ref/comparisons/2026-07-12-first-pass/FINDINGS.md`
 - Capture script: `node scripts/capture-period-compare.mjs`
 
-**Photo-driven fixes so far:** P0 cornice outward placement · P1 opening facade orientation + punched throat.  
-**Next:** P2 taller commercial base band (`FINDINGS.md`).
+**Photo-driven plan:** `docs/plans/photo-driven-visual-fidelity.md` (packets V1–V6).  
+**Landed:** P0 outward trim · P1 opening orientation · **V1 commercial base**.  
+**Next:** V2 cornice crown weight.
 
 ## Related
 

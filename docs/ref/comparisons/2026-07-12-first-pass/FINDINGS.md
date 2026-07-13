@@ -52,13 +52,12 @@ Silhouette + trim layering were **fail** because front moldings used `facadeSign
 **Exit met:** Clay re-capture shows frames/hoods on the wall plane with glass/throat reading inward (see `assembly-hall-clay-default.png` / orbit).  
 **Residual:** Still not as deep as Marx punched brick; raking Shift-light capture would make the throat clearer. Not a placement bug anymore.
 
-### P2 — Commercial base band
+### P2 / V1 — Commercial base band — **done 2026-07-13**
 
 **Refs:** Vanderbilt red base, Marx storefront belt  
-**Gap:** Ground floor is only slightly different from upper floors.  
-**Direction:** Taller ground scope + larger ground openings already partially in storefront grammar — push height ratio and arcade readability in clay.  
-**Exit:** Ground band height clearly != upper floor module height in silhouette.
-
+**Plan:** `docs/plans/photo-driven-visual-fidelity.md` (packet V1)  
+**Fix:** Style-pack ground **5.6 m** vs typical **~3.5 m** (~1.5×); derived `groundFloorRatio`; taller storefront glazing split; proud outward bulkhead/lintel/fascia; thicker ground wall depth; taller plinth.  
+**Exit:** Ground band clearly taller than floor above at default clay camera — intended as a 10-second silhouette win (not a forensic lighting check).
 ### P3 — Lintel / belt courses as horizontal trim layers
 
 **Refs:** Marx stone lintels/sills, Columbus window hoods  
@@ -92,6 +91,6 @@ Stage metrics from page capture (illustrative): facade 4 objects, openings 5, tr
 
 1. ~~P0 cornice outward placement~~ **landed**  
 2. ~~P1 punched opening orientation + throat~~ **landed**  
-3. **P2** taller commercial base band (next)  
-4. Optional: Shift-drag raking light frames in `capture-period-compare.mjs`  
-5. Re-score Vanderbilt packet after P2  
+3. ~~P2 / V1 commercial base band~~ **landed**  
+4. **V2** cornice crown weight (next — `docs/plans/photo-driven-visual-fidelity.md`)  
+5. Optional: Shift-drag raking frames in capture script  

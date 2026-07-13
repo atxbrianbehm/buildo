@@ -209,7 +209,9 @@ export function buildVerticalPilasterPrimitives(
 
 /** Continuous ground-floor water-table / plinth along front facade. */
 export function buildBasePlinthPrimitives(spec: BuildingFamilySpec): PrimitiveGeometry[] {
-  const height = Math.min(0.7, (spec.massing.floorHeightsM[0] ?? 4) * 0.16);
+  // Scale with commercial base so plinth reads as part of the tall ground band (V1).
+  const groundH = spec.massing.floorHeightsM[0] ?? 4;
+  const height = Math.min(0.95, Math.max(0.55, groundH * 0.14));
   const profile = densifyProfile(scaleProfileToHeight(late19cBasePlinthProfile, height), 2);
   const frontZ = frontFacadeExteriorZM(spec);
   const center: Vec3 = [0, height / 2, frontZ];

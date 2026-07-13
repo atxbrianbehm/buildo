@@ -30,6 +30,17 @@ describe("normalizeBuildingSpec", () => {
     expect(first.spec.diagnostics).toHaveLength(0);
   });
 
+  it("makes ground floor clearly taller than typical floors for commercial base (V1)", async () => {
+    const { spec } = await normalizeBuildingSpec(baseIntent, stylePack);
+    const ground = spec.massing.floorHeightsM[0]!;
+    const typical = spec.massing.floorHeightsM[1]!;
+    expect(ground).toBeGreaterThanOrEqual(5.2);
+    expect(typical).toBeLessThanOrEqual(3.8);
+    expect(ground / typical).toBeGreaterThanOrEqual(1.45);
+    const total = spec.massing.floorHeightsM.reduce((sum, h) => sum + h, 0);
+    expect(spec.facade.groundFloorRatio).toBeCloseTo(ground / total, 3);
+  });
+
   it("keeps family-scoped fields stable when only the building seed changes", async () => {
     const first = await normalizeBuildingSpec(baseIntent, stylePack);
     const second = await normalizeBuildingSpec(

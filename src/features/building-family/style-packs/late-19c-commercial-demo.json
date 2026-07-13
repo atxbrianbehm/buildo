@@ -18,8 +18,8 @@
   "massing": {
     "floorCount": { "min": 2, "max": 8 },
     "floorHeightM": {
-      "ground": 4.4,
-      "typical": { "min": 3.6, "max": 4.0 }
+      "ground": 5.6,
+      "typical": { "min": 3.4, "max": 3.7 }
     },
     "widthM": { "min": 12, "max": 42 },
     "depthM": { "min": 12, "max": 28 },
@@ -29,7 +29,7 @@
   "facade": {
     "frontBayCount": { "min": 3, "max": 10 },
     "sideBaySpacingM": { "min": 3.6, "max": 4.8 },
-    "groundFloorRatio": { "min": 0.22, "max": 0.32 },
+    "groundFloorRatio": { "min": 0.3, "max": 0.42 },
     "corniceHeightM": { "min": 0.8, "max": 1.6 },
     "symmetry": { "min": 0.6, "max": 1 }
   },

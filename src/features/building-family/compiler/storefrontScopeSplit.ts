@@ -24,16 +24,17 @@ export interface StorefrontVerticalSplit {
 
 /**
  * Split a ground floor band into bulkhead / glazing / lintel.
- * Ratios are stable; heights scale with floorHeightM so hash/layout track massing.
+ * Ratios track floorHeightM so a taller commercial base (V1) grows glazing, not just bulkhead.
  */
 export function splitGroundStorefrontVertical(
   floorBaseYM: number,
   floorHeightM: number
 ): StorefrontVerticalSplit {
   const h = Math.max(2.4, floorHeightM);
-  const bulkheadHeightM = Math.min(1.05, Math.max(0.55, h * 0.2));
-  const lintelHeightM = Math.min(0.42, Math.max(0.22, h * 0.09));
-  const glazingHeightM = Math.max(1.2, h - bulkheadHeightM - lintelHeightM);
+  // Tall ground (period commercial): solid base, large glass, thin lintel/fascia.
+  const bulkheadHeightM = Math.min(1.35, Math.max(0.7, h * 0.22));
+  const lintelHeightM = Math.min(0.55, Math.max(0.28, h * 0.1));
+  const glazingHeightM = Math.max(1.6, h - bulkheadHeightM - lintelHeightM);
   const glazingBottomYM = floorBaseYM + bulkheadHeightM;
   const glazingTopYM = glazingBottomYM + glazingHeightM;
   return {
