@@ -103,10 +103,31 @@ describe("openingSlotBinding", () => {
     });
     const expectedSx = bound.frameOuterSizeM[0] / recipeW;
     const expectedSy = bound.frameOuterSizeM[1] / recipeH;
+    const expectedSz = bound.frameOuterSizeM[2] / 0.4;
     expect(bound.transform[0]).toBeCloseTo(expectedSx, 5);
     expect(bound.transform[5]).toBeCloseTo(expectedSy, 5);
+    // Front facade flips local +Z (exterior) onto world −Z.
+    expect(bound.transform[10]).toBeCloseTo(-expectedSz, 5);
     expect(bound.transform[12]).toBeCloseTo(slot.centerM[0], 5);
     expect(bound.transform[13]).toBeCloseTo(slot.centerM[1], 5);
     expect(bound.transform[14]).toBeCloseTo(slot.centerM[2], 5);
+  });
+
+  it("orients left-facade openings so local exterior maps onto −X", () => {
+    const slot = placement({
+      facade: "left",
+      centerM: [-9, 5.5, 2],
+      sizeM: [1.4, 2.2, 0.22]
+    });
+    const bound = bindOpeningToSlot({
+      placement: slot,
+      wallDepthM: 0.34,
+      recipeWidthM: 1.2,
+      recipeHeightM: 2.0,
+      recipeDepthM: 0.4
+    });
+    // Local +Z column points along world −X for left facade.
+    expect(bound.transform[8]).toBeLessThan(0);
+    expect(Math.abs(bound.transform[8])).toBeCloseTo(bound.scale[2], 5);
   });
 });

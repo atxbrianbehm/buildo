@@ -6,9 +6,11 @@
  *
  * Depth hierarchy (exterior → interior):
  *   wall outer face
- *     → frame (slightly proud of wall)
+ *     → frame casing / lintel hood (local +Z = exterior normal)
  *     → pocket recess into wall thickness
- *     → glass (deeper than frame sash; see openingGeometry glass z)
+ *     → glass (local −Z = into wall; see openingGeometry)
+ *
+ * Instance matrices map local exterior (+Z) onto the facade outward normal.
  */
 
 import type { Diagnostic } from "../core/diagnostics";
@@ -27,20 +29,20 @@ export const FRAME_INSET_FROM_SLOT_M = 0.04;
  * Values are intentional constants — not magic numbers scattered in the compiler.
  */
 export const OPENING_DEPTH_HIERARCHY = {
-  /** Pocket thickness as a fraction of wall depth. */
-  pocketDepthOfWall: 0.72,
+  /** Pocket thickness as a fraction of wall depth (clay-readable throat). */
+  pocketDepthOfWall: 0.82,
   /** Pocket center distance from frame center along inward wall normal (× wall depth). */
-  pocketCenterInwardOfWall: 0.38,
+  pocketCenterInwardOfWall: 0.42,
   /** Outer reveal lip thickness (× wall depth). */
-  revealDepthOfWall: 0.18,
+  revealDepthOfWall: 0.14,
   /** Reveal center distance from frame along inward normal (× wall depth). */
-  revealCenterInwardOfWall: 0.1,
+  revealCenterInwardOfWall: 0.06,
   /** Pocket plane scale vs frame outer (window). */
-  pocketPadWindow: { width: 1.1, height: 1.08 },
+  pocketPadWindow: { width: 1.12, height: 1.1 },
   /** Pocket plane scale vs frame outer (door). */
-  pocketPadDoor: { width: 1.06, height: 1.04 },
+  pocketPadDoor: { width: 1.08, height: 1.06 },
   /** Reveal pad beyond pocket plane size (meters). */
-  revealPadM: 0.08
+  revealPadM: 0.1
 } as const;
 
 export interface OpeningSlotBindingInput {
@@ -121,6 +123,40 @@ export function scaleTranslateMatrix(scale: Vec3, position: Vec3): number[] {
 }
 
 /**
+ * Opening instance matrix: recipe local +Z is the exterior normal; map it to the
+ * facade outward direction so glass/recess sit into the wall mass in world space.
+ *
+ * Column-major 4×4 (Three.js / InstancedMesh).
+ */
+export function openingInstanceMatrix(
+  scale: Vec3,
+  position: Vec3,
+  facade: WallFacadeName
+): number[] {
+  const sx = scale[0];
+  const sy = scale[1];
+  const sz = scale[2];
+  const [px, py, pz] = position;
+
+  switch (facade) {
+    case "front":
+      // Local +Z (exterior) → world −Z.
+      return [sx, 0, 0, 0, 0, sy, 0, 0, 0, 0, -sz, 0, px, py, pz, 1];
+    case "rear":
+      // Local +Z → world +Z; flip local X so left/right stay street-facing.
+      return [-sx, 0, 0, 0, 0, sy, 0, 0, 0, 0, sz, 0, px, py, pz, 1];
+    case "left":
+      // Local X → −Z along wall, local +Z (exterior) → −X.
+      return [0, 0, -sx, 0, 0, sy, 0, 0, -sz, 0, 0, 0, px, py, pz, 1];
+    case "right":
+      // Local X → +Z along wall, local +Z (exterior) → +X.
+      return [0, 0, sx, 0, 0, sy, 0, 0, sz, 0, 0, 0, px, py, pz, 1];
+    default:
+      return scaleTranslateMatrix(scale, position);
+  }
+}
+
+/**
  * Bind one split opening slot to frame outer size, pocket AABB, and instance transform.
  * Oversize recipes are clamped to the slot (with inset); a warning diagnostic is emitted.
  */
@@ -185,7 +221,7 @@ export function bindOpeningToSlot(input: OpeningSlotBindingInput): BoundOpeningG
     : [pocketAlong + revealPad, pocketH + revealPad, revealDepth];
 
   const scale: Vec3 = [frameW / recipeW, frameH / recipeH, frameD / recipeD];
-  const transform = scaleTranslateMatrix(scale, frameCenterM);
+  const transform = openingInstanceMatrix(scale, frameCenterM, placement.facade);
 
   return {
     kind: placement.kind,

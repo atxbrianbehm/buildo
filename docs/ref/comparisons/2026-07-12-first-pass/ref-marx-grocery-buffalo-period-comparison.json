@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "0.1.0",
+  "packetKind": "dynamic-building-family-period-comparison",
+  "createdAt": "2026-07-13T02:26:30.000Z",
+  "catalogId": "period-ref-v0.1",
+  "referenceId": "ref-marx-grocery-buffalo",
+  "referenceTitle": "Former John Marx Grocery Store, Buffalo, NY",
+  "presentationMode": "clay",
+  "fidelityMode": "kit",
+  "seeds": {
+    "family": "family-seed",
+    "building": "building-seed",
+    "material": "material-seed",
+    "trim": "trim-seed"
+  },
+  "screenshotTargetRoute": "#room=assemblyHall",
+  "rubricScores": [
+    {
+      "id": "silhouette",
+      "label": "Silhouette / massing",
+      "status": "partial",
+      "notes": "Cornice crown + brackets project. Roof slab still softens skyline vs Marx deep cornice."
+    },
+    {
+      "id": "facadeRhythm",
+      "label": "Facade rhythm",
+      "status": "partial",
+      "notes": "Belts, quoins, bay grid present; still more uniform than Marx 3-bay lintel rhythm."
+    },
+    {
+      "id": "openingDepth",
+      "label": "Opening depth",
+      "status": "partial",
+      "notes": "P1: facade orientation maps local exterior onto outward normals; glass/throat into wall; lintel hoods proud. No longer surface-mounted boxes. Still shallower than Marx stone-lintel punched brick; default light (no raking) limits throat read."
+    },
+    {
+      "id": "trimLayering",
+      "label": "Trim layering",
+      "status": "partial",
+      "notes": "Cornice, belts, plinth, quoins, lintel hoods stack. Crown weight still below Marx."
+    },
+    {
+      "id": "storefrontBase",
+      "label": "Storefront / base",
+      "status": "partial",
+      "notes": "Ground openings + plinth; base not as tall/distinct as Marx commercial belt (P2)."
+    },
+    {
+      "id": "sideRear",
+      "label": "Side / rear hierarchy",
+      "status": "partial",
+      "notes": "Side simpler; side openings oriented into wall face."
+    },
+    {
+      "id": "materialScale",
+      "label": "Material scale (textured mode)",
+      "status": "not-reviewed",
+      "notes": "Clay-only pass."
+    }
+  ],
+  "freeformNotes": "Post P0+P1 re-capture. Root fixes: (P0) front trim facadeSign outward; (P1) openingInstanceMatrix + wall-face anchor + deeper throat/hoods. Next product gap: P2 commercial base height.",
+  "summary": {
+    "passCount": 0,
+    "partialCount": 6,
+    "failCount": 0,
+    "notReviewedCount": 1
+  }
+}

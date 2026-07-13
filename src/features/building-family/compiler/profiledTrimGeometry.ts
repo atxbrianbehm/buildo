@@ -37,6 +37,18 @@ function rangeValue(recipe: ComponentRecipe, key: string, fallback: number): num
   return (range.min + range.max) / 2;
 }
 
+/**
+ * Front exterior wall face (building mass is +Z of this plane).
+ * Profile `d` and proud trim must project with facadeSign -1 (outward, -Z)
+ * so cornice/belt read in clay instead of burying inside the mass.
+ */
+function frontFacadeExteriorZM(spec: BuildingFamilySpec): number {
+  return -spec.massing.depthM / 2;
+}
+
+/** Outward normal on the front facade in world Z. */
+const FRONT_FACADE_SIGN = -1 as const;
+
 export function buildProfiledRunPrimitives(input: ProfiledRunInput): PrimitiveGeometry[] {
   return input.layers.map((layer) =>
     buildBoxPrimitive({
@@ -67,11 +79,14 @@ export function buildCorniceProfilePrimitives(
     late19cCorniceProfile;
   const profile = densifyProfile(scaleProfileToHeight(profileDef, height), 2);
   const maxD = Math.max(...profile.points.map((point) => point.d));
-  const center: Vec3 = [0, totalHeight - height / 2, -spec.massing.depthM / 2 + maxD * 0.35];
+  const frontZ = frontFacadeExteriorZM(spec);
+  // Anchor on the exterior face; sweep `d` outward so crown is clay-visible.
+  const center: Vec3 = [0, totalHeight - height / 2, frontZ];
   const primitives = horizontalMoldingFromProfile({
     profile,
     center,
-    widthM: width + 0.12
+    widthM: width + 0.12,
+    facadeSign: FRONT_FACADE_SIGN
   });
 
   // Restrained profiles skip heavy brackets (shallower read).
@@ -84,7 +99,7 @@ export function buildCorniceProfilePrimitives(
       const x = -width / 2 + 0.28 + t * (width - 0.56);
       primitives.push(
         buildBoxPrimitive({
-          center: [x, center[1] - height * 0.12, center[2] + maxD * 0.25],
+          center: [x, center[1] - height * 0.12, frontZ - maxD * 0.35],
           size: [0.14, height * 0.32, maxD * 0.45]
         })
       );
@@ -104,18 +119,19 @@ export function buildHorizontalBeltCoursePrimitives(
   const beltHeight = Math.max(0.22, recipe.dimensionsM.height);
   const width = recipe.dimensionsM.width;
   const profile = densifyProfile(scaleProfileToHeight(late19cBeltProfile, beltHeight), 2);
-  const maxD = Math.max(...profile.points.map((point) => point.d));
   const primitives: PrimitiveGeometry[] = [];
 
+  const frontZ = frontFacadeExteriorZM(spec);
   let floorTop = 0;
   for (let floor = 0; floor < spec.massing.floorCount - 1; floor += 1) {
     floorTop += spec.massing.floorHeightsM[floor] ?? 0;
-    const center: Vec3 = [0, floorTop - beltHeight / 2, -spec.massing.depthM / 2 + maxD * 0.4];
+    const center: Vec3 = [0, floorTop - beltHeight / 2, frontZ];
     primitives.push(
       ...horizontalMoldingFromProfile({
         profile,
         center,
-        widthM: width
+        widthM: width,
+        facadeSign: FRONT_FACADE_SIGN
       })
     );
   }
@@ -127,16 +143,17 @@ export function buildRoofCapPrimitives(spec: BuildingFamilySpec, recipe: Compone
   const totalHeight = spec.massing.floorHeightsM.reduce((total, value) => total + value, 0);
   const height = Math.max(0.18, recipe.dimensionsM.height);
   const profile = densifyProfile(scaleProfileToHeight(late19cRoofCapProfile, height), 2);
-  const maxD = Math.max(...profile.points.map((point) => point.d));
+  const frontZ = frontFacadeExteriorZM(spec);
   const center: Vec3 = [
     0,
     totalHeight + spec.massing.parapetHeightM + height / 2,
-    -spec.massing.depthM / 2 + maxD * 0.4
+    frontZ
   ];
   return horizontalMoldingFromProfile({
     profile,
     center,
-    widthM: recipe.dimensionsM.width + 0.12
+    widthM: recipe.dimensionsM.width + 0.12,
+    facadeSign: FRONT_FACADE_SIGN
   });
 }
 
@@ -155,33 +172,34 @@ export function buildVerticalPilasterPrimitives(
   const profile = densifyProfile(late19cPilasterProfile, 2);
   const maxD = Math.max(...profile.points.map((point) => point.d));
   const maxHalf = Math.max(...profile.points.map((point) => point.u), recipe.dimensionsM.width / 2);
-  const z = -spec.massing.depthM / 2 + maxD * 0.55;
-  const shaftCenter: Vec3 = [edgeX, plinth + shaftHeight / 2, z];
+  const frontZ = frontFacadeExteriorZM(spec);
+  const shaftCenter: Vec3 = [edgeX, plinth + shaftHeight / 2, frontZ];
 
   const primitives = sweepProfileToBoxPrimitives({
     profile,
     center: shaftCenter,
     runLengthM: shaftHeight,
-    runAxis: "y"
+    runAxis: "y",
+    facadeSign: FRONT_FACADE_SIGN
   });
 
-  // Plinth block
+  // Plinth block (proud of exterior face)
   primitives.push(
     buildBoxPrimitive({
-      center: [edgeX, plinth / 2, z + maxD * 0.1],
+      center: [edgeX, plinth / 2, frontZ - maxD * 0.45],
       size: [maxHalf * 2.4, plinth, maxD * 1.35]
     })
   );
   // Capital
   primitives.push(
     buildBoxPrimitive({
-      center: [edgeX, totalHeight - capital / 2, z + maxD * 0.12],
+      center: [edgeX, totalHeight - capital / 2, frontZ - maxD * 0.5],
       size: [maxHalf * 2.5, capital, maxD * 1.4]
     })
   );
   primitives.push(
     buildBoxPrimitive({
-      center: [edgeX, totalHeight - capital * 0.3, z + maxD * 0.22],
+      center: [edgeX, totalHeight - capital * 0.3, frontZ - maxD * 0.55],
       size: [maxHalf * 2.7, capital * 0.32, maxD * 0.9]
     })
   );
@@ -193,12 +211,13 @@ export function buildVerticalPilasterPrimitives(
 export function buildBasePlinthPrimitives(spec: BuildingFamilySpec): PrimitiveGeometry[] {
   const height = Math.min(0.7, (spec.massing.floorHeightsM[0] ?? 4) * 0.16);
   const profile = densifyProfile(scaleProfileToHeight(late19cBasePlinthProfile, height), 2);
-  const maxD = Math.max(...profile.points.map((point) => point.d));
-  const center: Vec3 = [0, height / 2, -spec.massing.depthM / 2 + maxD * 0.45];
+  const frontZ = frontFacadeExteriorZM(spec);
+  const center: Vec3 = [0, height / 2, frontZ];
   return horizontalMoldingFromProfile({
     profile,
     center,
-    widthM: spec.massing.widthM + 0.16
+    widthM: spec.massing.widthM + 0.16,
+    facadeSign: FRONT_FACADE_SIGN
   });
 }
 
@@ -213,7 +232,9 @@ export function buildSpandrelBandPrimitives(
   const projection = options?.projectionM ?? 0.08;
   const width = spec.massing.widthM;
   const depth = 0.2 + projection;
-  const z = -spec.massing.depthM / 2 + depth / 2;
+  // Proud of the front exterior face (outward = -Z).
+  const frontZ = frontFacadeExteriorZM(spec);
+  const z = frontZ - depth / 2;
   const primitives: PrimitiveGeometry[] = [];
   let floorTop = 0;
 
@@ -229,7 +250,7 @@ export function buildSpandrelBandPrimitives(
     );
     primitives.push(
       buildBoxPrimitive({
-        center: [0, centerY - bandHeight * 0.15, z + depth * 0.12],
+        center: [0, centerY - bandHeight * 0.15, z - depth * 0.12],
         size: [width * 0.99, bandHeight * 0.35, depth * 0.45]
       })
     );
@@ -273,7 +294,9 @@ export function buildCornerQuoinPrimitives(spec: BuildingFamilySpec, recipe: Com
   const halfWidth = recipe.dimensionsM.width / 2;
   const halfDepth = recipe.dimensionsM.depth / 2;
   const projection = rangeValue(recipe, "projectionM", 0.08);
-  const frontZ = -spec.massing.depthM / 2 + halfDepth + projection * 0.35;
+  const exteriorZ = frontFacadeExteriorZM(spec);
+  // Quoin depth mostly on the facade, with a small proud step for clay shadow.
+  const frontZ = exteriorZ - halfDepth - projection * 0.35;
   const leftX = -spec.massing.widthM / 2 + halfWidth;
   const rightX = spec.massing.widthM / 2 - halfWidth;
   const course = rangeValue(recipe, "courseHeightM", 0.28);
@@ -288,8 +311,7 @@ export function buildCornerQuoinPrimitives(spec: BuildingFamilySpec, recipe: Com
       }
       const centerY = index * course + courseHeight / 2;
       const longCourse = index % 2 === 0;
-      // Keep quoin mass on the facade face; alternate courses read as stepped blocks
-      // without escaping the building AABB (compiler integrity checks).
+      // Stepped quoin blocks proud of the front face for clay corner read.
       primitives.push(
         buildBoxPrimitive({
           center: [x, centerY, frontZ],
@@ -305,7 +327,7 @@ export function buildCornerQuoinPrimitives(spec: BuildingFamilySpec, recipe: Com
           center: [
             x + (x < 0 ? projection * 0.15 : -projection * 0.15),
             centerY,
-            -spec.massing.depthM / 2 + recipe.dimensionsM.depth * 0.55
+            exteriorZ - recipe.dimensionsM.depth * 0.55
           ],
           size: [
             recipe.dimensionsM.width * 0.55,

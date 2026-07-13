@@ -103,4 +103,21 @@ describe("profiled trim geometry", () => {
       expect(primitive.bounds.min[1]).toBeLessThan(primitive.bounds.max[1]);
     }
   });
+
+  it("projects cornice and belt outward past the front facade face for clay crown read", () => {
+    const spec = fixtureSpec();
+    const frontZ = -spec.massing.depthM / 2;
+    const cornice = buildCorniceProfilePrimitives(spec, buildCorniceRecipe(spec));
+    const belt = buildHorizontalBeltCoursePrimitives(spec, buildProfiledHorizontalTrimRecipe(spec));
+    const plinth = buildBasePlinthPrimitives(spec);
+
+    const corniceMinZ = Math.min(...cornice.map((primitive) => primitive.bounds.min[2]));
+    const beltMinZ = Math.min(...belt.map((primitive) => primitive.bounds.min[2]));
+    const plinthMinZ = Math.min(...plinth.map((primitive) => primitive.bounds.min[2]));
+
+    // Front face is -depth/2; outward is more negative Z. Crown must clear the wall plane.
+    expect(corniceMinZ).toBeLessThan(frontZ - 0.2);
+    expect(beltMinZ).toBeLessThan(frontZ - 0.05);
+    expect(plinthMinZ).toBeLessThan(frontZ - 0.05);
+  });
 });

@@ -41,7 +41,7 @@ export function buildWindowFrameRecipe(spec: BuildingFamilySpec): ComponentRecip
       mullionCountX: { min: 1, max: 2 },
       mullionCountY: { min: 1, max: 2 },
       insetM: { min: 0.06, max: 0.22 },
-      recessDepthM: { min: 0.18, max: 0.34 },
+      recessDepthM: { min: 0.24, max: 0.4 },
       sillProjectionM: { min: 0.08, max: 0.18 },
       frameThicknessM: { min: 0.08, max: 0.14 }
     }

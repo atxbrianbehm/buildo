@@ -63,19 +63,18 @@ export interface OpeningSeed {
 function openingWorldCenter(scope: FacadeBayScope, _wallDepthM: number): Vec3 {
   const open = scope.opening!;
   const isSide = scope.facade === "left" || scope.facade === "right";
-  // Sit frames slightly proud of the outer wall face (GN: instance on facade face).
+  // Anchor on the outer wall face; casing/hoods project outward via local +Z orientation.
+  // (Previously offset outside the face, which made openings read as floating boxes.)
   if (!isSide) {
-    // Front: origin z is outer face, wall grows +Z inward. Rear: origin is inner, outer is origin+depth.
+    // Front: origin z is outer face, wall grows +Z inward. Rear: outer is origin+depth.
     const outerZ =
       scope.facade === "front"
-        ? scope.originM[2] - 0.03
-        : scope.originM[2] + scope.sizeM[2] + 0.03;
+        ? scope.originM[2]
+        : scope.originM[2] + scope.sizeM[2];
     return [open.centerAlongM, open.centerYM, outerZ];
   }
   const outerX =
-    scope.facade === "left"
-      ? scope.originM[0] - 0.03
-      : scope.originM[0] + scope.sizeM[0] + 0.03;
+    scope.facade === "left" ? scope.originM[0] : scope.originM[0] + scope.sizeM[0];
   return [outerX, open.centerYM, open.centerAlongM];
 }
 
