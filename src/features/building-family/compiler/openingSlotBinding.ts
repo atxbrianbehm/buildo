@@ -29,20 +29,20 @@ export const FRAME_INSET_FROM_SLOT_M = 0.04;
  * Values are intentional constants — not magic numbers scattered in the compiler.
  */
 export const OPENING_DEPTH_HIERARCHY = {
-  /** Pocket thickness as a fraction of wall depth (clay-readable throat). */
-  pocketDepthOfWall: 0.82,
+  /** Pocket thickness as a fraction of wall depth (V3 clay-readable throat). */
+  pocketDepthOfWall: 0.92,
   /** Pocket center distance from frame center along inward wall normal (× wall depth). */
-  pocketCenterInwardOfWall: 0.42,
+  pocketCenterInwardOfWall: 0.48,
   /** Outer reveal lip thickness (× wall depth). */
-  revealDepthOfWall: 0.14,
+  revealDepthOfWall: 0.12,
   /** Reveal center distance from frame along inward normal (× wall depth). */
-  revealCenterInwardOfWall: 0.06,
+  revealCenterInwardOfWall: 0.05,
   /** Pocket plane scale vs frame outer (window). */
-  pocketPadWindow: { width: 1.12, height: 1.1 },
+  pocketPadWindow: { width: 1.14, height: 1.12 },
   /** Pocket plane scale vs frame outer (door). */
-  pocketPadDoor: { width: 1.08, height: 1.06 },
+  pocketPadDoor: { width: 1.1, height: 1.08 },
   /** Reveal pad beyond pocket plane size (meters). */
-  revealPadM: 0.1
+  revealPadM: 0.12
 } as const;
 
 export interface OpeningSlotBindingInput {
@@ -188,7 +188,8 @@ export function bindOpeningToSlot(input: OpeningSlotBindingInput): BoundOpeningG
   // Frame fills the slot inset — not the raw recipe size (scale maps recipe → frame).
   const frameW = maxFrameW;
   const frameH = maxFrameH;
-  const frameD = Math.min(slotDepth, Math.max(recipeD, wallDepth * 0.45));
+  // Prefer a deep frame so scaled local geometry can show a real throat (V3).
+  const frameD = Math.max(recipeD, Math.min(Math.max(slotDepth, wallDepth * 0.85), wallDepth * 1.05));
   const frameCenterM: Vec3 = [...placement.centerM];
 
   const pad =

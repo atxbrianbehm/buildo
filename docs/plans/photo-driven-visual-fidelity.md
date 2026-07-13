@@ -1,6 +1,6 @@
 # Photo-Driven Visual Fidelity Packets
 
-**Status:** active — V1–V2 landed 2026-07-13; next V3  
+**Status:** active — V1–V3 landed 2026-07-13; next V4  
 **Date:** 2026-07-13  
 **Parent tracks:** G1–G8 geometry quality (exited), kit-grammar roadmap, Period Ref Lab  
 **Primary refs:** `docs/ref/` + `docs/research/period-reference/` via `#room=periodRef`  
@@ -88,11 +88,11 @@ Clay: ground band visibly taller than floor above at default camera (no zoom).
 **Levers:** Deeper layered/restrained profiles, `scaleProfileProjection`, taller corniceHeightM, larger brackets + fascia bar.  
 **Exit:** 3/4 clay skyline reads “has a cornice” before openings are inspected (≥ ~0.7 m overhang on layered).
 
-### V3 — Punched opening amplitude
+### V3 — Punched opening amplitude — **done 2026-07-13**
 
 **Gap:** P1 fixed orientation; depth still shallow vs brick refs.  
-**Levers:** Pocket depth fractions, frame recess, hood projection; keep slot binding 1:1.  
-**Exit:** Raking light shows interior throat without hunting.
+**Levers:** Deeper frame/door recipes, side/head returns, deeper glass, hoodProjection, fuller wall pockets.  
+**Exit:** Assembly depth ≥ ~0.55 m and glass inset ≥ ~0.2 m; throat reads under Shift-rake without hunting.
 
 ### V4 — Horizontal body hierarchy
 
@@ -131,6 +131,7 @@ Re-score Marx + Vanderbilt packets; archive captures; link from kit-grammar Phas
 | 2026-07-13 | P0 outward trim, P1 opening orientation |
 | 2026-07-13 | This plan; **V1 commercial base** landed (5.6 m ground vs ~3.5 m body) |
 | 2026-07-13 | **V2 cornice crown weight** landed (deeper profile + brackets + fascia) |
+| 2026-07-13 | **V3 punched opening amplitude** landed (returns, deeper glass/pockets, hoods) |
 
 ---
 

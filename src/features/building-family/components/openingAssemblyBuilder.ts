@@ -21,7 +21,8 @@ export function buildWindowFrameRecipe(spec: BuildingFamilySpec): ComponentRecip
     id: `recipe.window.${spec.selectedFamilies.window}.frame`,
     kind: "frame",
     role: "window",
-    dimensionsM: { width, height: arched ? height + 0.18 : height, depth: 0.42 },
+    // V3: deeper assembly so glass/sash sit well behind the wall face in clay.
+    dimensionsM: { width, height: arched ? height + 0.18 : height, depth: 0.58 },
     atlasSlotIds: ["frame.primary", "glass.primary"],
     uvBehavior: "cap-repeat-cap",
     variationScope: spec.variationPolicy.window ?? "building",
@@ -31,19 +32,20 @@ export function buildWindowFrameRecipe(spec: BuildingFamilySpec): ComponentRecip
       : `profile.window.${spec.selectedFamilies.window}.rect-assembly`,
     anchors: [
       { id: "origin", position: [0, 0, 0], normal: [0, 0, 1] },
-      { id: "sill-center", position: [0, -height / 2, 0.1], normal: [0, 1, 0] },
-      { id: "lintel-center", position: [0, height / 2, 0.05], normal: [0, -1, 0] },
-      { id: "glass-plane", position: [0, 0, -0.08], normal: [0, 0, 1] }
+      { id: "sill-center", position: [0, -height / 2, 0.12], normal: [0, 1, 0] },
+      { id: "lintel-center", position: [0, height / 2, 0.08], normal: [0, -1, 0] },
+      { id: "glass-plane", position: [0, 0, -0.22], normal: [0, 0, 1] }
     ],
     subcomponentRecipeIds: [`recipe.window.${spec.selectedFamilies.window}.glass`],
     parameterRanges: {
-      mullionDepthM: { min: 0.06, max: 0.14 },
+      mullionDepthM: { min: 0.08, max: 0.16 },
       mullionCountX: { min: 1, max: 2 },
       mullionCountY: { min: 1, max: 2 },
-      insetM: { min: 0.06, max: 0.22 },
-      recessDepthM: { min: 0.24, max: 0.4 },
-      sillProjectionM: { min: 0.08, max: 0.18 },
-      frameThicknessM: { min: 0.08, max: 0.14 }
+      insetM: { min: 0.1, max: 0.28 },
+      recessDepthM: { min: 0.36, max: 0.55 },
+      sillProjectionM: { min: 0.1, max: 0.22 },
+      frameThicknessM: { min: 0.09, max: 0.15 },
+      hoodProjectionM: { min: 0.12, max: 0.28 }
     }
   });
 }
@@ -102,7 +104,7 @@ export function buildDoorRecipe(spec: BuildingFamilySpec): ComponentRecipe {
     id: `recipe.door.${spec.selectedFamilies.door}`,
     kind: "frame",
     role: "door",
-    dimensionsM: { width: 2.2, height, depth: 0.48 },
+    dimensionsM: { width: 2.2, height, depth: 0.62 },
     atlasSlotIds: ["door.primary", "frame.primary", "glass.primary"],
     uvBehavior: "stretch",
     variationScope: spec.variationPolicy.door ?? "building",
@@ -110,16 +112,16 @@ export function buildDoorRecipe(spec: BuildingFamilySpec): ComponentRecipe {
     profileRecipeId: `profile.door.${spec.selectedFamilies.door}.storefront`,
     anchors: [
       { id: "origin", position: [0, 0, 0], normal: [0, 0, 1] },
-      { id: "threshold", position: [0, -height / 2, 0.08], normal: [0, 1, 0] },
-      { id: "transom-center", position: [0, height * 0.28, -0.04], normal: [0, 0, 1] }
+      { id: "threshold", position: [0, -height / 2, 0.1], normal: [0, 1, 0] },
+      { id: "transom-center", position: [0, height * 0.28, -0.18], normal: [0, 0, 1] }
     ],
     subcomponentRecipeIds: [`recipe.door.${spec.selectedFamilies.door}.glass`],
     parameterRanges: {
-      insetM: { min: 0.1, max: 0.3 },
-      recessDepthM: { min: 0.2, max: 0.4 },
+      insetM: { min: 0.12, max: 0.32 },
+      recessDepthM: { min: 0.34, max: 0.52 },
       frameThicknessM: { min: 0.1, max: 0.16 },
       transomHeightM: { min: 0.35, max: 0.55 },
-      leafInsetM: { min: 0.04, max: 0.1 }
+      leafInsetM: { min: 0.08, max: 0.16 }
     }
   });
 }

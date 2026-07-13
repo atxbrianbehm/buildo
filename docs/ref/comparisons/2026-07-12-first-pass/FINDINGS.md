@@ -93,10 +93,17 @@ Stage metrics from page capture (illustrative): facade 4 objects, openings 5, tr
 **Fix:** Deeper layered profile (max d ~1.08 m), projectionScale, taller corniceHeightM, larger brackets + continuous fascia bar.  
 **Exit:** Layered crown overhang ≥ ~0.7 m past front face.
 
+### V3 — Punched opening amplitude — **done 2026-07-13**
+
+**Plan:** photo-driven V3  
+**Fix:** Deeper window/door recipes, side/head returns, deeper glass, hoodProjection, fuller pockets.  
+**Exit:** depth ≥ 0.55 m, glass inset ≥ 0.2 m.
+
 ## Next actions
 
 1. ~~P0–P1 placement~~ **landed**  
 2. ~~V1 commercial base~~ **landed**  
-3. ~~V2 cornice crown weight~~ **landed**  
-4. **V3** punched opening amplitude (next)  
+3. ~~V2 cornice crown~~ **landed**  
+4. ~~V3 opening amplitude~~ **landed**  
+5. **V4** horizontal body hierarchy (next)  
 

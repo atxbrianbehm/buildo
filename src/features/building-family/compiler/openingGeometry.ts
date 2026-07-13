@@ -43,9 +43,9 @@ export function buildOpeningGlassPrimitives(recipe: ComponentRecipe): PrimitiveG
   const depth = Math.max(0.015, recipe.dimensionsM.depth);
   return [
     buildBoxPrimitive({
-      // Deeper into the recess (−Z) so clay reads a punched throat, not a surface pane.
-      center: [0, 0, -depth * 0.58],
-      size: [width, height, Math.min(0.03, depth)]
+      // V3: glass sits deep in the throat (−Z) so raking light darkens the opening.
+      center: [0, 0, -depth * 0.72],
+      size: [width, height, Math.min(0.025, depth)]
     })
   ];
 }
@@ -150,44 +150,64 @@ export function buildWindowFramePrimitives(
   const height = recipe.dimensionsM.height;
   const depth = recipe.dimensionsM.depth;
   const thickness = midRange(recipe, "frameThicknessM", 0.11);
-  const recessDepth = midRange(recipe, "recessDepthM", 0.3);
-  const sillProjection = midRange(recipe, "sillProjectionM", 0.13);
-  const mullionDepth = midRange(recipe, "mullionDepthM", 0.1);
+  const recessDepth = midRange(recipe, "recessDepthM", 0.45);
+  const sillProjection = midRange(recipe, "sillProjectionM", 0.16);
+  const hoodProjection = midRange(recipe, "hoodProjectionM", 0.2);
+  const mullionDepth = midRange(recipe, "mullionDepthM", 0.12);
   const countX = Math.round(midRange(recipe, "mullionCountX", 1));
   const countY = Math.round(midRange(recipe, "mullionCountY", 1));
-  // Outer casing sits slightly proud (+Z); sash/glass sit deeper (−Z).
-  const casingZ = depth * 0.1;
-  const sashZ = -depth * 0.08;
+  // Outer casing proud (+Z); sash/glass deep in throat (−Z). V3 amplitude.
+  const casingZ = depth * 0.12;
+  const sashZ = -depth * 0.22;
+  const throatZ = -recessDepth * 0.55 - depth * 0.18;
 
   if (detail === "low") {
     return [
       buildBoxPrimitive({
-        center: [0, 0, -depth * 0.15],
-        size: [width, height, Math.max(0.1, depth * 0.7)]
+        center: [0, 0, -depth * 0.28],
+        size: [width, height, Math.max(0.14, depth * 0.85)]
       })
     ];
   }
 
-  const casingThickness = thickness * 1.35;
-  const casingWidth = width + thickness * 1.6;
-  const casingHeight = height + thickness * 1.5;
+  const casingThickness = thickness * 1.4;
+  const casingWidth = width + thickness * 1.75;
+  const casingHeight = height + thickness * 1.65;
+  const halfW = width / 2;
+  const halfH = height / 2;
+  const returnDepth = recessDepth * 0.85 + depth * 0.25;
+  const returnThickness = thickness * 0.85;
 
   const primitives: PrimitiveGeometry[] = [
-    // Recess pocket into the wall mass (−Z throat).
+    // Deep recess pocket into the wall mass (−Z throat body).
     buildBoxPrimitive({
-      center: [0, 0, -recessDepth * 0.55 - depth * 0.12],
-      size: [width + 0.26, height + 0.26, recessDepth * 1.1]
+      center: [0, 0, throatZ],
+      size: [width + 0.32, height + 0.32, recessDepth * 1.25]
+    }),
+    // Side returns — vertical faces of the punch for raking-light shadow.
+    buildBoxPrimitive({
+      center: [-halfW - returnThickness * 0.15, 0, -returnDepth * 0.45],
+      size: [returnThickness, height + thickness * 0.4, returnDepth]
+    }),
+    buildBoxPrimitive({
+      center: [halfW + returnThickness * 0.15, 0, -returnDepth * 0.45],
+      size: [returnThickness, height + thickness * 0.4, returnDepth]
+    }),
+    // Head return into the throat.
+    buildBoxPrimitive({
+      center: [0, halfH + returnThickness * 0.1, -returnDepth * 0.4],
+      size: [width + thickness * 0.6, returnThickness, returnDepth * 0.9]
     }),
     // Outer casing / reveal — proud of the wall face for clay edge.
     ...frameBars({
       width: casingWidth,
       height: casingHeight,
-      depth: depth * 0.42,
+      depth: depth * 0.38,
       thickness: casingThickness,
       z: casingZ
     }),
-    // Inner sash frame set deeper into the throat.
-    ...frameBars({ width, height, depth: depth * 0.7, thickness, z: sashZ }),
+    // Inner sash frame set deep into the throat.
+    ...frameBars({ width, height, depth: depth * 0.65, thickness, z: sashZ }),
     ...mullions({
       width,
       height,
@@ -195,25 +215,25 @@ export function buildWindowFramePrimitives(
       thickness: thickness * 0.78,
       countX: Math.max(1, countX),
       countY: Math.max(1, countY),
-      z: sashZ - depth * 0.04
+      z: sashZ - depth * 0.08
     }),
     // Sill body + drip edge (drip projects outward +Z).
     buildBoxPrimitive({
-      center: [0, -height / 2 + thickness * 0.45, sillProjection * 0.15],
-      size: [width + thickness * 1.2, thickness * 1.1, depth * 0.5 + sillProjection]
+      center: [0, -halfH + thickness * 0.5, sillProjection * 0.2],
+      size: [width + thickness * 1.35, thickness * 1.25, depth * 0.55 + sillProjection]
     }),
     buildBoxPrimitive({
-      center: [0, -height / 2 + thickness * 0.15, sillProjection * 0.65],
-      size: [width + thickness * 1.35, thickness * 0.35, sillProjection * 0.6]
+      center: [0, -halfH + thickness * 0.18, sillProjection * 0.8],
+      size: [width + thickness * 1.55, thickness * 0.4, sillProjection * 0.75]
     }),
-    // Lintel / head hood — proud band for period clay shadow (Marx / Columbus).
+    // Lintel / head hood — proud shelf for period clay shadow (Marx / Columbus).
     buildBoxPrimitive({
-      center: [0, height / 2 - thickness * 0.2, depth * 0.14],
-      size: [width + thickness * 1.35, thickness * 1.45, depth * 0.55]
+      center: [0, halfH - thickness * 0.15, hoodProjection * 0.55],
+      size: [width + thickness * 1.6, thickness * 1.55, depth * 0.45 + hoodProjection]
     }),
     buildBoxPrimitive({
-      center: [0, height / 2 - thickness * 0.05, depth * 0.26],
-      size: [width + thickness * 1.5, thickness * 0.42, depth * 0.32]
+      center: [0, halfH + thickness * 0.05, hoodProjection * 0.95],
+      size: [width + thickness * 1.75, thickness * 0.48, hoodProjection * 0.7]
     })
   ];
 
@@ -222,15 +242,15 @@ export function buildWindowFramePrimitives(
       ...archedCrown({
         width: width * 0.98,
         height,
-        depth: depth * 0.82,
+        depth: depth * 0.9,
         steps: 7
       })
     );
     // Keystone mass at crown apex — readable silhouette cue in clay.
     primitives.push(
       buildBoxPrimitive({
-        center: [0, height / 2 + thickness * 0.55, depth * 0.12],
-        size: [thickness * 1.4, thickness * 1.8, depth * 0.55]
+        center: [0, halfH + thickness * 0.6, hoodProjection * 0.4],
+        size: [thickness * 1.55, thickness * 2.0, depth * 0.6]
       })
     );
   }
@@ -246,62 +266,73 @@ export function buildDoorFramePrimitives(
   const height = recipe.dimensionsM.height;
   const depth = recipe.dimensionsM.depth;
   const thickness = midRange(recipe, "frameThicknessM", 0.13);
-  const recessDepth = midRange(recipe, "recessDepthM", 0.34);
+  const recessDepth = midRange(recipe, "recessDepthM", 0.42);
   const transomHeight = midRange(recipe, "transomHeightM", 0.45);
-  const leafInset = midRange(recipe, "leafInsetM", 0.09);
+  const leafInset = midRange(recipe, "leafInsetM", 0.12);
 
   if (detail === "low") {
     return [
       buildBoxPrimitive({
-        center: [0, 0, 0],
-        size: [width, height, Math.max(0.12, depth * 0.65)]
+        center: [0, 0, -depth * 0.2],
+        size: [width, height, Math.max(0.14, depth * 0.8)]
       })
     ];
   }
 
   const leafHeight = Math.max(0.4, height - transomHeight - thickness * 1.5);
-  const casingThickness = thickness * 1.25;
+  const casingThickness = thickness * 1.3;
+  const halfW = width / 2;
+  const returnDepth = recessDepth * 0.9 + depth * 0.2;
   return [
-    // Throat pocket into the wall (−Z).
+    // Deep throat pocket into the wall (−Z).
     buildBoxPrimitive({
-      center: [0, 0, -recessDepth * 0.55 - depth * 0.1],
-      size: [width + 0.26, height + 0.16, recessDepth * 1.08]
+      center: [0, 0, -recessDepth * 0.55 - depth * 0.15],
+      size: [width + 0.3, height + 0.18, recessDepth * 1.2]
+    }),
+    // Side returns for punched storefront shadow.
+    buildBoxPrimitive({
+      center: [-halfW - thickness * 0.2, 0, -returnDepth * 0.45],
+      size: [thickness * 0.9, height * 0.95, returnDepth]
+    }),
+    buildBoxPrimitive({
+      center: [halfW + thickness * 0.2, 0, -returnDepth * 0.45],
+      size: [thickness * 0.9, height * 0.95, returnDepth]
     }),
     // Projecting storefront surround (+Z exterior).
     ...frameBars({
-      width: width + thickness * 1.4,
-      height: height + thickness * 0.8,
-      depth: depth * 0.48,
+      width: width + thickness * 1.5,
+      height: height + thickness * 0.9,
+      depth: depth * 0.45,
       thickness: casingThickness,
-      z: depth * 0.14
+      z: depth * 0.16
     }),
-    ...frameBars({ width, height, depth: depth * 0.78, thickness, z: -depth * 0.04 }),
+    ...frameBars({ width, height, depth: depth * 0.72, thickness, z: -depth * 0.18 }),
     // Threshold / stoop (proud).
     buildBoxPrimitive({
-      center: [0, -height / 2 + thickness * 0.45, depth * 0.18],
-      size: [width + 0.18, thickness * 1.05, depth * 0.85]
+      center: [0, -height / 2 + thickness * 0.45, depth * 0.2],
+      size: [width + 0.22, thickness * 1.1, depth * 0.9]
     }),
     buildBoxPrimitive({
-      center: [0, -height / 2 + thickness * 0.12, depth * 0.28],
-      size: [width + 0.28, thickness * 0.4, depth * 0.55]
+      center: [0, -height / 2 + thickness * 0.12, depth * 0.32],
+      size: [width + 0.32, thickness * 0.42, depth * 0.6]
     }),
-    // Door leaf + mid-stile (recessed into throat).
+    // Door leaf + mid-stile (recessed deep into throat).
     buildBoxPrimitive({
-      center: [0, -height / 2 + thickness + leafHeight / 2, -leafInset - depth * 0.08],
-      size: [Math.max(0.2, width - thickness * 2.2), leafHeight, depth * 0.42]
+      center: [0, -height / 2 + thickness + leafHeight / 2, -leafInset - depth * 0.2],
+      size: [Math.max(0.2, width - thickness * 2.2), leafHeight, depth * 0.38]
     }),
     buildBoxPrimitive({
-      center: [0, -height / 2 + thickness + leafHeight / 2, -leafInset - depth * 0.04],
-      size: [thickness * 0.55, leafHeight * 0.92, depth * 0.22]
+      center: [0, -height / 2 + thickness + leafHeight / 2, -leafInset - depth * 0.12],
+      size: [thickness * 0.55, leafHeight * 0.92, depth * 0.2]
     }),
     // Transom bar + head.
     buildBoxPrimitive({
-      center: [0, height / 2 - transomHeight / 2 - thickness * 0.2, -depth * 0.06],
-      size: [Math.max(0.15, width - thickness * 2), thickness * 0.85, depth * 0.65]
+      center: [0, height / 2 - transomHeight / 2 - thickness * 0.2, -depth * 0.2],
+      size: [Math.max(0.15, width - thickness * 2), thickness * 0.85, depth * 0.6]
     }),
     buildBoxPrimitive({
-      center: [0, height / 2 - thickness * 0.35, depth * 0.12],
-      size: [width + thickness * 0.8, thickness * 1.1, depth * 0.55]
+      center: [0, height / 2 - thickness * 0.3, depth * 0.14],
+      size: [width + thickness * 0.95, thickness * 1.2, depth * 0.6]
     })
   ];
 }

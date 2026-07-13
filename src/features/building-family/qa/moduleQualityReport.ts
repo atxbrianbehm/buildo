@@ -209,13 +209,13 @@ export function evaluateModuleQualityChecklist(
       "openingDepth",
       "Openings have wall pockets plus frame/glass depth hierarchy",
       detailLevel === "high"
-        ? openingDepthM > 0.28 && glassInsetM > 0.08 && openingPockets > 0 && slotLockedFrames
+        ? openingDepthM > 0.5 && glassInsetM > 0.18 && openingPockets > 0 && slotLockedFrames
           ? "pass"
           : "fail"
-        : openingDepthM > 0.15
+        : openingDepthM > 0.2
           ? "pass"
           : "fail",
-      "Opening frame depth, glass inset, slot-locked frame scale, and additive wall-pocket mass for punched-window read.",
+      "Opening frame depth, glass inset, slot-locked frame scale, and additive wall-pocket mass for punched-window read (V3 amplitude).",
       {
         openingDepthM,
         glassInsetM,

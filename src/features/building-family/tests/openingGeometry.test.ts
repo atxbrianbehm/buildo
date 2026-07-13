@@ -54,16 +54,18 @@ describe("openingGeometry", () => {
     const combined = buildOpeningAssemblyGeometry({ recipe: frame, detail: "high", part: "frame" });
 
     expect(high.length).toBeGreaterThan(low.length);
-    expect(high.length).toBeGreaterThanOrEqual(12);
-    expect(openingAssemblyDepthExtent(frame, "high")).toBeGreaterThan(0.32);
-    expect(openingGlassInsetFromExterior(frame)).toBeGreaterThan(0.1);
+    expect(high.length).toBeGreaterThanOrEqual(14);
+    // V3: total assembly depth and glass inset must read without forensic lighting.
+    expect(openingAssemblyDepthExtent(frame, "high")).toBeGreaterThan(0.55);
+    expect(openingGlassInsetFromExterior(frame)).toBeGreaterThan(0.2);
     // Glass sits deeper (−Z) than the proud exterior face (+Z casing/hood).
     const glass = buildOpeningAssemblyGeometry({
       recipe: buildWindowGlassRecipe(spec),
       detail: "high",
       part: "glass"
     });
-    expect(glass.bounds.max[2]).toBeLessThan(combined.bounds.max[2] - 0.08);
+    expect(glass.bounds.max[2]).toBeLessThan(combined.bounds.max[2] - 0.18);
+    expect(combined.bounds.min[2]).toBeLessThan(-0.25);
     expect(combined.normals.every((value) => Number.isFinite(value))).toBe(true);
     expect(combined.indices.length % 3).toBe(0);
   });
