@@ -112,19 +112,27 @@ function layerBytes(layers: MaterialSourceArtifact["layers"]): Uint8Array {
   return combined;
 }
 
+/** Standard late-19c brick course height (meters), including mortar bed. */
+export const BRICK_COURSE_HEIGHT_M = 0.075;
+
 /**
  * Derive brick cell size from metersPerTile so coursing density stays stable.
- * Standard course ~0.075 m; tile of 1.2 m → ~16 courses across the tile height.
+ * V5: ~0.96 m tile → ~12.8 courses; stretched by physical UV scale on the facade.
  */
-export function brickCellSizePx(request: MaterialSourceRequest): { brickWidth: number; brickHeight: number; mortar: number } {
+export function brickCellSizePx(request: MaterialSourceRequest): {
+  brickWidth: number;
+  brickHeight: number;
+  mortar: number;
+  coursesPerTile: number;
+} {
   const metersPerTile =
     request.metersPerTile ??
     Math.max(request.physicalSizeM.width, request.physicalSizeM.height);
-  const coursesPerTile = Math.max(4, metersPerTile / 0.075);
+  const coursesPerTile = Math.max(4, metersPerTile / BRICK_COURSE_HEIGHT_M);
   const brickHeight = Math.max(2, Math.round(request.heightPx / coursesPerTile));
-  const brickWidth = Math.max(4, Math.round(brickHeight * 2));
-  const mortar = Math.max(1, Math.round(brickHeight * 0.12));
-  return { brickWidth, brickHeight, mortar };
+  const brickWidth = Math.max(4, Math.round(brickHeight * 2.1));
+  const mortar = Math.max(1, Math.round(brickHeight * 0.14));
+  return { brickWidth, brickHeight, mortar, coursesPerTile };
 }
 
 function brickLayers(request: MaterialSourceRequest, seed: SeedTree): MaterialSourceArtifact["layers"] {

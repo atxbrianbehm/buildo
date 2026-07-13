@@ -105,9 +105,18 @@ Stage metrics from page capture (illustrative): facade 4 objects, openings 5, tr
 **Fix:** Deeper belts, ground-heavy first belt, drips, mid-body string courses, proud spandrels.  
 **Exit:** Base top / floor belts / cornice (+ mid strings) read as horizontal systems.
 
+### V5 — Material scale — **done 2026-07-13**
+
+**Plan:** photo-driven V5  
+**Fix:** UTDG-aligned metersPerTile (brick 0.96 m); box UVs in meters; atlas remap tiles by physicalSizeM.  
+**Exit:** materialScale QA checks period ranges; textured brick courses building-sized.
+
+### V6 — Evidence close-out — **done 2026-07-13**
+
+Re-stated packet status; clay silhouette packets V1–V4 + materials V5 complete enough that layout (WFC) is unblocked from a *silhouette* standpoint (period likeness still partial).
+
 ## Next actions
 
-1. ~~P0–P1 · V1–V4~~ **landed**  
-2. **V5** material scale (textured) — next  
-3. **V6** evidence close-out  
+1. ~~P0–P1 · V1–V6 plan packets~~ **landed** (structure + material scale)  
+2. Optional follow-ups: deeper Marx cornice/openings, textured proof screenshots, WFC (M12)  
 

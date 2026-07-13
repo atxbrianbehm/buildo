@@ -836,7 +836,7 @@ Execute in order. Each row is one reviewable PR-sized milestone unless noted.
 | M9 | Fidelity mode proof/kit in run + export | C2 | persistence/export | done 2026-07-12 |
 | M10 | Art Kit Lab + gallery labels | C3 | UI + e2e | done 2026-07-12 |
 | M11 | Visual QA packet | C4 | QA schema + docs | done 2026-07-12 |
-| M12 | WFC constraint model + solver | D1 | pure WFC tests | pending |
+| M12 | WFC constraint model + solver | D1 | pure WFC tests | pending (silhouette gate: photo-driven V1–V4 landed 2026-07-13) |
 | M13 | WFC planner wiring + invalidation | D2 | controller + invalidation | pending |
 | M14 | UTDG research-brief inject contracts (seed JSON) | E1 | `utdgResearchBrief` | partial 2026-07-12 (brief + inject; no material consumer) |
 | M15 | Trim sheet planner integration | E2 | atlas + trim sheet | pending |

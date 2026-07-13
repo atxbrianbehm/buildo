@@ -11,7 +11,8 @@ export const late19cApartmentKit: ArtKitManifest = ArtKitManifestSchema.parse({
       id: "brick",
       label: "Warm red brick",
       channels: ["baseColor", "normal", "orm", "height"],
-      metersPerTile: 1.2,
+      // V5: align with UTDG late-19c running bond (~0.96 m tile, ~75 mm courses).
+      metersPerTile: 0.96,
       atlasSlotHint: "wall.primary",
       proceduralSource: "running-bond-brick"
     },
@@ -19,7 +20,7 @@ export const late19cApartmentKit: ArtKitManifest = ArtKitManifestSchema.parse({
       id: "plaster",
       label: "Painted plaster / stucco",
       channels: ["baseColor", "normal", "orm", "height"],
-      metersPerTile: 1.5,
+      metersPerTile: 1.2,
       atlasSlotHint: "wall.secondary",
       proceduralSource: "painted-stucco"
     },
@@ -27,7 +28,7 @@ export const late19cApartmentKit: ArtKitManifest = ArtKitManifestSchema.parse({
       id: "trim-stone",
       label: "Pale trim stone",
       channels: ["baseColor", "normal", "orm", "height"],
-      metersPerTile: 1,
+      metersPerTile: 0.64,
       atlasSlotHint: "trim.horizontal.primary",
       proceduralSource: "carved-stone-trim"
     },
@@ -35,7 +36,7 @@ export const late19cApartmentKit: ArtKitManifest = ArtKitManifestSchema.parse({
       id: "painted-wood",
       label: "Painted wood",
       channels: ["baseColor", "normal", "orm"],
-      metersPerTile: 0.75,
+      metersPerTile: 0.32,
       atlasSlotHint: "frame.primary",
       proceduralSource: "painted-wood"
     },
@@ -43,7 +44,7 @@ export const late19cApartmentKit: ArtKitManifest = ArtKitManifestSchema.parse({
       id: "painted-metal",
       label: "Painted metal",
       channels: ["baseColor", "normal", "orm"],
-      metersPerTile: 0.75,
+      metersPerTile: 0.2,
       atlasSlotHint: "cornice.primary",
       proceduralSource: "painted-metal"
     },
@@ -59,7 +60,7 @@ export const late19cApartmentKit: ArtKitManifest = ArtKitManifestSchema.parse({
       id: "roof",
       label: "Dark roof membrane",
       channels: ["baseColor", "normal", "orm"],
-      metersPerTile: 2,
+      metersPerTile: 1.5,
       atlasSlotHint: "roof.primary",
       proceduralSource: "roof-membrane"
     },
@@ -67,7 +68,7 @@ export const late19cApartmentKit: ArtKitManifest = ArtKitManifestSchema.parse({
       id: "grime",
       label: "Grime / weathering mask",
       channels: ["baseColor", "orm", "opacity", "height"],
-      metersPerTile: 1,
+      metersPerTile: 0.8,
       atlasSlotHint: "utility.mask",
       proceduralSource: "grime-weathering-mask"
     }

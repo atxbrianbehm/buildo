@@ -1,6 +1,6 @@
 # Photo-Driven Visual Fidelity Packets
 
-**Status:** active — V1–V4 landed 2026-07-13; next V5  
+**Status:** **exited** — V1–V6 complete 2026-07-13 (structure + material scale); further period work is optional follow-ups  
 **Date:** 2026-07-13  
 **Parent tracks:** G1–G8 geometry quality (exited), kit-grammar roadmap, Period Ref Lab  
 **Primary refs:** `docs/ref/` + `docs/research/period-reference/` via `#room=periodRef`  
@@ -100,15 +100,15 @@ Clay: ground band visibly taller than floor above at default camera (no zoom).
 **Levers:** Deeper belt profile + projectionScale, ground→body heavy belt, drip bars, mid-body string courses, taller/prouder spandrels.  
 **Exit:** Three horizontal systems read at default camera: ground top / floor belts / cornice (plus mid-body strings).
 
-### V5 — Material scale
+### V5 — Material scale — **done 2026-07-13**
 
-**Gap:** Textured mode not period-checked.  
-**Levers:** Art-kit metersPerTile, atlas roles—not structure regen.  
-**Exit:** Brick course scale vs human-height openings feels building-sized.
+**Gap:** Textured mode not period-checked; UVs stretched one tile per face.  
+**Levers:** UTDG-aligned metersPerTile; meter-space box UVs; atlas remap divides by physicalSizeM + wrap for tileable slots; brick course density from 0.075 m.  
+**Exit:** Brick ~0.96 m/tile in period range; wall UVs tile by meters; materialScale QA checks period ranges.
 
-### V6 — Evidence close-out
+### V6 — Evidence close-out — **done 2026-07-13**
 
-Re-score Marx + Vanderbilt packets; archive captures; link from kit-grammar Phase C visual QA gate; park this plan as exited.
+Documented packet landings in this plan + `docs/ref/comparisons/…/FINDINGS.md`; Marx notes freeform updated. Visual QA materialScale now enforces period ranges. Layout work (WFC M12) is no longer blocked by “weak mass” from this track—period photoreal remains open-ended.
 
 ---
 
@@ -133,6 +133,8 @@ Re-score Marx + Vanderbilt packets; archive captures; link from kit-grammar Phas
 | 2026-07-13 | **V2 cornice crown weight** landed (deeper profile + brackets + fascia) |
 | 2026-07-13 | **V3 punched opening amplitude** landed (returns, deeper glass/pockets, hoods) |
 | 2026-07-13 | **V4 horizontal body hierarchy** landed (belts, drips, string courses, spandrels) |
+| 2026-07-13 | **V5 material scale** landed (period metersPerTile + physical UV tiling) |
+| 2026-07-13 | **V6 evidence close-out** — plan exited |
 
 ---
 

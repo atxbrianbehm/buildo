@@ -31,6 +31,55 @@ export function tilePhysicalSizeM(metersPerTile: number): { width: number; heigh
   return { width: size, height: size };
 }
 
+/** Late-19c period ranges (V5) — brick courses ~75 mm; tile is a multi-course repeat. */
+export const LATE19C_MATERIAL_SCALE_M = {
+  brick: { min: 0.85, max: 1.05, ideal: 0.96 },
+  plaster: { min: 1.0, max: 1.4, ideal: 1.2 },
+  "trim-stone": { min: 0.5, max: 0.8, ideal: 0.64 },
+  "painted-wood": { min: 0.25, max: 0.45, ideal: 0.32 },
+  "painted-metal": { min: 0.12, max: 0.35, ideal: 0.2 },
+  roof: { min: 1.2, max: 2.0, ideal: 1.5 },
+  glass: { min: 0.8, max: 1.2, ideal: 1.0 },
+  grime: { min: 0.5, max: 1.2, ideal: 0.8 }
+} as const;
+
+export type Late19cMaterialScaleId = keyof typeof LATE19C_MATERIAL_SCALE_M;
+
+export function isPeriodMaterialScale(
+  materialRoleId: string,
+  metersPerTile: number
+): boolean {
+  const range = LATE19C_MATERIAL_SCALE_M[materialRoleId as Late19cMaterialScaleId];
+  if (!range) {
+    return metersPerTile > 0;
+  }
+  return metersPerTile >= range.min && metersPerTile <= range.max;
+}
+
+export function evaluateArtKitPeriodMaterialScale(kit: ArtKitManifest): {
+  passCount: number;
+  failCount: number;
+  issues: string[];
+} {
+  const issues: string[] = [];
+  let passCount = 0;
+  let failCount = 0;
+  for (const material of kit.materials) {
+    if (isPeriodMaterialScale(material.id, material.metersPerTile)) {
+      passCount += 1;
+    } else {
+      failCount += 1;
+      const range = LATE19C_MATERIAL_SCALE_M[material.id as Late19cMaterialScaleId];
+      issues.push(
+        range
+          ? `${material.id}: ${material.metersPerTile} m/tile outside ${range.min}–${range.max}`
+          : `${material.id}: non-positive tile scale`
+      );
+    }
+  }
+  return { passCount, failCount, issues };
+}
+
 export function gltfHintsForChannels(channels: ArtKitMaterialChannel[]): ArtKitMaterialGltfHints {
   const hasOpacity = channels.includes("opacity");
   return {

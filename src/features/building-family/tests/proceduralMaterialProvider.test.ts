@@ -7,10 +7,10 @@ function brickRequest(partial: Partial<MaterialSourceRequest> = {}): MaterialSou
     role: "wall",
     selectedFamily: "brick-red",
     periodicity: "xy",
-    physicalSizeM: { width: 1.2, height: 1.2 },
+    physicalSizeM: { width: 0.96, height: 0.96 },
     seedPath: "atlas/source/wall.primary/brick-red",
     promptVocabulary: ["brick-red", "primary wall material"],
-    metersPerTile: 1.2,
+    metersPerTile: 0.96,
     artKitMaterialRoleId: "brick",
     proceduralSource: "running-bond-brick",
     widthPx: 64,
@@ -25,6 +25,7 @@ describe("ProceduralMaterialProvider art-kit scale", () => {
     const large = brickCellSizePx(brickRequest({ widthPx: 128, heightPx: 128 }));
 
     expect(small.brickHeight).toBeGreaterThan(0);
+    expect(small.coursesPerTile).toBeCloseTo(0.96 / 0.075, 5);
     expect(large.brickHeight / small.brickHeight).toBeCloseTo(2, 0);
     expect(large.brickWidth / small.brickWidth).toBeCloseTo(2, 0);
   });

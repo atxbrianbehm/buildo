@@ -6,6 +6,7 @@ import {
   OPENING_SLOT_ALIGNMENT_EPS_M
 } from "../compiler/openingSlotBinding";
 import { SchemaVersion010 } from "../contracts/shared";
+import { evaluateArtKitPeriodMaterialScale, isPeriodMaterialScale } from "../materials/artKitMaterialSet";
 import type { AssemblyHallFixture } from "../ui/assemblyHallFixture";
 
 export const MODULE_QUALITY_REPORT_KIND = "dynamic-building-family-module-quality";
@@ -288,10 +289,26 @@ export function evaluateModuleQualityChecklist(
     ),
     item(
       "materialScale",
-      "Tileable atlas slots expose metersPerTile physical scale",
-      tileableSlots.length >= 2 ? "pass" : "fail",
-      "Art-kit material set bindings stamp metersPerTile onto tileable atlas slots.",
-      { tileableSlotCount: tileableSlots.length }
+      "Tileable atlas slots expose period-valid metersPerTile physical scale",
+      (() => {
+        if (tileableSlots.length < 2) {
+          return "fail";
+        }
+        const brickSlot = tileableSlots.find(
+          (slot) => slot.id === "wall.primary" || slot.artKitMaterialRoleId === "brick"
+        );
+        const brickOk =
+          brickSlot?.metersPerTile !== undefined &&
+          isPeriodMaterialScale("brick", brickSlot.metersPerTile);
+        const periodEval = evaluateArtKitPeriodMaterialScale(late19cApartmentKit);
+        return brickOk && periodEval.failCount === 0 ? "pass" : "fail";
+      })(),
+      "Art-kit metersPerTile aligned to late-19c UTDG ranges; box UVs use meter space for tile repeat (V5).",
+      {
+        tileableSlotCount: tileableSlots.length,
+        brickMetersPerTile: tileableSlots.find((slot) => slot.id === "wall.primary")?.metersPerTile,
+        periodScale: evaluateArtKitPeriodMaterialScale(late19cApartmentKit)
+      }
     ),
     item(
       "sideRearTreatment",

@@ -134,24 +134,73 @@ function createMeshGeometry(batch: MeshBatchIR): BufferGeometry {
   return geometry;
 }
 
+function fract01(value: number): number {
+  const wrapped = value - Math.floor(value);
+  // Keep exact 1.0 at the edge instead of snapping to 0.
+  return wrapped === 0 && value > 0 ? 1 : wrapped;
+}
+
+/**
+ * Map geometry UVs into an atlas slot.
+ * Box primitives emit UVs in meters along each face; tileable slots divide by
+ * physicalSizeM so brick/trim repeat at period scale (V5). Unit (0–1) UVs still work.
+ */
 function remapGeometryUvsToAtlasSlot(geometry: BufferGeometry, material: MeshStandardMaterial): void {
-  const uvRect = material.userData.atlasSlot?.uvRect as
-    | { x: number; y: number; width: number; height: number }
+  const atlasSlot = material.userData.atlasSlot as
+    | {
+        uvRect?: { x: number; y: number; width: number; height: number };
+        physicalSizeM?: { width: number; height: number };
+        uvMode?: string;
+        periodicity?: string;
+      }
     | undefined;
+  const uvRect = atlasSlot?.uvRect;
   const uv = geometry.getAttribute("uv");
   if (!uvRect || !uv) {
     return;
   }
 
+  const physical = atlasSlot?.physicalSizeM;
+  const periodicity = atlasSlot?.periodicity ?? "none";
+  const uvMode = atlasSlot?.uvMode ?? "stretch";
+  const tileable =
+    periodicity === "xy" ||
+    periodicity === "x" ||
+    uvMode === "repeat" ||
+    uvMode === "cap-repeat-cap";
+  const tileW = Math.max(1e-4, physical?.width ?? 1);
+  const tileH = Math.max(1e-4, physical?.height ?? 1);
+
+  let maxU = 0;
+  let maxV = 0;
   for (let index = 0; index < uv.count; index += 1) {
-    uv.setXY(
-      index,
-      uvRect.x + uv.getX(index) * uvRect.width,
-      uvRect.y + uv.getY(index) * uvRect.height
-    );
+    maxU = Math.max(maxU, Math.abs(uv.getX(index)));
+    maxV = Math.max(maxV, Math.abs(uv.getY(index)));
+  }
+  const meterSpace = maxU > 1.05 || maxV > 1.05;
+
+  for (let index = 0; index < uv.count; index += 1) {
+    let u = uv.getX(index);
+    let v = uv.getY(index);
+    if (meterSpace) {
+      u = u / tileW;
+      v = v / tileH;
+      if (tileable) {
+        u = fract01(u);
+        v = fract01(v);
+      } else {
+        u = Math.min(1, Math.max(0, u));
+        v = Math.min(1, Math.max(0, v));
+      }
+    } else if (tileable && physical) {
+      u = fract01(u);
+      v = fract01(v);
+    }
+    uv.setXY(index, uvRect.x + u * uvRect.width, uvRect.y + v * uvRect.height);
   }
   uv.needsUpdate = true;
   geometry.userData.atlasSlotUvRect = { ...uvRect };
+  geometry.userData.physicalTileSizeM = physical ? { ...physical } : undefined;
 }
 
 function createRecipeGeometry(recipe: ComponentRecipe): BufferGeometry {

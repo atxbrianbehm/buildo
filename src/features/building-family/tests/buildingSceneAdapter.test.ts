@@ -128,11 +128,14 @@ describe("building scene adapter", () => {
     expect(wallObject?.geometry.getAttribute("position").count).toBe(wallBatch.positions!.length / 3);
     expect(wallObject?.geometry.getAttribute("normal").count).toBe(wallBatch.normals!.length / 3);
     expect(wallObject?.geometry.getAttribute("uv").count).toBe(wallBatch.uvs!.length / 2);
-    expect(Math.min(...renderedU)).toBeCloseTo(wallWindow.uvRect.x);
-    expect(Math.max(...renderedU)).toBeCloseTo(wallWindow.uvRect.x + wallWindow.uvRect.width);
-    expect(Math.min(...renderedV)).toBeCloseTo(wallWindow.uvRect.y);
-    expect(Math.max(...renderedV)).toBeCloseTo(wallWindow.uvRect.y + wallWindow.uvRect.height);
+    // V5: source UVs are meters along faces; remapped UVs stay inside the atlas slot.
+    expect(Math.max(...sourceUvs)).toBeGreaterThan(1.05);
+    expect(Math.min(...renderedU)).toBeGreaterThanOrEqual(wallWindow.uvRect.x - 1e-6);
+    expect(Math.max(...renderedU)).toBeLessThanOrEqual(wallWindow.uvRect.x + wallWindow.uvRect.width + 1e-6);
+    expect(Math.min(...renderedV)).toBeGreaterThanOrEqual(wallWindow.uvRect.y - 1e-6);
+    expect(Math.max(...renderedV)).toBeLessThanOrEqual(wallWindow.uvRect.y + wallWindow.uvRect.height + 1e-6);
     expect(Array.from(wallBatch.uvs!)).toEqual(sourceUvs);
+    expect(wallObject?.geometry.userData.physicalTileSizeM).toEqual(wallWindow.physicalSizeM);
     expect(wallObject?.geometry.index?.count).toBe(wallBatch.indices!.length);
     expect(runtime.metrics.meshCount).toBe(ir.meshBatches.length);
 
