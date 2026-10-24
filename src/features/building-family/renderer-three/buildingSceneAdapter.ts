@@ -1,4 +1,5 @@
 import {
+  Box3,
   BufferAttribute,
   BufferGeometry,
   Group,
@@ -7,7 +8,10 @@ import {
   Mesh,
   MeshStandardMaterial,
   REVISION,
+  Vector3,
   WebGLRenderer,
+  type Intersection,
+  type Object3D,
 } from "three";
 import type { ComponentCatalog } from "../components/componentCatalogBuilder";
 import type { ComponentGallery, ComponentGalleryEntry } from "../compiler/componentGalleryBuilder";
@@ -15,7 +19,10 @@ import type { ComponentRecipe } from "../contracts/componentRecipe";
 import type { MeshBatchIR, RuntimeBuildingIR } from "../contracts/runtimeBuildingIR";
 import type { AssemblyStage } from "../contracts/shared";
 import type { AtlasMaterialRegistry } from "./buildingAtlasMaterialFactory";
+import type { BuildingSurfaceLease, BuildingSurfaceRuntime } from "./surfaceMaterialRuntime";
 import { createRecipeBufferGeometry } from "./recipeGeometryFactory";
+import type { AtlasSlotTextureWindow } from "./buildingAtlasTextureFactory";
+import { createWallAtlasGeometry } from "./wallAtlasGeometry";
 import {
   disposeBuildingSceneResources,
   type DisposeBuildingSceneResourcesResult
@@ -42,6 +49,16 @@ export interface BuildingSemanticLookupEntry {
   stage: AssemblyStage;
   object: BuildingRenderable;
   elementIndex?: number;
+  /** Native index in a scale-compatible chunk; elementIndex remains the source IR index. */
+  instanceIndex?: number;
+}
+
+export interface BuildingWindowSelection {
+  semanticPath: string;
+  object: InstancedMesh<BufferGeometry, MeshStandardMaterial>;
+  instanceIndex: number;
+  elementIndex?: number;
+  bounds: Box3;
 }
 
 export interface BuildingGalleryObject {
@@ -70,11 +87,15 @@ export interface BuildingSceneRuntime {
   galleryObjects: Map<string, BuildingGalleryObject>;
   renderables: BuildingRenderable[];
   materialRegistry: AtlasMaterialRegistry;
+  surfaceRuntime?: BuildingSurfaceRuntime;
+  surfaceLease?: BuildingSurfaceLease;
   metrics: {
     meshCount: number;
     instanceBatchCount: number;
     instanceCount: number;
     triangleCount: number;
+    /** Actual adapter triangles, including repeat subdivisions and instance multiplicity. */
+    renderedTriangleCount?: number;
   };
   disposed: boolean;
 }
@@ -84,9 +105,91 @@ export interface CreateBuildingSceneRuntimeInput {
   catalog: ComponentCatalog;
   materialRegistry: AtlasMaterialRegistry;
   componentGallery?: ComponentGallery;
+  surfaceRuntime?: BuildingSurfaceRuntime;
+  /** Compiler-owned procedural prototypes; legacy catalog recipes remain the default. */
+  compiledInstanceGeometry?: ReadonlyMap<string, MeshBatchIR>;
 }
 
 export type DisposeBuildingSceneRuntimeResult = DisposeBuildingSceneResourcesResult;
+
+function selectionObjectVisible(object: Object3D): boolean {
+  for (let ancestor: Object3D | null = object; ancestor; ancestor = ancestor.parent) {
+    if (!ancestor.visible) return false;
+  }
+  const material = (object as Mesh).material;
+  return Array.isArray(material) ? material.some((entry) => entry.visible) : material?.visible !== false;
+}
+
+function windowSelection(
+  runtime: BuildingSceneRuntime,
+  catalog: ComponentCatalog,
+  lookup: BuildingSemanticLookupEntry
+): BuildingWindowSelection | undefined {
+  const object = lookup.object;
+  if (runtime.disposed || !object.isInstancedMesh || !runtime.renderables.includes(object) || !selectionObjectVisible(object)) return undefined;
+  let ancestor: Object3D | null = object;
+  while (ancestor && ancestor !== runtime.root) ancestor = ancestor.parent;
+  if (!ancestor) return undefined;
+  const recipe = catalog.recipes.find((entry) => entry.id === object.userData.recipeId);
+  if (!recipe || !((recipe.role === "window" && recipe.kind === "frame") || (recipe.role === "windowGlass" && recipe.kind === "panel"))) return undefined;
+  const instanceIndex = lookup.instanceIndex ?? lookup.elementIndex;
+  const mesh = object as InstancedMesh<BufferGeometry, MeshStandardMaterial>;
+  if (instanceIndex === undefined || !Number.isInteger(instanceIndex) || instanceIndex < 0 || instanceIndex >= mesh.count || instanceIndex >= mesh.instanceMatrix.count) return undefined;
+  const positions = mesh.geometry.getAttribute("position");
+  if (!positions || positions.count === 0) return undefined;
+  const instanceMatrix = new Matrix4();
+  mesh.getMatrixAt(instanceIndex, instanceMatrix);
+  mesh.updateWorldMatrix(true, false);
+  const worldMatrix = new Matrix4().multiplyMatrices(mesh.matrixWorld, instanceMatrix);
+  if (!worldMatrix.elements.every(Number.isFinite)) return undefined;
+  // Read the actual geometry without populating or changing its shared boundingBox.
+  const bounds = new Box3();
+  const vertex = new Vector3();
+  for (let index = 0; index < positions.count; index += 1) {
+    bounds.expandByPoint(vertex.fromBufferAttribute(positions, index).applyMatrix4(worldMatrix));
+  }
+  if (bounds.isEmpty() || ![...bounds.min.toArray(), ...bounds.max.toArray()].every(Number.isFinite)) return undefined;
+  return { semanticPath: lookup.semanticPath, object: mesh, instanceIndex, elementIndex: lookup.elementIndex, bounds };
+}
+
+/** Resolve an exact current window instance; other dropdown entries retain metadata only. */
+export function resolveWindowSelectionFromSemanticPath(
+  runtime: BuildingSceneRuntime,
+  catalog: ComponentCatalog,
+  semanticPath: string
+): BuildingWindowSelection | undefined {
+  const lookup = runtime.semanticLookup.get(semanticPath);
+  return lookup?.semanticPath === semanticPath ? windowSelection(runtime, catalog, lookup) : undefined;
+}
+
+/** Pass all actual hits, including occluders. An unadmitted nearest visible hit blocks selection. */
+export function resolveWindowSelectionFromIntersections(
+  runtime: BuildingSceneRuntime,
+  catalog: ComponentCatalog,
+  hits: readonly Intersection<Object3D>[]
+): BuildingWindowSelection | undefined {
+  if (runtime.disposed) return undefined;
+  let nearestDistance = Infinity;
+  let nearest: Intersection<Object3D>[] = [];
+  for (const hit of hits) {
+    if (!Number.isFinite(hit.distance) || hit.distance < 0 || !selectionObjectVisible(hit.object)) continue;
+    if (hit.distance < nearestDistance) {
+      nearestDistance = hit.distance;
+      nearest = [hit];
+    } else if (hit.distance === nearestDistance) nearest.push(hit);
+  }
+  let selected: BuildingWindowSelection | undefined;
+  for (const hit of nearest) {
+    if (hit.instanceId === undefined) return undefined;
+    const matches = [...runtime.semanticLookup.values()].filter((lookup) => lookup.object === hit.object &&
+      (lookup.instanceIndex ?? lookup.elementIndex) === hit.instanceId);
+    if (matches.length !== 1) return undefined;
+    const candidate = windowSelection(runtime, catalog, matches[0]!);
+    if (!candidate || (selected && selected.semanticPath !== candidate.semanticPath)) return undefined;
+    selected = candidate;
+  }
+  return selected;
+}
 
 function recipeById(catalog: ComponentCatalog, recipeId: string): ComponentRecipe {
   const recipe = catalog.recipes.find((candidate) => candidate.id === recipeId);
@@ -207,11 +310,60 @@ function createRecipeGeometry(recipe: ComponentRecipe): BufferGeometry {
   return createRecipeBufferGeometry(recipe);
 }
 
-function assignInstanceMatrices(object: InstancedMesh<BufferGeometry, MeshStandardMaterial>, transforms: Float32Array): void {
+function wallSamplingSlot(material: MeshStandardMaterial): AtlasSlotTextureWindow | undefined {
+  const slot = material.userData.atlasSlot as AtlasSlotTextureWindow | undefined;
+  return slot?.role === "wall" &&
+    (slot.periodicity === "x" || slot.periodicity === "xy" || slot.uvMode === "repeat" || slot.uvMode === "repeat-x")
+    ? slot : undefined;
+}
+
+function adaptGeometry(
+  geometry: BufferGeometry, material: MeshStandardMaterial,
+  uvSpace: "meters" | "normalized", scale?: [number, number, number]
+): BufferGeometry {
+  const isolated=material.userData.isolatedMeterTile as {widthM:number;heightM:number}|undefined;
+  if(isolated) {
+    if(![isolated.widthM,isolated.heightM].every(v=>Number.isFinite(v)&&v>0)){geometry.dispose();throw new Error("Isolated material tiles need finite metre dimensions.");}
+    const uv=geometry.getAttribute("uv");
+    for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)*(uvSpace === "meters"?1/isolated.widthM:1),uv.getY(i)*(uvSpace === "meters"?1/isolated.heightM:1));
+    uv.needsUpdate=true;geometry.userData.physicalTileSizeM={width:isolated.widthM,height:isolated.heightM};return geometry;
+  }
+  const slot = wallSamplingSlot(material);
+  if (!slot) {
+    remapGeometryUvsToAtlasSlot(geometry, material);
+    return geometry;
+  }
+  try {
+    return createWallAtlasGeometry(geometry, slot, { uvSpace, scale });
+  } finally {
+    // The helper owns new renderer buffers; this temporary source was never uploaded.
+    geometry.dispose();
+  }
+}
+
+function instanceScaleGroups(count: number, transforms?: Float32Array): Array<{ scale: [number, number, number]; indices: number[] }> {
+  const groups = new Map<string, { scale: [number, number, number]; indices: number[] }>();
+  for (let index = 0; index < count; index += 1) {
+    const offset = index * 16;
+    const scale: [number, number, number] = transforms ? [
+      Math.hypot(transforms[offset], transforms[offset + 1], transforms[offset + 2]),
+      Math.hypot(transforms[offset + 4], transforms[offset + 5], transforms[offset + 6]),
+      Math.hypot(transforms[offset + 8], transforms[offset + 9], transforms[offset + 10])
+    ] : [1, 1, 1];
+    if (!scale.every(Number.isFinite)) throw new Error("Wall instance scales must be finite.");
+    const key = scale.join(",");
+    const group = groups.get(key) ?? { scale, indices: [] };
+    group.indices.push(index);
+    groups.set(key, group);
+  }
+  return groups.size ? [...groups.values()] : [{ scale: [1, 1, 1], indices: [] }];
+}
+
+function assignInstanceMatrices(object: InstancedMesh<BufferGeometry, MeshStandardMaterial>, transforms: Float32Array, sourceIndices?: number[]): void {
   const matrix = new Matrix4();
 
   for (let index = 0; index < object.count; index += 1) {
-    matrix.fromArray(transforms, index * 16);
+    matrix.fromArray(transforms, (sourceIndices?.[index] ?? index) * 16);
     object.setMatrixAt(index, matrix);
   }
 
@@ -222,9 +374,12 @@ function attachSemanticLookup(
   runtime: BuildingSceneRuntime,
   ir: RuntimeBuildingIR,
   object: BuildingRenderable,
-  batchId: string
+  batchId: string,
+  sourceIndices?: number[],
+  representative = true
 ): void {
-  const semanticEntries = ir.semanticIndex.filter((entry) => entry.batchId === batchId);
+  const semanticEntries = ir.semanticIndex.filter((entry) => entry.batchId === batchId &&
+    (!sourceIndices || (entry.elementIndex === undefined ? representative : sourceIndices.includes(entry.elementIndex))));
   object.userData.semanticPaths = semanticEntries.map((entry) => entry.semanticPath);
 
   for (const entry of semanticEntries) {
@@ -233,7 +388,8 @@ function attachSemanticLookup(
       batchId,
       stage: entry.stage,
       object,
-      elementIndex: entry.elementIndex
+      elementIndex: entry.elementIndex,
+      ...(sourceIndices && entry.elementIndex !== undefined ? { instanceIndex: sourceIndices.indexOf(entry.elementIndex) } : {})
     });
   }
 }
@@ -247,7 +403,10 @@ function linkGalleryObjects(runtime: BuildingSceneRuntime, componentGallery: Com
     if (!entry.batchId) {
       continue;
     }
-    const object = runtime.objectsByBatchId.get(entry.batchId);
+    const sample = entry.sampleSemanticPath ? runtime.semanticLookup.get(entry.sampleSemanticPath) : undefined;
+    const indexedSample = entry.sampleElementIndex === undefined ? undefined :
+      [...runtime.semanticLookup.values()].find((lookup) => lookup.batchId === entry.batchId && lookup.elementIndex === entry.sampleElementIndex);
+    const object = (sample?.batchId === entry.batchId ? sample.object : indexedSample?.object) ?? runtime.objectsByBatchId.get(entry.batchId);
     if (object) {
       runtime.galleryObjects.set(entry.recipeId, { entry, object });
     }
@@ -290,6 +449,7 @@ export function createBuildingSceneRuntime(input: CreateBuildingSceneRuntimeInpu
     galleryObjects: new Map(),
     renderables: [],
     materialRegistry: input.materialRegistry,
+    surfaceRuntime: input.surfaceRuntime,
     metrics: {
       meshCount: input.ir.meshBatches.length,
       instanceBatchCount: input.ir.instanceBatches.length,
@@ -299,58 +459,87 @@ export function createBuildingSceneRuntime(input: CreateBuildingSceneRuntimeInpu
     disposed: false
   };
 
-  for (const batch of input.ir.meshBatches) {
-    const stage = stageForBatch(input.ir, batch.batchId);
-    const materialSlotId = batch.materialSlotId ?? "utility.mask";
-    const material = input.materialRegistry.getMaterial(materialSlotId);
-    const geometry = createMeshGeometry(batch);
-    remapGeometryUvsToAtlasSlot(geometry, material);
-    const mesh = new Mesh(geometry, material) as BuildingRenderable;
-    mesh.name = batch.batchId;
-    mesh.userData = {
-      batchId: batch.batchId,
-      role: batch.role,
-      stage,
-      materialSlotId,
-      rendererBoundary: "building-family"
-    };
-    stageGroups.get(stage)!.add(mesh);
-    runtime.renderables.push(mesh);
-    runtime.objectsByBatchId.set(batch.batchId, mesh);
-    attachSemanticLookup(runtime, input.ir, mesh, batch.batchId);
-  }
-
-  for (const batch of input.ir.instanceBatches) {
-    const recipe = recipeById(input.catalog, batch.recipeId);
-    const stage = stageForBatch(input.ir, batch.batchId);
-    const material = input.materialRegistry.getMaterial(batch.materialSlotId);
-    const geometry = createRecipeGeometry(recipe);
-    remapGeometryUvsToAtlasSlot(geometry, material);
-    const mesh = new InstancedMesh(
-      geometry,
-      material,
-      batch.count
-    ) as BuildingRenderable;
-    mesh.name = batch.batchId;
-    mesh.userData = {
-      batchId: batch.batchId,
-      recipeId: recipe.id,
-      role: recipe.role,
-      stage,
-      materialSlotId: batch.materialSlotId,
-      rendererBoundary: "building-family"
-    };
-    if (batch.transforms) {
-      assignInstanceMatrices(mesh as InstancedMesh<BufferGeometry, MeshStandardMaterial>, batch.transforms);
+  try {
+    runtime.surfaceLease = input.surfaceRuntime?.acquire(input.ir, input.materialRegistry);
+    for (const batch of input.ir.meshBatches) {
+      const stage = stageForBatch(input.ir, batch.batchId);
+      const materialSlotId = batch.materialSlotId ?? "utility.mask";
+      const material = runtime.surfaceLease?.getMaterial(batch.batchId) ?? input.materialRegistry.getMaterial(materialSlotId);
+      const geometry = adaptGeometry(createMeshGeometry(batch), material, "meters");
+      const mesh = new Mesh(geometry, material) as BuildingRenderable;
+      mesh.name = batch.batchId;
+      mesh.userData = {
+        batchId: batch.batchId,
+        role: batch.role,
+        stage,
+        materialSlotId,
+        rendererBoundary: "building-family"
+      };
+      stageGroups.get(stage)!.add(mesh);
+      runtime.renderables.push(mesh);
+      runtime.objectsByBatchId.set(batch.batchId, mesh);
+      attachSemanticLookup(runtime, input.ir, mesh, batch.batchId);
     }
-    stageGroups.get(stage)!.add(mesh);
-    runtime.renderables.push(mesh);
-    runtime.objectsByBatchId.set(batch.batchId, mesh);
-    attachSemanticLookup(runtime, input.ir, mesh, batch.batchId);
-  }
 
-  linkGalleryObjects(runtime, input.componentGallery);
-  return runtime;
+    for (const batch of input.ir.instanceBatches) {
+      const prototype = input.compiledInstanceGeometry?.get(batch.recipeId);
+      const recipe = prototype ? undefined : recipeById(input.catalog, batch.recipeId);
+      const stage = stageForBatch(input.ir, batch.batchId);
+      const material = input.materialRegistry.getMaterial(batch.materialSlotId);
+      const wall = wallSamplingSlot(material);
+      const scaleGroups = wall ? instanceScaleGroups(batch.count, batch.transforms) : [{
+        scale: [1, 1, 1] as [number, number, number], indices: Array.from({ length: batch.count }, (_, index) => index)
+      }];
+      const groups = scaleGroups.flatMap(group => {
+        const byMaterial = new Map<MeshStandardMaterial, { scale: [number, number, number]; indices: number[]; material: MeshStandardMaterial }>();
+        for (const index of group.indices) {
+          const effective = runtime.surfaceLease?.getMaterial(batch.batchId, index) ?? material;
+          const partition = byMaterial.get(effective) ?? { scale: group.scale, indices: [], material: effective };
+          partition.indices.push(index); byMaterial.set(effective, partition);
+        }
+        return byMaterial.size ? [...byMaterial.values()] : [{ ...group, material }];
+      });
+      for (const [groupIndex, group] of groups.entries()) {
+        const sourceGeometry = prototype ? createMeshGeometry(prototype) : createRecipeGeometry(recipe!);
+        const uvSpace = prototype || sourceGeometry.userData.openingAssembly || sourceGeometry.userData.pilasterAssembly ? "meters" : "normalized";
+        const geometry = adaptGeometry(sourceGeometry, group.material, uvSpace, group.scale);
+        const mesh = new InstancedMesh(
+          geometry,
+          group.material,
+          group.indices.length
+        ) as BuildingRenderable;
+        mesh.name = groupIndex === 0 ? batch.batchId : `${batch.batchId}.scale-${groupIndex}`;
+        mesh.userData = {
+          batchId: batch.batchId,
+          recipeId: batch.recipeId,
+          role: prototype?.role ?? recipe!.role,
+          // Glazing receives the frame/reveal shadows; its opaque display proxy
+          // must not self-shadow like a solid architectural member.
+          ...(prototype ? { opaqueShadowCaster: prototype.role !== "glass" } : {}),
+          stage,
+          materialSlotId: batch.materialSlotId,
+          rendererBoundary: "building-family"
+        };
+        if (batch.transforms) {
+          assignInstanceMatrices(mesh as InstancedMesh<BufferGeometry, MeshStandardMaterial>, batch.transforms, group.indices);
+        }
+        stageGroups.get(stage)!.add(mesh);
+        runtime.renderables.push(mesh);
+        // Keep the existing representative-mesh API; precise semantics point to their actual chunk.
+        if (groupIndex === 0) runtime.objectsByBatchId.set(batch.batchId, mesh);
+        attachSemanticLookup(runtime, input.ir, mesh, batch.batchId, wall || runtime.surfaceLease ? group.indices : undefined, groupIndex === 0);
+      }
+    }
+
+    runtime.metrics.instanceBatchCount = runtime.renderables.filter((object) => object.isInstancedMesh).length;
+    runtime.metrics.renderedTriangleCount = runtime.renderables.reduce((total, object) =>
+      total + (object.geometry.index?.count ?? object.geometry.getAttribute("position")?.count ?? 0) / 3 * (object.isInstancedMesh ? object.count ?? 0 : 1), 0);
+    linkGalleryObjects(runtime, input.componentGallery);
+    return runtime;
+  } catch (error) {
+    disposeBuildingSceneResources(runtime, { disposeMaterials: false });
+    throw error;
+  }
 }
 
 export function disposeBuildingSceneRuntime(runtime: BuildingSceneRuntime): DisposeBuildingSceneRuntimeResult {

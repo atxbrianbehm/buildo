@@ -1,7 +1,7 @@
 import { Group } from "three";
 import type { ComponentCatalog } from "../components/componentCatalogBuilder";
 import type { ComponentGallery } from "../compiler/componentGalleryBuilder";
-import type { RuntimeBuildingIR } from "../contracts/runtimeBuildingIR";
+import type { MeshBatchIR, RuntimeBuildingIR } from "../contracts/runtimeBuildingIR";
 import type { AtlasDebugExport } from "../materials/atlasDebugExport";
 import type { PackedAtlas } from "../materials/atlasPacker";
 import { createAtlasMaterialRegistry, type AtlasMaterialRegistry } from "./buildingAtlasMaterialFactory";
@@ -12,6 +12,7 @@ import {
   type RendererBackendSupport
 } from "./buildingSceneAdapter";
 import { disposeBuildingSceneResources } from "./resourceDisposal";
+import type { BuildingSurfaceRuntime } from "./surfaceMaterialRuntime";
 
 export interface CreateBuildingFamilyRuntimeInput {
   familyId: string;
@@ -25,6 +26,8 @@ export interface CreateOrReplaceBuildingRuntimeInput {
   catalog: ComponentCatalog;
   componentGallery?: ComponentGallery;
   buildingId?: string;
+  surfaceRuntime?: BuildingSurfaceRuntime;
+  compiledInstanceGeometry?: ReadonlyMap<string, MeshBatchIR>;
 }
 
 export interface BuildingFamilyRuntimeMetrics {
@@ -82,6 +85,7 @@ function liveMetrics(
   preferredBackend?: RendererBackendSupport["preferredBackend"]
 ): BuildingFamilyRuntimeMetrics {
   const runtimes = Array.from(buildingRuntimes.values()).filter((runtime) => !runtime.disposed);
+  const surfaces = [...new Set(runtimes.flatMap(runtime => runtime.surfaceRuntime ? [runtime.surfaceRuntime] : []))];
   return {
     buildingCount: runtimes.length,
     meshCount: runtimes.reduce((total, runtime) => total + runtime.metrics.meshCount, 0),
@@ -89,8 +93,8 @@ function liveMetrics(
     instanceCount: runtimes.reduce((total, runtime) => total + runtime.metrics.instanceCount, 0),
     triangleCount: runtimes.reduce((total, runtime) => total + runtime.metrics.triangleCount, 0),
     drawCallCount: runtimes.reduce((total, runtime) => total + runtime.renderables.length, 0),
-    sharedMaterialCount: materialRegistry.listMaterials().length,
-    textureCount: textureSet.disposed ? 0 : Object.keys(textureSet.textures).length,
+    sharedMaterialCount: materialRegistry.listMaterials().length + surfaces.reduce((sum, surface) => sum + surface.listMaterials().length, 0),
+    textureCount: (textureSet.disposed ? 0 : Object.keys(textureSet.textures).length) + surfaces.reduce((sum, surface) => sum + surface.listTextures().length, 0),
     preferredBackend
   };
 }
@@ -144,17 +148,19 @@ export function createBuildingFamilyRuntime(input: CreateBuildingFamilyRuntimeIn
       const ir = runtimeIrWithBuildingId(buildingInput.ir, buildingInput.buildingId);
       const buildingId = ir.buildingId;
       const existing = buildingRuntimes.get(buildingId);
-      if (existing) {
-        disposeBuildingSceneResources(existing, { disposeMaterials: false });
-        root.remove(existing.root);
-      }
-
+      // Build first: failed construction must leave the current building usable.
       const runtime = createBuildingSceneRuntime({
         ir,
         catalog: buildingInput.catalog,
         componentGallery: buildingInput.componentGallery,
-        materialRegistry
+        materialRegistry,
+        surfaceRuntime: buildingInput.surfaceRuntime,
+        compiledInstanceGeometry: buildingInput.compiledInstanceGeometry
       });
+      if (existing) {
+        disposeBuildingSceneResources(existing, { disposeMaterials: false });
+        root.remove(existing.root);
+      }
       buildingRuntimes.set(buildingId, runtime);
       root.add(runtime.root);
       familyRuntime.metrics = liveMetrics(buildingRuntimes, materialRegistry, textureSet, preferredBackend);

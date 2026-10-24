@@ -38,13 +38,17 @@ describe("buildingSeedVariation", () => {
   it("produces multiple distinct compositions across sample building seeds", async () => {
     const base = await normalizeBuildingSpec(baseIntent, stylePack);
     const keys = new Set<string>();
+    const bayCounts = new Set<number>();
     for (let index = 0; index < 16; index += 1) {
       const buildingSeed =
         index === 0 ? "building-seed" : `building-seed-variant-${index.toString().padStart(2, "0")}`;
       const variant = withBuildingSeedVariation(base.spec, buildingSeed, stylePack);
       keys.add(buildingCompositionKey(variant));
+      bayCounts.add(variant.facade.frontBayCount);
+      expect(variant.materialParameters).toEqual(base.spec.materialParameters);
     }
     // Building seeds must not collapse to one or two near-clone massings.
     expect(keys.size).toBeGreaterThanOrEqual(6);
+    expect(bayCounts.size).toBeGreaterThan(1);
   });
 });

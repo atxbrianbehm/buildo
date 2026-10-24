@@ -50,4 +50,45 @@ describe("moduleQualityReport", () => {
       fixture.familyRuntime.dispose();
     }
   });
+
+  it("measures positive physical frame widths after proper front, rear and side rotations", async () => {
+    const fixture = await createAssemblyHallFixture({
+      promptControls: { ...defaultBuildingPromptControls, fidelityMode: "kit", detailLevel: "high" }
+    });
+    try {
+      const nominalWidth = fixture.catalog.recipes.find((recipe) => recipe.role === "window")!.dimensionsM.width;
+      // Known physical widths and proper rotations. Unequal height/depth scales
+      // prevent a projected row or another basis axis from impersonating width.
+      const cases = [
+        { facade: "front", width: 1.2, matrix: [-1.2 / nominalWidth, 0, 0, 0, 0, 1.7, 0, 0, 0, 0, -0.4, 0, 0, 5, -8, 1] },
+        { facade: "rear", width: 1.4, matrix: [1.4 / nominalWidth, 0, 0, 0, 0, 1.7, 0, 0, 0, 0, 0.4, 0, 0, 5, 8, 1] },
+        { facade: "left", width: 1.6, matrix: [0, 0, 1.6 / nominalWidth, 0, 0, 1.7, 0, 0, -0.4, 0, 0, 0, -9, 5, 0, 1] },
+        { facade: "right", width: 1.8, matrix: [0, 0, -1.8 / nominalWidth, 0, 0, 1.7, 0, 0, 0.4, 0, 0, 0, 9, 5, 0, 1] }
+      ];
+      const measuredOpening = (matrices: number[][]) => createModuleQualityReport({
+        fixture: {
+          ...fixture,
+          ir: {
+            ...fixture.ir,
+            instanceBatches: fixture.ir.instanceBatches.map((batch) => batch.batchId === "instances.window"
+              ? { ...batch, count: matrices.length, transforms: new Float32Array(matrices.flat()) }
+              : batch)
+          }
+        },
+        detailLevel: "high"
+      }).checklist.find((row) => row.category === "openingDepth")!;
+      for (const sample of cases) {
+        const row = measuredOpening([sample.matrix]);
+        expect(row.measuredValue, sample.facade).toEqual(expect.objectContaining({
+          avgFrameWidthM: expect.closeTo(sample.width, 5), slotLockedFrames: true
+        }));
+        expect(row.status, sample.facade).toBe("pass");
+      }
+      expect(measuredOpening(cases.map((sample) => sample.matrix)).measuredValue).toEqual(expect.objectContaining({
+        avgFrameWidthM: expect.closeTo(1.5, 5), slotLockedFrames: true
+      }));
+    } finally {
+      fixture.familyRuntime.dispose();
+    }
+  });
 });

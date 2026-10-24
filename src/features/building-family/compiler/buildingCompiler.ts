@@ -1,3 +1,4 @@
+import { z } from "zod";
 import type { BuildingGraph } from "../contracts/buildingGraph";
 import type { BuildingFamilySpec } from "../contracts/buildingFamilySpec";
 import {
@@ -10,6 +11,9 @@ import type { AssemblyStage } from "../contracts/shared";
 import type { ComponentRecipe } from "../contracts/componentRecipe";
 import type { ModuleInstanceSet } from "../contracts/moduleInstanceSet";
 import type { ComponentCatalog } from "../components/componentCatalogBuilder";
+import {
+  BuildingWindowWidthOverrideSchema, findBuildingDocumentJsonIssue, type BuildingWindowWidthOverride
+} from "../contracts/buildingDocument";
 import { hashCanonicalJson } from "../core/contentHash";
 import { late19cApartmentKit, planFacadeModules, type FacadeModulePlan } from "../art-kit";
 import { validateBuildingGraph } from "./buildingGraphBuilder";
@@ -34,16 +38,100 @@ import {
 } from "./profiledTrimGeometry";
 import {
   buildFacadeSplitPlan,
+  applyWindowWidthOverride,
+  BuildingWindowWidthOverrideError,
   wallPrimitivesFromSplitPlan,
   type FacadeSplitPlan
 } from "./facadeSplitPlan";
 import {
   bindOpeningsFromSplitPlan,
+  openingGlazingCenterZ,
+  openingPaneThicknessM,
   type BoundOpeningGeometry
 } from "./openingSlotBinding";
+import { buildOpeningAssemblyGeometry, openingTransomGlazingBand } from "./openingGeometry";
+import { deriveFrontTrimClearance, type FrontOpeningEnvelope, type FrontTrimClearance } from "./frontTrimClearance";
 
 export type BuildingComponentDetailLevel = "high" | "low";
 export type BuildingFidelityMode = "proof" | "kit";
+
+/** Validate the complete list before Zod reads any element or index accessor. */
+export const BuildingWindowWidthOverridesSchema = z.unknown().superRefine((value, context) => {
+  if (value === undefined) return;
+  const issue = findBuildingDocumentJsonIssue(value);
+  if (issue) context.addIssue({ code: "custom", path: issue.path, message: issue.message });
+}).pipe(z.array(BuildingWindowWidthOverrideSchema).max(1)).optional();
+
+function invalidWindowWidthOverrides(): BuildingWindowWidthOverrideError {
+  return new BuildingWindowWidthOverrideError("building.windowWidth.invalidDirective", "Window width overrides must be an optional list containing at most one valid directive.");
+}
+
+export function parseWindowWidthOverrides(value: unknown): BuildingWindowWidthOverride[] | undefined {
+  try { return BuildingWindowWidthOverridesSchema.parse(value); }
+  catch { throw invalidWindowWidthOverrides(); }
+}
+
+/** Read the new option without invoking a getter or losing inherited/non-JSON authority. */
+export function readWindowWidthOverrides(input: object): BuildingWindowWidthOverride[] | undefined {
+  const descriptor = Object.getOwnPropertyDescriptor(input, "windowWidthOverrides");
+  if (descriptor) {
+    if (!descriptor.enumerable || !("value" in descriptor)) throw invalidWindowWidthOverrides();
+    return parseWindowWidthOverrides(descriptor.value);
+  }
+  if ("windowWidthOverrides" in input) throw invalidWindowWidthOverrides();
+  return undefined;
+}
+
+const windowWidthBatchFacadeOrder = { front: 0, rear: 1, left: 2, right: 3 } as const;
+
+/** A compiler-only batch authority; saved source continues to use the standalone max-one list. */
+export const BuildingWindowWidthBatchSchema = z.unknown().superRefine((value, context) => {
+  const issue = findBuildingDocumentJsonIssue(value);
+  if (issue) context.addIssue({ code: "custom", path: issue.path, message: issue.message });
+}).pipe(z.object({
+  schemaVersion: z.literal("0.1.0"),
+  directives: z.array(BuildingWindowWidthOverrideSchema)
+}).strict()).superRefine((batch, context) => {
+  const addresses = new Set<string>();
+  for (const [index, directive] of batch.directives.entries()) {
+    const { facade, floorIndex, bayIndex } = directive.address;
+    const key = `${facade}:${floorIndex}:${bayIndex}`;
+    if (addresses.has(key)) {
+      context.addIssue({ code: "custom", path: ["directives", index, "address"], message: "A window slot may occur only once in a width batch." });
+    }
+    addresses.add(key);
+  }
+}).transform((batch) => ({
+  ...batch,
+  directives: [...batch.directives].sort((left, right) =>
+    windowWidthBatchFacadeOrder[left.address.facade] - windowWidthBatchFacadeOrder[right.address.facade]
+    || left.address.floorIndex - right.address.floorIndex
+    || left.address.bayIndex - right.address.bayIndex)
+}));
+
+export type BuildingWindowWidthBatch = z.infer<typeof BuildingWindowWidthBatchSchema>;
+
+function invalidWindowWidthBatch(): BuildingWindowWidthOverrideError {
+  return new BuildingWindowWidthOverrideError("building.windowWidth.invalidDirective", "Window width compilation requires one valid standalone list or one versioned batch with unique slot addresses.");
+}
+
+/** Admit both authorities before cloning or changing an active compiler request. */
+export function readWindowWidthCompileOptions(input: object): {
+  windowWidthOverrides: BuildingWindowWidthOverride[] | undefined;
+  windowWidthBatch: BuildingWindowWidthBatch | undefined;
+} {
+  const windowWidthOverrides = readWindowWidthOverrides(input);
+  try {
+    let windowWidthBatch: BuildingWindowWidthBatch | undefined;
+    const descriptor = Object.getOwnPropertyDescriptor(input, "windowWidthBatch");
+    if (descriptor) {
+      if (!descriptor.enumerable || !("value" in descriptor)) throw invalidWindowWidthBatch();
+      if (descriptor.value !== undefined) windowWidthBatch = BuildingWindowWidthBatchSchema.parse(descriptor.value);
+    } else if ("windowWidthBatch" in input) throw invalidWindowWidthBatch();
+    if (windowWidthOverrides !== undefined && windowWidthBatch !== undefined) throw invalidWindowWidthBatch();
+    return { windowWidthOverrides, windowWidthBatch };
+  } catch { throw invalidWindowWidthBatch(); }
+}
 
 export interface CompileBuildingInput {
   spec: BuildingFamilySpec;
@@ -51,7 +139,7 @@ export interface CompileBuildingInput {
   graph: BuildingGraph;
   buildingId?: string;
   detailLevel?: BuildingComponentDetailLevel;
-  /** When omitted, kit mode is inferred from the art-kit graph Group node. */
+  /** When omitted, current compilation defaults to kit mode. */
   fidelityMode?: BuildingFidelityMode;
   facadePlan?: FacadeModulePlan;
   /**
@@ -59,6 +147,10 @@ export interface CompileBuildingInput {
    * Opening layout authority is always FacadeSplitPlan — not this set.
    */
   moduleInstances?: ModuleInstanceSet;
+  /** One standalone narrowing directive; fixture/cache/source admission is separate. */
+  windowWidthOverrides?: readonly BuildingWindowWidthOverride[];
+  /** Versioned compiler-only batch; mutually exclusive with a defined standalone list. */
+  windowWidthBatch?: BuildingWindowWidthBatch;
 }
 
 interface SemanticIndexEntry {
@@ -85,14 +177,6 @@ interface InstancePlan {
   transforms: number[];
   instanceBounds: Bounds3[];
   semanticEntries: SemanticIndexEntry[];
-}
-
-interface FacadePanelPlan {
-  facade: "front" | "rear" | "left" | "right";
-  floor: number;
-  bay: number;
-  center: Vec3;
-  size: Vec3;
 }
 
 function sum(values: number[]): number {
@@ -144,7 +228,7 @@ function recipeByRoleOptional(catalog: ComponentCatalog, role: string): Componen
   return catalog.recipes.find((candidate) => candidate.role === role);
 }
 
-function cloneInstancePlanWithRecipe(
+function createPairedGlassPlan(
   base: InstancePlan,
   input: {
     batchId: string;
@@ -153,16 +237,36 @@ function cloneInstancePlanWithRecipe(
     semanticPathSuffix?: string;
   }
 ): InstancePlan {
+  const transforms = [...base.transforms];
+  const transom = base.recipe.role === "door" ? openingTransomGlazingBand(base.recipe) : undefined;
+  const localZ = openingGlazingCenterZ(base.recipe.dimensionsM.depth);
+  const instanceBounds: Bounds3[] = [];
+  for (let offset = 0; offset < transforms.length; offset += 16) {
+    const depthScale = Math.hypot(transforms[offset + 8], transforms[offset + 9], transforms[offset + 10]);
+    const yScale = transom ? transom.heightM / input.recipe.dimensionsM.height : 1;
+    for (let axis = 0; axis < 3; axis += 1) {
+      transforms[offset + 12 + axis] += transforms[offset + 8 + axis] * localZ +
+        transforms[offset + 4 + axis] * (transom?.centerY ?? 0);
+      transforms[offset + 4 + axis] *= yScale;
+      // A 20 mm pane remains 20 mm even when the frame's throat is scaled.
+      transforms[offset + 8 + axis] /= depthScale;
+    }
+    const halfSize = [input.recipe.dimensionsM.width / 2, input.recipe.dimensionsM.height / 2,
+      openingPaneThicknessM(input.recipe.dimensionsM.depth) / 2];
+    const extent: Vec3 = [0, 1, 2].map((axis) =>
+      Math.abs(transforms[offset + axis]) * halfSize[0] +
+      Math.abs(transforms[offset + 4 + axis]) * halfSize[1] +
+      Math.abs(transforms[offset + 8 + axis]) * halfSize[2]) as Vec3;
+    const center = transforms.slice(offset + 12, offset + 15) as Vec3;
+    instanceBounds.push(boundsFromBox(center, extent.map((value) => value * 2) as Vec3));
+  }
   return {
     batchId: input.batchId,
     recipe: input.recipe,
     materialSlotId: input.materialSlotId,
     stage: base.stage,
-    transforms: [...base.transforms],
-    instanceBounds: base.instanceBounds.map((bounds) => ({
-      min: [...bounds.min] as Vec3,
-      max: [...bounds.max] as Vec3
-    })),
+    transforms,
+    instanceBounds,
     semanticEntries: base.semanticEntries.map((entry, elementIndex) => ({
       ...entry,
       batchId: input.batchId,
@@ -185,7 +289,7 @@ function withPairedGlassPlans(
       const glassRecipe = recipeByRoleOptional(catalog, "windowGlass");
       if (glassRecipe && framePlan.transforms.length > 0) {
         plans.push(
-          cloneInstancePlanWithRecipe(framePlan, {
+          createPairedGlassPlan(framePlan, {
             batchId: "instances.window.glass",
             recipe: glassRecipe,
             materialSlotId: preferredMaterialSlot(glassRecipe, "glass"),
@@ -198,7 +302,7 @@ function withPairedGlassPlans(
       const glassRecipe = recipeByRoleOptional(catalog, "doorGlass");
       if (glassRecipe && framePlan.transforms.length > 0) {
         plans.push(
-          cloneInstancePlanWithRecipe(framePlan, {
+          createPairedGlassPlan(framePlan, {
             batchId: "instances.door.glass",
             recipe: glassRecipe,
             materialSlotId: preferredMaterialSlot(glassRecipe, "glass"),
@@ -242,12 +346,14 @@ function bindSplitOpenings(split: FacadeSplitPlan, catalog: ComponentCatalog): B
     window: {
       width: windowRecipe.dimensionsM.width,
       height: windowRecipe.dimensionsM.height,
-      depth: windowRecipe.dimensionsM.depth
+      depth: windowRecipe.dimensionsM.depth,
+      glazingThicknessM: recipeByRoleOptional(catalog, "windowGlass")?.dimensionsM.depth
     },
     door: {
       width: doorRecipe.dimensionsM.width,
       height: doorRecipe.dimensionsM.height,
-      depth: doorRecipe.dimensionsM.depth
+      depth: doorRecipe.dimensionsM.depth,
+      glazingThicknessM: recipeByRoleOptional(catalog, "doorGlass")?.dimensionsM.depth
     }
   });
 }
@@ -318,9 +424,10 @@ function createOpeningInstancePlansFromBindings(
   return withPairedGlassPlans(catalog, plans);
 }
 
-function createCorniceMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCatalog): MeshPlan {
+function createCorniceMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCatalog, clearance: FrontTrimClearance): MeshPlan | undefined {
   const recipe = recipeByRole(catalog, "cornice");
-  const primitives = buildCorniceProfilePrimitives(spec, recipe);
+  const primitives = buildCorniceProfilePrimitives(spec, recipe, clearance);
+  if (!primitives.length) return undefined;
 
   return {
     batchId: "mesh.cornice",
@@ -337,12 +444,13 @@ function createCorniceMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCatal
   };
 }
 
-function createHorizontalBeltMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCatalog): MeshPlan | undefined {
+function createHorizontalBeltMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCatalog, clearance: FrontTrimClearance): MeshPlan | undefined {
   const recipe = catalog.recipes.find((candidate) => candidate.role === "horizontalTrim");
   if (!recipe) {
     return undefined;
   }
-  const primitives = buildHorizontalBeltCoursePrimitives(spec, recipe);
+  const primitives = buildHorizontalBeltCoursePrimitives(spec, recipe, clearance);
+  if (!primitives.length) return undefined;
   return {
     batchId: "mesh.belt-course",
     role: "horizontalTrim",
@@ -400,6 +508,46 @@ function createCornerQuoinMeshPlan(spec: BuildingFamilySpec, catalog: ComponentC
   };
 }
 
+/** A closed gable prism on massing.top. The ridge follows X; rise matches roofBuilder. */
+function buildGableRoofPrimitive(spec: BuildingFamilySpec): PrimitiveGeometry {
+  const pitchDegrees = spec.massing.roof.pitchDegrees ?? 28;
+  if (!Number.isFinite(pitchDegrees) || pitchDegrees <= 0 || pitchDegrees >= 90) {
+    throw new Error("Gable roof pitch must be finite and between 0 and 90 degrees.");
+  }
+  const { widthM: width, depthM: depth } = spec.massing;
+  const eaveY = sum(spec.massing.floorHeightsM);
+  const radians = pitchDegrees * Math.PI / 180;
+  const rise = Math.tan(radians) * depth * 0.5;
+  const ridgeY = eaveY + rise;
+  const x0 = -width / 2, x1 = width / 2, z0 = -depth / 2, z1 = depth / 2;
+  const slopeLength = Math.hypot(depth / 2, rise);
+  const cos = Math.cos(radians), sin = Math.sin(radians);
+  const positions: number[] = [], normals: number[] = [], uvs: number[] = [], indices: number[] = [];
+  const face = (corners: Vec3[], normal: Vec3, coordinates: number[]) => {
+    const offset = positions.length / 3;
+    for (const corner of corners) {
+      positions.push(...corner);
+      normals.push(...normal);
+    }
+    uvs.push(...coordinates);
+    for (let i = 1; i < corners.length - 1; i += 1) indices.push(offset, offset + i, offset + i + 1);
+  };
+
+  // Face-local metre UVs follow the ridge and true slope distance.
+  face([[x0, eaveY, z1], [x1, eaveY, z1], [x1, ridgeY, 0], [x0, ridgeY, 0]],
+    [0, cos, sin], [0, 0, width, 0, width, slopeLength, 0, slopeLength]);
+  face([[x1, eaveY, z0], [x0, eaveY, z0], [x0, ridgeY, 0], [x1, ridgeY, 0]],
+    [0, cos, -sin], [0, 0, width, 0, width, slopeLength, 0, slopeLength]);
+  face([[x1, eaveY, z1], [x1, eaveY, z0], [x1, ridgeY, 0]],
+    [1, 0, 0], [0, 0, depth, 0, depth / 2, rise]);
+  face([[x0, eaveY, z0], [x0, eaveY, z1], [x0, ridgeY, 0]],
+    [-1, 0, 0], [0, 0, depth, 0, depth / 2, rise]);
+  face([[x0, eaveY, z0], [x1, eaveY, z0], [x1, eaveY, z1], [x0, eaveY, z1]],
+    [0, -1, 0], [0, 0, width, 0, width, depth, 0, depth]);
+
+  return { positions, normals, uvs, indices, bounds: { min: [x0, eaveY, z0], max: [x1, ridgeY, z1] } };
+}
+
 function createRoofMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCatalog): MeshPlan {
   const recipe = recipeByRole(catalog, "roof");
   const totalHeight = sum(spec.massing.floorHeightsM);
@@ -411,7 +559,7 @@ function createRoofMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCatalog)
     role: "roof",
     materialSlotId: firstAtlasSlot(recipe),
     stage: "roof",
-    primitives: [
+    primitives: spec.massing.roof.type === "gable" ? [buildGableRoofPrimitive(spec)] : [
       buildBoxPrimitive({
         center,
         size: [spec.massing.widthM, roofHeight, spec.massing.depthM]
@@ -430,6 +578,49 @@ function createRoofMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCatalog)
 
 function graphHasArtKitFacadePlan(graph: BuildingGraph): boolean {
   return graph.nodes.some((node) => node.id === "node.art-kit-facade-plan" && node.type === "Group");
+}
+
+/** Full-width trim must clear the actual opening assembly, including its hood. */
+function frontTrimClearanceFromOpeningPlans(
+  spec: BuildingFamilySpec,
+  split: FacadeSplitPlan,
+  plans: InstancePlan[]
+): FrontTrimClearance {
+  const openingsByPath = new Map(split.openings.map((opening) => [opening.semanticPath, opening]));
+  const recipeBounds = new Map<string, Bounds3>();
+  const envelopes: FrontOpeningEnvelope[] = [];
+  for (const plan of plans) {
+    const glassSuffix = plan.recipe.role === "windowGlass" ? "/glass" :
+      plan.recipe.role === "doorGlass" ? "/transom-glass" : "";
+    let localBounds = recipeBounds.get(plan.recipe.id);
+    for (const entry of plan.semanticEntries) {
+      const sourcePath = glassSuffix && entry.semanticPath.endsWith(glassSuffix)
+        ? entry.semanticPath.slice(0, -glassSuffix.length)
+        : entry.semanticPath;
+      const opening = openingsByPath.get(sourcePath);
+      if (!opening) throw new Error(`Trim clearance cannot resolve split opening ${sourcePath}.`);
+      if (opening.facade !== "front") continue;
+      if (!localBounds) {
+        localBounds = buildOpeningAssemblyGeometry({ recipe: plan.recipe, detail: "high" }).bounds;
+        recipeBounds.set(plan.recipe.id, localBounds);
+      }
+      const offset = (entry.elementIndex ?? 0) * 16;
+      const matrix = plan.transforms.slice(offset, offset + 16);
+      let minYM = Number.POSITIVE_INFINITY;
+      let maxYM = Number.NEGATIVE_INFINITY;
+      for (const x of [localBounds.min[0], localBounds.max[0]]) {
+        for (const y of [localBounds.min[1], localBounds.max[1]]) {
+          for (const z of [localBounds.min[2], localBounds.max[2]]) {
+            const worldY = matrix[1]! * x + matrix[5]! * y + matrix[9]! * z + matrix[13]!;
+            minYM = Math.min(minYM, worldY);
+            maxYM = Math.max(maxYM, worldY);
+          }
+        }
+      }
+      envelopes.push({ floorIndex: opening.floorIndex, minYM, maxYM });
+    }
+  }
+  return deriveFrontTrimClearance(spec, envelopes);
 }
 
 function createVerticalPilasterMeshPlan(
@@ -469,13 +660,13 @@ function createVerticalPilasterMeshPlan(
   };
 }
 
-function createSpandrelMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCatalog): MeshPlan | undefined {
+function createSpandrelMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCatalog, clearance: FrontTrimClearance): MeshPlan | undefined {
   if (spec.massing.floorCount < 2) {
     return undefined;
   }
   const wallRecipe = catalog.recipes.find((candidate) => candidate.role === "wall");
   const materialSlotId = wallRecipe ? firstAtlasSlot(wallRecipe) : "wall.primary";
-  const primitives = buildSpandrelBandPrimitives(spec);
+  const primitives = buildSpandrelBandPrimitives(spec, { clearance });
   if (primitives.length === 0) {
     return undefined;
   }
@@ -518,13 +709,14 @@ function createBasePlinthMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCa
 }
 
 /**
- * Additive wall-pocket mass from slot bindings (G2) — same center/size authority as frames.
- * No mesh booleans; reads as punched recess under raking clay light.
+ * Perimeter returns and interior backing from the same slot/depth authority as frames.
+ * Never cover the aperture with a solid face in front of glazing.
  */
 function createOpeningPocketMeshPlan(
   spec: BuildingFamilySpec,
   catalog: ComponentCatalog,
-  bindings: BoundOpeningGeometry[]
+  bindings: BoundOpeningGeometry[],
+  detailLevel: BuildingComponentDetailLevel
 ): MeshPlan | undefined {
   const wallRecipe = catalog.recipes.find((candidate) => candidate.role === "wall");
   if (!wallRecipe || bindings.length === 0) {
@@ -535,19 +727,32 @@ function createOpeningPocketMeshPlan(
 
   for (let index = 0; index < bindings.length; index += 1) {
     const bound = bindings[index]!;
-    primitives.push(
-      buildBoxPrimitive({
-        center: bound.pocketCenterM,
-        size: bound.pocketSizeM
-      })
-    );
-    primitives.push(
-      buildBoxPrimitive({
-        center: bound.revealCenterM,
-        size: bound.revealSizeM
-      })
-    );
-    const elementIndex = primitives.length - 2;
+    const elementIndex = primitives.length;
+    if (detailLevel === "high") {
+      const side = bound.facade === "left" || bound.facade === "right";
+      const alongAxis = side ? 2 : 0;
+      const depthAxis = side ? 0 : 2;
+      const outerWidth = bound.pocketSizeM[alongAxis];
+      const outerHeight = bound.pocketSizeM[1];
+      const [innerWidth, innerHeight] = bound.frameOuterSizeM;
+      const borderWidth = (outerWidth - innerWidth) / 2;
+      const borderHeight = (outerHeight - innerHeight) / 2;
+      const addReturn = (along: number, y: number, width: number, height: number) => {
+        const center: Vec3 = [...bound.pocketCenterM];
+        center[alongAxis] += along;
+        center[1] += y;
+        const size: Vec3 = [...bound.pocketSizeM];
+        size[alongAxis] = width;
+        size[1] = height;
+        size[depthAxis] = bound.pocketSizeM[depthAxis];
+        primitives.push(buildBoxPrimitive({ center, size }));
+      };
+      addReturn(-(innerWidth + borderWidth) / 2, 0, borderWidth, outerHeight);
+      addReturn((innerWidth + borderWidth) / 2, 0, borderWidth, outerHeight);
+      addReturn(0, -(innerHeight + borderHeight) / 2, innerWidth, borderHeight);
+      addReturn(0, (innerHeight + borderHeight) / 2, innerWidth, borderHeight);
+    }
+    primitives.push(buildBoxPrimitive({ center: bound.backingCenterM, size: bound.backingSizeM }));
     semanticEntries.push({
       semanticPath: semanticPath(
         spec,
@@ -704,6 +909,8 @@ function expandBoundsForPlans(meshBounds: Bounds3[], instancePlans: InstancePlan
 }
 
 export async function compileBuilding(input: CompileBuildingInput): Promise<RuntimeBuildingIR> {
+  const widthOptions = readWindowWidthCompileOptions(input);
+  input = structuredClone({ ...input, ...widthOptions });
   const graphDiagnostics = validateBuildingGraph(input.graph);
   if (graphDiagnostics.length > 0) {
     throw new Error(`Cannot compile invalid building graph: ${graphDiagnostics.map((item) => item.code).join(", ")}`);
@@ -741,7 +948,7 @@ export async function compileBuilding(input: CompileBuildingInput): Promise<Runt
         }))
       : undefined;
 
-  const facadeSplit = await buildFacadeSplitPlan({
+  const originalSplit = await buildFacadeSplitPlan({
     spec: input.spec,
     wallDepthM,
     facadePlan: facadePlanForSplit,
@@ -749,6 +956,12 @@ export async function compileBuilding(input: CompileBuildingInput): Promise<Runt
     // Proof (and any non-kit path) uses front-only defaults; kit plan implies strictOpenings.
     defaultOpeningMode: "front-only"
   });
+  let facadeSplit = input.windowWidthOverrides?.[0]
+    ? await applyWindowWidthOverride(originalSplit, input.windowWidthOverrides[0])
+    : originalSplit;
+  for (const directive of input.windowWidthBatch?.directives ?? []) {
+    facadeSplit = await applyWindowWidthOverride(facadeSplit, directive);
+  }
 
   const openingBindings = bindSplitOpenings(facadeSplit, input.catalog);
   const openingPlans = createOpeningInstancePlansFromBindings(facadeSplit, input.catalog, openingBindings);
@@ -761,21 +974,25 @@ export async function compileBuilding(input: CompileBuildingInput): Promise<Runt
     );
   }
 
+  const trimClearance: FrontTrimClearance = highDetail
+    ? frontTrimClearanceFromOpeningPlans(input.spec, facadeSplit, openingPlans)
+    : { floorBands: [] };
   const highDetailMeshPlans = highDetail
     ? [
         createBasePlinthMeshPlan(input.spec, input.catalog),
         createStorefrontHierarchyMeshPlan(input.spec, input.catalog, facadeSplit),
-        createCorniceMeshPlan(input.spec, input.catalog),
-        createHorizontalBeltMeshPlan(input.spec, input.catalog),
+        createCorniceMeshPlan(input.spec, input.catalog, trimClearance),
+        createHorizontalBeltMeshPlan(input.spec, input.catalog, trimClearance),
         createVerticalPilasterMeshPlan(input.spec, input.catalog),
-        createSpandrelMeshPlan(input.spec, input.catalog),
-        createOpeningPocketMeshPlan(input.spec, input.catalog, openingBindings),
+        createSpandrelMeshPlan(input.spec, input.catalog, trimClearance),
         createRoofCapMeshPlan(input.spec, input.catalog),
         createCornerQuoinMeshPlan(input.spec, input.catalog)
       ].filter((plan): plan is MeshPlan => plan !== undefined)
     : [];
   const meshPlans = [
     createWallMeshPlan(input.spec, input.catalog, facadeSplit),
+    ...[createOpeningPocketMeshPlan(input.spec, input.catalog, openingBindings, detailLevel)]
+      .filter((plan): plan is MeshPlan => plan !== undefined),
     ...highDetailMeshPlans,
     createRoofMeshPlan(input.spec, input.catalog)
   ];
@@ -793,14 +1010,20 @@ export async function compileBuilding(input: CompileBuildingInput): Promise<Runt
     instancePlans
   );
 
+  const legacySourceGraphHash = detailLevel === "high"
+    ? await hashCanonicalJson(input.graph)
+    : await hashCanonicalJson({ graph: input.graph, detailLevel });
+  const sourceGraphHash = facadeSplit.contentHash === originalSplit.contentHash
+    ? legacySourceGraphHash
+    : await hashCanonicalJson({
+      schemaVersion: "0.1.0", kind: "building-window-width-compile", legacySourceGraphHash,
+      fidelityMode: isKitMode ? "kit" : "proof", splitContentHash: facadeSplit.contentHash
+    });
   return RuntimeBuildingIRSchema.parse({
     schemaVersion: "0.1.0",
     buildingId: input.buildingId ?? input.spec.familyId,
     familyId: input.spec.familyId,
-    sourceGraphHash:
-      detailLevel === "high"
-        ? await hashCanonicalJson(input.graph)
-        : await hashCanonicalJson({ graph: input.graph, detailLevel }),
+    sourceGraphHash,
     bounds,
     meshBatches,
     instanceBatches,

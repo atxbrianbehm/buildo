@@ -77,6 +77,8 @@ describe("buildComponentGallery", () => {
     const wallPanel = gallery.entries.find((entry) => entry.recipeId === "recipe.wall.panel.primary");
     const windowFrame = gallery.entries.find((entry) => entry.recipeId === "recipe.window.tall-arched.frame");
     const roof = gallery.entries.find((entry) => entry.role === "roof");
+    const wallBatch = ir.meshBatches.find((batch) => batch.batchId === "mesh.wall-panels")!;
+    const wallEntries = ir.semanticIndex.filter((entry) => entry.batchId === wallBatch.batchId);
 
     expect(containsTypedArray(gallery)).toBe(false);
     expect(wallPanel).toMatchObject({
@@ -84,12 +86,14 @@ describe("buildComponentGallery", () => {
       batchId: "mesh.wall-panels",
       stage: "facade",
       materialSlotId: "wall.primary",
-      sampleSemanticPath: expect.stringContaining("/wall/panel")
+      sampleSemanticPath: expect.stringContaining("/facade/wall/subdivided/piece/")
     });
-    expect(wallPanel?.metrics.elementCount).toBe(
-      ir.semanticIndex.filter((entry) => entry.batchId === "mesh.wall-panels").length
-    );
-    expect(wallPanel?.metrics.vertexCount).toBe(ir.meshBatches.find((batch) => batch.batchId === "mesh.wall-panels")!.positions!.length / 3);
+    expect(wallEntries.length).toBeGreaterThan(0);
+    expect(wallPanel?.sampleSemanticPath).toBe(wallEntries[0].semanticPath);
+    expect(wallPanel?.sampleElementIndex).toBe(wallEntries[0].elementIndex);
+    expect(wallPanel?.metrics.elementCount).toBe(wallEntries.length);
+    expect(wallPanel?.metrics.vertexCount).toBe(wallBatch.positions!.length / 3);
+    expect(wallPanel?.metrics.triangleCount).toBe(wallBatch.indices!.length / 3);
     expect(windowFrame).toMatchObject({
       source: "instanceBatch",
       batchId: "instances.window",
@@ -103,26 +107,64 @@ describe("buildComponentGallery", () => {
     expect(roof?.metrics.triangleCount).toBeGreaterThan(0);
   });
 
-  it("keeps recipe-only entries with diagnostics when the current compiler has not emitted a matching IR batch yet", async () => {
+  it("reports emitted opening pockets and retains recipe-only diagnostics when their matching IR batch is absent", async () => {
     const { ir, catalog } = await fixtureGalleryInputs();
     const gallery = await buildComponentGallery({ catalog, ir });
     const opening = gallery.entries.find((entry) => entry.role === "opening");
-    const beltCourse = gallery.entries.find((entry) => entry.role === "horizontalTrim");
 
     expect(opening).toMatchObject({
+      source: "meshBatch",
+      stage: "openings",
+      batchId: "mesh.opening-pockets",
+      sampleSemanticPath: expect.stringContaining("/opening-pocket/")
+    });
+    const openingCount = ir.instanceBatches
+      .filter((batch) => batch.batchId === "instances.window" || batch.batchId === "instances.door")
+      .reduce((count, batch) => count + batch.count, 0);
+    expect(openingCount).toBeGreaterThan(0);
+    expect(opening?.metrics.elementCount).toBe(openingCount);
+    expect(opening?.metrics.vertexCount).toBeGreaterThan(0);
+    expect(opening?.metrics.triangleCount).toBeGreaterThan(0);
+    expect(gallery.diagnostics).not.toContainEqual(
+      expect.objectContaining({ received: opening?.recipeId })
+    );
+
+    const withoutOpeningPockets = {
+      ...ir,
+      meshBatches: ir.meshBatches.filter((batch) => batch.batchId !== "mesh.opening-pockets"),
+      semanticIndex: ir.semanticIndex.filter((entry) => entry.batchId !== "mesh.opening-pockets")
+    };
+    const incompleteGallery = await buildComponentGallery({ catalog, ir: withoutOpeningPockets });
+    expect(incompleteGallery.entries.find((entry) => entry.role === "opening")).toMatchObject({
       source: "recipeOnly",
       stage: "openings",
       batchId: undefined,
-      sampleSemanticPath: undefined
+      sampleSemanticPath: undefined,
+      metrics: { vertexCount: 0, triangleCount: 0, instanceCount: 0, elementCount: 0 }
     });
-    // Belt courses are emitted as high-detail mesh batches after profiled-trim work.
+    // The base plinth and belt share horizontalTrim; isolate the belt source so
+    // this checks its lineage without treating the gallery's first role match as a belt.
+    const otherHorizontalTrimBatchIds = new Set(
+      ir.meshBatches
+        .filter((batch) => batch.role === "horizontalTrim" && batch.batchId !== "mesh.belt-course")
+        .map((batch) => batch.batchId)
+    );
+    const beltGallery = await buildComponentGallery({
+      catalog,
+      ir: {
+        ...ir,
+        meshBatches: ir.meshBatches.filter((batch) => !otherHorizontalTrimBatchIds.has(batch.batchId)),
+        semanticIndex: ir.semanticIndex.filter((entry) => !otherHorizontalTrimBatchIds.has(entry.batchId))
+      }
+    });
+    const beltCourse = beltGallery.entries.find((entry) => entry.role === "horizontalTrim");
     expect(beltCourse).toMatchObject({
       source: "meshBatch",
       batchId: "mesh.belt-course",
       label: "Belt course / horizontal trim",
       stage: "trim"
     });
-    expect(gallery.diagnostics).toContainEqual(
+    expect(incompleteGallery.diagnostics).toContainEqual(
       expect.objectContaining({
         code: "componentGallery.recipeOnly",
         severity: "warning",
@@ -132,7 +174,7 @@ describe("buildComponentGallery", () => {
   });
 
   it("preserves anchors, dimensions, atlas slots, and stage metadata needed by Component Forge controls", async () => {
-    const { ir, catalog } = await fixtureGalleryInputs();
+    const { spec, ir, catalog } = await fixtureGalleryInputs();
     const gallery: ComponentGallery = await buildComponentGallery({ catalog, ir });
     const cornice = gallery.entries.find((entry) => entry.role === "cornice");
     const verticalTrim = gallery.entries.find((entry) => entry.role === "verticalTrim");
@@ -153,13 +195,24 @@ describe("buildComponentGallery", () => {
     });
     expect(verticalTrim).toMatchObject({
       label: "Pilaster / vertical trim",
-      source: "instanceBatch",
+      source: "meshBatch",
+      batchId: "mesh.vertical-pilasters",
       atlasSlotIds: ["trim.vertical.primary"],
-      metrics: expect.objectContaining({
-        instanceCount: 8
-      })
+      sampleSemanticPath: expect.stringContaining("/facade/front/bay-edge/")
     });
-    expect(windowFrame?.dimensionsM.depth).toBeGreaterThanOrEqual(0.28);
+    const pilasterEntries = ir.semanticIndex.filter((entry) => entry.batchId === "mesh.vertical-pilasters");
+    const pilasterEdges = new Set(
+      pilasterEntries.map((entry) => entry.semanticPath.match(/\/bay-edge\/(\d+)\/pilaster\//)?.[1])
+    );
+    expect(pilasterEdges.has(undefined)).toBe(false);
+    expect(pilasterEdges.size).toBe(spec.facade.frontBayCount + 1);
+    expect(verticalTrim?.metrics.elementCount).toBe(pilasterEntries.length);
+    expect(verticalTrim?.metrics.instanceCount).toBe(0);
+    expect(verticalTrim?.metrics.vertexCount).toBeGreaterThan(0);
+    expect(verticalTrim?.metrics.triangleCount).toBeGreaterThan(0);
+    // V3 deepened the opening assembly; the gallery must retain that recipe depth.
+    expect(windowFrame?.dimensionsM.depth).toBeGreaterThanOrEqual(0.55);
+    expect(windowFrame?.dimensionsM).toEqual(catalog.recipes.find((recipe) => recipe.role === "window")?.dimensionsM);
     expect(windowFrame?.anchorIds).toEqual(expect.arrayContaining(["origin", "sill-center", "lintel-center"]));
     expect(gallery.entries.every((entry) => entry.atlasSlotIds.length > 0)).toBe(true);
     expect(gallery.entries.every((entry) => entry.dimensionsM.width > 0 && entry.dimensionsM.height > 0)).toBe(true);

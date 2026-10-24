@@ -142,6 +142,7 @@ const controlImpactMatrix: Record<BuildingControlName, Record<BuildingInvalidati
   bayCount: {
     ...noImpact,
     normalizedSpec: "partial",
+    componentCatalog: "full",
     buildingGraph: "full",
     runtimeBuildingIr: "full",
     gpuScene: "full"
@@ -167,6 +168,7 @@ const controlImpactMatrix: Record<BuildingControlName, Record<BuildingInvalidati
   roofType: {
     ...noImpact,
     normalizedSpec: "partial",
+    componentCatalog: "full",
     buildingGraph: "full",
     runtimeBuildingIr: "full",
     gpuScene: "full"
@@ -175,8 +177,8 @@ const controlImpactMatrix: Record<BuildingControlName, Record<BuildingInvalidati
     ...noImpact,
     normalizedSpec: "partial",
     atlasPlan: "partial",
-    materialSources: "trimOnly",
-    packedAtlas: "full",
+    materialSources: "none",
+    packedAtlas: "none",
     componentCatalog: "trimOnly",
     buildingGraph: "full",
     runtimeBuildingIr: "full",
@@ -223,7 +225,7 @@ const controlImpactMatrix: Record<BuildingControlName, Record<BuildingInvalidati
 
 const legacyArtifactMatrix: Record<string, ArtifactKind[]> = {
   floorCount: ["spec", "graph", "geometry"],
-  bayCount: ["spec", "graph", "geometry"],
+  bayCount: ["spec", "componentCatalog", "graph", "geometry"],
   detailLevel: ["geometry"],
   buildingSeed: ["spec", "graph", "geometry"],
   familySeed: ["intent", "spec", "atlas", "componentCatalog", "graph", "geometry"],

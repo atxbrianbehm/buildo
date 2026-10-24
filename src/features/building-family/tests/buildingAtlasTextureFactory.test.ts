@@ -48,6 +48,7 @@ describe("building atlas texture factory", () => {
 
     expect(window).toEqual({
       slotId: "wall.primary",
+      role: wallSlot.role,
       rectPx: wallSlot.rectPx,
       uvMode: wallSlot.uvMode,
       periodicity: wallSlot.periodicity,

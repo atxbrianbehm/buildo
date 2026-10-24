@@ -200,7 +200,9 @@ export async function normalizeBuildingSpec(
     floorCount,
     frontBayCount,
     wallMaterial,
-    roofType,
+    // Keep the legacy flat token in the family seed namespace so a roof-only
+    // component rebuild does not reroll facade module choices.
+    roofType: "flat",
     corniceFamily,
     trimDensity: intent.requested.trimDensity ?? stylePack.defaults.trimDensity
   };
@@ -262,9 +264,11 @@ export async function normalizeBuildingSpec(
     diagnostics
   });
 
-  // Apply building-seed structural variety (bays/depth/window family/rhythm) while
-  // keeping familyId and material seeds stable for shared-family samples.
-  const spec = withBuildingSeedVariation(baseSpec, intent.seeds.building, stylePack);
+  // An explicit bay request remains authoritative after constraint clamping.
+  // Direct sample/stress variation can still vary bays within the shared family.
+  const spec = withBuildingSeedVariation(baseSpec, intent.seeds.building, stylePack, {
+    preserveRequestedBayCount: intent.requested.bayCount !== undefined
+  });
 
   return { spec, diagnostics };
 }

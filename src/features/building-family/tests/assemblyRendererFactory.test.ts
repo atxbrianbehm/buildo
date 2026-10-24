@@ -3,9 +3,13 @@ import type { RendererBackendSupport } from "../renderer-three/buildingSceneAdap
 import {
   configureAssemblyRendererPresentation,
   createAssemblyRenderer,
+  createWebGpuAssemblyRenderer,
   type AssemblyRenderer,
   type AssemblyRendererActivation
 } from "../renderer-three/assemblyRendererFactory";
+
+const gpuMock = vi.hoisted(() => ({ construct: vi.fn() }));
+vi.mock("three/webgpu", () => ({ WebGPURenderer: gpuMock.construct }));
 
 function backendSupport(input: Partial<RendererBackendSupport> = {}): RendererBackendSupport {
   return {
@@ -36,6 +40,33 @@ function fakeRenderer(label: string): AssemblyRenderer {
 }
 
 describe("assembly renderer factory", () => {
+  it.each([true, false])("verifies the initialized backend rather than the renderer class name: %s", async actual => {
+    vi.stubGlobal("navigator", { gpu: {} });
+    const renderer = { ...fakeRenderer("gpu-default"), init: vi.fn(async () => {}), backend: { isWebGPUBackend: actual } };
+    gpuMock.construct.mockImplementation(function () { return renderer; });
+    try {
+      if (actual) {
+        expect(await createWebGpuAssemblyRenderer()).toBe(renderer);
+        expect(renderer.dispose).not.toHaveBeenCalled();
+      } else {
+        await expect(createWebGpuAssemblyRenderer()).rejects.toThrow("actual WebGPU backend");
+        expect(renderer.dispose).toHaveBeenCalledTimes(1);
+      }
+    } finally { vi.unstubAllGlobals(); }
+  });
+  it("reports WebGL when Three silently chooses its internal WebGL fallback", async () => {
+    vi.stubGlobal("navigator", { gpu: {} });
+    const gpu = { ...fakeRenderer("internal-gl"), init: vi.fn(async () => {}), backend: { isWebGPUBackend: false } };
+    const gl = fakeRenderer("explicit-gl");
+    gpuMock.construct.mockImplementation(function () { return gpu; });
+    try {
+      const activated = await createAssemblyRenderer({ backendSupport: backendSupport(), createWebGlRenderer: () => gl });
+      expect(activated.activeBackend).toBe("webgl");
+      expect(activated.renderer).toBe(gl);
+      expect(activated.fallbackReason).toContain("actual WebGPU backend");
+      expect(gpu.dispose).toHaveBeenCalledTimes(1);
+    } finally { vi.unstubAllGlobals(); }
+  });
   it("configures the shared renderer presentation baseline", () => {
     const renderer = fakeRenderer("presentation") as AssemblyRenderer & {
       outputColorSpace?: string;

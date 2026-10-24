@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useStore } from "zustand";
 import "./App.css";
 import { AtlasLab } from "../features/building-family/ui/AtlasLab";
 import { summarizeArtKitFacadePlanFromGraph } from "../features/building-family/art-kit";
 import { ArtifactTracePanel } from "../features/building-family/ui/ArtifactTracePanel";
-import { AssemblyHall } from "../features/building-family/ui/AssemblyHall";
+import { AssemblyHall, type AssemblyHallWindowSelection } from "../features/building-family/ui/AssemblyHall";
+import { BayConstructionWorkbench } from "../features/building-family/ui/BayConstructionWorkbench";
+import { useConstructionWorkspace, constructionRecoveryText } from "../features/building-family/state/useConstructionWorkspace";
 import { ComponentForge } from "../features/building-family/ui/ComponentForge";
 import { PromptTracePanel } from "../features/building-family/ui/PromptTracePanel";
 import { ArtKitLab } from "../features/building-family/ui/ArtKitLab";
@@ -12,12 +14,20 @@ import { PeriodReferenceLab } from "../features/building-family/ui/PeriodReferen
 import { SampleBuildingGallery } from "../features/building-family/ui/SampleBuildingGallery";
 import { createIndexedDbArtifactPersistence } from "../features/building-family/materials/indexedDbArtifactPersistence";
 import {
+  CompletedFamilyReplayProfileError,
+  buildAssemblyHallSourceWindowSplit,
   restoreAssemblyHallFixtureFromCompletedFamilyPacket,
   type AssemblyHallFixture
 } from "../features/building-family/ui/assemblyHallFixture";
+import { resolveWindowOpeningFromSlotAddress, resolveWindowSlotAddressFromSemanticPath } from "../features/building-family/compiler/facadeSplitPlan";
+import type { BuildingWindowSlotAddress } from "../features/building-family/contracts/buildingDocument";
+import { captureBuildingSourceSnapshot, parseBuildingSourceFile, type BuildingSourceSnapshot } from "../features/building-family/state/buildingSourceFile";
+import { parseBuildingSurfaceSourceFile } from "../features/building-family/state/buildingSurfaceSourceFile";
 import { decodeBrowserPngLayer } from "../features/building-family/ui/browserPngLayerDecoder";
 import { BuildingArtifactRegistry } from "../features/building-family/state/artifactRegistry";
-import { BuildingRunController } from "../features/building-family/state/buildingRunController";
+import { BuildingRunController, type BuildingFixtureViewerPreparer, type BuildingSourceCheckpointStatus, type StartDemoRunResult } from "../features/building-family/state/buildingRunController";
+import { createBuildingSourceCheckpointPersistence, type BuildingSourceCheckpoint } from "../features/building-family/state/buildingSourceCheckpoint";
+import { acquireBuildingSourceCheckpointWriter, type BuildingSourceCheckpointWriterSession } from "../features/building-family/state/buildingSourceCheckpointWriter";
 import { createCompletedFamilyExportBundle } from "../features/building-family/state/completedFamilyExportBundle";
 import { importCompletedFamilyExportBundleToPacket } from "../features/building-family/state/completedFamilyExportImport";
 import { createCompletedFamilyPersistencePacket } from "../features/building-family/state/completedFamilyPersistence";
@@ -107,13 +117,13 @@ function routeSelectionFromHash(hash: string): BuildingRouteSelection {
   return {
     documentId: documentIdFromHashValue(documentId),
     hasDocumentId: documentId !== null,
-    room: isBuildingRoom(room) ? room : "promptLab"
+    room: isBuildingRoom(room) ? room : "assemblyHall"
   };
 }
 
 function currentRouteSelection(): BuildingRouteSelection {
   return typeof window === "undefined"
-    ? { documentId: defaultBuildingDocumentId, hasDocumentId: false, room: "promptLab" }
+    ? { documentId: defaultBuildingDocumentId, hasDocumentId: false, room: "assemblyHall" }
     : routeSelectionFromHash(window.location.hash);
 }
 
@@ -191,34 +201,216 @@ function downloadJsonFile(fileName: string, payload: unknown): void {
   URL.revokeObjectURL(url);
 }
 
+interface WindowWidthAuthority {
+  selection: AssemblyHallWindowSelection;
+  sourceReference: BuildingSourceSnapshot;
+  sourceHash: string;
+  revision: number;
+  documentId: string;
+}
+
+interface WindowWidthModel extends WindowWidthAuthority {
+  address: BuildingWindowSlotAddress;
+  baseWidth: number;
+  currentWidth: number;
+  replacesOtherWindow: boolean;
+  hasWidthEdit: boolean;
+}
+
+type RecoveryState = "acquiring" | "manual" | "ready" | "busy" | "unsupported" | "failed" | "recovered-source" | "recovered-view";
+interface AppRuntime {
+  documentId: string;
+  store: BuildingStoreApi;
+  registry: BuildingArtifactRegistry;
+  controller: BuildingRunController;
+  ready: Promise<void>;
+  finishReady(): void;
+  acquisitionSettled: Promise<void>;
+  finishAcquisition(): void;
+  session?: BuildingSourceCheckpointWriterSession;
+  closing?: Promise<void>;
+  terminal?: Promise<void>;
+  acquired: boolean;
+  admission?: { publication: number; writable: boolean };
+  canSave: boolean;
+  disposed: boolean;
+}
+
 export function App() {
-  const [{ store, registry, controller }] = useState(() => {
+  const [constructionLanding] = useState(() => typeof window === "undefined" || !new URLSearchParams(window.location.hash.slice(1)).has("room") ? currentRouteSelection().documentId : null);
+  const enteredConstruction = useRef(new Set<string>());
+  const [initialStore] = useState(() => {
     const routeSelection = currentRouteSelection();
-    const createdStore: BuildingStoreApi = createBuildingStore(
+    return createBuildingStore(
       undefined,
       routeSelection.room,
       routeSelection.documentId
     );
-    const createdRegistry = new BuildingArtifactRegistry();
-    return {
-      store: createdStore,
-      registry: createdRegistry,
-      controller: new BuildingRunController({
-        store: createdStore,
-        registry: createdRegistry,
-        completedFamilyPersistence: createBrowserCompletedFamilyPersistence(),
-        restoreCompletedFamilyFixture: restoreAssemblyHallFixtureFromCompletedFamilyPacket,
-        remoteMaterial: {
-          decodePngLayer: decodeBrowserPngLayer
-        }
-      })
-    };
   });
+  const [emptyRegistry] = useState(() => new BuildingArtifactRegistry());
+  const [runtime, setRuntime] = useState<AppRuntime>();
+  const runtimeRef = useRef<AppRuntime | null>(null);
+  const stagedRuntimeRef = useRef<AppRuntime | null>(null);
+  const viewerRef = useRef<{ prepare: BuildingFixtureViewerPreparer; registrations: Map<AppRuntime, () => void> } | null>(null);
+  const closingDocumentsRef = useRef(new Map<string, Promise<void>>());
+  const store = runtime?.store ?? initialStore;
+  const [recovery, setRecovery] = useState<{ documentId: string; state: RecoveryState; message?: string; runId?: string; viewFixture?: AssemblyHallFixture }>(() => ({ documentId: initialStore.getState().selection.documentId, state: "acquiring" }));
+  const [checkpointNotice, setCheckpointNotice] = useState<{ owner: AppRuntime; fixture?: AssemblyHallFixture; writable: boolean; status: BuildingSourceCheckpointStatus }>();
+  const registry = runtime?.registry ?? emptyRegistry;
+  const controller = runtime?.controller;
+  const intentEpochRef = useRef(0);
+  const intentMountedRef = useRef(false);
+  const [fileCommandPhase, setFileCommandPhase] = useState<"idle" | "source-read" | "export-conversion" | "activating">("idle");
+  const importPending = fileCommandPhase !== "idle";
+  const widthFieldId = useId();
+  const rawWindowSelectionRef = useRef<AssemblyHallWindowSelection | null>(null);
+  const [windowSelection, setWindowSelection] = useState<AssemblyHallWindowSelection | null>(null);
+  const widthReadTokenRef = useRef(0);
+  const widthActionTokenRef = useRef(0);
+  const widthPendingRef = useRef(false);
+  const [widthReadRefresh, setWidthReadRefresh] = useState(0);
+  const [windowWidthModel, setWindowWidthModel] = useState<WindowWidthModel | null>(null);
+  const [windowWidthRead, setWindowWidthRead] = useState<"idle" | "loading" | "unavailable" | "ready" | "error">("idle");
+  const [windowWidthDraft, setWindowWidthDraft] = useState("");
+  const [windowWidthError, setWindowWidthError] = useState<string | null>(null);
+  const [windowWidthPending, setWindowWidthPending] = useState(false);
+  const [windowWidthHistoryAction, setWindowWidthHistoryAction] = useState<"undo" | "redo" | null>(null);
+  const [sourceActionError, setSourceActionError] = useState<string | null>(null);
+  const createRuntime = useCallback((documentId: string, room: BuildingRoom): AppRuntime => {
+    const ownedStore = createBuildingStore(undefined, room, documentId), ownedRegistry = new BuildingArtifactRegistry();
+    let finishReady!: () => void, finishAcquisition!: () => void;
+    const ready = new Promise<void>((resolve) => { finishReady = resolve; });
+    const acquisitionSettled = new Promise<void>((resolve) => { finishAcquisition = resolve; });
+    const ownedController = new BuildingRunController({
+      store: ownedStore, registry: ownedRegistry,
+      completedFamilyPersistence: createBrowserCompletedFamilyPersistence(),
+      restoreCompletedFamilyFixture: restoreAssemblyHallFixtureFromCompletedFamilyPacket,
+      remoteMaterial: { decodePngLayer: decodeBrowserPngLayer },
+      retainSourceCheckpointWriter: (target) => {
+        const publication = ownedController.getSourceCheckpointStatus(target)?.publication;
+        if (publication !== undefined) owned.admission = { publication, writable: owned.canSave };
+        return owned.canSave ? owned.session?.retain(target) : undefined;
+      },
+      onSourceCheckpointStatus: (status) => {
+        const state = ownedStore.getState();
+        if (runtimeRef.current === owned && !owned.disposed && state.selection.documentId === status.documentId) {
+          const active = state.runs.activeFixtureArtifactId;
+          const writable = owned.admission?.publication === status.publication && owned.admission.writable;
+          setCheckpointNotice({ owner: owned, fixture: active ? ownedRegistry.get<AssemblyHallFixture>(active) : undefined, writable, status });
+        }
+      }
+    });
+    const owned: AppRuntime = { documentId, store: ownedStore, registry: ownedRegistry, controller: ownedController, ready, finishReady,
+      acquisitionSettled, finishAcquisition, acquired: false, canSave: false, disposed: false };
+    const viewer = viewerRef.current;
+    if (viewer) viewer.registrations.set(owned, ownedController.registerFixtureViewer(viewer.prepare));
+    return owned;
+  }, []);
+  const closeRuntime = useCallback((owned: AppRuntime): Promise<void> => {
+    if (owned.terminal) return owned.terminal;
+    owned.disposed = true;
+    owned.canSave = false;
+    const viewer = viewerRef.current;
+    viewer?.registrations.get(owned)?.();
+    viewer?.registrations.delete(owned);
+    try { owned.controller.dispose(); } catch { try { owned.registry.clear(); } catch { /* Continue terminal storage cleanup. */ } }
+    const close = owned.closing ?? owned.session?.close();
+    void close?.catch(() => undefined);
+    const terminal = Promise.allSettled([owned.acquisitionSettled, owned.controller.drainSourceCheckpoints(), close])
+      .then(async () => { try { await owned.session?.close(); } catch { /* Native loss cannot affect a replacement generation. */ } });
+    owned.terminal = terminal;
+    closingDocumentsRef.current.set(owned.documentId, terminal);
+    void terminal.then(() => { if (closingDocumentsRef.current.get(owned.documentId) === terminal) closingDocumentsRef.current.delete(owned.documentId); });
+    return terminal;
+  }, []);
+  const acquireAuthority = useCallback(async (owned: AppRuntime): Promise<{ state: "record"; checkpoint: BuildingSourceCheckpoint | undefined } | { state: "busy" | "unsupported" | "stale" }> => {
+    try {
+      const previous = closingDocumentsRef.current.get(owned.documentId);
+      if (previous) await previous;
+      if (owned.disposed) return { state: "stale" };
+      let persistence: ReturnType<typeof createBuildingSourceCheckpointPersistence> | undefined;
+      const supported = typeof globalThis.navigator?.locks?.request === "function";
+      const session = await acquireBuildingSourceCheckpointWriter({ documentId: owned.documentId, createPersistence: () => {
+        persistence = createBuildingSourceCheckpointPersistence(); return persistence;
+      } });
+      if (owned.disposed) { await session?.close(); return { state: "stale" }; }
+      owned.session = session;
+      owned.acquired = true;
+      owned.finishAcquisition();
+      owned.finishReady();
+      if (!session) return { state: supported ? "busy" : "unsupported" };
+      const checkpoint = await persistence!.get(owned.documentId);
+      if (owned.disposed) return { state: "stale" };
+      owned.canSave = true;
+      return { state: "record", checkpoint };
+    } finally { owned.acquired = true; owned.finishAcquisition(); owned.finishReady(); }
+  }, []);
+  const onWindowSelectionChange = useCallback((selection: AssemblyHallWindowSelection | null) => {
+    const previous = rawWindowSelectionRef.current;
+    if (previous?.fixture === selection?.fixture && previous?.semanticPath === selection?.semanticPath) return;
+    const owned = selection ? { fixture: selection.fixture, semanticPath: selection.semanticPath } : null;
+    rawWindowSelectionRef.current = owned;
+    widthReadTokenRef.current += 1;
+    setWindowSelection(owned);
+    setWindowWidthModel(null);
+    setWindowWidthDraft("");
+    setWindowWidthError(null);
+    setWindowWidthRead(owned ? "loading" : "idle");
+  }, []);
+  const isCurrentWidthAuthority = useCallback((authority: WindowWidthAuthority) => {
+    const state = store.getState();
+    const selection = rawWindowSelectionRef.current;
+    const current = state.runs.activeFixtureArtifactId ? registry.get<AssemblyHallFixture>(state.runs.activeFixtureArtifactId) : undefined;
+    const source = authority.selection.fixture.sourceSnapshot;
+    return intentMountedRef.current && state.selection.room === "assemblyHall" && state.selection.documentId === authority.documentId &&
+      current === authority.selection.fixture && selection?.fixture === authority.selection.fixture && selection.semanticPath === authority.selection.semanticPath &&
+      source === authority.sourceReference && source.sourceContentHash === authority.sourceHash && source.document.revision === authority.revision;
+  }, [registry, store]);
+  const invalidateWindowWidthIntent = useCallback(() => {
+    const staged = stagedRuntimeRef.current;
+    stagedRuntimeRef.current = null;
+    if (staged) void closeRuntime(staged);
+    setSourceActionError(null);
+    widthReadTokenRef.current += 1;
+    widthActionTokenRef.current += 1;
+    widthPendingRef.current = false;
+    setWindowWidthPending(false);
+    setWindowWidthHistoryAction(null);
+    setWindowWidthModel(null);
+    setWindowWidthDraft("");
+    setWindowWidthError(null);
+    setWidthReadRefresh(value => value + 1);
+  }, [closeRuntime]);
+  const acquireFixtureViewerLease = useCallback(
+    (fixture: AssemblyHallFixture) => {
+      let failure: unknown;
+      for (const owned of [stagedRuntimeRef.current, runtimeRef.current]) {
+        if (!owned || owned.disposed) continue;
+        try { return owned.controller.acquireFixtureViewerLease(fixture); } catch (error) { failure = error; }
+      }
+      throw failure ?? new Error("The building viewer has no current fixture owner.");
+    }, []
+  );
+  const registerFixtureViewer = useCallback(
+    (prepare: BuildingFixtureViewerPreparer) => {
+      const previous = viewerRef.current;
+      if (previous) for (const release of previous.registrations.values()) release();
+      const viewer = { prepare, registrations: new Map<AppRuntime, () => void>() };
+      viewerRef.current = viewer;
+      for (const owned of [runtimeRef.current, stagedRuntimeRef.current]) if (owned && !owned.disposed) viewer.registrations.set(owned, owned.controller.registerFixtureViewer(prepare));
+      return () => {
+        if (viewerRef.current === viewer) viewerRef.current = null;
+        for (const release of viewer.registrations.values()) release();
+        viewer.registrations.clear();
+      };
+    }, []
+  );
   const runState = useStore(store, (state) => state.runs);
   const artifacts = useStore(store, (state) => state.artifacts);
   const promptControls = useStore(store, (state) => state.prompt);
   const controlState = useStore(store, (state) => state.controls);
   const routeDocumentId = useStore(store, (state) => state.selection.documentId);
+  const construction = useConstructionWorkspace(routeDocumentId);
   const activeRoom = useStore(store, (state) => state.selection.room);
   const selectDocument = useStore(store, (state) => state.selectDocument);
   const selectRoom = useStore(store, (state) => state.selectRoom);
@@ -226,36 +418,109 @@ export function App() {
   const currentRun = runState.currentRun;
   const activeFixtureArtifactId = runState.activeFixtureArtifactId;
   const invalidation = controlState.invalidation;
-  const runDisabled = runState.status === "running";
+  const runDisabled = !controller || runState.status === "running" || fileCommandPhase === "source-read" || fileCommandPhase === "activating";
   const fixture = activeFixtureArtifactId
     ? registry.get<AssemblyHallFixture>(activeFixtureArtifactId) ?? null
     : null;
+  useEffect(() => {
+    if (!constructionLanding || routeDocumentId !== constructionLanding || activeRoom !== "assemblyHall" || !fixture?.sourceSnapshot || runState.status !== "complete" ||
+      !["ready","unsupported"].includes(construction.status.state) || enteredConstruction.current.has(routeDocumentId)) return;
+    enteredConstruction.current.add(routeDocumentId);
+    construction.setMode(true);
+  }, [constructionLanding, activeRoom, fixture, runState.status, construction, routeDocumentId]);
   const activeFixtureMetadata = activeFixtureArtifactId ? artifacts.byId[activeFixtureArtifactId] : undefined;
   const exportDisabled = runState.status !== "complete" || !fixture || !currentRun || !activeFixtureMetadata;
   const materialSourceCacheHit = currentRun ? latestMaterialSourceCacheHit(currentRun.events) : undefined;
 
+  useEffect(() => () => {
+    // This cleanup also owns an accepted staged bundle before its document effect installs.
+    intentMountedRef.current = false;
+    intentEpochRef.current += 1;
+    const current = runtimeRef.current, staged = stagedRuntimeRef.current;
+    runtimeRef.current = null;
+    stagedRuntimeRef.current = null;
+    if (current) void closeRuntime(current);
+    if (staged && staged !== current) void closeRuntime(staged);
+  }, [closeRuntime]);
+
   useEffect(() => {
+    intentMountedRef.current = true;
+    const adopted = runtimeRef.current;
+    const owned = adopted && !adopted.disposed && adopted.documentId === routeDocumentId
+      ? adopted : createRuntime(routeDocumentId, currentRouteSelection().room);
+    const cleanup = () => {
+      if (runtimeRef.current === owned) {
+        runtimeRef.current = null;
+        intentMountedRef.current = false;
+        intentEpochRef.current += 1;
+        widthReadTokenRef.current += 1;
+        widthActionTokenRef.current += 1;
+        widthPendingRef.current = false;
+        const staged = stagedRuntimeRef.current;
+        stagedRuntimeRef.current = null;
+        if (staged) void closeRuntime(staged);
+      }
+      void closeRuntime(owned);
+    };
+    // A foreign manual command already accepted this complete bundle before adoption.
+    if (owned === adopted) return cleanup;
+    const intent = ++intentEpochRef.current;
+    runtimeRef.current = owned;
+    // Publish the fresh effect-owned store/controller/registry generation; disposed controllers are terminal.
+    setRuntime(owned);
+    onWindowSelectionChange(null);
+    const isCurrent = () => !owned.disposed && runtimeRef.current === owned && owned.store.getState().selection.documentId === owned.documentId;
+    const isAutomaticCurrent = () => isCurrent() && intentEpochRef.current === intent;
+    const report = (state: RecoveryState, message?: string, runId?: string, viewFixture?: AssemblyHallFixture) => {
+      if (isCurrent()) setRecovery({ documentId: owned.documentId, state, message, runId, viewFixture });
+    };
     void (async () => {
+      report("acquiring");
       try {
-        const restored = await controller.restoreLatestCompletedFamily();
-        if (restored !== undefined) {
+        const authority = await acquireAuthority(owned);
+        if (!isAutomaticCurrent() || authority.state === "stale") return;
+        if (authority.state !== "record") { report(authority.state); return; }
+        const checkpoint = authority.checkpoint;
+        if (checkpoint?.kind === "source") {
+          const restored = await owned.controller.openSourceFile({ readText: async () => JSON.stringify(checkpoint.sourceFile) });
+          if (isAutomaticCurrent() && !restored.stale) report("recovered-source");
           return;
         }
-      } catch {
-        // Fall back to procedural generation when a persisted packet cannot be restored.
+        if (checkpoint?.kind === "source-unavailable") {
+          const restored = await owned.controller.restoreSourceUnavailableCheckpoint(checkpoint);
+          if (isAutomaticCurrent() && !restored.stale) report("recovered-view", undefined, restored.runId, restored.fixture);
+          return;
+        }
+        // Only confirmed absence may enter the historical completed-cache fallback.
+        try {
+          const restored = await owned.controller.restoreLatestCompletedFamily(owned.documentId);
+          if (!isAutomaticCurrent() || restored !== undefined) { if (isAutomaticCurrent()) report("ready"); return; }
+        } catch (error) {
+          if (error instanceof CompletedFamilyReplayProfileError) throw error;
+          // Preserve the ordinary cache-failure fallback only after checkpoint absence.
+        }
+        if (isAutomaticCurrent()) { await owned.controller.startDemoRun(); if (isAutomaticCurrent()) report("ready"); }
+      } catch (error) {
+        // A superseded automatic read cannot close a manual generation or replace its UI.
+        if (!isAutomaticCurrent()) return;
+        owned.canSave = false;
+        owned.closing = owned.session?.close();
+        owned.session = undefined;
+        void owned.closing?.catch(() => undefined);
+        report("failed", error instanceof Error ? error.message : "The saved building could not be recovered.");
       }
-
-      await controller.startDemoRun();
     })().catch(() => undefined);
-
-    return () => {
-      controller.dispose();
-    };
-  }, [controller]);
-
+    return cleanup;
+  }, [acquireAuthority, closeRuntime, createRuntime, onWindowSelectionChange, routeDocumentId]);
   useEffect(() => {
     const syncRoomFromRoute = () => {
       const routeSelection = currentRouteSelection();
+      if (store.getState().selection.documentId !== routeSelection.documentId) {
+        intentEpochRef.current += 1;
+        invalidateWindowWidthIntent();
+        setFileCommandPhase("idle");
+        runtimeRef.current?.controller.cancelActiveRun();
+      }
       selectDocument(routeSelection.documentId);
       selectRoom(routeSelection.room);
     };
@@ -268,24 +533,110 @@ export function App() {
       window.removeEventListener("hashchange", syncRoomFromRoute);
       window.removeEventListener("popstate", syncRoomFromRoute);
     };
-  }, [selectDocument, selectRoom]);
+  }, [invalidateWindowWidthIntent, selectDocument, selectRoom, store]);
+
+  useEffect(() => {
+    const token = ++widthReadTokenRef.current;
+    const intent = intentEpochRef.current;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Clear stale owner-bound editor state before asynchronously resolving the newly accepted fixture.
+    setWindowWidthModel(null);
+    setWindowWidthDraft("");
+    setWindowWidthError(null);
+    if (activeRoom !== "assemblyHall" || !windowSelection) { setWindowWidthRead("idle"); return; }
+    // A viewer commit reports selection before App's published artifact catches up.
+    // Keep that raw event so the next accepted fixture render can rebind it.
+    if (!fixture || windowSelection.fixture !== fixture) { setWindowWidthRead("loading"); return; }
+    const sourceReference = fixture.sourceSnapshot;
+    if (!sourceReference) { setWindowWidthRead("unavailable"); return; }
+    if (sourceReference.document.documentId !== routeDocumentId) { setWindowWidthRead("idle"); return; }
+    const authority: WindowWidthAuthority = {
+      selection: windowSelection, sourceReference, sourceHash: sourceReference.sourceContentHash,
+      revision: sourceReference.document.revision, documentId: routeDocumentId
+    };
+    const isCurrent = () => widthReadTokenRef.current === token && intentEpochRef.current === intent && isCurrentWidthAuthority(authority);
+    setWindowWidthRead("loading");
+    void (async () => {
+      const source = captureBuildingSourceSnapshot(sourceReference);
+      const split = await buildAssemblyHallSourceWindowSplit({ sourceSnapshot: source, catalog: fixture.catalog });
+      if (!isCurrent()) return;
+      const address = resolveWindowSlotAddressFromSemanticPath(split, windowSelection.semanticPath);
+      const opening = resolveWindowOpeningFromSlotAddress(split, address);
+      const overrides = source.schemaVersion === "0.5.0" ? source.windowWidthBatch.directives
+        : source.schemaVersion === "0.4.0" ? source.windowWidthOverrides : [];
+      const override = overrides.find(directive => directive.address.facade === address.facade &&
+        directive.address.floorIndex === address.floorIndex && directive.address.bayIndex === address.bayIndex);
+      const currentWidth = override ? override.widthM : opening.sizeM[0];
+      if (!isCurrent()) return;
+      setWindowWidthModel({ ...authority, address, baseWidth: opening.sizeM[0], currentWidth,
+        replacesOtherWindow: source.schemaVersion === "0.4.0" && overrides.length > 0 && !override, hasWidthEdit: source.schemaVersion === "0.4.0" || Boolean(override) });
+      setWindowWidthDraft(String(currentWidth));
+      setWindowWidthRead("ready");
+    })().catch((error: unknown) => {
+      if (!isCurrent()) return;
+      setWindowWidthError(error instanceof Error ? error.message : "This window cannot be edited in the current building.");
+      setWindowWidthRead("error");
+    });
+    return () => { if (widthReadTokenRef.current === token) widthReadTokenRef.current += 1; };
+  }, [activeRoom, fixture, isCurrentWidthAuthority, routeDocumentId, widthReadRefresh, windowSelection]);
+
+  useEffect(() => store.subscribe((state) => {
+    if (widthPendingRef.current && (state.controls.baselineStatus !== "known" || state.controls.invalidation.changedControls.length > 0)) {
+      // A draft changed during controller preflight must not be captured then reset by publication.
+      intentEpochRef.current += 1;
+      invalidateWindowWidthIntent();
+      controller?.cancelActiveRun();
+    }
+  }), [controller, invalidateWindowWidthIntent, store]);
+
+  useEffect(() => {
+    if (activeRoom === "assemblyHall") return;
+    onWindowSelectionChange(null);
+    if (widthPendingRef.current) {
+      intentEpochRef.current += 1;
+      invalidateWindowWidthIntent();
+      controller?.cancelActiveRun();
+    }
+  }, [activeRoom, controller, invalidateWindowWidthIntent, onWindowSelectionChange]);
 
   function selectRoutedRoom(room: BuildingRoom): void {
+    if (!runtime || runtimeRef.current !== runtime || runtime.disposed || runtime.store.getState().selection.documentId !== runtime.documentId) return;
     selectRoom(room);
     pushRoomHash(room, routeDocumentId, currentRouteSelection().hasDocumentId);
   }
 
   function startRun(nextPrompt: BuildingPromptControls): void {
-    void controller.startDemoRun(nextPrompt).catch(() => undefined);
+    if (!runtime || runtimeRef.current !== runtime || runtime.disposed || runtime.store.getState().selection.documentId !== runtime.documentId) return;
+    const intent = ++intentEpochRef.current;
+    invalidateWindowWidthIntent();
+    setFileCommandPhase("idle");
+    const owned = runtimeRef.current;
+    owned?.controller.cancelActiveRun();
+    const run = () => {
+      if (!owned) return;
+      if (!owned.disposed && runtimeRef.current === owned && intentEpochRef.current === intent) {
+        setRecovery(previous => previous.documentId === owned.documentId && previous.state === "acquiring" ? { documentId: owned.documentId, state: "manual" } : previous);
+        return owned.controller.startDemoRun(nextPrompt);
+      }
+    };
+    if (owned?.acquired) void run()?.catch(() => undefined);
+    else if (owned) void owned.ready.then(run).catch(() => undefined);
+  }
+  function cancelRun(): void {
+    intentEpochRef.current += 1;
+    invalidateWindowWidthIntent();
+    setFileCommandPhase("idle");
+    runtimeRef.current?.controller.cancelActiveRun();
   }
 
   function updateAndRun(patch: BuildingPromptControlPatch): void {
+    if (!runtime || runtimeRef.current !== runtime || runtime.disposed || runtime.store.getState().selection.documentId !== runtime.documentId) return;
     const nextPrompt = promptWithPatch(promptControls, patch);
     updatePromptControls(patch);
     startRun(nextPrompt);
   }
 
   function toggleComponentLock(componentKey: string): void {
+    if (!runtime || runtimeRef.current !== runtime || runtime.disposed || runtime.store.getState().selection.documentId !== runtime.documentId) return;
     const isLocked = promptControls.lockedComponentKeys.includes(componentKey);
     updatePromptControls({
       lockedComponentKeys: isLocked
@@ -294,21 +645,56 @@ export function App() {
     });
   }
 
+  async function saveBuildingSource(): Promise<void> {
+    if (!controller || runtimeRef.current?.controller !== controller || runtimeRef.current.documentId !== routeDocumentId) return;
+    const saved = await controller.exportSourceFile();
+    downloadJsonFile(saved.fileName, JSON.parse(saved.contents) as unknown);
+  }
+
+  async function openBuildingSource(file: File | undefined): Promise<void> {
+    if (!file) return;
+    const intent = ++intentEpochRef.current;
+    const draftAtIntent = structuredClone(runtimeRef.current?.store.getState().prompt ?? store.getState().prompt);
+    invalidateWindowWidthIntent();
+    const isCurrent = () => intentMountedRef.current && intentEpochRef.current === intent;
+    setFileCommandPhase("source-read");
+    runtimeRef.current?.controller.cancelActiveRun();
+    try {
+      const serialized = await file.text();
+      if (!isCurrent()) return;
+      const decoded: unknown = JSON.parse(serialized);
+      const parsed = decoded && typeof decoded === "object" && "schemaVersion" in decoded && decoded.schemaVersion === "0.6.0"
+        ? await parseBuildingSurfaceSourceFile(decoded) : await parseBuildingSourceFile(decoded);
+      if (!isCurrent()) return;
+      setFileCommandPhase("activating");
+      await runInDocument(parsed.sourceSnapshot.document.documentId, intent, draftAtIntent, active => active.openSourceFile({ readText: async () => serialized }));
+    } catch (error: unknown) {
+      if (isCurrent()) setSourceActionError(error instanceof Error ? error.message : "The source file could not be opened. The current building is retained.");
+    } finally {
+      if (isCurrent()) setFileCommandPhase("idle");
+    }
+  }
+
   async function downloadCompletedFamilyExport(): Promise<void> {
-    if (exportDisabled || !fixture || !currentRun || !activeFixtureMetadata) {
+    if (!controller || !runtime || runtimeRef.current !== runtime || runtime.disposed || runtime.store.getState().selection.documentId !== runtime.documentId || exportDisabled || !fixture || !currentRun || !activeFixtureMetadata) {
       return;
     }
 
-    const packet = await createCompletedFamilyPersistencePacket({
-      documentId: routeDocumentId,
-      fixture,
-      requestHash: activeFixtureMetadata.requestHash,
-      runId: currentRun.runId
-    });
-    downloadJsonFile(
-      `${safeFileSegment(routeDocumentId)}-completed-family-export.json`,
-      createCompletedFamilyExportBundle(packet)
-    );
+    const release = controller.acquireFixtureViewerLease(fixture);
+    try {
+      const packet = await createCompletedFamilyPersistencePacket({
+        documentId: routeDocumentId,
+        fixture,
+        requestHash: activeFixtureMetadata.requestHash,
+        runId: currentRun.runId
+      });
+      downloadJsonFile(
+        `${safeFileSegment(routeDocumentId)}-completed-family-export.json`,
+        createCompletedFamilyExportBundle(packet)
+      );
+    } finally {
+      release();
+    }
   }
 
   async function importCompletedFamilyExport(file: File | undefined): Promise<void> {
@@ -316,72 +702,361 @@ export function App() {
       return;
     }
 
-    const packet = await importCompletedFamilyExportBundleToPacket(JSON.parse(await file.text()));
-    selectDocument(packet.documentId);
-    pushRoomHash(activeRoom, packet.documentId, true);
-    await controller.restoreCompletedFamilyPacket(packet);
+    const intent = ++intentEpochRef.current;
+    const draftAtIntent = structuredClone(runtimeRef.current?.store.getState().prompt ?? store.getState().prompt);
+    invalidateWindowWidthIntent();
+    const isCurrent = () => intentMountedRef.current && intentEpochRef.current === intent;
+    setFileCommandPhase("export-conversion");
+    runtimeRef.current?.controller.cancelActiveRun();
+    try {
+      const serialized = await file.text();
+      if (!isCurrent()) return;
+      const packet = await importCompletedFamilyExportBundleToPacket(JSON.parse(serialized));
+      if (!isCurrent()) return;
+      setFileCommandPhase("activating");
+      await runInDocument(packet.documentId, intent, draftAtIntent, active => active.restoreCompletedFamilyPacket(packet));
+    } catch (error: unknown) {
+      if (isCurrent()) setSourceActionError(error instanceof Error ? error.message : "The saved building could not be imported. The current building is retained.");
+    } finally {
+      if (isCurrent()) setFileCommandPhase("idle");
+    }
   }
 
-  return (
-    <main className="app-shell">
-      <section className="hero" aria-labelledby="buildo-title">
-        <div className="hero-copy">
-          <p className="project-label">Wild Construct Lab</p>
-          <h1 id="buildo-title">Buildo</h1>
-          <p className="hero-text">
-            A new workspace for deterministic building families, semantic material atlases, and
-            inspectable browser assembly.
-          </p>
-          <p className="route-identity" aria-label="Route document identity">
-            {routeDocumentId}
-          </p>
+  function carryFileDraft(owned: AppRuntime, latest: BuildingPromptControls, before: BuildingPromptControls): void {
+    const changed = (Object.keys(latest) as Array<keyof BuildingPromptControls>).filter(key => key !== "seeds" && key !== "lockedComponentKeys" && latest[key] !== before[key]);
+    const patch = Object.fromEntries(changed.map(key => [key, latest[key]])) as BuildingPromptControlPatch;
+    const seeds = Object.fromEntries((Object.keys(latest.seeds) as Array<keyof BuildingPromptControls["seeds"]>).filter(key => latest.seeds[key] !== before.seeds[key]).map(key => [key, latest.seeds[key]]));
+    if (Object.keys(seeds).length) patch.seeds = seeds;
+    if (JSON.stringify(latest.lockedComponentKeys) !== JSON.stringify(before.lockedComponentKeys)) patch.lockedComponentKeys = [...latest.lockedComponentKeys];
+    const state = owned.store.getState(), next = promptWithPatch(state.controls.committedPrompt ?? state.prompt, patch);
+    if (JSON.stringify(next) !== JSON.stringify(state.prompt)) {
+      try { state.updatePromptControls(next); } catch { /* Assigned draft changes survive an observer error. */ }
+    }
+  }
+
+  async function runInDocument(documentId: string, intent: number, draftAtIntent: BuildingPromptControls, run: (active: BuildingRunController) => Promise<StartDemoRunResult>): Promise<void> {
+    const owned = runtimeRef.current;
+    if (owned && !owned.disposed && owned.documentId === documentId) {
+      await owned.ready;
+      if (runtimeRef.current === owned && intentMountedRef.current && intentEpochRef.current === intent && owned.store.getState().selection.documentId === documentId) {
+        setRecovery(previous => previous.documentId === documentId && previous.state === "acquiring" ? { documentId, state: "manual" } : previous);
+        const oldActive = owned.store.getState().runs.activeFixtureArtifactId;
+        const oldFixture = oldActive ? owned.registry.get(oldActive) : undefined;
+        let latestDraft = structuredClone(owned.store.getState().prompt), accepted = false;
+        const unsubscribe = owned.store.subscribe(state => {
+          if (accepted) return;
+          const active = state.runs.activeFixtureArtifactId;
+          if (state.runs.status === "complete" && active && owned.registry.get(active) && owned.registry.get(active) !== oldFixture) {
+            accepted = true;
+            if (runtimeRef.current === owned && intentEpochRef.current === intent) carryFileDraft(owned, latestDraft, draftAtIntent);
+          } else latestDraft = structuredClone(state.prompt);
+        });
+        let result: StartDemoRunResult;
+        try { result = await run(owned.controller); } finally { unsubscribe(); }
+        if (!result.stale && intentMountedRef.current && intentEpochRef.current === intent) pushRoomHash(owned.store.getState().selection.room, documentId, true);
+      }
+      return;
+    }
+    const staged = createRuntime(documentId, owned?.store.getState().selection.room ?? currentRouteSelection().room);
+    stagedRuntimeRef.current = staged;
+    const isCurrent = () => intentMountedRef.current && intentEpochRef.current === intent && stagedRuntimeRef.current === staged && !staged.disposed;
+    try {
+      let state: RecoveryState = "ready", message: string | undefined;
+      try {
+        const authority = await acquireAuthority(staged);
+        if (authority.state === "stale") return;
+        if (authority.state !== "record") state = authority.state;
+      } catch (error) {
+        staged.canSave = false;
+        staged.closing = staged.session?.close();
+        staged.session = undefined;
+        void staged.closing?.catch(() => undefined);
+        state = "failed";
+        message = error instanceof Error ? error.message : "The saved source could not be verified.";
+      }
+      if (!isCurrent()) return;
+      let accepted = false;
+      const adoptAccepted = () => {
+        if (accepted || !isCurrent()) return;
+        const published = staged.store.getState(), active = published.runs.activeFixtureArtifactId;
+        if (published.runs.status !== "complete" || !active || !published.artifacts.byId[active] || !staged.registry.get<AssemblyHallFixture>(active)) return;
+        accepted = true;
+        // Carry only draft fields changed by the user after this file command began.
+        const latest = owned?.store.getState().prompt;
+        if (latest) carryFileDraft(staged, latest, draftAtIntent);
+        const room = owned?.store.getState().selection.room ?? published.selection.room;
+        if (staged.store.getState().selection.room !== room) {
+          try { staged.store.getState().selectRoom(room); } catch { /* Accepted adoption cannot be rolled back by a room observer. */ }
+        }
+        // Adopt inside the accepted notification, before a queued later intent can discard B.
+        stagedRuntimeRef.current = null;
+        runtimeRef.current = staged;
+        setRuntime(staged);
+        setRecovery({ documentId, state, message });
+        const status = staged.controller.getSourceCheckpointStatus(documentId);
+        if (status) setCheckpointNotice({ owner: staged, fixture: staged.registry.get<AssemblyHallFixture>(active),
+          writable: staged.admission?.publication === status.publication && staged.admission.writable, status });
+        pushRoomHash(room, documentId, true);
+        if (owned) void closeRuntime(owned);
+      };
+      const unsubscribe = staged.store.subscribe(adoptAccepted);
+      try { const result = await run(staged.controller); if (!result.stale) adoptAccepted(); }
+      finally { unsubscribe(); }
+    } finally {
+      if (runtimeRef.current !== staged) {
+        if (stagedRuntimeRef.current === staged) stagedRuntimeRef.current = null;
+        void closeRuntime(staged);
+      }
+    }
+  }
+
+  const widthDraftNumber = windowWidthDraft.trim() === "" ? Number.NaN : Number(windowWidthDraft);
+  const widthValidationError = !windowWidthModel ? null
+    : !Number.isFinite(widthDraftNumber) ? "Enter a width in metres."
+      : widthDraftNumber < 0.23 ? "Width must be at least 0.23 m."
+        : widthDraftNumber > windowWidthModel.baseWidth ? "Width cannot exceed the original width."
+          : null;
+  const widthFieldError = windowWidthError ?? widthValidationError;
+  const widthGlobalDraftDirty = controlState.baselineStatus === "known" && invalidation.changedControls.length > 0;
+  const widthBlocked = !windowWidthModel || windowWidthPending || runDisabled || importPending || controlState.baselineStatus !== "known" || widthGlobalDraftDirty;
+  const widthCanRestore = windowWidthModel && (windowWidthModel.currentWidth !== windowWidthModel.baseWidth ||
+    (windowWidthModel.sourceReference.schemaVersion === "0.5.0" && windowWidthModel.hasWidthEdit));
+  const widthHistory = controller?.getWindowWidthHistoryState();
+  const widthHistoryBlocked = !fixture?.sourceSnapshot || fixture.sourceSnapshot.document.documentId !== routeDocumentId ||
+    windowWidthPending || runDisabled || importPending || controlState.baselineStatus !== "known" || widthGlobalDraftDirty;
+
+  async function applyWindowWidth(restoreOriginal: boolean, applyToFloor = false, applyToBay = false): Promise<void> {
+    const model = windowWidthModel;
+    const state = store.getState();
+    if (!controller || !model || widthPendingRef.current || state.runs.status === "running" || importPending ||
+        state.controls.baselineStatus !== "known" || state.controls.invalidation.changedControls.length > 0 || !isCurrentWidthAuthority(model)) return;
+    const widthM = restoreOriginal ? model.baseWidth : widthDraftNumber;
+    if (!restoreOriginal && widthValidationError) { setWindowWidthError(widthValidationError); return; }
+    // This lock precedes the controller's asynchronous source/split preflight.
+    const action = ++widthActionTokenRef.current;
+    const intent = ++intentEpochRef.current;
+    widthPendingRef.current = true;
+    setWindowWidthPending(true);
+    setWindowWidthHistoryAction(null);
+    setWindowWidthError(null);
+    const isCurrentAction = () => intentMountedRef.current && widthActionTokenRef.current === action && intentEpochRef.current === intent &&
+      store.getState().selection.room === "assemblyHall" && store.getState().selection.documentId === model.documentId;
+    try {
+      if (applyToFloor) {
+        await controller.applyWindowFloorWidthOverride({ expectedSourceContentHash: model.sourceHash, expectedRevision: model.revision,
+          directive: { schemaVersion: "0.1.0", facade: model.address.facade, floorIndex: model.address.floorIndex, widthM } });
+      } else if (applyToBay) {
+        await controller.applyWindowBayWidthOverride({ expectedSourceContentHash: model.sourceHash, expectedRevision: model.revision,
+          directive: { schemaVersion: "0.1.0", facade: model.address.facade, bayIndex: model.address.bayIndex, widthM } });
+      } else {
+        await controller.applyWindowWidthOverride({ expectedSourceContentHash: model.sourceHash, expectedRevision: model.revision,
+          directive: { schemaVersion: "0.1.0", address: model.address, widthM } });
+      }
+      // Accepted attachment drives the next model. Do not reset a newer selection's draft here.
+    } catch (error: unknown) {
+      if (isCurrentAction() && isCurrentWidthAuthority(model)) {
+        setWindowWidthError(error instanceof Error ? error.message : "The window width could not be updated. Try again.");
+      }
+    } finally {
+      // Release this action's lock even if selection changed while it was pending.
+      if (widthActionTokenRef.current === action) {
+        widthPendingRef.current = false;
+        if (intentMountedRef.current) setWindowWidthPending(false);
+      }
+    }
+  }
+
+  async function traverseWindowWidthHistory(direction: "undo" | "redo"): Promise<void> {
+    const owned = runtime, source = fixture?.sourceSnapshot;
+    if (!owned || !fixture || !source || runtimeRef.current !== owned || owned.disposed || widthPendingRef.current || importPending) return;
+    const state = owned.store.getState(), active = state.runs.activeFixtureArtifactId;
+    if (state.runs.status === "running" || state.controls.baselineStatus !== "known" || state.controls.invalidation.changedControls.length > 0 ||
+        state.selection.room !== "assemblyHall" || state.selection.documentId !== owned.documentId || source.document.documentId !== owned.documentId ||
+        routeDocumentId !== owned.documentId || !active || owned.registry.get(active) !== fixture) return;
+    const history = owned.controller.getWindowWidthHistoryState();
+    if (direction === "undo" ? !history.canUndo : !history.canRedo) return;
+    const sourceHash = source.sourceContentHash, revision = source.document.revision;
+    const selection = rawWindowSelectionRef.current;
+    const action = ++widthActionTokenRef.current, intent = ++intentEpochRef.current;
+    widthPendingRef.current = true;
+    setWindowWidthPending(true);
+    setWindowWidthHistoryAction(direction);
+    setWindowWidthError(null);
+    const isCurrentAction = () => {
+      const current = owned.store.getState(), currentActive = current.runs.activeFixtureArtifactId;
+      return intentMountedRef.current && runtimeRef.current === owned && !owned.disposed && widthActionTokenRef.current === action &&
+        intentEpochRef.current === intent && current.selection.room === "assemblyHall" && current.selection.documentId === owned.documentId &&
+        currentActive === active && owned.registry.get(currentActive) === fixture && fixture.sourceSnapshot === source && rawWindowSelectionRef.current === selection &&
+        source.sourceContentHash === sourceHash && source.document.revision === revision;
+    };
+    try {
+      const request = { expectedSourceContentHash: sourceHash, expectedRevision: revision };
+      if (direction === "undo") await owned.controller.undoWindowWidthOverride(request);
+      else await owned.controller.redoWindowWidthOverride(request);
+    } catch (error: unknown) {
+      if (isCurrentAction()) setWindowWidthError(error instanceof Error ? error.message : "The window width change could not be restored. Try again.");
+    } finally {
+      if (widthActionTokenRef.current === action) {
+        widthPendingRef.current = false;
+        if (intentMountedRef.current) { setWindowWidthPending(false); setWindowWidthHistoryAction(null); }
+      }
+    }
+  }
+
+  const windowWidthInspector = (
+    <section className="window-width-inspector" aria-labelledby={`${widthFieldId}-heading`}>
+      <h2 id={`${widthFieldId}-heading`}>Selected window</h2>
+      <p className="window-width-inspector__context">
+        {windowWidthModel
+          ? `${windowWidthModel.address.facade[0].toUpperCase()}${windowWidthModel.address.facade.slice(1)} · Floor ${windowWidthModel.address.floorIndex + 1} · Bay ${windowWidthModel.address.bayIndex + 1}`
+          : fixture && !fixture.sourceSnapshot ? "Open a portable source file to edit window widths."
+            : windowWidthRead === "loading" ? "Reading selected window…"
+              : "Select a window in the building to edit its width."}
+      </p>
+      <form noValidate aria-busy={windowWidthPending} onSubmit={(event) => { event.preventDefault(); void applyWindowWidth(false); }}>
+        <label htmlFor={widthFieldId}>Window width (m)</label>
+        <input id={widthFieldId} type="number" inputMode="decimal" step="any" min="0.23" max={windowWidthModel?.baseWidth}
+          value={windowWidthDraft} disabled={widthBlocked} aria-invalid={Boolean(widthFieldError)}
+          aria-describedby={`${widthFieldId}-hint${widthFieldError ? ` ${widthFieldId}-error` : ""}`}
+          onChange={(event) => { setWindowWidthDraft(event.currentTarget.value); setWindowWidthError(null); }} />
+        <p className="window-width-inspector__hint" id={`${widthFieldId}-hint`}>
+          {windowWidthModel ? `Original width: ${windowWidthModel.baseWidth} m. Minimum: 0.23 m.` : "Select a visible window to enable width controls."}
+        </p>
+        <div className="window-width-inspector__actions">
+          <button type="submit" disabled={widthBlocked || Boolean(widthValidationError) || widthDraftNumber === windowWidthModel?.currentWidth}>Apply</button>
+          <button type="button" disabled={widthBlocked || !widthCanRestore}
+            onClick={() => void applyWindowWidth(true)}>Restore original</button>
+          <button type="button" disabled={widthBlocked || Boolean(widthValidationError)}
+            onClick={() => void applyWindowWidth(false, true)}>Apply to floor</button>
+          <button type="button" disabled={widthBlocked || Boolean(widthValidationError)}
+            title="Apply this width to windows in this bay on the selected facade"
+            onClick={() => void applyWindowWidth(false, false, true)}>Apply to bay</button>
         </div>
-        <div className="status-panel" aria-label="Project setup status">
-          {setupCards.map((card) => (
-            <article className="status-card" key={card.title}>
-              <div>
-                <h2>{card.title}</h2>
-                <p>{card.body}</p>
+        <div className="window-width-inspector__actions" role="group" aria-label="Window width history">
+          <button type="button" disabled={widthHistoryBlocked || !widthHistory?.canUndo} onClick={() => void traverseWindowWidthHistory("undo")}>Undo width</button>
+          <button type="button" disabled={widthHistoryBlocked || !widthHistory?.canRedo} onClick={() => void traverseWindowWidthHistory("redo")}>Redo width</button>
+        </div>
+      </form>
+      {!widthHistory?.canUndo && !widthHistory?.canRedo ? <p className="window-width-inspector__hint">No window width changes to undo or redo.</p> : null}
+      {widthGlobalDraftDirty ? <p className="window-width-inspector__hint">Run Current to apply your building changes before editing a window.</p> : null}
+      {windowWidthPending ? <p className="window-width-inspector__feedback" role="status">{windowWidthHistoryAction === "undo" ? "Undoing window width…" : windowWidthHistoryAction === "redo" ? "Redoing window width…" : "Applying window width…"}</p> : null}
+      {widthFieldError ? <p className="window-width-inspector__error" id={`${widthFieldId}-error`} role="alert">{widthFieldError}</p> : null}
+      {windowWidthModel?.replacesOtherWindow ? <p className="window-width-inspector__hint">Applying here replaces the width edit on the other window.</p> : null}
+      {windowWidthModel?.hasWidthEdit ? <p className="window-width-inspector__hint">Save source to keep this edit.</p> : null}
+    </section>
+  );
+
+  const isWorkspace = activeRoom === "assemblyHall";
+  const recoveryCurrent = recovery.documentId === routeDocumentId ? recovery : { documentId: routeDocumentId, state: "acquiring" as const };
+  const recoveryCopy: Record<RecoveryState, string> = {
+    acquiring: "Checking this document’s saved source…",
+    manual: "Automatic recovery was skipped for this manual building. Save source to keep unsaved changes.",
+    ready: "Automatic source saving is available for this document.",
+    busy: "This document is open in another tab. Manual work is available but will not be saved automatically.",
+    unsupported: "Automatic source saving is unavailable in this browser. Save source to keep manual changes.",
+    failed: "The saved building could not be recovered. The saved copy is retained; manual changes will not be saved automatically.",
+    "recovered-source": "Recovered editable source for this document.",
+    "recovered-view": "Recovered a saved view reference; editable source is unavailable."
+  };
+  const checkpointStatus = checkpointNotice && checkpointNotice.owner === runtime ? checkpointNotice.status : undefined;
+  const statusMatches = checkpointStatus?.documentId === routeDocumentId && checkpointNotice?.fixture === fixture &&
+    (checkpointStatus.kind === "source-unavailable" ? Boolean(fixture && !fixture.sourceSnapshot)
+      : Boolean(fixture?.sourceSnapshot && fixture.sourceSnapshot.sourceContentHash === checkpointStatus.sourceContentHash && fixture.sourceSnapshot.document.revision === checkpointStatus.revision));
+  const recoveredViewSaved = recoveryCurrent.state === "recovered-view" && recoveryCurrent.viewFixture === fixture && Boolean(fixture && !fixture.sourceSnapshot);
+  const writable = runtime?.canSave === true && checkpointNotice?.writable === true;
+  const saveState = writable && statusMatches ? checkpointStatus.state : recoveredViewSaved ? "saved" : "unsaved";
+  const saveCopy = saveState === "pending" ? "Saving this building’s source…"
+    : saveState === "failed" ? "Automatic source saving failed. Save source to keep this edit."
+      : saveState === "saved" ? fixture?.sourceSnapshot ? "Editable source saved." : "View reference saved; editable source unavailable."
+        : "Changes are not saved automatically. Save source to keep this edit.";
+  const buildingActions = (
+              <div className="control-panel__actions" aria-label="Committed run controls">
+                <button type="button" disabled={runDisabled} onClick={() => startRun(promptControls)}>
+                  Run Current
+                </button>
+                <button
+                  type="button"
+                  disabled={runDisabled}
+                  onClick={() =>
+                    updateAndRun({
+                      seeds: {
+                        building: advanceSeed(promptControls.seeds.building)
+                      }
+                    })
+                  }
+                >
+                  New Building
+                </button>
+                <button
+                  type="button"
+                  disabled={runDisabled}
+                  onClick={() =>
+                    updateAndRun({
+                      seeds: {
+                        family: advanceSeed(promptControls.seeds.family),
+                        building: "building-seed"
+                      }
+                    })
+                  }
+                >
+                  New Family
+                </button>
+                <button type="button" disabled={!runDisabled && !importPending && !windowWidthPending} onClick={cancelRun}>
+                  Cancel Run
+                </button>
+                <span role="status" aria-label="Source checkpoint recovery" data-state={recoveryCurrent.state}>{recoveryCopy[recoveryCurrent.state]}{recoveryCurrent.state === "failed" && recoveryCurrent.message ? ` ${recoveryCurrent.message}` : ""}</span>
+                <span role="status" aria-label="Source checkpoint save status" data-state={saveState} data-document-id={routeDocumentId}
+                  data-run-id={statusMatches ? checkpointStatus.runId : recoveredViewSaved ? recoveryCurrent.runId : undefined}
+                  data-source-content-hash={statusMatches ? checkpointStatus.sourceContentHash : undefined}
+                  data-revision={statusMatches ? checkpointStatus.revision : undefined}>{saveCopy}</span>
+                {sourceActionError ? <span role="alert" className="run-panel__error" aria-label="Source file error">{sourceActionError}</span> : null}
+                <button type="button" disabled={!fixture?.sourceSnapshot} onClick={() => void saveBuildingSource().catch(() => undefined)}>
+                  Save source
+                </button>
+                <label className="control-panel__file-action" data-disabled={runDisabled ? "true" : "false"}>
+                  <span>Open source</span>
+                  <input
+                    aria-label="Open Source File"
+                    accept="application/json,.json"
+                    disabled={runDisabled}
+                    type="file"
+                    onChange={(event) => {
+                      const file = event.currentTarget.files?.[0];
+                      event.currentTarget.value = "";
+                      void openBuildingSource(file).catch(() => undefined);
+                    }}
+                  />
+                </label>
+                {fixture && !fixture.sourceSnapshot ? <span>This saved result has no editable source.</span> : null}
+                <button
+                  type="button"
+                  disabled={exportDisabled}
+                  onClick={() => void downloadCompletedFamilyExport().catch(() => undefined)}
+                >
+                  Download Export
+                </button>
+                <label className="control-panel__file-action" data-disabled={runDisabled ? "true" : "false"}>
+                  <span>Import Export</span>
+                  <input
+                    aria-label="Import Export File"
+                    accept="application/json,.json"
+                    disabled={runDisabled}
+                    type="file"
+                    onChange={(event) => {
+                      const file = event.currentTarget.files?.[0];
+                      event.currentTarget.value = "";
+                      void importCompletedFamilyExport(file).catch(() => undefined);
+                    }}
+                  />
+                </label>
               </div>
-              <span>{card.status}</span>
-            </article>
-          ))}
-        </div>
-      </section>
-      <div className="room-tabs" role="tablist" aria-label="Building rooms">
-        {roomOptions.map((option) => {
-          const isSelected = option.room === activeRoom;
-          return (
-            <button
-              aria-controls={`building-room-panel-${option.room}`}
-              aria-selected={isSelected}
-              className="room-tabs__tab"
-              id={`building-room-tab-${option.room}`}
-              key={option.room}
-              onClick={() => selectRoutedRoom(option.room)}
-              role="tab"
-              type="button"
-            >
-              {option.label}
-            </button>
-          );
-        })}
-      </div>
-      {activeRoom === "promptLab" ? (
-        <section
-          aria-labelledby="building-room-tab-promptLab"
-          className="room-panel"
-          id="building-room-panel-promptLab"
-          role="tabpanel"
-        >
-          <div className="room-panel__heading">
-            <p className="project-label">Room 1</p>
-            <h2>Prompt Lab</h2>
-          </div>
+  );
+  const buildingControls = (
           <section className="control-panel" aria-labelledby="control-invalidation-heading">
             <div className="control-panel__inputs">
-              <p className="project-label">Control Surface</p>
-              <h2 id="control-invalidation-heading">Control Invalidation</h2>
+              {!isWorkspace ? <p className="project-label">Control Surface</p> : null}
+              <h2 id="control-invalidation-heading">{isWorkspace ? "Building" : "Control Invalidation"}</h2>
+              {isWorkspace ? buildingActions : null}
               <div className="control-panel__fields" aria-label="Building controls">
                 <label className="control-panel__field-wide">
                   <span>Prompt</span>
@@ -523,103 +1198,56 @@ export function App() {
                   <span>Remote Detail Provider</span>
                 </label>
               </div>
-              <div className="control-panel__actions" aria-label="Committed run controls">
-                <button type="button" disabled={runDisabled} onClick={() => startRun(promptControls)}>
-                  Run Current
-                </button>
-                <button
-                  type="button"
-                  disabled={runDisabled}
-                  onClick={() =>
-                    updateAndRun({
-                      seeds: {
-                        building: advanceSeed(promptControls.seeds.building)
-                      }
-                    })
-                  }
-                >
-                  New Building
-                </button>
-                <button
-                  type="button"
-                  disabled={runDisabled}
-                  onClick={() =>
-                    updateAndRun({
-                      seeds: {
-                        family: advanceSeed(promptControls.seeds.family),
-                        building: "building-seed"
-                      }
-                    })
-                  }
-                >
-                  New Family
-                </button>
-                <button type="button" disabled={!runDisabled} onClick={() => controller.cancelActiveRun()}>
-                  Cancel Run
-                </button>
-                <button
-                  type="button"
-                  disabled={exportDisabled}
-                  onClick={() => void downloadCompletedFamilyExport().catch(() => undefined)}
-                >
-                  Download Export
-                </button>
-                <label className="control-panel__file-action" data-disabled={runDisabled ? "true" : "false"}>
-                  <span>Import Export</span>
-                  <input
-                    aria-label="Import Export File"
-                    accept="application/json,.json"
-                    disabled={runDisabled}
-                    type="file"
-                    onChange={(event) => {
-                      const file = event.currentTarget.files?.[0];
-                      event.currentTarget.value = "";
-                      void importCompletedFamilyExport(file).catch(() => undefined);
-                    }}
-                  />
-                </label>
-              </div>
+              {!isWorkspace ? buildingActions : null}
             </div>
             <div className="control-panel__preview" aria-label="Invalidation preview">
-              <dl className="control-panel__metrics">
-                <div>
-                  <dt>Changed</dt>
-                  <dd>{invalidation.changedControls.length ? invalidation.changedControls.join(", ") : "none"}</dd>
-                </div>
-                <div>
-                  <dt>Material sources</dt>
-                  <dd>
-                    {invalidation.reusableArtifacts.materialSources
-                      ? "Material sources reusable"
-                      : "Material sources regenerate"}
-                  </dd>
-                </div>
-                <div>
-                  <dt>Atlas</dt>
-                  <dd>{invalidation.reusableArtifacts.packedAtlas ? "atlas reusable" : "atlas refresh"}</dd>
-                </div>
-                <div>
-                  <dt>Catalog</dt>
-                  <dd>{invalidation.reusableArtifacts.componentCatalog ? "catalog reusable" : "catalog refresh"}</dd>
-                </div>
-              </dl>
-              <ol className="control-panel__stages">
-                {invalidation.invalidatedStages.length ? (
-                  invalidation.invalidatedStages.map((stage) => (
-                    <li key={stage}>
-                      <span>{stage}</span>
-                      <small>{invalidation.stageImpacts[stage]}</small>
-                    </li>
-                  ))
-                ) : (
-                  <li>
-                    <span>none</span>
-                    <small>reusable</small>
-                  </li>
-                )}
-              </ol>
+              {controlState.baselineStatus === "unknown" ? (
+                <p>Saved inputs could not be verified. The current scene and materials are preserved; regeneration stays gated until material reuse is verified.</p>
+              ) : (
+                <>
+                  <dl className="control-panel__metrics">
+                    <div>
+                      <dt>Changed</dt>
+                      <dd>{invalidation.changedControls.length ? invalidation.changedControls.join(", ") : "none"}</dd>
+                    </div>
+                    <div>
+                      <dt>Material sources</dt>
+                      <dd>
+                        {invalidation.reusableArtifacts.materialSources
+                          ? "Material sources reusable"
+                          : "Material sources regenerate"}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>Atlas</dt>
+                      <dd>{invalidation.reusableArtifacts.packedAtlas ? "atlas reusable" : "atlas refresh"}</dd>
+                    </div>
+                    <div>
+                      <dt>Catalog</dt>
+                      <dd>{invalidation.reusableArtifacts.componentCatalog ? "catalog reusable" : "catalog refresh"}</dd>
+                    </div>
+                  </dl>
+                  <ol className="control-panel__stages">
+                    {invalidation.invalidatedStages.length ? (
+                      invalidation.invalidatedStages.map((stage) => (
+                        <li key={stage}>
+                          <span>{stage}</span>
+                          <small>{invalidation.stageImpacts[stage]}</small>
+                        </li>
+                      ))
+                    ) : (
+                      <li>
+                        <span>none</span>
+                        <small>reusable</small>
+                      </li>
+                    )}
+                  </ol>
+                </>
+              )}
             </div>
           </section>
+  );
+  const generationDetails = (
           <section className="run-panel" aria-labelledby="generation-run-heading">
             <div className="run-panel__summary">
               <p className="project-label">Run Controller</p>
@@ -654,7 +1282,7 @@ export function App() {
                     </em>
                   )}
                   {event.error ? (
-                    <small className="run-panel__error">{event.error.code ?? event.error.message}</small>
+                    <small className="run-panel__error">{event.error.code === "building.completedReplayProfileUnresolved" ? event.error.message : event.error.code ?? event.error.message}</small>
                   ) : null}
                 </li>
               )) ?? (
@@ -664,6 +1292,86 @@ export function App() {
               )}
             </ol>
           </section>
+  );
+
+  return (
+    <main className={isWorkspace ? `app-shell app-shell--workspace${construction.mode ? " app-shell--construction" : ""}` : "app-shell"}>
+      {isWorkspace ? (
+        <header className="workbench-header">
+          <div className="workbench-header__identity">
+            <h1 id="buildo-title">Buildo</h1>
+            <p className="route-identity" aria-label="Route document identity">{routeDocumentId}</p>
+          </div>
+          <details className="workbench-project">
+            <summary>Project info</summary>
+            <div className="status-panel" aria-label="Project setup status">
+              {setupCards.map((card) => (
+                <article className="status-card" key={card.title}>
+                  <div><h2>{card.title}</h2><p>{card.body}</p></div>
+                  <span>{card.status}</span>
+                </article>
+              ))}
+            </div>
+          </details>
+        </header>
+      ) : (
+      <section className="hero" aria-labelledby="buildo-title">
+        <div className="hero-copy">
+          <p className="project-label">Wild Construct Lab</p>
+          <h1 id="buildo-title">Buildo</h1>
+          <p className="hero-text">
+            A new workspace for deterministic building families, semantic material atlases, and
+            inspectable browser assembly.
+          </p>
+          <p className="route-identity" aria-label="Route document identity">
+            {routeDocumentId}
+          </p>
+        </div>
+        <div className="status-panel" aria-label="Project setup status">
+          {setupCards.map((card) => (
+            <article className="status-card" key={card.title}>
+              <div>
+                <h2>{card.title}</h2>
+                <p>{card.body}</p>
+              </div>
+              <span>{card.status}</span>
+            </article>
+          ))}
+        </div>
+      </section>
+      )}
+      <div className="room-tabs" role="tablist" aria-label="Building rooms">
+        {roomOptions.map((option) => {
+          const isSelected = option.room === activeRoom;
+          return (
+            <button
+              aria-controls={`building-room-panel-${option.room}`}
+              aria-selected={isSelected}
+              className="room-tabs__tab"
+              id={`building-room-tab-${option.room}`}
+              key={option.room}
+              onClick={() => selectRoutedRoom(option.room)}
+              role="tab"
+              type="button"
+            >
+              {option.label}
+            </button>
+          );
+        })}
+      </div>
+      {activeRoom === "promptLab" ? (
+        <section
+          aria-labelledby="building-room-tab-promptLab"
+          className="room-panel"
+          id="building-room-panel-promptLab"
+          role="tabpanel"
+        >
+          <div className="room-panel__heading">
+            <p className="project-label">Room 1</p>
+            <h2>Prompt Lab</h2>
+          </div>
+          {buildingControls}
+          {generationDetails}
           <ArtifactTracePanel
             activeArtifactId={activeFixtureArtifactId}
             artifacts={artifacts}
@@ -803,13 +1511,40 @@ export function App() {
           id="building-room-panel-assemblyHall"
           role="tabpanel"
         >
+          {construction.mode && fixture ? <BayConstructionWorkbench key={routeDocumentId} base={fixture} acquireBaseLease={acquireFixtureViewerLease}
+            initialSession={construction.session} onSessionChange={construction.acceptSession} onReturn={() => construction.setMode(false)}
+            recoveryStatus={construction.status} onInitialFailure={construction.recovering ? construction.failRecovery : undefined} /> : <>
+          <div className="control-panel__actions">
+            <button type="button" disabled={!fixture?.sourceSnapshot || runState.status === "running" || construction.status.state === "loading"} onClick={() => construction.setMode(true)}>
+              {construction.session ? "Continue construction" : "Construct building"}
+            </button>
+          </div>
+          {construction.status.state === "failed" || construction.status.state === "busy" ? <p role="status" aria-label="Construction recovery">{constructionRecoveryText(construction.status)}</p> : null}
+          <div className="building-workspace" aria-label="Building workspace">
+            <div className="building-workspace__stage">
           {fixture ? (
-            <AssemblyHall fixture={fixture} />
+            <AssemblyHall workspace fixture={fixture} acquireFixtureViewerLease={acquireFixtureViewerLease} registerFixtureViewer={registerFixtureViewer}
+              onWindowSelectionChange={onWindowSelectionChange} />
           ) : (
             <div className="room-panel__loading" role={runState.error ? "alert" : "status"}>
               {runState.error ?? "Preparing assembly runtime"}
             </div>
           )}
+            </div>
+            <aside className="building-workspace__inspector" aria-label="Building inspector">
+              <div className="building-workspace__status" aria-label="Workspace run status" role="status">
+                <span>{runState.status === "running" ? "Updating building…" : runState.status === "complete" ? "Building ready" : runState.status}</span>
+                {runState.error ? <p>{runState.error}</p> : null}
+              </div>
+              {windowWidthInspector}
+              {buildingControls}
+              <details className="workspace-run-details">
+                <summary>Generation details</summary>
+                {generationDetails}
+              </details>
+            </aside>
+          </div>
+          </>}
         </section>
       ) : null}
     </main>

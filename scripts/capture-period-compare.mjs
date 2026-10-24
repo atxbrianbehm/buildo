@@ -7,6 +7,8 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { createServer } from "vite";
 
+/* global document, HTMLImageElement */
+
 const outDir = path.resolve("docs/ref/comparisons/2026-07-12-first-pass");
 
 async function main() {

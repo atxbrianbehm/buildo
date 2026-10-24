@@ -7,7 +7,7 @@ import { PeriodReferenceLab } from "../ui/PeriodReferenceLab";
 
 describe("PeriodReferenceLab", () => {
   it("lists primary refs, shows look-for cues, and exports comparison notes", () => {
-    const createObjectURL = vi.fn((_value: Blob | MediaSource) => "blob:period-ref");
+    const createObjectURL = vi.fn<(value: Blob | MediaSource) => string>(() => "blob:period-ref");
     const revokeObjectURL = vi.fn();
     const click = vi.fn();
     Object.defineProperty(URL, "createObjectURL", { configurable: true, value: createObjectURL });

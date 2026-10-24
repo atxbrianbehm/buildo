@@ -10,6 +10,11 @@ import {
   resolveArtKitMaterialSet,
   tilePhysicalSizeM
 } from "./artKitMaterialSet";
+import {
+  PRIMARY_WALL_PERIODIC_SAMPLING_PROFILE,
+  PrimaryWallSamplingProfileSchema,
+  type PrimaryWallSamplingProfile
+} from "./periodicMasonryRaster";
 
 export interface AtlasPlannerOptions {
   widthPx?: number;
@@ -30,6 +35,7 @@ export interface AtlasMaterialSourcePlan {
   metersPerTile?: number;
   artKitMaterialRoleId?: string;
   proceduralSource?: string;
+  samplingProfile?: PrimaryWallSamplingProfile;
 }
 
 export interface AtlasPlan {
@@ -300,7 +306,12 @@ function buildMaterialSources(
       ],
       metersPerTile: meta.metersPerTile,
       artKitMaterialRoleId: meta.artKitMaterialRoleId,
-      proceduralSource: meta.proceduralSource
+      proceduralSource: meta.proceduralSource,
+      ...(template.id === "wall.primary" && template.role === "wall" && template.periodicity === "xy" &&
+        meta.artKitMaterialRoleId === "brick" && meta.proceduralSource === "running-bond-brick" &&
+        meta.metersPerTile === 0.96 && meta.physicalSizeM.width === 0.96 && meta.physicalSizeM.height === 0.96
+        ? { samplingProfile: PrimaryWallSamplingProfileSchema.parse(PRIMARY_WALL_PERIODIC_SAMPLING_PROFILE) }
+        : {})
     };
   });
 }

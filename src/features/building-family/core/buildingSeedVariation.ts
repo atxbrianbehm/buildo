@@ -47,7 +47,8 @@ function pickWeightedId(
 export function withBuildingSeedVariation(
   baseSpec: BuildingFamilySpec,
   buildingSeed: string,
-  stylePackInput: HistoricalStylePack | unknown
+  stylePackInput: HistoricalStylePack | unknown,
+  options: { preserveRequestedBayCount?: boolean } = {}
 ): BuildingFamilySpec {
   const stylePack = stylePackInput as HistoricalStylePack;
   const buildingTree = createSeedTree(buildingSeed).fork("building-variation");
@@ -58,7 +59,7 @@ export function withBuildingSeedVariation(
   const requestedBayCount = Number(
     baseSpec.componentParameters.requestedBayCount ?? baseSpec.facade.frontBayCount
   );
-  const bayDelta = buildingTree.int(-1, 1, "facade/bay-delta");
+  const bayDelta = options.preserveRequestedBayCount ? 0 : buildingTree.int(-1, 1, "facade/bay-delta");
   const frontBayCount = clamp(
     requestedBayCount + bayDelta,
     stylePack.facade.frontBayCount.min,

@@ -58,7 +58,8 @@ export interface BuildingArtifactSliceState {
 }
 
 export interface BuildingControlSliceState {
-  committedPrompt: BuildingPromptControls;
+  baselineStatus: "known" | "unknown";
+  committedPrompt: BuildingPromptControls | undefined;
   invalidation: BuildingInvalidation;
 }
 
@@ -80,6 +81,17 @@ export interface BuildingStoreState {
   beginRun(input: { runId: string; event: GenerationRunEvent }): void;
   appendRunEvent(runId: string, event: GenerationRunEvent): void;
   completeRun(input: { runId: string; artifactId: string; event: GenerationRunEvent }): void;
+  publishCompletedFixture(input: {
+    runId: string;
+    artifactId: string;
+    metadata: readonly BuildingArtifactMetadata[];
+    replacedArtifactIds: readonly string[];
+    event: GenerationRunEvent;
+    prompt?: BuildingPromptControls;
+    draftAtStart?: BuildingPromptControls;
+    targetDocumentId?: string;
+    publishArtifacts: () => void;
+  }): boolean;
   failRun(input: { runId: string; event: GenerationRunEvent; message: string }): void;
   cancelRun(input: { runId: string; event: GenerationRunEvent }): void;
   registerArtifact(metadata: BuildingArtifactMetadata): void;
@@ -160,6 +172,12 @@ function mergePromptControls(previous: BuildingPromptControls, patch: BuildingPr
   };
 }
 
+function unknownControlInvalidation(): BuildingInvalidation {
+  // No structural/material inference is possible without a control baseline.
+  const unchanged = computeBuildingInvalidation(defaultBuildingPromptControls, defaultBuildingPromptControls);
+  return { ...unchanged, reusableArtifacts: { materialSources: false, packedAtlas: false, componentCatalog: false } };
+}
+
 function controlSnapshot(controls: BuildingPromptControls): BuildingControlSnapshot {
   return controls;
 }
@@ -172,6 +190,7 @@ export function createBuildingStore(
   return createStore<BuildingStoreState>()((set) => ({
     prompt: initialPrompt,
     controls: {
+      baselineStatus: "known",
       committedPrompt: clonePromptControls(initialPrompt),
       invalidation: computeBuildingInvalidation(controlSnapshot(initialPrompt), controlSnapshot(initialPrompt))
     },
@@ -230,6 +249,41 @@ export function createBuildingStore(
           }
         };
       }),
+    publishCompletedFixture: (input) => {
+      let published = false;
+      set((state) => {
+        const currentRun = state.runs.currentRun;
+        if (!currentRun || state.runs.status !== "running" || state.runs.activeRunId !== input.runId || currentRun.runId !== input.runId) return state;
+        const byId = { ...state.artifacts.byId };
+        for (const id of input.replacedArtifactIds) delete byId[id];
+        for (const metadata of input.metadata) byId[metadata.artifactId] = metadata;
+        const byType: BuildingArtifactSliceState["byType"] = {};
+        for (const metadata of Object.values(byId)) (byType[metadata.artifactType] ??= []).push(metadata.artifactId);
+        const committedPrompt = input.prompt ? clonePromptControls(input.prompt) : undefined;
+        const draftChanged = input.draftAtStart && computeBuildingInvalidation(input.draftAtStart, state.prompt).changedControls.length > 0;
+        const prompt = committedPrompt ? (draftChanged ? state.prompt : committedPrompt) : undefined;
+        const next = {
+          ...(input.targetDocumentId !== undefined ? { selection: { ...state.selection, documentId: input.targetDocumentId } } : {}),
+          artifacts: { byId, byType },
+          runs: {
+            ...state.runs,
+            activeFixtureArtifactId: input.artifactId,
+            currentRun: appendEvent(currentRun, input.event),
+            error: undefined,
+            status: "complete" as const
+          },
+          ...(prompt && committedPrompt ? {
+            prompt,
+            controls: { baselineStatus: "known" as const, committedPrompt, invalidation: computeBuildingInvalidation(controlSnapshot(committedPrompt), controlSnapshot(prompt)) }
+          } : { controls: { baselineStatus: "unknown" as const, committedPrompt: undefined, invalidation: unknownControlInvalidation() } })
+        };
+        // The guard and next state are ready before registry aliases become visible.
+        input.publishArtifacts();
+        published = true;
+        return next;
+      });
+      return published;
+    },
     failRun: ({ runId, event, message }) =>
       set((state) => {
         const currentRun = state.runs.currentRun;
@@ -287,10 +341,9 @@ export function createBuildingStore(
           prompt: nextPrompt,
           controls: {
             ...state.controls,
-            invalidation: computeBuildingInvalidation(
-              controlSnapshot(state.controls.committedPrompt),
-              controlSnapshot(nextPrompt)
-            )
+            invalidation: state.controls.baselineStatus === "known" && state.controls.committedPrompt
+              ? computeBuildingInvalidation(controlSnapshot(state.controls.committedPrompt), controlSnapshot(nextPrompt))
+              : unknownControlInvalidation()
           }
         };
       }),
@@ -301,6 +354,7 @@ export function createBuildingStore(
           prompt: committedPrompt,
           controls: {
             ...state.controls,
+            baselineStatus: "known",
             committedPrompt,
             invalidation: computeBuildingInvalidation(controlSnapshot(committedPrompt), controlSnapshot(committedPrompt))
           }

@@ -151,7 +151,9 @@ export function evaluateModuleQualityChecklist(
   const sampleFrameWidths: number[] = [];
   if (windowBatch?.transforms && windowRecipe) {
     for (let i = 0; i < Math.min(windowBatch.count, 6); i += 1) {
-      const sx = windowBatch.transforms[i * 16] ?? 1;
+      const offset = i * 16;
+      const sx = Math.hypot(windowBatch.transforms[offset] ?? 1,
+        windowBatch.transforms[offset + 1] ?? 0, windowBatch.transforms[offset + 2] ?? 0);
       sampleScales.push(sx);
       sampleFrameWidths.push(windowRecipe.dimensionsM.width * sx);
     }
@@ -216,7 +218,7 @@ export function evaluateModuleQualityChecklist(
         : openingDepthM > 0.2
           ? "pass"
           : "fail",
-      "Opening frame depth, glass inset, slot-locked frame scale, and additive wall-pocket mass for punched-window read (V3 amplitude).",
+      "Opening frame depth, glass inset, slot-locked frame scale, perimeter returns and intentional backing are structural proxies. They do not establish full-scene glazing visibility or human acceptance.",
       {
         openingDepthM,
         glassInsetM,

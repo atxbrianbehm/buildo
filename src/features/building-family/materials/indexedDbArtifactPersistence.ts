@@ -101,13 +101,31 @@ export function createIndexedDbArtifactPersistence(
 
   return {
     async put(entry) {
-      const store = await objectStore("readwrite");
-      await requestToPromise(
-        store.put({
-          key: indexedDbArtifactCacheKey(entry),
-          entry: structuredClone(entry)
-        })
-      );
+      const ownedEntry = structuredClone(entry);
+      const record = {
+        key: indexedDbArtifactCacheKey(ownedEntry),
+        entry: ownedEntry
+      };
+      const database = await openDatabase();
+      await new Promise<void>((resolve, reject) => {
+        let transaction: IDBTransaction | undefined;
+        try {
+          transaction = database.transaction(storeName, "readwrite");
+          const writeTransaction = transaction;
+          writeTransaction.oncomplete = () => resolve();
+          writeTransaction.onabort = () => reject(writeTransaction.error ?? new Error("IndexedDB artifact transaction aborted."));
+          writeTransaction.onerror = () => reject(writeTransaction.error ?? new Error("IndexedDB artifact transaction failed."));
+          const request = writeTransaction.objectStore(storeName).put(record);
+          request.onerror = () => reject(request.error ?? new Error("IndexedDB artifact request failed."));
+        } catch (error) {
+          reject(error);
+          try {
+            transaction?.abort();
+          } catch {
+            // Preserve the write failure if the transaction is already inactive.
+          }
+        }
+      });
     },
     async get<T>(
       artifactType: string,

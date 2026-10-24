@@ -1,4 +1,10 @@
-import { buildFacadeBayScopes, expandBayWallPrimitives } from "../compiler/facadeWallSubdivision";
+import {
+  buildFacadeBayScopes,
+  expandBayWallPrimitives,
+  type FacadeBayScope,
+  type WallFacadeName
+} from "../compiler/facadeWallSubdivision";
+import type { PrimitiveGeometry } from "../compiler/primitiveGeometry";
 import type { BuildingFamilySpec } from "../contracts/buildingFamilySpec";
 
 function fixtureSpec(): BuildingFamilySpec {
@@ -39,6 +45,42 @@ function fixtureSpec(): BuildingFamilySpec {
   };
 }
 
+/** Intersect actual world triangles with an inward ray from the exterior face. */
+function wallRayHits(
+  scope: FacadeBayScope,
+  pieces: PrimitiveGeometry[],
+  alongM: number,
+  yM: number
+): number[] {
+  const side = scope.facade === "left" || scope.facade === "right";
+  const alongAxis = side ? 2 : 0;
+  const depthAxis = side ? 0 : 2;
+  const outwardSign = scope.facade === "front" || scope.facade === "left" ? -1 : 1;
+  const outerDepth = scope.originM[depthAxis] + (outwardSign === 1 ? scope.sizeM[depthAxis] : 0);
+  const rayDepth = outerDepth + outwardSign * 0.5;
+  const hits: number[] = [];
+  for (const piece of pieces) {
+    for (let index = 0; index < piece.indices.length; index += 3) {
+      const vertices = [0, 1, 2].map((offset) => {
+        const vertex = piece.indices[index + offset] * 3;
+        return [piece.positions[vertex + alongAxis], piece.positions[vertex + 1], piece.positions[vertex + depthAxis]];
+      });
+      const [a, b, c] = vertices;
+      const determinant = (b[1] - c[1]) * (a[0] - c[0]) + (c[0] - b[0]) * (a[1] - c[1]);
+      // Triangles parallel to this ray have no projected area.
+      if (Math.abs(determinant) < 1e-10) continue;
+      const u = ((b[1] - c[1]) * (alongM - c[0]) + (c[0] - b[0]) * (yM - c[1])) / determinant;
+      const v = ((c[1] - a[1]) * (alongM - c[0]) + (a[0] - c[0]) * (yM - c[1])) / determinant;
+      const w = 1 - u - v;
+      if (Math.min(u, v, w) < -1e-8) continue;
+      const depth = u * a[2] + v * b[2] + w * c[2];
+      const distance = (depth - rayDepth) * -outwardSign;
+      if (distance >= 0) hits.push(distance);
+    }
+  }
+  return hits;
+}
+
 describe("facadeWallSubdivision", () => {
   it("splits facades into floor×bay scopes with ground/body zones", () => {
     const spec = fixtureSpec();
@@ -63,11 +105,68 @@ describe("facadeWallSubdivision", () => {
     );
     expect(target?.opening).toBeDefined();
     const pieces = expandBayWallPrimitives(target!);
-    // Left pier, right pier, sill, head, reveal ≥ 4 pieces
-    expect(pieces.length).toBeGreaterThanOrEqual(4);
+    // Left pier, right pier, sill and head provide full-depth perimeter returns.
+    expect(pieces).toHaveLength(4);
     const solidBay = scopes.find(
       (scope) => scope.facade === "rear" && scope.floorIndex === 0 && scope.bayIndex === 0
     );
     expect(expandBayWallPrimitives(solidBay!).length).toBe(1);
+  });
+
+  it.each<[WallFacadeName, number, "window" | "door"]>([
+    ["front", 0, "window"],
+    ["front", 0, "door"],
+    ["front", 1, "window"],
+    ["rear", 0, "window"],
+    ["rear", 1, "window"],
+    ["left", 1, "window"],
+    ["right", 1, "window"]
+  ])("leaves the %s floor %i %s aperture clear while retaining structural wall extents", (facade, floorIndex, kind) => {
+    const scopes = buildFacadeBayScopes({
+      spec: fixtureSpec(),
+      wallDepthM: 0.34,
+      openings: [{ facade, floorIndex, bayIndex: 2, widthM: 1.4, heightM: 2.2, kind }],
+      strictOpenings: true
+    });
+    const scope = scopes.find((entry) => entry.facade === facade && entry.floorIndex === floorIndex && entry.bayIndex === 2)!;
+    const untouchedScope = structuredClone(scope);
+    const pieces = expandBayWallPrimitives(scope);
+    const opening = scope.opening!;
+
+    // Inspect a grid inside the opening, beyond a single central ray or box count.
+    for (const alongFraction of [-0.45, 0, 0.45]) {
+      for (const upFraction of [-0.45, 0, 0.45]) {
+        expect(wallRayHits(
+          scope,
+          pieces,
+          opening.centerAlongM + opening.widthM * alongFraction,
+          opening.centerYM + opening.heightM * upFraction
+        )).toHaveLength(0);
+      }
+    }
+
+    // The aperture repair must not shrink the wall bay, its depth or outer face.
+    for (let axis = 0; axis < 3; axis += 1) {
+      expect(Math.min(...pieces.map((piece) => piece.bounds.min[axis]))).toBeCloseTo(scope.originM[axis], 8);
+      expect(Math.max(...pieces.map((piece) => piece.bounds.max[axis]))).toBeCloseTo(scope.originM[axis] + scope.sizeM[axis], 8);
+    }
+    const alongAxis = facade === "left" || facade === "right" ? 2 : 0;
+    const pierAlongM = (scope.originM[alongAxis] + opening.centerAlongM - opening.widthM / 2) / 2;
+    expect(wallRayHits(scope, pieces, pierAlongM, opening.centerYM).length).toBeGreaterThan(0);
+    const sillYM = scope.storefront?.bulkheadCenterYM ?? (scope.originM[1] + opening.centerYM - opening.heightM / 2) / 2;
+    const headYM = scope.storefront?.lintelCenterYM ?? (scope.originM[1] + scope.sizeM[1] + opening.centerYM + opening.heightM / 2) / 2;
+    expect(wallRayHits(scope, pieces, opening.centerAlongM, sillYM).length).toBeGreaterThan(0);
+    expect(wallRayHits(scope, pieces, opening.centerAlongM, headYM).length).toBeGreaterThan(0);
+    expect(scope).toEqual(untouchedScope);
+    expect(expandBayWallPrimitives(scope)).toEqual(pieces);
+
+    const solidNeighbor = scopes.find((entry) => entry.facade === facade && entry.floorIndex === floorIndex && entry.bayIndex === 1)!;
+    expect(solidNeighbor.opening).toBeUndefined();
+    expect(wallRayHits(
+      solidNeighbor,
+      expandBayWallPrimitives(solidNeighbor),
+      solidNeighbor.originM[alongAxis] + solidNeighbor.sizeM[alongAxis] / 2,
+      solidNeighbor.originM[1] + solidNeighbor.sizeM[1] / 2
+    ).length).toBeGreaterThan(0);
   });
 });

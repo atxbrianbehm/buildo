@@ -3,11 +3,20 @@ import { ComponentCatalogSchema } from "../components/componentCatalogBuilder";
 import { BuildingFamilySpecSchema } from "../contracts/buildingFamilySpec";
 import { BuildingGraphSchema } from "../contracts/buildingGraph";
 import { RuntimeBuildingIRSchema, type RuntimeBuildingIR } from "../contracts/runtimeBuildingIR";
+import { BuildingWindowWidthBatchSchema, BuildingWindowWidthOverridesSchema } from "./buildingCompiler";
+
+const compilerDomainErrorCode = z.enum([
+  "building.windowSlot.invalidAddress", "building.windowSlot.unresolvedPath", "building.windowSlot.missingOpening",
+  "building.windowSlot.ambiguousTarget", "building.windowSlot.notWindow",
+  "building.windowWidth.invalidDirective", "building.windowWidth.unsupportedWidth", "building.windowWidth.missingScope",
+  "building.windowWidth.ambiguousScope", "building.windowWidth.incoherentPlan"
+]);
 
 export const SerializedCompilerErrorSchema = z.object({
   name: z.string().optional(),
   message: z.string(),
-  stack: z.string().optional()
+  stack: z.string().optional(),
+  code: compilerDomainErrorCode.optional()
 });
 
 export const CompilerWorkerCompileRequestSchema = z.object({
@@ -15,8 +24,19 @@ export const CompilerWorkerCompileRequestSchema = z.object({
   requestId: z.string().min(1),
   spec: BuildingFamilySpecSchema,
   graph: BuildingGraphSchema,
-  catalog: ComponentCatalogSchema
-});
+  catalog: ComponentCatalogSchema,
+  buildingId: z.string().optional(),
+  detailLevel: z.enum(["high", "low"]).optional(),
+  fidelityMode: z.enum(["proof", "kit"]).optional(),
+  windowWidthOverrides: BuildingWindowWidthOverridesSchema
+}).strict();
+
+export const CompilerWorkerWindowWidthBatchCompileRequestSchema = CompilerWorkerCompileRequestSchema
+  .omit({ type: true, windowWidthOverrides: true })
+  .extend({
+    type: z.literal("compile-window-width-batch"),
+    windowWidthBatch: BuildingWindowWidthBatchSchema
+  }).strict();
 
 export const CompilerWorkerCancelRequestSchema = z.object({
   type: z.literal("cancel"),
@@ -25,6 +45,7 @@ export const CompilerWorkerCancelRequestSchema = z.object({
 
 export const CompilerWorkerRequestSchema = z.discriminatedUnion("type", [
   CompilerWorkerCompileRequestSchema,
+  CompilerWorkerWindowWidthBatchCompileRequestSchema,
   CompilerWorkerCancelRequestSchema
 ]);
 
@@ -56,6 +77,7 @@ export const CompilerWorkerResponseSchema = z.discriminatedUnion("type", [
 
 export type SerializedCompilerError = z.infer<typeof SerializedCompilerErrorSchema>;
 export type CompilerWorkerCompileRequest = z.infer<typeof CompilerWorkerCompileRequestSchema>;
+export type CompilerWorkerWindowWidthBatchCompileRequest = z.infer<typeof CompilerWorkerWindowWidthBatchCompileRequestSchema>;
 export type CompilerWorkerCancelRequest = z.infer<typeof CompilerWorkerCancelRequestSchema>;
 export type CompilerWorkerRequest = z.infer<typeof CompilerWorkerRequestSchema>;
 export type CompilerWorkerProgressResponse = z.infer<typeof CompilerWorkerProgressResponseSchema>;
@@ -90,10 +112,12 @@ export function collectRuntimeIrTransferables(ir: RuntimeBuildingIR): ArrayBuffe
 
 export function serializeCompilerError(error: unknown): SerializedCompilerError {
   if (error instanceof Error) {
+    const code = compilerDomainErrorCode.safeParse((error as Error & { code?: unknown }).code);
     return {
       name: error.name,
       message: error.message,
-      stack: error.stack
+      stack: error.stack,
+      ...(code.success ? { code: code.data } : {})
     };
   }
 

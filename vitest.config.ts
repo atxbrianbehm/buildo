@@ -2,6 +2,8 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
+    // Atlas and family-runtime fixtures are memory intensive; do not spawn one jsdom pool per host core.
+    maxWorkers: 4,
     environment: "jsdom",
     globals: true,
     include: ["src/**/*.test.{ts,tsx}", "server/**/*.test.ts"],

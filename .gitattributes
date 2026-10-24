@@ -1,0 +1,3 @@
+# Review fixtures and proof snapshots carry byte-level SHA identities.
+# Preserve their literal bytes on every checkout.
+docs/reviews/** -text

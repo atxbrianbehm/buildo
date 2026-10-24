@@ -36,6 +36,7 @@ export type AssemblyRendererFactory = (
 
 type WebGpuAssemblyRenderer = AssemblyRenderer & {
   init(): Promise<unknown>;
+  backend?: { isWebGPUBackend?: boolean };
 };
 
 type WebGpuRendererConstructor = new (parameters?: {
@@ -95,6 +96,9 @@ export async function createWebGpuAssemblyRenderer(): Promise<AssemblyRenderer> 
 
   try {
     await renderer.init();
+    if (renderer.backend?.isWebGPUBackend !== true) {
+      throw new Error("Three.js did not activate an actual WebGPU backend");
+    }
   } catch (error) {
     renderer.dispose();
     throw error;

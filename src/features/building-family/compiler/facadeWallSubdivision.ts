@@ -19,6 +19,9 @@ import {
 
 export type WallFacadeName = "front" | "rear" | "left" | "right";
 
+/** Minimum horizontal masonry beside an opening, shared with validated local narrowing. */
+export const MIN_FACADE_PIER_WIDTH_M = 0.08;
+
 export interface OpeningSlot {
   widthM: number;
   heightM: number;
@@ -234,8 +237,8 @@ export function expandBayWallPrimitives(scope: FacadeBayScope): PrimitiveGeometr
   const alongSize = isSide ? sz : sx;
   const openAlong = open.centerAlongM;
   const openHalf = open.widthM / 2;
-  const leftWidth = Math.max(0.08, openAlong - openHalf - alongMin);
-  const rightWidth = Math.max(0.08, alongMin + alongSize - (openAlong + openHalf));
+  const leftWidth = Math.max(MIN_FACADE_PIER_WIDTH_M, openAlong - openHalf - alongMin);
+  const rightWidth = Math.max(MIN_FACADE_PIER_WIDTH_M, alongMin + alongSize - (openAlong + openHalf));
   const openBottom = open.centerYM - open.heightM / 2;
   const openTop = open.centerYM + open.heightM / 2;
   const sillHeight = Math.max(0.08, openBottom - oy);
@@ -276,13 +279,8 @@ export function expandBayWallPrimitives(scope: FacadeBayScope): PrimitiveGeometr
           })
         );
       }
-      // Inner reveal at glazing slot
-      primitives.push(
-        buildBoxPrimitive({
-          center: [openAlong, open.centerYM, oz + sz * 0.22],
-          size: [open.widthM + 0.1, open.heightM + 0.1, sz * 0.28]
-        })
-      );
+      // The full-depth piers and bands already form the masonry returns.
+      // Keep the glazing aperture empty; opening binding owns its frame/recess.
       return primitives;
     }
 
@@ -322,13 +320,8 @@ export function expandBayWallPrimitives(scope: FacadeBayScope): PrimitiveGeometr
         })
       );
     }
-    // Inner reveal thickness toward exterior (reads as punched wall).
-    primitives.push(
-      buildBoxPrimitive({
-        center: [openAlong, open.centerYM, oz + sz * 0.22],
-        size: [open.widthM + 0.1, open.heightM + 0.1, sz * 0.28]
-      })
-    );
+    // These four full-depth pieces supply the perimeter returns without a slab
+    // across the opening. Its frame/recess is derived separately from this slot.
   } else {
     // Side facade: along-axis is Z
     if (leftWidth > 0.05) {
