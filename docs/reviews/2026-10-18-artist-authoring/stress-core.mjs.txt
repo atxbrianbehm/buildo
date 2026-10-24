@@ -1,0 +1,22 @@
+import {createServer} from "vite";
+import {writeFile} from "node:fs/promises";
+const server=await createServer({cacheDir:"test-results/artist-workflow-audit-2026-10-18/.vite-ssr",server:{middlewareMode:true},appType:"custom"});
+try {
+ const {createBuildingConstructionGraph}=await server.ssrLoadModule('/src/features/building-family/contracts/bayConstructionGraph.ts');
+ const {evaluateConstruction}=await server.ssrLoadModule('/src/features/building-family/compiler/evaluateConstruction.ts');
+ const graph=createBuildingConstructionGraph('artist-audit');
+ const encode=(_key,value)=>ArrayBuffer.isView(value)?[...value]:value;
+ const geometry=result=>JSON.stringify({meshes:result.ir.meshBatches,instances:result.ir.instanceBatches,prototypes:result.prototypes},encode);
+ const baseline=await evaluateConstruction(graph); const cases=[];
+ const {resolveWorkbenchGeneration,defaultConstructionGenerationControls}=await server.ssrLoadModule('/src/features/building-family/state/constructionGenerationState.ts');
+ async function probe(name,mutate){const next=structuredClone(graph);mutate(next);try{const result=await evaluateConstruction(next);cases.push({name,status:'compiled',nodes:next.nodes.length,instanceCounts:result.ir.instanceBatches.map(b=>({id:b.batchId,count:b.count})),geometryEqualsBaseline:geometry(result)===geometry(baseline),bounds:result.ir.bounds,trace:result.trace});}catch(error){cases.push({name,status:'rejected',error:String(error.message)});}}
+ await probe('all-window-frame-width',g=>{g.nodes.find(n=>n.id==='window').parameters.frameWidthM=.09;});
+ await probe('select-one-floor-and-bay',g=>{Object.assign(g.nodes.find(n=>n.type==='SelectScopes').parameters,{floorIndex:1,bayIndex:1});});
+ await probe('new-disconnected-split-floors',g=>{g.nodes.push({id:'SplitFloors_1',type:'SplitFloors',input:{nodeId:'facade',socket:'scope'},parameters:{count:3}});});
+ await probe('delete-window-assembly',g=>{g.nodes=g.nodes.filter(n=>n.id!=='window');});
+ await probe('bypass-roof',g=>{g.nodes.find(n=>n.id==='roof').bypassed=true;});
+ await probe('oversized-window',g=>{g.nodes.find(n=>n.id==='opening').parameters.widthM=8;});
+ const orphan=structuredClone(graph);orphan.nodes.push({id:'SplitFloors_1',type:'SplitFloors',input:{nodeId:'facade',socket:'scope'},parameters:{count:3}});
+ try{await resolveWorkbenchGeneration(orphan,null,defaultConstructionGenerationControls,true);cases.push({name:'reroll-after-disconnected-node',status:'resolved'});}catch(error){cases.push({name:'reroll-after-disconnected-node',status:'rejected',error:error.message});}
+ const receipt={schemaVersion:'0.1.0',kind:'artist-authoring-core-probes',baseline:{nodes:graph.nodes.length,instanceCounts:baseline.ir.instanceBatches.map(b=>({id:b.batchId,count:b.count}))},cases};await writeFile('test-results/artist-workflow-audit-2026-10-18/core-probes.json',JSON.stringify(receipt,null,2));console.log(JSON.stringify({...receipt,cases:cases.map(({trace,...c})=>c)},null,2));
+}finally{await server.close();}

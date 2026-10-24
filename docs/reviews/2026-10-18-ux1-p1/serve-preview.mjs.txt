@@ -1,0 +1,7 @@
+import {createServer} from "vite";
+import {writeFile} from "node:fs/promises";
+const server=await createServer({cacheDir:"test-results/ux1-p1-2026-10-18/preview-cache",server:{host:"127.0.0.1",port:5190,strictPort:true}});
+await server.listen();
+await writeFile("test-results/ux1-p1-2026-10-18/preview.json",JSON.stringify({schemaVersion:"0.1.0",url:"http://127.0.0.1:5190/#document=masonry-study-ux1",pid:process.pid,host:"127.0.0.1",stop:"Send SIGINT to this recorded Node process or terminate its recorded exec session."},null,2));
+server.printUrls();
+const close=async()=>{await server.close();process.exit(0);};process.on("SIGINT",close);process.on("SIGTERM",close);await new Promise(()=>{});

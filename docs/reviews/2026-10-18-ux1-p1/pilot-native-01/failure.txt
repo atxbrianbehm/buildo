@@ -1,0 +1,6 @@
+AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+  assert(await page.getByRole('button',{name:'Edit custom construction',exact:true}).isVisible())
+
+    at file:///C:/Users/behmb/Documents/Cascade%20Projects/buildo/test-results/ux1-p1-2026-10-18/capture-grouped-01.mjs:165:247
+[]

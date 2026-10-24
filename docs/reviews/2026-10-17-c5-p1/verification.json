@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "c5-p1-generation-resolution-checkpoint",
+  "status": "engineering-complete",
+  "closedAtUtc": "2026-10-18T04:06:01.705645+00:00",
+  "gitHead": "4c0fedeacfc9b4bed0c0000096d7d1ea605d23b9",
+  "sourcePins": [
+    {
+      "file": "src/features/building-family/core/constructionGenerationResolver.ts",
+      "sha256": "593ccebc891e4ea86926ef3bbd68eba34456a693bddbe25ebed666c04bff8561",
+      "snapshot": "source/src/features/building-family/core/constructionGenerationResolver.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionGenerationResolver.test.ts",
+      "sha256": "3409d9aecd98bed44629374b490829be0ef204d2f25471c222c3ba22a49a928b",
+      "snapshot": "source/src/features/building-family/tests/constructionGenerationResolver.test.ts.txt"
+    }
+  ],
+  "newSourcePaths": [
+    "src/features/building-family/core/constructionGenerationResolver.ts",
+    "src/features/building-family/tests/constructionGenerationResolver.test.ts"
+  ],
+  "changedExistingImplementationPaths": [],
+  "baseline": {
+    "file": "docs/reviews/2026-10-17-c5-p0/verification.json",
+    "sha256": "50ec5a17bd973f7a912d3c427fbf220853074432cbcb3e0b7b50551d484b0f4a",
+    "verifiedCurrentPins": 51
+  },
+  "checks": [
+    {
+      "log": "test-results/c5-p1-2026-10-17/typecheck-final-02.log",
+      "finishedAt": "2026-10-18T04:02:17.4820366Z",
+      "exitCode": 0,
+      "name": "typecheck",
+      "startedAt": "2026-10-18T04:02:07.1096522Z"
+    },
+    {
+      "log": "test-results/c5-p1-2026-10-17/lint-final-02.log",
+      "finishedAt": "2026-10-18T04:02:32.1767756Z",
+      "exitCode": 0,
+      "name": "lint",
+      "startedAt": "2026-10-18T04:02:17.5264200Z"
+    },
+    {
+      "log": "test-results/c5-p1-2026-10-17/focused-final-02.log",
+      "finishedAt": "2026-10-18T04:02:37.0925886Z",
+      "exitCode": 0,
+      "name": "focused",
+      "startedAt": "2026-10-18T04:02:32.1817975Z"
+    }
+  ],
+  "resolverTests": 22,
+  "focusedTests": 75,
+  "focusedFiles": 4,
+  "examples": [
+    {
+      "name": "two-storey",
+      "windows": 23,
+      "metrics": "two-storey-metrics.json",
+      "source": "two-storey-source.json",
+      "resolution": "two-storey-resolution.json",
+      "metricsSha256": "dca74983f4e0bf87366b6ab64d298ee7c10c720c3c891b6d46527529881a93fc"
+    },
+    {
+      "name": "four-storey",
+      "windows": 79,
+      "metrics": "four-storey-metrics.json",
+      "source": "four-storey-source.json",
+      "resolution": "four-storey-resolution.json",
+      "metricsSha256": "dcab2e79f75bb5de3a862f06032f4468f8e7d6b3a3ff99cf9a85abcc390361f4"
+    }
+  ],
+  "newNativeOrFullRegression": false,
+  "review": [
+    "Uses existing semantic SeedTree, actual connected graph operators and original compiler constraints.",
+    "Recipe pin covers explicit variation choices, C4 operator defaults and resolver version.",
+    "Source read owns before awaits; resolution read owns both source and result before hashing.",
+    "Bounded numeric locks and explicit counts retained; unsupported requests fail rather than silently substitute.",
+    "Material/reference appearance and provenance wording do not alter geometry; no structural randomness/framework imports/network calls.",
+    "Two additions only; all C4/P0 source and runtime behavior retained."
+  ],
+  "nextPacket": "C5.P2",
+  "workbenchIntegrationComplete": false
+}

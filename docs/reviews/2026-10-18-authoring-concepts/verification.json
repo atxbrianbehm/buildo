@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "ux1-p0-authoring-direction-concepts",
+  "createdAtUtc": "2026-10-18T06:25:30.684973+00:00",
+  "status": "human-direction-selection-pending",
+  "tool": "built-in image_gen",
+  "reference": "docs/reviews/2026-10-18-artist-authoring/live/01-initial-workspace.png",
+  "referenceSha256": "209c91a492ffd8fed93c1bf7401aac7991e7f7c8e285c44af9d2ebf8f9f74e26",
+  "options": [
+    {
+      "displayedOption": 1,
+      "id": "grouped-inspector",
+      "path": "grouped-inspector.png",
+      "sha256": "8a29e1bdc8904771bb4dad1330f23652ab4b6f62aabcb0c3885fca792dfdbd4a",
+      "dimensions": [
+        1493,
+        1054
+      ]
+    },
+    {
+      "displayedOption": 2,
+      "id": "select-and-shape",
+      "path": "select-and-shape.png",
+      "sha256": "fd7064661c6960331609861db662953990c1292e0d4cb87fc7563cccaeb03805",
+      "dimensions": [
+        1493,
+        1054
+      ]
+    },
+    {
+      "displayedOption": 3,
+      "id": "elevation-studio",
+      "path": "elevation-studio.png",
+      "sha256": "d8cb825c3416fd5efb8abc4c12e26807a2eed2800f7ac0fb7bc589ee3b2c9e24",
+      "dimensions": [
+        1493,
+        1053
+      ]
+    }
+  ],
+  "independentGeneratedImages": 3,
+  "visuallyInspected": 3,
+  "productionCodeChanged": false,
+  "unchangedC6SourcePins": 62,
+  "runtimeEvidence": false,
+  "humanParticipants": 0,
+  "nextPacket": "UX1.P1 bounded prototype after direction selection",
+  "humanDecision": null,
+  "notion": {
+    "url": "https://app.notion.com/p/3fdb77d6cd4f812a9f88f1316beb9c25",
+    "proof": "notion-gallery-proof.json",
+    "conceptImages": 3,
+    "previousImagesRetained": 85,
+    "totalImages": 88,
+    "parentBuildoPageUnresolved": true
+  }
+}

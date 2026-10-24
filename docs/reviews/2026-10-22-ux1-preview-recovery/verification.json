@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "ux1-local-preview-recovery",
+  "recordedAtUtc": "2026-10-22T16:32:49.129017+00:00",
+  "status": "preview recovered; human workflow review still pending",
+  "url": "http://127.0.0.1:5190/#document=masonry-study-ux1",
+  "serverExecSession": 35365,
+  "server": {
+    "schemaVersion": "0.1.0",
+    "url": "http://127.0.0.1:5190/#document=masonry-study-ux1",
+    "pid": 35340,
+    "host": "127.0.0.1",
+    "stop": "Send SIGINT to this recorded Node process or terminate its recorded exec session."
+  },
+  "browserExecSession": 19648,
+  "browserExitCode": 0,
+  "browserExecutable": "C:/Users/behmb/AppData/Local/ms-playwright/chromium-1228/chrome-win64/chrome.exe",
+  "sourceBaseline": "../2026-10-18-ux1-p1/verification.json",
+  "sourceBaselineSha256": "89bb827822a106dcb0d11fbd6e2053bc3947dfd06f25bb4e49466960dfc1243b",
+  "sourcePinsUnchanged": 65,
+  "originalEvidenceFilesUnchanged": 175,
+  "freshChecks": [
+    "actual browser-rendered grouped inspector",
+    "visible 3px input focus",
+    "keyboard Enter opens Shape",
+    "Apply hover capture",
+    "no horizontal overflow at 900x1100 and 430x1000",
+    "zero application console/page errors; inherited favicon404 separately recorded"
+  ],
+  "priorBroadChecks": "Inherited from unchanged October18 source. No fresh unit/build/whole native-geometry sweep claimed.",
+  "nativeBrowserInspectedScreenshot": "focus-desktop.png",
+  "appSourceChanged": false,
+  "humanDecisionReceived": false,
+  "codexOpenStatus": "queued",
+  "attempts": [
+    {
+      "step": "old preview session65060",
+      "result": "unknown process handle; no longer live"
+    },
+    {
+      "step": "sandbox local HTTP client",
+      "result": "WinError10013 socket access denied; not treated as process absence"
+    },
+    {
+      "step": "sandbox-only listener",
+      "result": "Node started PID48484, but outside browser could not connect"
+    },
+    {
+      "step": "default sandbox browser cache",
+      "result": "redirected cache missing; no browser installed or downloaded"
+    },
+    {
+      "step": "existing installed browser inside sandbox",
+      "result": "browser exited3221225506"
+    },
+    {
+      "step": "existing installed browser outside sandbox",
+      "result": "launch succeeded; connection to sandbox listener timed out"
+    },
+    {
+      "step": "replace verified owned preview",
+      "result": "CIM command line matched this exact serve-preview script before stopping PID48484. Restarted same loopback-only server outside sandbox."
+    },
+    {
+      "step": "final installed Chromium verification",
+      "result": "passed; exit0"
+    }
+  ]
+}

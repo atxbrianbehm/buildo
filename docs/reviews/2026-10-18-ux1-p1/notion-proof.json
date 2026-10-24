@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "0.1.0",
+  "pageId": "3fdb77d6-cd4f-812a-9f88-f1316beb9c25",
+  "url": "https://app.notion.com/p/3fdb77d6cd4f812a9f88f1316beb9c25?pvs=204",
+  "beforeImageCount": 88,
+  "afterImageCount": 95,
+  "allPreviousImagesRetained": true,
+  "allNewImages": [
+    "notion-file-block://69116da3-ce45-4d26-a838-93ba24d8e110/b0979467-6a7e-43b9-b7a0-3d0d9914b198?space_id=9d48be88-714a-4dfc-87f7-debce8804fd1&name=buildo-ux1-p1-grouped-desktop.png",
+    "notion-file-block://cd2b137e-471d-4b4c-ac50-8a8b80e91d80/fb3ebdf0-69e0-4211-b8b1-6076eb7df522?space_id=9d48be88-714a-4dfc-87f7-debce8804fd1&name=buildo-ux1-p1-shared-recess-close.png",
+    "notion-file-block://1db0e923-e337-488f-828e-11559aecebcf/742688fe-f7ee-41ec-a6ac-fe36b099f0b5?space_id=9d48be88-714a-4dfc-87f7-debce8804fd1&name=buildo-ux1-p1-local-finish.png",
+    "notion-file-block://ed4bd04f-9ba9-420d-aa3e-9294c4c55d4a/4d9c5c2c-f9f3-4377-b6e9-4d5c4c455060?space_id=9d48be88-714a-4dfc-87f7-debce8804fd1&name=buildo-ux1-p1-advanced-graph.png",
+    "notion-file-block://5080506a-7476-47ae-8d1a-18b50f9743e4/f684af1d-30af-48b3-839a-f3f90911b5ab?space_id=9d48be88-714a-4dfc-87f7-debce8804fd1&name=buildo-ux1-p1-custom-topology-boundary.png",
+    "notion-file-block://ead4e22c-2feb-4921-bd11-41eaf42ebe97/2707dc67-6c27-43b9-b0f0-b95fbc8832eb?space_id=9d48be88-714a-4dfc-87f7-debce8804fd1&name=buildo-ux1-p1-grouped-compact.png",
+    "notion-file-block://dd6edb83-d2ef-4b8e-9eff-eee4ae31a719/cd0cdb87-57fd-4b42-ba3d-818431eb78b2?space_id=9d48be88-714a-4dfc-87f7-debce8804fd1&name=buildo-ux1-p1-cold-recovered.png"
+  ],
+  "noLocalURLs": true,
+  "truncated": "field not returned",
+  "unknownBlockCount": "field not returned",
+  "selectedOption": 1,
+  "parentBuildoPageUnresolved": true,
+  "completeContentClosingTags": true
+}

@@ -1,0 +1,30 @@
+1:45:09 AM [vite] (client) [optimizer] bundling dependencies...
+{"api":"webgpu","state":"grouped-default"}
+{"api":"webgpu","state":"legacy-C5-source"}
+{"api":"webgpu","state":"shared-recess"}
+{"api":"webgpu","state":"local-finish"}
+{"api":"webgpu","state":"undo-finish"}
+{"api":"webgpu","state":"redo-finish"}
+{"api":"webgpu","state":"shape-depth"}
+{"api":"webgpu","state":"four-storeys"}
+{"api":"webgpu","state":"cornice-edit"}
+{"api":"webgpu","state":"locked-reroll"}
+{"api":"webgpu","state":"keyboard-submit"}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+  assert(await page.getByRole('button',{name:'Edit custom construction',exact:true}).isVisible())
+
+    at file:///C:/Users/behmb/Documents/Cascade%20Projects/buildo/test-results/ux1-p1-2026-10-18/capture-grouped-01.mjs:165:247 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.14.1

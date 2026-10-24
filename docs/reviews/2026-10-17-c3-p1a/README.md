@@ -1,0 +1,19 @@
+# C3.P1a: composite from accepted paint
+
+Engineering complete, 2026-10-17. Local main remains 4c0fede; no commits or pushes. [Verification and source hashes](verification.json).
+
+The compositor can now blend from the accepted flat painted frame/trim appearance instead of hidden raw atlas pixels. A strict constant-opaque-PBR base artifact owns color, roughness, metalness, slot/role and a content hash. [Actual deterministic base artifacts](construction-bases.json). A new tile schema 0.2.0 and explicit constant-base-v2 algorithm pin that authority; default v1 inputs and outputs retain their previous behavior. Base references must match the tile slot, and source/runtime validation rejects wrong roles, hashes and registry appearance. Metadata is captured before asynchronous verification.
+
+The accepted fixture palette moved into shared pure constants without changing its values. Empty, zero-opacity and cleared results keep original material identity. Positive results blend from accepted paint, use aligned channels with correct PBR multipliers, and use isolated linear/mipmapped textures. Source atlas bytes, compiler geometry and material generation remain unchanged. Family scene leases defer composite disposal correctly.
+
+All five checks pass on final-02: typecheck, lint, **1,601 tests /114 files**, build and all eight standard browser workflows. The complete focused suite passes **66 tests /6 files**, including legacy compositor and actual construction runtime coverage.
+
+Actual WebGPU and forced WebGL each pass fourteen full/close surface captures across base, empty, zero, subtle, local, shared and cleared phases. Exact native pixels restore for all no-effect phases. The 1% layer remains within three mean RGB levels in the selected frame region, avoiding a jump to hidden wood. Compiler arrays, all submitted mesh/instance positions, normals, indices, native/world transforms, source channels and outside material pointers remain pinned. Invalid preparation retains the accepted frame. Provider/interpreter calls remain zero; all surface owners release.
+
+Separate App proof opens the accepted C3 source on both backends and reproduces its original full native framebuffer PNG exactly. Initialization still makes twelve procedural construction sources; Open makes none. No Workbench controls or CSS changed. [Accepted App](app-03-webgpu/accepted-app-desktop.png), [local finish close](native-03/webgpu/local-close.png), [shared finish](native-03/webgpu/shared-full.png).
+
+Four final images were directly reviewed, and four additional final views are byte-identical to previously inspected candidate-01 views. All final images, native PNGs, receipts, literal source snapshots and before-images are preserved. Proof source uses .txt snapshots so test/lint discovery cannot execute archived evidence.
+
+Candidate 01 passed 64 focused cases and both fourteen-capture native runs. Review found an async IR ownership gap, a missing comparison between declared paint and the borrowed registry material, and an unlinked tile/base slot reference. These were fixed with regression coverage; the first full suite was intentionally interrupted and is not accepted evidence. Candidate 02 passed WebGPU but its WebGL empty-state readback mismatched after rendering. The final harness reads a PNG synchronously in the actual draw call and derives RGBA from that captured image, matching the established C3 readback boundary. Exact comparisons remain unchanged. Final native-03 and both App proofs pass with zero page/console errors. No production pixel repair was made for the readback issue.
+
+This completes the compositor-base milestone. Finish controls and editable surface graph/source are C3.P1b. The single front facade and existing fine shadow seams/aliasing remain; whole-building geometry and human appearance acceptance remain C4.

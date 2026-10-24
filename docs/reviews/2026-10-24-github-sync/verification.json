@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "0.1.0",
+  "recordedAtUtc": "2026-10-24T07:27:51.176109+00:00",
+  "kind": "github-publication-candidate",
+  "remote": "https://github.com/atxbrianbehm/buildo.git",
+  "branch": "main",
+  "remoteBase": "f8cb1486595856255a3b13a3961a42ef5554faba",
+  "implementationCommit": "4e5c3ce308136e1321a6df538343e052692df96e",
+  "state": "local commits prepared; public push requires explicit disclosure confirmation",
+  "checks": [
+    {
+      "name": "typecheck",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-24T07:19:24.9948446Z",
+      "endedAtUtc": "2026-10-24T07:19:33.9054095Z",
+      "log": "typecheck-candidate-01.log"
+    },
+    {
+      "name": "lint",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-24T07:19:33.9261165Z",
+      "endedAtUtc": "2026-10-24T07:20:00.2431977Z",
+      "log": "lint-candidate-01.log"
+    },
+    {
+      "name": "test",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-24T07:20:00.2471609Z",
+      "endedAtUtc": "2026-10-24T07:24:41.8544418Z",
+      "log": "test-candidate-01.log"
+    },
+    {
+      "name": "build",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-24T07:24:41.8563464Z",
+      "endedAtUtc": "2026-10-24T07:24:51.2000991Z",
+      "log": "build-candidate-01.log"
+    },
+    {
+      "name": "test:e2e",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-24T07:24:51.2017594Z",
+      "endedAtUtc": "2026-10-24T07:26:34.5797508Z",
+      "log": "test-e2e-candidate-01.log"
+    }
+  ],
+  "unitTests": 1753,
+  "unitFiles": 122,
+  "standardBrowserWorkflows": [
+    "R3_P1_WORKSPACE_E2E_RESULT",
+    "R3_P6_WINDOW_WIDTH_E2E_RESULT",
+    "R3_P11_SOURCE_CHECKPOINT_RECOVERY_E2E_RESULT",
+    "R3_P12_WINDOW_WIDTH_HISTORY_E2E_RESULT",
+    "R3_P15_WIDTH_BATCH_SOURCE_E2E_RESULT",
+    "R3_P16_WINDOW_FLOOR_WIDTH_E2E_RESULT",
+    "R3_P18_WINDOW_BAY_WIDTH_E2E_RESULT",
+    "R4_P4_SURFACE_SOURCE_APP_E2E_RESULT"
+  ],
+  "selectedChangedFilesBeforeCloseout": 667,
+  "selectedBytesBeforeCloseout": 82274859,
+  "omittedArchiveFiles": 12305,
+  "omittedArchiveBytes": 4667236671,
+  "localArchiveDeleted": false,
+  "byteExactReviewAttributes": "docs/reviews/** -text",
+  "credentialScan": "credential-scan.json",
+  "limits": [
+    "Dependency packages were reused from the installed workspace; no installation.",
+    "Historical report inventories describe the full local archive. Omitted attachments are disclosed in GITHUB-ARCHIVE-SCOPE.md.",
+    "Existing EOF blank lines were preserved; scoped whitespace check found no other issues.",
+    "No fresh native building-geometry campaign was run for this source-preserving Git synchronization.",
+    "Human workflow/C6/artist/family/block gates remain pending."
+  ]
+}

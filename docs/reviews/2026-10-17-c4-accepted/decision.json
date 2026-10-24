@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "c4-human-appearance-decision",
+  "decision": "accepted",
+  "userStatement": "Accept c4 and the proceed",
+  "recordedAtUtc": "2026-10-18T03:45:01.622927+00:00",
+  "reviewedCheckpoint": "docs/reviews/2026-10-17-c4/verification.json",
+  "reviewedCheckpointSha256": "1884a975f976705b40ad27b944fec0bddb15323bcca61f826aa1d6fe12a1f680",
+  "reviewGallery": "https://app.notion.com/p/3fdb77d6cd4f812a9f88f1316beb9c25",
+  "scope": "Reviewed C4 whole-building appearance; proceed sequentially to generation/UTDG. No release, family/block, publication or paid provider authorization."
+}

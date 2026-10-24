@@ -1,0 +1,13 @@
+
+> buildo@0.0.0 test
+> vitest run
+
+
+ RUN  v4.1.9 C:/Users/behmb/Documents/Cascade Projects/buildo/test-results/github-sync-2026-10-24/candidate
+
+
+ Test Files  122 passed (122)
+      Tests  1753 passed (1753)
+   Start at  02:20:02
+   Duration  279.28s (transform 4.38s, setup 16.31s, import 24.19s, tests 693.60s, environment 131.36s)
+

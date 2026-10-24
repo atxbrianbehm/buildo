@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "c5-p0-generation-source-checkpoint",
+  "status": "engineering-complete",
+  "closedAtUtc": "2026-10-18T03:54:32.838912+00:00",
+  "gitHead": "4c0fedeacfc9b4bed0c0000096d7d1ea605d23b9",
+  "humanDecision": {
+    "file": "docs/reviews/2026-10-17-c4-accepted/decision.json",
+    "sha256": "31a144baacc913168a0a96a0630170ba75818e63c13eaf1a3e8ca381718cdf95"
+  },
+  "sourcePins": [
+    {
+      "file": "src/features/building-family/contracts/constructionGeneration.ts",
+      "sha256": "306c6d48ea3746e1536d0e30365da811fbb39943ccb695ee8e57f380620af0f0",
+      "snapshot": "source/src/features/building-family/contracts/constructionGeneration.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/core/constructionGenerationSource.ts",
+      "sha256": "b00c4ca1ffbebe5339058dc073acb933f1ce67bd1e3f70918ae64ff460de353c",
+      "snapshot": "source/src/features/building-family/core/constructionGenerationSource.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionGenerationSource.test.ts",
+      "sha256": "4698dc6c0d73d680b1f0dab1e10967b600af81290550517497dd84c12d352d85",
+      "snapshot": "source/src/features/building-family/tests/constructionGenerationSource.test.ts.txt"
+    }
+  ],
+  "newSourcePaths": [
+    "src/features/building-family/contracts/constructionGeneration.ts",
+    "src/features/building-family/core/constructionGenerationSource.ts",
+    "src/features/building-family/tests/constructionGenerationSource.test.ts"
+  ],
+  "changedExistingImplementationPaths": [],
+  "baseline": {
+    "file": "docs/reviews/2026-10-17-c4/verification.json",
+    "sha256": "1884a975f976705b40ad27b944fec0bddb15323bcca61f826aa1d6fe12a1f680",
+    "verifiedCurrentPins": 48
+  },
+  "checks": [
+    {
+      "startedAt": "2026-10-18T03:51:37.4825456Z",
+      "name": "typecheck",
+      "exitCode": 0,
+      "finishedAt": "2026-10-18T03:51:50.9721538Z",
+      "log": "test-results/c5-p0-2026-10-17/typecheck-final.log"
+    },
+    {
+      "startedAt": "2026-10-18T03:51:51.0289255Z",
+      "name": "lint",
+      "exitCode": 0,
+      "finishedAt": "2026-10-18T03:52:09.1047655Z",
+      "log": "test-results/c5-p0-2026-10-17/lint-final.log"
+    },
+    {
+      "startedAt": "2026-10-18T03:52:09.1104011Z",
+      "name": "focused",
+      "exitCode": 0,
+      "finishedAt": "2026-10-18T03:52:15.1942599Z",
+      "log": "test-results/c5-p0-2026-10-17/focused-final.log"
+    }
+  ],
+  "newBoundaryTests": 36,
+  "focusedTests": 61,
+  "focusedFiles": 5,
+  "newBuildE2EOrNativeRun": false,
+  "inheritedRuntimeProof": "All 48 C4 implementation sources unchanged; boundary not imported by current runtime.",
+  "review": [
+    "Pure contracts/core; no framework/DOM/store imports, randomness, network calls or GPU owners.",
+    "Serialized input validated and deeply cloned before async hashing; offline reader owns before validation.",
+    "Strict canonical admission rejects loss/defaults; both full-source and reference hashes checked.",
+    "Demo retains unknown architectural coverage and null confidence; normalized upstream metadata does not establish live integration.",
+    "Existing graph remains structural authority; lineage does not relabel legacy material provenance."
+  ],
+  "nextPacket": "C5.P1",
+  "productIntegrationComplete": false
+}

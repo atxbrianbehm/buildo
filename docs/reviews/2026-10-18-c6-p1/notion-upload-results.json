@@ -1,0 +1,184 @@
+[
+  {
+    "name": "restrained-building",
+    "filename": "buildo-c6-restrained-building.png",
+    "response": {
+      "file_upload_id": "3fdb77d6-cd4f-81d7-b99b-00b262409b58",
+      "filename": "buildo-c6-restrained-building.png",
+      "content_type": "image/png",
+      "content_length": 237496,
+      "status": "uploaded",
+      "markdown_source": "file-upload://3fdb77d6-cd4f-81d7-b99b-00b262409b58",
+      "suggested_markdown": "<image src=\"file-upload://3fdb77d6-cd4f-81d7-b99b-00b262409b58\"></image>"
+    }
+  },
+  {
+    "name": "deep-building",
+    "filename": "buildo-c6-deep-building.png",
+    "response": {
+      "file_upload_id": "3fdb77d6-cd4f-81fb-a5d5-00b2641774d5",
+      "filename": "buildo-c6-deep-building.png",
+      "content_type": "image/png",
+      "content_length": 232858,
+      "status": "uploaded",
+      "markdown_source": "file-upload://3fdb77d6-cd4f-81fb-a5d5-00b2641774d5",
+      "suggested_markdown": "<image src=\"file-upload://3fdb77d6-cd4f-81fb-a5d5-00b2641774d5\"></image>"
+    }
+  },
+  {
+    "name": "cornice-building",
+    "filename": "buildo-c6-cornice-building.png",
+    "response": {
+      "file_upload_id": "3fdb77d6-cd4f-812b-bced-00b240ae2c67",
+      "filename": "buildo-c6-cornice-building.png",
+      "content_type": "image/png",
+      "content_length": 238885,
+      "status": "uploaded",
+      "markdown_source": "file-upload://3fdb77d6-cd4f-812b-bced-00b240ae2c67",
+      "suggested_markdown": "<image src=\"file-upload://3fdb77d6-cd4f-812b-bced-00b240ae2c67\"></image>"
+    }
+  },
+  {
+    "name": "restrained-clay",
+    "filename": "buildo-c6-restrained-clay.png",
+    "response": {
+      "file_upload_id": "3fdb77d6-cd4f-8119-9be8-00b2cbb1bb3c",
+      "filename": "buildo-c6-restrained-clay.png",
+      "content_type": "image/png",
+      "content_length": 82339,
+      "status": "uploaded",
+      "markdown_source": "file-upload://3fdb77d6-cd4f-8119-9be8-00b2cbb1bb3c",
+      "suggested_markdown": "<image src=\"file-upload://3fdb77d6-cd4f-8119-9be8-00b2cbb1bb3c\"></image>"
+    }
+  },
+  {
+    "name": "deep-clay",
+    "filename": "buildo-c6-deep-clay.png",
+    "response": {
+      "file_upload_id": "3fdb77d6-cd4f-8122-b2ec-00b228056565",
+      "filename": "buildo-c6-deep-clay.png",
+      "content_type": "image/png",
+      "content_length": 78872,
+      "status": "uploaded",
+      "markdown_source": "file-upload://3fdb77d6-cd4f-8122-b2ec-00b228056565",
+      "suggested_markdown": "<image src=\"file-upload://3fdb77d6-cd4f-8122-b2ec-00b228056565\"></image>"
+    }
+  },
+  {
+    "name": "cornice-clay",
+    "filename": "buildo-c6-cornice-clay.png",
+    "response": {
+      "file_upload_id": "3fdb77d6-cd4f-815a-9a84-00b2f04bb422",
+      "filename": "buildo-c6-cornice-clay.png",
+      "content_type": "image/png",
+      "content_length": 81056,
+      "status": "uploaded",
+      "markdown_source": "file-upload://3fdb77d6-cd4f-815a-9a84-00b2f04bb422",
+      "suggested_markdown": "<image src=\"file-upload://3fdb77d6-cd4f-815a-9a84-00b2f04bb422\"></image>"
+    }
+  },
+  {
+    "name": "restrained-opening",
+    "filename": "buildo-c6-restrained-opening.png",
+    "response": {
+      "file_upload_id": "3fdb77d6-cd4f-8144-90da-00b299b1f19f",
+      "filename": "buildo-c6-restrained-opening.png",
+      "content_type": "image/png",
+      "content_length": 431483,
+      "status": "uploaded",
+      "markdown_source": "file-upload://3fdb77d6-cd4f-8144-90da-00b299b1f19f",
+      "suggested_markdown": "<image src=\"file-upload://3fdb77d6-cd4f-8144-90da-00b299b1f19f\"></image>"
+    }
+  },
+  {
+    "name": "deep-opening",
+    "filename": "buildo-c6-deep-opening.png",
+    "response": {
+      "file_upload_id": "3fdb77d6-cd4f-81f7-abf1-00b264544f29",
+      "filename": "buildo-c6-deep-opening.png",
+      "content_type": "image/png",
+      "content_length": 453333,
+      "status": "uploaded",
+      "markdown_source": "file-upload://3fdb77d6-cd4f-81f7-abf1-00b264544f29",
+      "suggested_markdown": "<image src=\"file-upload://3fdb77d6-cd4f-81f7-abf1-00b264544f29\"></image>"
+    }
+  },
+  {
+    "name": "deep-entrance",
+    "filename": "buildo-c6-deep-entrance.png",
+    "response": {
+      "file_upload_id": "3fdb77d6-cd4f-8102-a140-00b29ce8fbe0",
+      "filename": "buildo-c6-deep-entrance.png",
+      "content_type": "image/png",
+      "content_length": 381993,
+      "status": "uploaded",
+      "markdown_source": "file-upload://3fdb77d6-cd4f-8102-a140-00b29ce8fbe0",
+      "suggested_markdown": "<image src=\"file-upload://3fdb77d6-cd4f-8102-a140-00b29ce8fbe0\"></image>"
+    }
+  },
+  {
+    "name": "cornice-roof",
+    "filename": "buildo-c6-cornice-roof.png",
+    "response": {
+      "file_upload_id": "3fdb77d6-cd4f-815b-aa79-00b23eb0b348",
+      "filename": "buildo-c6-cornice-roof.png",
+      "content_type": "image/png",
+      "content_length": 153879,
+      "status": "uploaded",
+      "markdown_source": "file-upload://3fdb77d6-cd4f-815b-aa79-00b23eb0b348",
+      "suggested_markdown": "<image src=\"file-upload://3fdb77d6-cd4f-815b-aa79-00b23eb0b348\"></image>"
+    }
+  },
+  {
+    "name": "deep-authored",
+    "filename": "buildo-c6-deep-authored.png",
+    "response": {
+      "file_upload_id": "3fdb77d6-cd4f-81b5-af90-00b2099dde2f",
+      "filename": "buildo-c6-deep-authored.png",
+      "content_type": "image/png",
+      "content_length": 248631,
+      "status": "uploaded",
+      "markdown_source": "file-upload://3fdb77d6-cd4f-81b5-af90-00b2099dde2f",
+      "suggested_markdown": "<image src=\"file-upload://3fdb77d6-cd4f-81b5-af90-00b2099dde2f\"></image>"
+    }
+  },
+  {
+    "name": "cold-recovered",
+    "filename": "buildo-c6-cold-recovered.png",
+    "response": {
+      "file_upload_id": "3fdb77d6-cd4f-8117-b898-00b268ecdfb8",
+      "filename": "buildo-c6-cold-recovered.png",
+      "content_type": "image/png",
+      "content_length": 254557,
+      "status": "uploaded",
+      "markdown_source": "file-upload://3fdb77d6-cd4f-8117-b898-00b268ecdfb8",
+      "suggested_markdown": "<image src=\"file-upload://3fdb77d6-cd4f-8117-b898-00b268ecdfb8\"></image>"
+    }
+  },
+  {
+    "name": "recipes-desktop",
+    "filename": "buildo-c6-recipes-desktop.png",
+    "response": {
+      "file_upload_id": "3fdb77d6-cd4f-817f-8850-00b2fea60f34",
+      "filename": "buildo-c6-recipes-desktop.png",
+      "content_type": "image/png",
+      "content_length": 334046,
+      "status": "uploaded",
+      "markdown_source": "file-upload://3fdb77d6-cd4f-817f-8850-00b2fea60f34",
+      "suggested_markdown": "<image src=\"file-upload://3fdb77d6-cd4f-817f-8850-00b2fea60f34\"></image>"
+    }
+  },
+  {
+    "name": "recipes-compact",
+    "filename": "buildo-c6-recipes-compact.png",
+    "response": {
+      "file_upload_id": "3fdb77d6-cd4f-8146-ab9e-00b2de640b8a",
+      "filename": "buildo-c6-recipes-compact.png",
+      "content_type": "image/png",
+      "content_length": 260276,
+      "status": "uploaded",
+      "markdown_source": "file-upload://3fdb77d6-cd4f-8146-ab9e-00b2de640b8a",
+      "suggested_markdown": "<image src=\"file-upload://3fdb77d6-cd4f-8146-ab9e-00b2de640b8a\"></image>"
+    }
+  }
+]

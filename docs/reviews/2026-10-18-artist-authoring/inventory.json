@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "0.1.0",
+  "files": [
+    {
+      "path": "artist-test-protocol.md",
+      "bytes": 3973,
+      "sha256": "f5327d0b2e4768b00fd30a5a8afbb376d4e3f9eacb7887deac297235cbbb3034"
+    },
+    {
+      "path": "capture-audit.mjs.txt",
+      "bytes": 7385,
+      "sha256": "a45d8a18e1799adb0a6c8cb482b88085dc0e742269efff8c8d450ccbff2ed973"
+    },
+    {
+      "path": "core-probes.json",
+      "bytes": 59683,
+      "sha256": "e2cc96c3dd0e2734dd71761418044efdbd34304796347b3cbdf84a80f4073574"
+    },
+    {
+      "path": "core-probes.log",
+      "bytes": 4431,
+      "sha256": "73f092d502fff3bba205b7df5bb4ea62a2749f201134a2795831f7c16a69df13"
+    },
+    {
+      "path": "live/01-initial-workspace.png",
+      "bytes": 258816,
+      "sha256": "209c91a492ffd8fed93c1bf7401aac7991e7f7c8e285c44af9d2ebf8f9f74e26"
+    },
+    {
+      "path": "live/02-node-canvas.png",
+      "bytes": 265328,
+      "sha256": "9bb57580b2d0e27a070a943fc99a6f1a6814655004d2b8c2667d68050e3affb8"
+    },
+    {
+      "path": "live/03-shared-window-controls.png",
+      "bytes": 269668,
+      "sha256": "0f5bf4c0aa97ad4a74b9cad0163faba42d200e77b091bd6eed0f2d8c155c803a"
+    },
+    {
+      "path": "live/04-selection-filters-construction.png",
+      "bytes": 277795,
+      "sha256": "6e01d5560892b50cb665fdc31773a7c5c67346a63c4ac19f4dfaf0a19b4e4ab6"
+    },
+    {
+      "path": "live/05-undo-restores-building.png",
+      "bytes": 264354,
+      "sha256": "94be28911456d3cfff12a8d799c3e836497009c54d797295cb1529c822c3d86d"
+    },
+    {
+      "path": "live/06-no-op-node-reroll-boundary.png",
+      "bytes": 261622,
+      "sha256": "85c82320fcbdddb84a70005dba3694bdb61c69a63f42f951b889495db5f3e394"
+    },
+    {
+      "path": "live/07-delete-dependency-error.png",
+      "bytes": 260007,
+      "sha256": "637b44a32722589ff4f7b9ece19abf82532e64eab9fa06c4a54e915360355c1e"
+    },
+    {
+      "path": "live/08-compact-workspace.png",
+      "bytes": 273770,
+      "sha256": "17c5e5ac29db6bf902a143d1fcf4010b4b46ea4d70c023ea91208c38e80683b0"
+    },
+    {
+      "path": "live/receipt.json",
+      "bytes": 21475,
+      "sha256": "63b5da08daa8f9a98e70be7228867190afe359aaf88ac2eeca2830334a4d22e2"
+    },
+    {
+      "path": "notion-gallery-proof.json",
+      "bytes": 16643,
+      "sha256": "b3cfb9edcb65db61a1332faa152292557786ff0eddee8461f5d792e5346befe6"
+    },
+    {
+      "path": "README.md",
+      "bytes": 12393,
+      "sha256": "f8ae539024b1a5a25ee1ed37c98a2fb2782e358c1d71de10456276036c16b489"
+    },
+    {
+      "path": "revival-plan-snapshot.md.txt",
+      "bytes": 285230,
+      "sha256": "5366ea6203c208b5b4d6583616e680542ec5a424f84a6ead641cdf7a6ead24b6"
+    },
+    {
+      "path": "stress-core.mjs.txt",
+      "bytes": 3025,
+      "sha256": "9291adb687d04cbb0aa02a73fe984f54ebf83248f0b83fcfa0e5fc9865b7e671"
+    },
+    {
+      "path": "verification.json",
+      "bytes": 2610,
+      "sha256": "47c7208fc12618186c422c5565cd70e71cee317b6ad6234b5d84edb05990e327"
+    }
+  ]
+}

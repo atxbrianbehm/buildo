@@ -1,0 +1,19 @@
+1:48:26 AM [vite] (client) [optimizer] scanning dependencies...
+1:48:28 AM [vite] (client) [optimizer] bundling dependencies...
+{"api":"webgpu","state":"grouped-default"}
+{"api":"webgpu","state":"legacy-C5-source"}
+{"api":"webgpu","state":"shared-recess"}
+{"api":"webgpu","state":"local-finish"}
+{"api":"webgpu","state":"undo-finish"}
+{"api":"webgpu","state":"redo-finish"}
+{"api":"webgpu","state":"shape-depth"}
+{"api":"webgpu","state":"four-storeys"}
+{"api":"webgpu","state":"cornice-edit"}
+{"api":"webgpu","state":"locked-reroll"}
+{"api":"webgpu","state":"keyboard-submit"}
+{"api":"webgpu","state":"restored-standard-topology"}
+{"api":"webgpu","state":"final-grouped-source"}
+{"api":"webgpu","state":"opened-v5"}
+{"api":"webgpu","state":"room-return"}
+{"api":"webgpu","state":"cold-recovered-v5"}
+{"api":"webgpu","draws":16,"captures":14,"errors":[]}
