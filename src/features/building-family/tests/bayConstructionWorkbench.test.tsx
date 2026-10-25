@@ -567,4 +567,42 @@ it("generates, edits, locks and rerolls through the actual workbench with saved 
     for(const record of rendererState.records)expect(record.dispose).toHaveBeenCalledTimes(1);
   },60000);
 
+  it("publishes storefronts with unchanged materials, local history, version-seven source and invalid-fit retention", async () => {
+    const view = mount({ graph: createBuildingConstructionGraph(), materials });
+    try {
+      await ready(); fireEvent.click(screen.getByText("Ground floor", { selector: "summary" }));
+      fireEvent.change(screen.getByRole("combobox", { name: "Ground frontage" }), { target: { value: "1" } });
+      expect(view.onSessionChange).toHaveBeenCalledTimes(1);
+      fireEvent.click(screen.getByRole("button", { name: "Apply construction" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(2), { timeout: 15000 }); await ready();
+      const edited = view.onSessionChange.mock.calls.at(-1)![0];
+      expect(edited.graph.schemaVersion).toBe("0.6.0"); expect(edited.materials).toBe(materials);
+      expect(screen.getByText("Applies to 4 front ground-floor bays, including the entrance.")).toBeInTheDocument();
+      const file = await createBayConstructionProject(edited.graph, edited.materials.file);
+      expect(file.schemaVersion).toBe("0.7.0"); expect((await readBayConstructionProject(JSON.parse(JSON.stringify(file)))).project).toEqual(file);
+      await expect(readBayConstructionProject({ ...file, schemaVersion: "0.6.0" })).rejects.toThrow("versions must agree");
+      const checkpoint = await createConstructionCheckpoint("storefront-workspace", edited.graph, edited.materials.file);
+      expect((await readConstructionCheckpoint(checkpoint)).project.graph).toEqual(edited.graph);
+      fireEvent.change(screen.getByLabelText("Transom level (m)"), { target: { value: "3" } });
+      fireEvent.change(screen.getByLabelText("Head band height (m)"), { target: { value: "1.2" } });
+      fireEvent.click(screen.getByRole("button", { name: "Apply construction" }));
+      await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("150 mm"), { timeout: 15000 });
+      expect(view.onSessionChange).toHaveBeenCalledTimes(2);
+      fireEvent.click(screen.getByRole("button", { name: "Revert draft" }));
+      fireEvent.click(screen.getByRole("button", { name: "Undo construction" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(3), { timeout: 15000 }); await ready();
+      expect(view.onSessionChange.mock.calls.at(-1)![0].graph.schemaVersion).toBe("0.4.0");
+      fireEvent.click(screen.getByRole("button", { name: "Redo construction" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(4), { timeout: 15000 }); await ready();
+      expect(screen.getByRole("combobox", { name: "Ground frontage" })).toHaveValue("1");
+      fireEvent.click(screen.getByText("Openings", { selector: "summary" }));
+      fireEvent.change(screen.getByRole("combobox", { name: "Window assembly" }), { target: { value: "2" } });
+      fireEvent.click(screen.getByRole("button", { name: "Apply construction" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(5), { timeout: 15000 }); await ready();
+      expect(view.onSessionChange.mock.calls.at(-1)![0].graph.schemaVersion).toBe("0.6.0");
+      expect(generate).toHaveBeenCalledTimes(sourceCalls);
+    } finally { view.unmount(); }
+    for (const record of rendererState.records) expect(record.dispose).toHaveBeenCalledTimes(1);
+  }, 90000);
+
 });

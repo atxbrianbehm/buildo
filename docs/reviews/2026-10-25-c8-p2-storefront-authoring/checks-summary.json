@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "0.1.0",
+  "allFivePassed": true,
+  "tests": 1812,
+  "testFiles": 125,
+  "e2eMarkers": [
+    "R3_P1_WORKSPACE_E2E_RESULT",
+    "R3_P6_WINDOW_WIDTH_E2E_RESULT",
+    "R3_P11_SOURCE_CHECKPOINT_RECOVERY_E2E_RESULT",
+    "R3_P12_WINDOW_WIDTH_HISTORY_E2E_RESULT",
+    "R3_P15_WIDTH_BATCH_SOURCE_E2E_RESULT",
+    "R3_P16_WINDOW_FLOOR_WIDTH_E2E_RESULT",
+    "R3_P18_WINDOW_BAY_WIDTH_E2E_RESULT",
+    "R4_P4_SURFACE_SOURCE_APP_E2E_RESULT"
+  ],
+  "sourcePinsVerified": 338
+}

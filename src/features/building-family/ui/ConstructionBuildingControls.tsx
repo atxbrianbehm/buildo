@@ -2,18 +2,28 @@ import { CONSTRUCTION_WINDOW_LAYOUTS } from "../core/constructionWindowVocabular
 import { useId, useState } from "react";
 import type { BayConstructionGraph } from "../contracts/bayConstructionGraph";
 import { supportsGroupedConstruction } from "./constructionBuildingBindings";
+import { constructionHasStorefront, CONSTRUCTION_FRONTAGE_OPTIONS } from "../core/constructionStorefrontGraph";
 
 type Fields = Record<string, Record<string, string>>;
 const groups = [
   { id: "shape", label: "Shape", fields: [["footprint", "widthM", "Width (m)", "Overall building width."], ["footprint", "depthM", "Depth (m)", "Overall building depth."], ["footprint", "wallDepthM", "Wall depth (m)", "Thickness of the masonry shell."]] },
   { id: "storeys", label: "Storeys", fields: [["facade", "count", "Floor count", "Number of storeys on every elevation."], ["facade", "groundHeightM", "Ground storey height (m)", "Height of the ground storey."], ["facade", "upperHeightM", "Upper storey height (m)", "Height of each upper storey."], ["bays", "count", "Bays per elevation", "Repeating divisions on each elevation."]] },
   { id: "openings", label: "Openings", fields: [["window", "recessM", "Recess (m)", "Distance from facade to window frame."], ["window", "frameWidthM", "Frame width (m)", "Width of the window frame."], ["window", "sillProjectionM", "Sill projection (m)", "How far the sill extends from the facade."]] },
+  { id: "frontage", label: "Ground floor", fields: [] },
   { id: "roof", label: "Roof & trim", fields: [["roof", "parapetHeightM", "Parapet height (m)", "Wall above the roof deck."], ["roof", "copingProjectionM", "Coping projection (m)", "Overhang of the parapet cap."], ["roof", "corniceHeightM", "Cornice height (m)", "Height of the continuous roof profile."], ["roof", "corniceProjectionM", "Cornice projection (m)", "How far the cornice projects."], ["bands", "heightM", "Belt height (m)", "Height of the horizontal storey bands."], ["bands", "projectionM", "Belt projection (m)", "How far the storey bands project."]] }
 ] as const;
 const proportions = [["opening", "widthM", "Opening width (m)", "Width of the repeated window opening."], ["opening", "heightM", "Opening height (m)", "Height of the repeated window opening."], ["opening", "sillM", "Sill height (m)", "Height above each storey floor."]] as const;
+const frontageProportions = [
+  ["frontage", "pierWidthM", "Masonry pier width (m)", "Masonry retained at each side of a display bay."],
+  ["frontage", "bulkheadHeightM", "Bulkhead height (m)", "Solid masonry below the display glazing; the entrance stays at grade."],
+  ["frontage", "headHeightM", "Head band height (m)", "Masonry above the display and entrance apertures."],
+  ["frontage", "transomBaseM", "Transom level (m)", "Bottom of the shared transom rail above the ground floor."],
+  ["frontage", "frameWidthM", "Storefront frame width (m)", "Frame and transom rail section."],
+  ["frontage", "recessM", "Storefront recess (m)", "Distance from masonry face to the storefront frame."]
+] as const;
 
-export function ConstructionBuildingControls({ graph, fields, windowCount, disabled, dirty, onFieldChange, onApply, onRevert, onAdvanced }: {
-  graph: BayConstructionGraph; fields: Fields; windowCount: number; disabled: boolean; dirty: boolean;
+export function ConstructionBuildingControls({ graph, fields, windowCount, storefrontCount = 0, disabled, dirty, onFieldChange, onApply, onRevert, onAdvanced }: {
+  graph: BayConstructionGraph; fields: Fields; windowCount: number; storefrontCount?: number; disabled: boolean; dirty: boolean;
   onFieldChange: (nodeId: string, field: string, text: string) => void; onApply: () => void; onRevert: () => void; onAdvanced: () => void;
 }) {
   const [active, setActive] = useState<string | null>("openings"), prefix = useId();
@@ -23,13 +33,16 @@ export function ConstructionBuildingControls({ graph, fields, windowCount, disab
     text !== String(Number((node.parameters as Record<string,number>)[key].toPrecision(12))))).map(node => node.id);
   const onlyWindows = active === "openings" && (!dirty || changedNodes.length > 0 && changedNodes.every(id => id === "window" || id === "opening"));
   const pendingLayout = changedNodes.some(id => !["window", "opening"].includes(id));
+  const storefront = constructionHasStorefront(graph), frontageChosen = fields.frontage?.mode === "1";
+  const frontageBypassed = Boolean(graph.nodes.find(node => node.type === "PlaceStorefront" && node.bypassed));
+  const bayCount = graph.nodes.find(node => node.type === "SplitBays")!.parameters.count;
   const unavailable = <p className="construction-grouped__unavailable" aria-label="Local geometry editing unavailable">Local geometry edits — not implemented</p>;
   const actions = <div className="construction-grouped__actions"><button type="submit" aria-label="Apply construction">{onlyWindows ? `Apply to ${windowCount} windows` : "Apply changes"}</button>
     {dirty ? <button type="button" onClick={onRevert}>Revert draft</button> : null}</div>;
   const field = ([nodeId,key,label,hint]: readonly string[]) => {
     const node = graph.nodes.find(node => node.id === nodeId)!, bypassed = "bypassed" in node && node.bypassed;
     return <label className="construction-grouped__field" key={nodeId+key}><span><strong>{label}</strong><small id={prefix+nodeId+key}>{hint}{bypassed ? " This operator is bypassed in the advanced graph." : ""}</small></span>
-      <input type="number" aria-label={label} aria-describedby={prefix+nodeId+key} step={key === "count" ? "1" : "0.01"} value={fields[nodeId]?.[key] ?? ""} disabled={Boolean(bypassed)}
+      <input type="number" aria-label={label} aria-describedby={prefix+nodeId+key} step={key === "count" ? "1" : "0.01"} value={fields[nodeId]?.[key] ?? ""} disabled={Boolean(bypassed) || active === "frontage" && frontageBypassed}
         onChange={event => onFieldChange(nodeId,key,event.currentTarget.value)} /></label>;
   };
   return <form className="construction-grouped" noValidate onSubmit={event => { event.preventDefault(); onApply(); }}>
@@ -37,15 +50,33 @@ export function ConstructionBuildingControls({ graph, fields, windowCount, disab
       {groups.map(group => <details key={group.id} open={active === group.id} className="construction-grouped__section">
         <summary onClick={event => {event.preventDefault();setActive(value => value === group.id ? null : group.id);}}>{group.label}</summary>
         {active === group.id ? <div className="construction-grouped__body">
-          <p className="construction-grouped__scope">{group.id === "openings" ? pendingLayout ? "Shared window controls. Apply pending layout changes to update the affected count." : `Applies to all ${windowCount} generated windows.` : "Applies to the whole building."}</p>
+          <p className="construction-grouped__scope">{group.id === "frontage" ? dirty ? "Apply updates the front ground-floor row. Upper storeys and other elevations keep their windows." : storefront ? `Applies to ${storefrontCount} front ground-floor bays, including the entrance.` : "Front ground-floor frontage. Upper storeys and other elevations keep their windows." : group.id === "openings" ? pendingLayout ? "Shared window controls. Apply pending layout changes to update the affected count." : storefront ? `Applies to ${windowCount} regular windows. Display glazing is controlled under Ground floor.` : `Applies to all ${windowCount} generated windows.` : "Applies to the whole building."}</p>
           {group.id === "openings" ? <label className="construction-grouped__field construction-grouped__assembly">
-            <span><strong>Window assembly</strong><small id={prefix+"assembly"}>Frame and glazing construction for every generated window.</small></span>
+            <span><strong>Window assembly</strong><small id={prefix+"assembly"}>{storefront ? "Frame and glazing for regular windows; display bays use their own assembly." : "Frame and glazing construction for every generated window."}</small></span>
             <select aria-label="Window assembly" aria-describedby={prefix+"assembly"} value={fields.window?.layout ?? "0"}
               disabled={Boolean(graph.nodes.find(node => node.id === "window" && "bypassed" in node && node.bypassed))}
               onChange={event => onFieldChange("window","layout",event.currentTarget.value)}>
               {CONSTRUCTION_WINDOW_LAYOUTS.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
             </select>
           </label> : null}
+          {group.id === "frontage" ? <>
+            <label className="construction-grouped__field construction-grouped__assembly">
+              <span><strong>Ground frontage</strong><small id={prefix+"frontage"}>Wide display glazing and a glazed entrance with a shared transom.{frontageBypassed ? " This operator is bypassed in the advanced graph." : ""}</small></span>
+              <select aria-label="Ground frontage" aria-describedby={prefix+"frontage"} value={fields.frontage?.mode ?? "0"} disabled={frontageBypassed} onChange={event => onFieldChange("frontage","mode",event.currentTarget.value)}>
+                {CONSTRUCTION_FRONTAGE_OPTIONS.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
+              </select>
+            </label>
+            {frontageChosen ? <>
+              <label className="construction-grouped__field"><span><strong>Entrance bay</strong><small id={prefix+"entrance"}>Front bays are numbered from left to right.</small></span>
+                <select aria-label="Entrance bay" aria-describedby={prefix+"entrance"} value={fields.entrance?.bayIndex ?? "1"} disabled={frontageBypassed} onChange={event => onFieldChange("entrance","bayIndex",event.currentTarget.value)}>
+                  {Array.from({length:bayCount},(_,index) => <option key={index} value={index}>Bay {index+1}</option>)}
+                </select>
+              </label>
+              {field(["entrance","widthM","Entrance width (m)","Width of the grade-level glazed entrance."])}
+              <details className="construction-grouped__proportions"><summary>Frontage proportions</summary>{frontageProportions.map(field)}</details>
+              <p>Head band and transom level set the entrance height. Regular window controls stay under Openings.</p>
+            </> : null}
+          </> : null}
           {group.fields.map(field)}
           {group.id === "openings" ? <details className="construction-grouped__proportions"><summary>Opening proportions</summary>{proportions.map(field)}</details> : null}
           {dirty ? <p className="construction-grouped__draft">Apply commits all pending building changes. Undo restores the previous building.</p> : null}

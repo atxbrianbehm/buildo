@@ -1,0 +1,45 @@
+AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+... Skipped lines
+
+  [
+    'building/authored-building/node/wall/facade/wall',
+    'building/authored-building/node/wall/facade/right/wall',
+    'building/authored-building/node/wall/facade/rear/wall',
+    'building/authored-building/node/wall/facade/left/wall',
+...
+    'building/authored-building/node/window/facade/floor/0/bay/3/frame',
++   'building/authored-building/node/window/facade/floor/0/bay/0/glass',
++   'building/authored-building/node/window/facade/floor/0/bay/2/glass',
++   'building/authored-building/node/window/facade/floor/0/bay/3/glass',
++   'building/authored-building/node/window/facade/floor/0/bay/0/trim',
++   'building/authored-building/node/window/facade/floor/0/bay/2/trim',
++   'building/authored-building/node/window/facade/floor/0/bay/3/trim',
+    'building/authored-building/node/window/facade/floor/1/bay/0/frame',
+    'building/authored-building/node/window/facade/floor/1/bay/1/frame',
+    'building/authored-building/node/window/facade/floor/1/bay/2/frame',
+    'building/authored-building/node/window/facade/floor/1/bay/3/frame',
+    'building/authored-building/node/window/facade/floor/2/bay/0/frame',
+...
+    'building/authored-building/node/window/facade/left/floor/2/bay/3/frame',
+-   'building/authored-building/node/window/facade/floor/0/bay/0/glass',
+-   'building/authored-building/node/window/facade/floor/0/bay/2/glass',
+-   'building/authored-building/node/window/facade/floor/0/bay/3/glass',
+    'building/authored-building/node/window/facade/floor/1/bay/0/glass',
+    'building/authored-building/node/window/facade/floor/1/bay/1/glass',
+    'building/authored-building/node/window/facade/floor/1/bay/2/glass',
+    'building/authored-building/node/window/facade/floor/1/bay/3/glass',
+    'building/authored-building/node/window/facade/floor/2/bay/0/glass',
+...
+    'building/authored-building/node/window/facade/left/floor/2/bay/3/glass',
+-   'building/authored-building/node/window/facade/floor/0/bay/0/trim',
+-   'building/authored-building/node/window/facade/floor/0/bay/2/trim',
+-   'building/authored-building/node/window/facade/floor/0/bay/3/trim',
+    'building/authored-building/node/window/facade/floor/1/bay/0/trim',
+    'building/authored-building/node/window/facade/floor/1/bay/1/trim',
+    'building/authored-building/node/window/facade/floor/1/bay/2/trim',
+    'building/authored-building/node/window/facade/floor/1/bay/3/trim',
+    'building/authored-building/node/window/facade/floor/2/bay/0/trim',
+
+    at file:///C:/Users/behmb/Documents/Cascade%20Projects/buildo/test-results/c8-p2-storefront-authoring-2026-10-25/capture-storefront-01.mjs:165:148
+[]

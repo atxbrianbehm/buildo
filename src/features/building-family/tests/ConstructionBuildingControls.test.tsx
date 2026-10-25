@@ -1,3 +1,5 @@
+import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
+import { groupedStorefrontCount } from "../ui/constructionBuildingBindings";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import { ConstructionBuildingControls } from "../ui/ConstructionBuildingControls";
@@ -5,10 +7,10 @@ import { supportsGroupedConstruction, groupedWindowCount } from "../ui/construct
 import { createBuildingConstructionGraph } from "../contracts/bayConstructionGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
 afterEach(cleanup);
-function mount(graph = createBuildingConstructionGraph(), dirty = false) {
+function mount(graph = createBuildingConstructionGraph(), dirty = false, counts = { window: 47, storefront: 0 }) {
   const fields = Object.fromEntries(graph.nodes.filter(node => "parameters" in node).map(node => [node.id,Object.fromEntries(Object.entries(node.parameters).map(([key,value]) => [key,String(value)]))]));
   const onFieldChange=vi.fn(),onApply=vi.fn(),onRevert=vi.fn(),onAdvanced=vi.fn();
-  const view=render(<ConstructionBuildingControls graph={graph} fields={fields} windowCount={47} disabled={false} dirty={dirty} onFieldChange={onFieldChange} onApply={onApply} onRevert={onRevert} onAdvanced={onAdvanced}/>);
+  const view=render(<ConstructionBuildingControls graph={graph} fields={fields} windowCount={counts.window} storefrontCount={counts.storefront} disabled={false} dirty={dirty} onFieldChange={onFieldChange} onApply={onApply} onRevert={onRevert} onAdvanced={onAdvanced}/>);
   return {...view,fields,onFieldChange,onApply,onRevert,onAdvanced};
 }
 it("reports real generated window frames, excludes the entrance and follows scope filtering",async()=>{
@@ -53,4 +55,22 @@ it("offers named real assembly choices while preserving shared and bypass bounda
   fireEvent.change(screen.getByRole("combobox",{name:"Window assembly"}),{target:{value:"2"}});
   expect(view.onFieldChange).toHaveBeenCalledWith("window","layout","2");expect(graph).toEqual(before);
   expect(screen.getByRole("option",{name:"Twin casement"})).toBeInTheDocument();expect(screen.getByRole("option",{name:"Six-light casement"})).toBeInTheDocument();
+});
+
+it("separates regular windows from the four real front-ground bays and binds artist-friendly entrance choices", async () => {
+  const graph = withConstructionStorefront(createBuildingConstructionGraph(), 1), result = await evaluateConstruction(graph);
+  const counts = { window: groupedWindowCount(graph, result.ir), storefront: groupedStorefrontCount(graph, result.ir) };
+  expect(counts).toEqual({ window: 44, storefront: 4 }); expect(supportsGroupedConstruction(graph)).toBe(true);
+  const view = mount(graph, false, counts);
+  expect(screen.getByText("Applies to 44 regular windows. Display glazing is controlled under Ground floor.")).toBeInTheDocument();
+  fireEvent.click(screen.getByText("Ground floor", { selector: "summary" }));
+  expect(screen.getByRole("combobox", { name: "Ground frontage" })).toHaveValue("1");
+  expect(screen.getByText("Applies to 4 front ground-floor bays, including the entrance.")).toBeInTheDocument();
+  expect(screen.getByRole("option", { name: "Bay 2" })).toHaveValue("1");
+  fireEvent.change(screen.getByRole("combobox", { name: "Entrance bay" }), { target: { value: "2" } });
+  expect(view.onFieldChange).toHaveBeenCalledWith("entrance", "bayIndex", "2");
+  fireEvent.change(screen.getByLabelText("Bulkhead height (m)"), { target: { value: "0.65" } });
+  expect(view.onFieldChange).toHaveBeenCalledWith("frontage", "bulkheadHeightM", "0.65");
+  fireEvent.change(screen.getByRole("combobox", { name: "Ground frontage" }), { target: { value: "0" } });
+  expect(view.onFieldChange).toHaveBeenCalledWith("frontage", "mode", "0");
 });

@@ -1,0 +1,7 @@
+locator.waitFor: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('button', { name: 'Apply construction', exact: true }) to be visible[22m
+
+    at advanced (C:\Users\behmb\Documents\Cascade Projects\buildo\test-results\c8-p2-storefront-authoring-2026-10-25\capture-storefront-02.mjs:149:335)
+    at async file:///C:/Users/behmb/Documents/Cascade%20Projects/buildo/test-results/c8-p2-storefront-authoring-2026-10-25/capture-storefront-02.mjs:183:187
+[]

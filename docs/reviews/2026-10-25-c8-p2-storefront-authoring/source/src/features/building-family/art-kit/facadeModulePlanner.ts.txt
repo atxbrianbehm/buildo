@@ -1,0 +1,597 @@
+import type { BuildingFamilySpec } from "../contracts/buildingFamilySpec";
+import type { Diagnostic } from "../core/diagnostics";
+import { createSeedTree } from "../core/seedTree";
+import type { ArtKitFacadeZone, ArtKitManifest, ArtKitModule, ArtKitModuleKind } from "./artKitContracts";
+import {
+  validateBoundsFit,
+  validateSameFacadeLayerOverlap,
+  type ArtKitPlacementLayer
+} from "./moduleSnapGrid";
+
+export type ArtKitFacadeName = "front" | "rear" | "left" | "right";
+
+export interface FacadeCell {
+  id: string;
+  facade: ArtKitFacadeName;
+  floorIndex: number;
+  bayIndex: number;
+  zone: "ground" | "body";
+  originMeters: [number, number, number];
+  sizeMeters: [number, number, number];
+  semanticPath: string;
+}
+
+export interface FacadeModulePlacement {
+  id: string;
+  moduleId: string;
+  facade: ArtKitFacadeName;
+  floorIndex: number;
+  bayIndex: number;
+  zone: "ground" | "body" | "cornice" | "roof" | "side" | "rear";
+  layer: ArtKitPlacementLayer;
+  originMeters: [number, number, number];
+  sizeMeters: [number, number, number];
+  semanticPath: string;
+}
+
+export interface FacadeModulePlan {
+  schemaVersion: "0.1.0";
+  artKitManifestId: string;
+  unitMeters: 1;
+  plannerId: "seeded-greedy";
+  cells: FacadeCell[];
+  placements: FacadeModulePlacement[];
+  diagnostics: Diagnostic[];
+}
+
+export interface PlanFacadeModulesInput {
+  spec: BuildingFamilySpec;
+  kit: ArtKitManifest;
+}
+
+export interface DeriveFacadeBodyOpeningPlacementInput extends PlanFacadeModulesInput {
+  cell: FacadeCell;
+}
+
+const SIDE_PANEL_DEPTH_M = 0.6;
+
+export function sideBayCount(spec: BuildingFamilySpec): number {
+  return Math.max(1, Math.round(spec.massing.depthM / spec.facade.sideBaySpacingM));
+}
+
+function floorBaseY(spec: BuildingFamilySpec, floorIndex: number): number {
+  return spec.massing.floorHeightsM.slice(0, floorIndex).reduce((total, height) => total + height, 0);
+}
+
+function zoneForFloor(floorIndex: number): "ground" | "body" {
+  return floorIndex === 0 ? "ground" : "body";
+}
+
+function plannerDiagnostic(code: string, message: string, path: string, received?: unknown): Diagnostic {
+  return { code, message, severity: "error", path, received };
+}
+
+function placementSizeForFacade(
+  facade: ArtKitFacadeName,
+  module: ArtKitModule
+): [number, number, number] {
+  if (facade === "left" || facade === "right") {
+    return [module.boundsMeters.depth, module.boundsMeters.height, module.boundsMeters.width];
+  }
+  return [module.boundsMeters.width, module.boundsMeters.height, module.boundsMeters.depth];
+}
+
+function wallSizeForCell(cell: FacadeCell): [number, number, number] {
+  return [...cell.sizeMeters];
+}
+
+function placementOrigin(
+  cell: FacadeCell,
+  size: [number, number, number],
+  centerOnFacade: boolean,
+  verticalAlign: "bottom" | "center" | "top" = "center"
+): [number, number, number] {
+  let x = cell.originMeters[0];
+  let y = cell.originMeters[1];
+  if (verticalAlign === "center") {
+    y = cell.originMeters[1] + Math.max(0, (cell.sizeMeters[1] - size[1]) / 2);
+  } else if (verticalAlign === "top") {
+    y = cell.originMeters[1] + Math.max(0, cell.sizeMeters[1] - size[1]);
+  }
+  let z = cell.originMeters[2];
+
+  if (centerOnFacade) {
+    if (cell.facade === "front" || cell.facade === "rear") {
+      x = cell.originMeters[0] + Math.max(0, (cell.sizeMeters[0] - size[0]) / 2);
+    } else {
+      z = cell.originMeters[2] + Math.max(0, (cell.sizeMeters[2] - size[2]) / 2);
+    }
+  }
+
+  // Preserve exact cell topology. Fractional bay spans (e.g. 3.6 m side bays)
+  // must not be snapped onto the 1 m lattice or same-facade walls falsely overlap.
+  return [x, y, z];
+}
+
+/** Ground-front storefront grammar: bulkhead + lintel (trim) around glazing/door openings. */
+function placeStorefrontBands(
+  kit: ArtKitManifest,
+  cell: FacadeCell,
+  placements: FacadeModulePlacement[],
+  diagnostics: Diagnostic[]
+): void {
+  if (cell.facade !== "front" || cell.zone !== "ground") {
+    return;
+  }
+  const bulkhead = kit.modules.find((module) => module.id === "storefront.bulkhead.panel");
+  const lintel = kit.modules.find((module) => module.id === "storefront.lintel.band");
+  const bayWidth = cell.sizeMeters[0];
+
+  if (bulkhead) {
+    const height = Math.min(bulkhead.boundsMeters.height, cell.sizeMeters[1] * 0.28);
+    const size: [number, number, number] = [
+      Math.min(bulkhead.boundsMeters.width, bayWidth * 0.98),
+      height,
+      Math.min(bulkhead.boundsMeters.depth, cell.sizeMeters[2])
+    ];
+    const placement = createPlacement({
+      cell,
+      module: bulkhead,
+      layer: "trim",
+      zone: "ground",
+      size,
+      centerOnFacade: true,
+      verticalAlign: "bottom"
+    });
+    placements.push(placement);
+    diagnostics.push(...validateBoundsFit(placement, cell));
+  }
+
+  if (lintel) {
+    const height = Math.min(lintel.boundsMeters.height, cell.sizeMeters[1] * 0.12);
+    const size: [number, number, number] = [
+      Math.min(lintel.boundsMeters.width, bayWidth * 0.98),
+      height,
+      Math.min(lintel.boundsMeters.depth, cell.sizeMeters[2])
+    ];
+    const placement = createPlacement({
+      cell,
+      module: lintel,
+      layer: "trim",
+      zone: "ground",
+      size,
+      centerOnFacade: true,
+      verticalAlign: "top"
+    });
+    placements.push(placement);
+    diagnostics.push(...validateBoundsFit(placement, cell));
+  }
+}
+
+function moduleSupportsZone(module: ArtKitModule, zone: ArtKitFacadeZone): boolean {
+  return module.facadeZones.includes(zone);
+}
+
+function findModule(
+  kit: ArtKitManifest,
+  kind: ArtKitModuleKind,
+  zone: ArtKitFacadeZone,
+  diagnostics: Diagnostic[]
+): ArtKitModule | undefined {
+  const module = kit.modules.find((candidate) => candidate.kind === kind && moduleSupportsZone(candidate, zone));
+  if (!module) {
+    diagnostics.push(
+      plannerDiagnostic(
+        "artKit.facadePlanner.missingModule",
+        `No art-kit module of kind ${kind} supports facade zone ${zone}.`,
+        `modules.${kind}`,
+        zone
+      )
+    );
+  }
+  return module;
+}
+
+function wallZoneForCell(cell: FacadeCell): ArtKitFacadeZone {
+  if (cell.facade === "left" || cell.facade === "right") {
+    return "side";
+  }
+  if (cell.facade === "rear") {
+    return "rear";
+  }
+  return cell.zone === "ground" ? "ground" : "body";
+}
+
+function resolveWallModule(kit: ArtKitManifest, cell: FacadeCell, diagnostics: Diagnostic[]): ArtKitModule | undefined {
+  const preferredZone = wallZoneForCell(cell);
+  const preferred = kit.modules.find(
+    (candidate) => candidate.kind === "wall-panel" && moduleSupportsZone(candidate, preferredZone)
+  );
+  if (preferred) {
+    return preferred;
+  }
+
+  // Body-capable wall panels often also cover ground cells in the demo kit.
+  const fallbackZones: ArtKitFacadeZone[] =
+    preferredZone === "ground" ? ["body", "side", "rear"] : [preferredZone];
+  for (const zone of fallbackZones) {
+    const module = kit.modules.find(
+      (candidate) => candidate.kind === "wall-panel" && moduleSupportsZone(candidate, zone)
+    );
+    if (module) {
+      return module;
+    }
+  }
+
+  return findModule(kit, "wall-panel", preferredZone, diagnostics);
+}
+
+function createPlacement(input: {
+  cell: FacadeCell;
+  module: ArtKitModule;
+  layer: ArtKitPlacementLayer;
+  zone: FacadeModulePlacement["zone"];
+  size: [number, number, number];
+  centerOnFacade: boolean;
+  /** Vertical alignment within the cell (default center). */
+  verticalAlign?: "bottom" | "center" | "top";
+}): FacadeModulePlacement {
+  const originMeters = placementOrigin(
+    input.cell,
+    input.size,
+    input.centerOnFacade,
+    input.verticalAlign ?? "center"
+  );
+  return {
+    id: `placement.${input.layer}.${input.cell.facade}.floor${input.cell.floorIndex}.bay${input.cell.bayIndex}.${input.module.id}`,
+    moduleId: input.module.id,
+    facade: input.cell.facade,
+    floorIndex: input.cell.floorIndex,
+    bayIndex: input.cell.bayIndex,
+    zone: input.zone,
+    layer: input.layer,
+    originMeters,
+    sizeMeters: input.size,
+    semanticPath: `${input.cell.semanticPath}/${input.layer}/${input.module.id}`
+  };
+}
+
+export function buildFacadeCells(spec: BuildingFamilySpec): FacadeCell[] {
+  const cells: FacadeCell[] = [];
+  const width = spec.massing.widthM;
+  const depth = spec.massing.depthM;
+  const frontBayWidth = width / spec.facade.frontBayCount;
+  const sides = sideBayCount(spec);
+  const sideBayDepth = depth / sides;
+
+  for (let floorIndex = 0; floorIndex < spec.massing.floorCount; floorIndex += 1) {
+    const floorHeight = spec.massing.floorHeightsM[floorIndex] ?? spec.massing.floorHeightsM.at(-1) ?? 3;
+    const y = floorBaseY(spec, floorIndex);
+    const zone = zoneForFloor(floorIndex);
+
+    for (let bayIndex = 0; bayIndex < spec.facade.frontBayCount; bayIndex += 1) {
+      cells.push({
+        id: `cell.front.floor${floorIndex}.bay${bayIndex}`,
+        facade: "front",
+        floorIndex,
+        bayIndex,
+        zone,
+        originMeters: [-width / 2 + bayIndex * frontBayWidth, y, -depth / 2],
+        sizeMeters: [frontBayWidth, floorHeight, SIDE_PANEL_DEPTH_M],
+        semanticPath: `building/${spec.familyId}/facade/front/floor/${floorIndex}/bay/${bayIndex}`
+      });
+      cells.push({
+        id: `cell.rear.floor${floorIndex}.bay${bayIndex}`,
+        facade: "rear",
+        floorIndex,
+        bayIndex,
+        zone,
+        originMeters: [-width / 2 + bayIndex * frontBayWidth, y, depth / 2 - SIDE_PANEL_DEPTH_M],
+        sizeMeters: [frontBayWidth, floorHeight, SIDE_PANEL_DEPTH_M],
+        semanticPath: `building/${spec.familyId}/facade/rear/floor/${floorIndex}/bay/${bayIndex}`
+      });
+    }
+
+    for (let bayIndex = 0; bayIndex < sides; bayIndex += 1) {
+      cells.push({
+        id: `cell.left.floor${floorIndex}.bay${bayIndex}`,
+        facade: "left",
+        floorIndex,
+        bayIndex,
+        zone,
+        originMeters: [-width / 2, y, -depth / 2 + bayIndex * sideBayDepth],
+        sizeMeters: [SIDE_PANEL_DEPTH_M, floorHeight, sideBayDepth],
+        semanticPath: `building/${spec.familyId}/facade/left/floor/${floorIndex}/bay/${bayIndex}`
+      });
+      cells.push({
+        id: `cell.right.floor${floorIndex}.bay${bayIndex}`,
+        facade: "right",
+        floorIndex,
+        bayIndex,
+        zone,
+        originMeters: [width / 2 - SIDE_PANEL_DEPTH_M, y, -depth / 2 + bayIndex * sideBayDepth],
+        sizeMeters: [SIDE_PANEL_DEPTH_M, floorHeight, sideBayDepth],
+        semanticPath: `building/${spec.familyId}/facade/right/floor/${floorIndex}/bay/${bayIndex}`
+      });
+    }
+  }
+
+  return cells;
+}
+
+function chooseWindowModule(
+  kit: ArtKitManifest,
+  cell: FacadeCell,
+  seedTree: ReturnType<typeof createSeedTree>
+): ArtKitModule | undefined {
+  const zone: ArtKitFacadeZone = cell.zone;
+
+  // Ground storefront glazing is kit grammar (G4), not residential body windows.
+  if (zone === "ground" && cell.facade === "front") {
+    const storefrontGlazing = kit.modules.find((module) => module.id === "storefront.glazing.bay");
+    if (storefrontGlazing) {
+      return storefrontGlazing;
+    }
+  }
+
+  const rectangular = kit.modules.find(
+    (module) => module.id === "opening.window.rectangular" && moduleSupportsZone(module, zone)
+  );
+  const arched = kit.modules.find(
+    (module) => module.id === "opening.window.arched" && moduleSupportsZone(module, zone)
+  );
+
+  // Balanced weights so building-seed samples visibly differ (not always rectangular).
+  const weighted = [
+    rectangular ? { value: rectangular, weight: 2 } : undefined,
+    arched ? { value: arched, weight: 3 } : undefined
+  ].filter((item): item is { value: ArtKitModule; weight: number } => item !== undefined);
+
+  if (weighted.length === 0) {
+    return kit.modules.find((module) => module.kind === "opening" && moduleSupportsZone(module, zone));
+  }
+  if (weighted.length === 1) {
+    return weighted[0].value;
+  }
+  return seedTree.chooseWeighted(weighted, cell.semanticPath);
+}
+
+function chooseStorefrontDoorModule(kit: ArtKitManifest, diagnostics: Diagnostic[]): ArtKitModule | undefined {
+  const preferred = kit.modules.find((module) => module.id === "storefront.door.recessed");
+  if (preferred) {
+    return preferred;
+  }
+  return (
+    kit.modules.find((module) => module.id === "door.storefront.recessed") ??
+    findModule(kit, "door", "ground", diagnostics)
+  );
+}
+
+function isBodyOpeningCell(cell: FacadeCell): boolean {
+  return cell.zone === "body" && cell.facade !== "rear";
+}
+
+/** Mix only occupancy scores: module choices retain the semantic seed tree's authored values. */
+function bodyOpeningScore(seedTree: ReturnType<typeof createSeedTree>, cell: FacadeCell): number {
+  const path = cell.facade === "front"
+    ? `front-open/${cell.floorIndex}/${cell.bayIndex}`
+    : `side-opening/${cell.facade}/${cell.floorIndex}/${cell.bayIndex}`;
+  let value = seedTree.uint32(path);
+  value ^= value >>> 16;
+  value = Math.imul(value, 0x85ebca6b);
+  value ^= value >>> 13;
+  value = Math.imul(value, 0xc2b2ae35);
+  value ^= value >>> 16;
+  return (value >>> 0) / 0x100000000;
+}
+
+function bodyOpeningPresence(
+  cells: readonly FacadeCell[],
+  seedTree: ReturnType<typeof createSeedTree>
+): Set<string> {
+  const rows = new Map<string, { cell: FacadeCell; score: number }[]>();
+  for (const cell of cells) {
+    if (!isBodyOpeningCell(cell)) continue;
+    const rowKey = `${cell.facade}/${cell.floorIndex}`;
+    const row = rows.get(rowKey) ?? [];
+    row.push({ cell, score: bodyOpeningScore(seedTree, cell) });
+    rows.set(rowKey, row);
+  }
+
+  const present = new Set<string>();
+  const frontProbability = 0.72 + seedTree.float01("front-density") * 0.22;
+  for (const row of rows.values()) {
+    const isFront = row[0].cell.facade === "front";
+    for (const { cell, score } of row) {
+      if (isFront ? score <= frontProbability : score < 0.55) present.add(cell.id);
+    }
+    const minimum = Math.ceil(row.length * (isFront ? 0.7 : 0.5));
+    let count = row.filter(({ cell }) => present.has(cell.id)).length;
+    if (count >= minimum) continue;
+    // Lowest-score fill preserves the density variation above the per-storey floor.
+    const ranked = [...row].sort((a, b) => a.score - b.score || a.cell.bayIndex - b.cell.bayIndex);
+    for (const { cell } of ranked) {
+      if (present.has(cell.id)) continue;
+      present.add(cell.id);
+      count += 1;
+      if (count >= minimum) break;
+    }
+  }
+  return present;
+}
+
+function deriveBodyOpeningPlacement(
+  input: DeriveFacadeBodyOpeningPlacementInput,
+  seedTree: ReturnType<typeof createSeedTree>,
+  diagnostics: Diagnostic[]
+): FacadeModulePlacement | undefined {
+  const { cell, kit } = input;
+  if (!isBodyOpeningCell(cell)) return undefined;
+  const module = cell.facade === "front"
+    ? chooseWindowModule(kit, cell, seedTree)
+    : kit.modules.find((candidate) => candidate.id === "opening.window.rectangular") ??
+      findModule(kit, "opening", "side", diagnostics) ??
+      findModule(kit, "opening", "body", diagnostics);
+  if (!module) {
+    if (cell.facade === "front") findModule(kit, "opening", "body", diagnostics);
+    return undefined;
+  }
+  return createPlacement({
+    cell,
+    module,
+    layer: "opening",
+    zone: cell.facade === "front" ? "body" : "side",
+    size: placementSizeForFacade(cell.facade, module),
+    centerOnFacade: true
+  });
+}
+
+/** Authored front/side body candidate, independent of the row's occupancy mask. */
+export function deriveFacadeBodyOpeningPlacement(
+  input: DeriveFacadeBodyOpeningPlacementInput
+): FacadeModulePlacement | undefined {
+  const seedTree = createSeedTree(input.spec.seeds.building).fork("art-kit/facades");
+  return deriveBodyOpeningPlacement(input, seedTree, []);
+}
+
+export function planFacadeModules(input: PlanFacadeModulesInput): FacadeModulePlan {
+  const { spec, kit } = input;
+  const cells = buildFacadeCells(spec);
+  const diagnostics: Diagnostic[] = [];
+  const placements: FacadeModulePlacement[] = [];
+  // Building seed drives per-building facade choices so sample gallery variants
+  // and Assembly Hall opens are not identical for a shared family seed.
+  const seedTree = createSeedTree(spec.seeds.building).fork("art-kit/facades");
+  const bodyPresence = bodyOpeningPresence(cells, seedTree);
+  const centerDoorBay = Math.floor(spec.facade.frontBayCount / 2);
+  const doorBayCandidates = [centerDoorBay - 1, centerDoorBay, centerDoorBay + 1].filter(
+    (bay) => bay >= 0 && bay < spec.facade.frontBayCount
+  );
+  const doorBay = seedTree.chooseWeighted(
+    doorBayCandidates.map((bay) => ({
+      value: bay,
+      // Prefer center, allow ±1 for visible sample variety.
+      weight: bay === centerDoorBay ? 3 : 1
+    })),
+    "door-bay"
+  );
+
+  for (const cell of cells) {
+    const wallModule = resolveWallModule(kit, cell, diagnostics);
+    if (wallModule) {
+      const wallPlacement = createPlacement({
+        cell,
+        module: wallModule,
+        layer: "wall",
+        zone:
+          cell.facade === "left" || cell.facade === "right"
+            ? "side"
+            : cell.facade === "rear"
+              ? "rear"
+              : cell.zone,
+        size: wallSizeForCell(cell),
+        centerOnFacade: false
+      });
+      placements.push(wallPlacement);
+      diagnostics.push(...validateBoundsFit(wallPlacement, cell));
+    }
+
+    const isFrontDoorCell =
+      cell.facade === "front" && cell.floorIndex === 0 && cell.bayIndex === doorBay;
+    if (isFrontDoorCell) {
+      placeStorefrontBands(kit, cell, placements, diagnostics);
+      const doorModule = chooseStorefrontDoorModule(kit, diagnostics);
+      if (doorModule) {
+        const size = placementSizeForFacade(cell.facade, doorModule);
+        const doorPlacement = createPlacement({
+          cell,
+          module: doorModule,
+          layer: "opening",
+          zone: "ground",
+          size,
+          centerOnFacade: true
+        });
+        placements.push(doorPlacement);
+        diagnostics.push(...validateBoundsFit(doorPlacement, cell));
+      }
+      continue;
+    }
+
+    if (cell.facade === "front") {
+      if (cell.zone === "body") {
+        if (bodyPresence.has(cell.id)) {
+          const openingPlacement = deriveBodyOpeningPlacement({ spec, kit, cell }, seedTree, diagnostics);
+          if (openingPlacement) {
+            placements.push(openingPlacement);
+            diagnostics.push(...validateBoundsFit(openingPlacement, cell));
+          }
+        }
+        continue;
+      } else if (cell.zone === "ground") {
+        placeStorefrontBands(kit, cell, placements, diagnostics);
+      }
+      const windowModule = chooseWindowModule(kit, cell, seedTree);
+      if (windowModule) {
+        const size = placementSizeForFacade(cell.facade, windowModule);
+        const openingPlacement = createPlacement({
+          cell,
+          module: windowModule,
+          layer: "opening",
+          zone: cell.zone,
+          size,
+          centerOnFacade: true
+        });
+        placements.push(openingPlacement);
+        diagnostics.push(...validateBoundsFit(openingPlacement, cell));
+      } else {
+        findModule(kit, "opening", cell.zone, diagnostics);
+      }
+      continue;
+    }
+
+    if (cell.facade === "rear" && cell.zone === "body") {
+      const rearWindow =
+        kit.modules.find((module) => module.id === "opening.window.rectangular") ??
+        findModule(kit, "opening", "rear", diagnostics) ??
+        findModule(kit, "opening", "body", diagnostics);
+      if (rearWindow) {
+        const size = placementSizeForFacade(cell.facade, rearWindow);
+        const openingPlacement = createPlacement({
+          cell,
+          module: rearWindow,
+          layer: "opening",
+          zone: "rear",
+          size,
+          centerOnFacade: true
+        });
+        placements.push(openingPlacement);
+        diagnostics.push(...validateBoundsFit(openingPlacement, cell));
+      }
+      continue;
+    }
+
+    if (
+      (cell.facade === "left" || cell.facade === "right") &&
+      cell.zone === "body" &&
+      bodyPresence.has(cell.id)
+    ) {
+      const openingPlacement = deriveBodyOpeningPlacement({ spec, kit, cell }, seedTree, diagnostics);
+      if (openingPlacement) {
+        placements.push(openingPlacement);
+        diagnostics.push(...validateBoundsFit(openingPlacement, cell));
+      }
+    }
+  }
+
+  diagnostics.push(...validateSameFacadeLayerOverlap(placements));
+
+  return {
+    schemaVersion: "0.1.0",
+    artKitManifestId: kit.id,
+    unitMeters: 1,
+    plannerId: "seeded-greedy",
+    cells,
+    placements,
+    diagnostics
+  };
+}

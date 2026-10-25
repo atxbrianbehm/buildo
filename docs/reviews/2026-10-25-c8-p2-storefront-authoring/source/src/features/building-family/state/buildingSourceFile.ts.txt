@@ -1,0 +1,539 @@
+import { z } from "zod";
+import { BuildingDocumentSchema, BuildingWindowWidthOverrideSchema, findBuildingDocumentJsonIssue, type BuildingDocument } from "../contracts/buildingDocument";
+import { BuildingIntentSchema } from "../contracts/buildingIntent";
+import { HistoricalStylePackSchema } from "../contracts/historicalStylePack";
+import { SeedsSchema } from "../contracts/shared";
+import type { BuildingFamilySpec } from "../contracts/buildingFamilySpec";
+import { canonicalJson } from "../core/canonicalJson";
+import { hashCanonicalJson, sha256Hex } from "../core/contentHash";
+import { resolveBuildingDocument } from "../core/resolveBuildingDocument";
+import { BuildingWindowWidthOverrideError } from "../compiler/facadeSplitPlan";
+import { BuildingWindowWidthBatchSchema, type BuildingWindowWidthBatch } from "../compiler/buildingCompiler";
+import type { AtlasDebugExport } from "../materials/atlasDebugExport";
+import type { PackedAtlas, PackedAtlasChannels } from "../materials/atlasPacker";
+import type { BuildingPromptControls } from "./buildingStore";
+import { CompletedFamilyPersistencePacketSchema } from "./completedFamilyPersistence";
+import { decodeCompletedFamilyExportChannel, completedFamilyExportAtlasContentHash } from "./completedFamilyExportVerifier";
+
+const names = ["baseColor", "normal", "orm", "height", "opacity"] as const;
+const hashSchema = z.string().regex(/^[a-f0-9]{64}$/);
+const parameterAuthoredFields = ["floorCount", "bayCount", "roofType", "trimDensity", "windowFamily", "corniceFamily"] as const;
+const controlsSchema = z.object({
+  prompt: z.string(), psgPresetId: z.literal("late19cCommercialDemo"),
+  stylePackId: z.literal("late-19c-commercial-demo"), seeds: SeedsSchema.strict(),
+  floorCount: z.number().int().positive(), bayCount: z.number().int().positive(),
+  detailLevel: z.enum(["high", "low"]), fidelityMode: z.enum(["proof", "kit"]),
+  roofType: z.enum(["flat", "gable"]), trimDensity: z.enum(["restrained", "moderate", "ornate"]),
+  windowFamily: z.string().min(1), corniceFamily: z.string().min(1),
+  remoteMaterialEnabled: z.boolean(), lockedComponentKeys: z.array(z.string().min(1))
+}).strict();
+
+function optionalInput(path: Array<string | number>): boolean {
+  const root = path[0];
+  const p = path.slice(1);
+  if (root === "intent") {
+    return (p.length === 1 && p[0] === "stylePackId") ||
+      (p.length === 2 && p[0] === "requested" && ["floorCount", "bayCount", "wallMaterial", "roofType", "windowFamily", "trimDensity", "corniceFamily", "weathering", "symmetry"].includes(String(p[1]))) ||
+      (p.length === 2 && p[0] === "psg" && p[1] === "sourceDocumentId") ||
+      (p.length === 3 && p[0] === "locks" && typeof p[1] === "number" && ["scope", "reason"].includes(String(p[2])));
+  }
+  if (root === "stylePack") return p.length === 2 && p[0] === "defaults" && ["pilasterFamily", "ornamentFamily"].includes(String(p[1]));
+  if (root === "document") return (p.length === 2 && p[0] === "authored" && ["floorCount", "bayCount", "roofType", "trimDensity", "windowFamily", "corniceFamily"].includes(String(p[1]))) ||
+    (p.length === 3 && p[0] === "locks" && typeof p[1] === "number" && p[2] === "reason");
+  return false;
+}
+
+function optionalMaterial(path: Array<string | number>): boolean {
+  const last = path[path.length - 1];
+  return (path.length === 5 && path[0] === "atlas" && path[1] === "manifest" && path[2] === "slots" && typeof path[3] === "number" &&
+    ["profileRecipeId", "metersPerTile", "artKitMaterialRoleId", "proceduralSource"].includes(String(last))) ||
+    (path.length >= 3 && path[path.length - 3] === "diagnostics" && typeof path[path.length - 2] === "number" &&
+      ["path", "received", "allowedValues"].includes(String(last)));
+}
+
+function invalid(message: string, diagnostics?: unknown): Error {
+  return Object.assign(new Error(message), { code: "building.sourceFileInvalid", ...(diagnostics ? { diagnostics } : {}) });
+}
+
+function ownJson(input: unknown, optional: (path: Array<string | number>) => boolean = () => false): unknown {
+  const issue = findBuildingDocumentJsonIssue(input, optional);
+  if (issue) throw invalid(issue.path.join(".") + ": " + issue.message);
+  return JSON.parse(canonicalJson(input)) as unknown;
+}
+
+function jsonBoundary() {
+  return z.unknown().superRefine((value, context) => {
+    const issue = findBuildingDocumentJsonIssue(value);
+    if (issue) context.addIssue({ code: "custom", path: issue.path, message: issue.message });
+  });
+}
+
+const snapshotShape = z.object({
+  schemaVersion: z.literal("0.1.0"),
+  document: BuildingDocumentSchema,
+  intent: BuildingIntentSchema,
+  stylePack: HistoricalStylePackSchema,
+  compilation: z.object({ detailLevel: z.enum(["high", "low"]), fidelityMode: z.enum(["proof", "kit"]) }).strict(),
+  controlsView: controlsSchema,
+  sourceContentHash: hashSchema
+}).strict();
+
+const floorSnapshotShape = snapshotShape.extend({
+  schemaVersion: z.literal("0.2.0"),
+  document: BuildingDocumentSchema.refine((document) =>
+    Object.keys(document.authored).length === 2 &&
+    document.authored.windowFamily !== undefined && document.authored.floorCount !== undefined,
+  { message: "Floor source requires exactly authored windowFamily and floorCount." })
+}).strict();
+const parameterSnapshotShape = snapshotShape.extend({
+  schemaVersion: z.literal("0.3.0"),
+  document: BuildingDocumentSchema.refine((document) => {
+    const keys = Object.keys(document.authored);
+    return keys.length > 0 && keys.every((key) => parameterAuthoredFields.some((field) => field === key));
+  }, { message: "Parameter source requires a nonempty declared subset of the six supported authored fields." })
+}).strict();
+const widthOverridesSchema = jsonBoundary().pipe(z.array(BuildingWindowWidthOverrideSchema).max(1));
+const widthSnapshotShape = parameterSnapshotShape.extend({
+  schemaVersion: z.literal("0.4.0"),
+  windowWidthOverrides: widthOverridesSchema
+}).strict();
+const signedWidthBatchSchema = z.unknown().superRefine((input, context) => {
+  const parsed = BuildingWindowWidthBatchSchema.safeParse(input);
+  if (parsed.success && canonicalJson(parsed.data) !== canonicalJson(input)) {
+    context.addIssue({ code: "custom", message: "Saved width batches require canonical directive order." });
+  }
+}).pipe(BuildingWindowWidthBatchSchema);
+const widthBatchSnapshotShape = parameterSnapshotShape.extend({
+  schemaVersion: z.literal("0.5.0"),
+  windowWidthBatch: signedWidthBatchSchema
+}).strict();
+export const BuildingSourceSnapshotSchema = jsonBoundary().pipe(
+  z.discriminatedUnion("schemaVersion", [snapshotShape, floorSnapshotShape, parameterSnapshotShape, widthSnapshotShape, widthBatchSnapshotShape])
+);
+export type BuildingSourceSnapshot = z.infer<typeof BuildingSourceSnapshotSchema>;
+
+const artifacts = CompletedFamilyPersistencePacketSchema.shape.artifacts.shape;
+const debugSchema = artifacts.debugExport;
+const channelSchema = debugSchema.shape.channels.element.extend({
+  widthPx: z.number().int().min(1).max(4096), heightPx: z.number().int().min(1).max(4096),
+  byteLength: z.number().int().min(4).max(4096 * 4096 * 4), channelHash: hashSchema
+}).strict();
+const fileShape = z.object({
+  schemaVersion: z.literal("0.1.0"),
+  model: z.literal("building-window-source-v1"),
+  source: jsonBoundary().pipe(snapshotShape),
+  materials: z.object({
+    atlas: z.object({
+      manifest: artifacts.atlasManifest, contentHash: hashSchema,
+      slotProvenance: artifacts.atlasSlotProvenance,
+      diagnostics: debugSchema.shape.diagnostics
+    }).strict(),
+    channels: z.array(channelSchema).length(5),
+    debugMetadata: debugSchema.omit({ channels: true }).strict()
+  }).strict(),
+  contentHash: hashSchema
+}).strict();
+
+const floorFileShape = fileShape.extend({
+  schemaVersion: z.literal("0.2.0"),
+  model: z.literal("building-window-floor-source-v2"),
+  source: jsonBoundary().pipe(floorSnapshotShape)
+}).strict();
+const parameterFileShape = fileShape.extend({
+  schemaVersion: z.literal("0.3.0"),
+  model: z.literal("building-parameter-source-v3"),
+  source: jsonBoundary().pipe(parameterSnapshotShape)
+}).strict();
+const widthFileShape = fileShape.extend({
+  schemaVersion: z.literal("0.4.0"),
+  model: z.literal("building-window-width-source-v4"),
+  source: jsonBoundary().pipe(widthSnapshotShape)
+}).strict();
+const widthBatchFileShape = fileShape.extend({
+  schemaVersion: z.literal("0.5.0"),
+  model: z.literal("building-window-width-batch-source-v5"),
+  source: jsonBoundary().pipe(widthBatchSnapshotShape)
+}).strict();
+export const BuildingSourceFileSchema = jsonBoundary().pipe(
+  z.discriminatedUnion("schemaVersion", [fileShape, floorFileShape, parameterFileShape, widthFileShape, widthBatchFileShape])
+);
+export type BuildingSourceFile = z.infer<typeof BuildingSourceFileSchema>;
+
+function freezeJson<T>(value: T): T {
+  if (value && typeof value === "object") {
+    for (const child of Object.values(value)) freezeJson(child);
+    Object.freeze(value);
+  }
+  return value;
+}
+
+export function captureBuildingSourceControls(input: unknown): BuildingPromptControls {
+  return controlsSchema.parse(ownJson(input));
+}
+
+export function captureBuildingSourceSnapshot(input: unknown): BuildingSourceSnapshot {
+  const owned = ownJson(input, optionalInput);
+  const parsed = BuildingSourceSnapshotSchema.parse(owned);
+  if (canonicalJson(parsed) !== canonicalJson(owned)) throw invalid("Source contains unsupported dependency fields.");
+  return freezeJson(parsed);
+}
+
+function sourcePayload(source: BuildingSourceSnapshot) {
+  const { sourceContentHash: omitted, ...payload } = source;
+  void omitted;
+  return { ...payload, document: { ...source.document, revision: 0 } };
+}
+
+export function withBuildingSourceRevision(source: BuildingSourceSnapshot, revision: number): BuildingSourceSnapshot {
+  const owned = captureBuildingSourceSnapshot(source);
+  const document = BuildingDocumentSchema.parse({ ...owned.document, revision });
+  return freezeJson({ ...owned, document });
+}
+
+function checkControls(source: BuildingSourceSnapshot): void {
+  const { controlsView: controls, document, intent, compilation } = source;
+  const parameterSource = source.schemaVersion === "0.3.0" || source.schemaVersion === "0.4.0" || source.schemaVersion === "0.5.0";
+  if (parameterSource) {
+    for (const field of parameterAuthoredFields) {
+      const value = document.authored[field];
+      if (value !== undefined && (intent.requested[field] !== value || controls[field] !== value)) {
+        throw invalid("Source controls or captured intent disagree with authored " + field + ".");
+      }
+    }
+  } else {
+    const supportsFloor = source.schemaVersion === "0.2.0";
+    if (Object.keys(document.authored).some((key) => key !== "windowFamily" && (!supportsFloor || key !== "floorCount")) ||
+        !document.authored.windowFamily || (supportsFloor && document.authored.floorCount === undefined)) {
+      throw invalid(supportsFloor
+        ? "This source version requires explicit authored windowFamily and floorCount."
+        : "This source version supports only an explicit authored windowFamily.");
+    }
+    if (supportsFloor && (intent.requested.floorCount !== document.authored.floorCount || controls.floorCount !== document.authored.floorCount)) {
+      throw invalid("Source floor controls disagree with the authored floorCount.");
+    }
+  }
+  const expected = {
+    prompt: intent.prompt, psgPresetId: "late19cCommercialDemo", stylePackId: source.stylePack.id,
+    seeds: document.seeds, floorCount: intent.requested.floorCount, bayCount: intent.requested.bayCount,
+    detailLevel: compilation.detailLevel, fidelityMode: compilation.fidelityMode,
+    roofType: intent.requested.roofType, trimDensity: intent.requested.trimDensity,
+    windowFamily: parameterSource ? intent.requested.windowFamily : document.authored.windowFamily,
+    corniceFamily: intent.requested.corniceFamily,
+    remoteMaterialEnabled: controls.remoteMaterialEnabled,
+    lockedComponentKeys: document.locks.map((lock) => lock.lockedValue.componentKey)
+  };
+  if (intent.stylePackId !== source.stylePack.id || canonicalJson(intent.seeds) !== canonicalJson(document.seeds) || canonicalJson(intent.locks) !== canonicalJson(document.locks) ||
+      (!parameterSource && intent.requested.windowFamily !== document.authored.windowFamily) || canonicalJson(expected) !== canonicalJson(controls)) {
+    throw invalid("Source controls view disagrees with the authored source or its input dependencies.");
+  }
+}
+
+export async function resolveBuildingSourceSnapshot(input: unknown): Promise<{
+  sourceSnapshot: BuildingSourceSnapshot; spec: BuildingFamilySpec;
+}> {
+  // Own unknown dependency payloads before the first asynchronous hash.
+  const sourceSnapshot = captureBuildingSourceSnapshot(input);
+  checkControls(sourceSnapshot);
+  const resolution = await resolveBuildingDocument({
+    document: sourceSnapshot.document, intent: sourceSnapshot.intent, stylePack: sourceSnapshot.stylePack
+  });
+  if (resolution.status !== "resolved") throw invalid("Source document resolution was rejected.", resolution.diagnostics);
+  if (await hashCanonicalJson(sourcePayload(sourceSnapshot)) !== sourceSnapshot.sourceContentHash) throw invalid("Source content hash does not match its captured inputs.");
+  return { sourceSnapshot, spec: resolution.spec };
+}
+
+type CreateBuildingSourceSnapshotInput = {
+  documentId: string; revision: number; controls: BuildingPromptControls; intent: unknown; stylePack: unknown;
+};
+export async function createBuildingSourceSnapshot(input: CreateBuildingSourceSnapshotInput): Promise<{
+  sourceSnapshot: BuildingSourceSnapshot; spec: BuildingFamilySpec;
+}> {
+  return createSourceSnapshot(input, "0.1.0");
+}
+async function createSourceSnapshot(
+  input: CreateBuildingSourceSnapshotInput,
+  schemaVersion: BuildingSourceSnapshot["schemaVersion"],
+  declaredAuthored?: BuildingDocument["authored"],
+  windowWidthOverrides?: unknown,
+  windowWidthBatch?: unknown
+): Promise<{
+  sourceSnapshot: BuildingSourceSnapshot; spec: BuildingFamilySpec;
+}> {
+  const documentId = input.documentId;
+  const revision = input.revision;
+  const owned = ownJson({
+    controls: input.controls, intent: input.intent, stylePack: input.stylePack,
+    ...(schemaVersion === "0.3.0" || schemaVersion === "0.4.0" || schemaVersion === "0.5.0" ? { document: { authored: declaredAuthored } } : {}),
+    ...(schemaVersion === "0.4.0" ? { windowWidthOverrides } : {}),
+    ...(schemaVersion === "0.5.0" ? { windowWidthBatch } : {})
+  }, optionalInput) as {
+    controls: BuildingPromptControls; intent: z.infer<typeof BuildingIntentSchema>; stylePack: z.infer<typeof HistoricalStylePackSchema>;
+    document?: { authored: BuildingDocument["authored"] };
+    windowWidthOverrides?: z.infer<typeof widthOverridesSchema>;
+    windowWidthBatch?: BuildingWindowWidthBatch;
+  };
+  const controls = captureBuildingSourceControls(owned.controls);
+  const intent = BuildingIntentSchema.parse(owned.intent);
+  const stylePack = HistoricalStylePackSchema.parse(owned.stylePack);
+  if (canonicalJson(intent) !== canonicalJson(owned.intent) || canonicalJson(stylePack) !== canonicalJson(owned.stylePack)) throw invalid("Source dependency fields are unsupported.");
+  const [intentHash, stylePackHash] = await Promise.all([hashCanonicalJson(intent), hashCanonicalJson(stylePack)]);
+  const document: BuildingDocument = BuildingDocumentSchema.parse({
+    schemaVersion: "0.1.0", documentId, revision,
+    intentRef: { contentHash: intentHash }, stylePackRef: { stylePackId: stylePack.id, contentHash: stylePackHash },
+    seeds: controls.seeds,
+    authored: schemaVersion === "0.3.0" || schemaVersion === "0.4.0" || schemaVersion === "0.5.0"
+      ? owned.document?.authored
+      : schemaVersion === "0.2.0"
+        ? { windowFamily: controls.windowFamily, floorCount: controls.floorCount }
+        : { windowFamily: controls.windowFamily },
+    locks: intent.locks
+  });
+  const draft = BuildingSourceSnapshotSchema.parse({
+    schemaVersion, document, intent, stylePack,
+    compilation: { detailLevel: controls.detailLevel, fidelityMode: controls.fidelityMode },
+    controlsView: controls, sourceContentHash: "0".repeat(64),
+    ...(schemaVersion === "0.4.0" ? { windowWidthOverrides: owned.windowWidthOverrides } : {}),
+    ...(schemaVersion === "0.5.0" ? { windowWidthBatch: owned.windowWidthBatch } : {})
+  });
+  draft.sourceContentHash = await hashCanonicalJson(sourcePayload(draft));
+  return resolveBuildingSourceSnapshot(draft);
+}
+
+/** Derive a window edit without replacing pinned dependencies or authored floor authority. */
+export async function deriveBuildingSourceWindowEdit(input: {
+  sourceSnapshot: unknown; windowFamily: string;
+}): Promise<BuildingSourceSnapshot> {
+  const windowFamily = input.windowFamily;
+  const { sourceSnapshot: source } = await resolveBuildingSourceSnapshot(input.sourceSnapshot);
+  if (windowFamily === source.controlsView.windowFamily) return source;
+  try {
+    const edited = await createSourceSnapshot({
+      documentId: source.document.documentId,
+      revision: source.document.revision,
+      controls: { ...source.controlsView, windowFamily },
+      intent: { ...source.intent, requested: { ...source.intent.requested, windowFamily } },
+      stylePack: source.stylePack
+    }, source.schemaVersion, source.schemaVersion === "0.3.0" || source.schemaVersion === "0.4.0" || source.schemaVersion === "0.5.0" ? { ...source.document.authored, windowFamily } : undefined,
+    source.schemaVersion === "0.4.0" ? source.windowWidthOverrides : undefined,
+    source.schemaVersion === "0.5.0" ? source.windowWidthBatch : undefined);
+    return edited.sourceSnapshot;
+  } catch (error) {
+    throw Object.assign(error instanceof Error ? error : new Error('Cannot resolve explicit window family: ' + windowFamily), {
+      code: 'building.documentResolutionRejected'
+    });
+  }
+}
+
+/** A real floor edit upgrades to v2; a no-op preserves the accepted portable version. */
+export async function deriveBuildingSourceFloorEdit(input: {
+  sourceSnapshot: unknown; floorCount: number;
+}): Promise<BuildingSourceSnapshot> {
+  const floorCount = input.floorCount;
+  const { sourceSnapshot: source } = await resolveBuildingSourceSnapshot(input.sourceSnapshot);
+  if (floorCount === source.controlsView.floorCount) return source;
+  try {
+    const edited = await createSourceSnapshot({
+      documentId: source.document.documentId,
+      revision: source.document.revision,
+      controls: { ...source.controlsView, floorCount },
+      intent: { ...source.intent, requested: { ...source.intent.requested, floorCount } },
+      stylePack: source.stylePack
+    }, source.schemaVersion === "0.5.0" ? "0.5.0" : source.schemaVersion === "0.4.0" ? "0.4.0" : source.schemaVersion === "0.3.0" ? "0.3.0" : "0.2.0",
+    source.schemaVersion === "0.3.0" || source.schemaVersion === "0.4.0" || source.schemaVersion === "0.5.0" ? { ...source.document.authored, floorCount } : undefined,
+    source.schemaVersion === "0.4.0" ? source.windowWidthOverrides : undefined,
+    source.schemaVersion === "0.5.0" ? source.windowWidthBatch : undefined);
+    return edited.sourceSnapshot;
+  } catch (error) {
+    throw Object.assign(error instanceof Error ? error : new Error("Cannot resolve explicit floor count: " + floorCount), {
+      code: "building.documentResolutionRejected"
+    });
+  }
+}
+/** A real bay edit declares bay authority while preserving every accepted authored key. */
+export async function deriveBuildingSourceBayEdit(input: {
+  sourceSnapshot: unknown; bayCount: number;
+}): Promise<BuildingSourceSnapshot> {
+  const bayCount = input.bayCount;
+  const { sourceSnapshot: source } = await resolveBuildingSourceSnapshot(input.sourceSnapshot);
+  if (bayCount === source.controlsView.bayCount) return source;
+  try {
+    const edited = await createSourceSnapshot({
+      documentId: source.document.documentId,
+      revision: source.document.revision,
+      controls: { ...source.controlsView, bayCount },
+      intent: { ...source.intent, requested: { ...source.intent.requested, bayCount } },
+      stylePack: source.stylePack
+    }, source.schemaVersion === "0.5.0" ? "0.5.0" : source.schemaVersion === "0.4.0" ? "0.4.0" : "0.3.0", { ...source.document.authored, bayCount },
+    source.schemaVersion === "0.4.0" ? source.windowWidthOverrides : undefined,
+    source.schemaVersion === "0.5.0" ? source.windowWidthBatch : undefined);
+    return edited.sourceSnapshot;
+  } catch (error) {
+    throw Object.assign(error instanceof Error ? error : new Error("Cannot resolve explicit bay count: " + bayCount), {
+      code: "building.documentResolutionRejected"
+    });
+  }
+}
+
+
+/** A real roof edit declares roof authority while preserving every accepted authored key. */
+export async function deriveBuildingSourceRoofEdit(input: {
+  sourceSnapshot: unknown; roofType: BuildingPromptControls["roofType"];
+}): Promise<BuildingSourceSnapshot> {
+  const roofType = input.roofType;
+  const { sourceSnapshot: source } = await resolveBuildingSourceSnapshot(input.sourceSnapshot);
+  if (roofType === source.controlsView.roofType) return source;
+  try {
+    const edited = await createSourceSnapshot({
+      documentId: source.document.documentId,
+      revision: source.document.revision,
+      controls: { ...source.controlsView, roofType },
+      intent: { ...source.intent, requested: { ...source.intent.requested, roofType } },
+      stylePack: source.stylePack
+    }, source.schemaVersion === "0.5.0" ? "0.5.0" : source.schemaVersion === "0.4.0" ? "0.4.0" : "0.3.0", { ...source.document.authored, roofType },
+    source.schemaVersion === "0.4.0" ? source.windowWidthOverrides : undefined,
+    source.schemaVersion === "0.5.0" ? source.windowWidthBatch : undefined);
+    return edited.sourceSnapshot;
+  } catch (error) {
+    throw Object.assign(error instanceof Error ? error : new Error("Cannot resolve explicit roof type: " + roofType), {
+      code: "building.documentResolutionRejected"
+    });
+  }
+}
+
+/** Own a complete local-width list without changing captured proposal dependencies. */
+export async function deriveBuildingSourceWindowWidthEdit(input: {
+  sourceSnapshot: unknown; windowWidthOverrides: unknown;
+}): Promise<BuildingSourceSnapshot> {
+  // Capture both arguments before source validation reaches its first hash await.
+  const source = captureBuildingSourceSnapshot(input.sourceSnapshot);
+  if (source.schemaVersion === "0.5.0") {
+    throw new BuildingWindowWidthOverrideError("building.windowWidth.invalidDirective", "The standalone width-list API cannot replace a complete v5 width batch.");
+  }
+  let windowWidthOverrides: z.infer<typeof widthOverridesSchema>;
+  try { windowWidthOverrides = widthOverridesSchema.parse(ownJson(input.windowWidthOverrides)); }
+  catch {
+    throw new BuildingWindowWidthOverrideError("building.windowWidth.invalidDirective", "Window width overrides must contain at most one valid directive.");
+  }
+  await resolveBuildingSourceSnapshot(source);
+  const previous = source.schemaVersion === "0.4.0" ? source.windowWidthOverrides : [];
+  if (canonicalJson(previous) === canonicalJson(windowWidthOverrides)) return source;
+  const draft = widthSnapshotShape.parse({ ...source, schemaVersion: "0.4.0", windowWidthOverrides });
+  draft.sourceContentHash = await hashCanonicalJson(sourcePayload(draft));
+  return (await resolveBuildingSourceSnapshot(draft)).sourceSnapshot;
+}
+
+/** Replace complete absolute batch authority; geometry admission uses the pinned unedited split. */
+export async function deriveBuildingSourceWindowWidthBatchEdit(input: {
+  sourceSnapshot: unknown; windowWidthBatch: unknown;
+}): Promise<BuildingSourceSnapshot> {
+  const sourceField = Object.getOwnPropertyDescriptor(input, "sourceSnapshot");
+  const batchField = Object.getOwnPropertyDescriptor(input, "windowWidthBatch");
+  if (!sourceField?.enumerable || !("value" in sourceField)) throw invalid("Batch replacement requires an owned source data field.");
+  const source = captureBuildingSourceSnapshot(sourceField.value);
+  let windowWidthBatch: BuildingWindowWidthBatch;
+  try {
+    if (!batchField?.enumerable || !("value" in batchField)) throw new Error("Batch replacement requires an owned batch data field.");
+    windowWidthBatch = BuildingWindowWidthBatchSchema.parse(ownJson(batchField.value));
+  } catch {
+    throw new BuildingWindowWidthOverrideError("building.windowWidth.invalidDirective", "Window width batch authority must contain unique valid slot directives.");
+  }
+  await resolveBuildingSourceSnapshot(source);
+  const previous: BuildingWindowWidthBatch = source.schemaVersion === "0.5.0" ? source.windowWidthBatch
+    : { schemaVersion: "0.1.0", directives: source.schemaVersion === "0.4.0" ? source.windowWidthOverrides : [] };
+  if (canonicalJson(previous) === canonicalJson(windowWidthBatch)) return source;
+  const draft = widthBatchSnapshotShape.parse({
+    schemaVersion: "0.5.0", document: source.document, intent: source.intent, stylePack: source.stylePack,
+    compilation: source.compilation, controlsView: source.controlsView,
+    sourceContentHash: "0".repeat(64), windowWidthBatch
+  });
+  draft.sourceContentHash = await hashCanonicalJson(sourcePayload(draft));
+  return (await resolveBuildingSourceSnapshot(draft)).sourceSnapshot;
+}
+
+function channelPayload(name: string, layer: PackedAtlasChannels["baseColor"]): Uint8Array {
+  const prefix = new TextEncoder().encode(name + ":" + layer.widthPx + "x" + layer.heightPx + ":");
+  const result = new Uint8Array(prefix.length + layer.data.byteLength);
+  result.set(prefix); result.set(layer.data, prefix.length);
+  return result;
+}
+
+async function decodeMaterials(file: BuildingSourceFile): Promise<{ packedAtlas: PackedAtlas; debugExport: AtlasDebugExport }> {
+  const { atlas, channels, debugMetadata } = file.materials;
+  if (new Set(channels.map((entry) => entry.name)).size !== names.length || names.some((name) => !channels.some((entry) => entry.name === name)) ||
+      new Set(atlas.manifest.channels).size !== names.length || names.some((name) => !atlas.manifest.channels.includes(name))) throw invalid("Source requires each of the five atlas channels exactly once.");
+  const decoded = await Promise.all(channels.map(async (entry) => {
+    const layer = decodeCompletedFamilyExportChannel(entry);
+    if (entry.widthPx !== atlas.manifest.widthPx || entry.heightPx !== atlas.manifest.heightPx ||
+        entry.byteLength !== layer.data.byteLength || entry.byteLength !== entry.widthPx * entry.heightPx * 4 ||
+        await sha256Hex(channelPayload(entry.name, layer)) !== entry.channelHash) throw invalid("Source atlas channel receipt mismatch: " + entry.name);
+    return [entry.name, layer] as const;
+  }));
+  const packedChannels = Object.fromEntries(decoded) as unknown as PackedAtlasChannels;
+  if (await completedFamilyExportAtlasContentHash({ channels: packedChannels, slotProvenance: atlas.slotProvenance }) !== atlas.contentHash) throw invalid("Source atlas content hash mismatch.");
+  const debugExport: AtlasDebugExport = { ...debugMetadata, channels: [...channels] };
+  if (debugExport.atlasId !== atlas.manifest.atlasId || debugExport.sourceContentHash !== atlas.contentHash) throw invalid("Source debug metadata refers to a different atlas.");
+  const exportHash = await hashCanonicalJson({
+    schemaVersion: debugExport.schemaVersion, atlasId: debugExport.atlasId, sourceContentHash: debugExport.sourceContentHash,
+    channelHashes: channels.map((entry) => [entry.name, entry.channelHash]),
+    slotOverlays: debugExport.slotOverlays, providerDiagnostics: debugExport.providerDiagnostics, diagnostics: debugExport.diagnostics
+  });
+  if (exportHash !== debugExport.exportHash) throw invalid("Source debug export hash mismatch.");
+  if (atlas.slotProvenance.length !== atlas.manifest.slots.length || debugExport.slotOverlays.length !== atlas.manifest.slots.length ||
+      new Set(atlas.slotProvenance.map((entry) => entry.slotId)).size !== atlas.manifest.slots.length ||
+      new Set(debugExport.slotOverlays.map((entry) => entry.slotId)).size !== atlas.manifest.slots.length) throw invalid("Source atlas slot receipts are incomplete.");
+  for (const slot of atlas.manifest.slots) {
+    const provenance = atlas.slotProvenance.find((entry) => entry.slotId === slot.id);
+    const overlay = debugExport.slotOverlays.find((entry) => entry.slotId === slot.id);
+    if (!provenance || !overlay || provenance.sourceId !== slot.materialSourceId ||
+        canonicalJson({ ...provenance, role: slot.role, rectPx: slot.rectPx }) !== canonicalJson(overlay)) throw invalid("Source atlas slot receipt mismatch: " + slot.id);
+  }
+  return {
+    packedAtlas: { schemaVersion: "0.1.0", atlasId: atlas.manifest.atlasId, manifest: atlas.manifest, channels: packedChannels, slotProvenance: atlas.slotProvenance, contentHash: atlas.contentHash, diagnostics: atlas.diagnostics },
+    debugExport
+  };
+}
+
+export async function parseBuildingSourceFile(input: unknown): Promise<{
+  file: BuildingSourceFile; sourceSnapshot: BuildingSourceSnapshot; packedAtlas: PackedAtlas; debugExport: AtlasDebugExport;
+}> {
+  try {
+    const owned = ownJson(input);
+    const file = BuildingSourceFileSchema.parse(owned);
+    if (canonicalJson(file) !== canonicalJson(owned)) throw invalid("Source file contains unsupported fields.");
+    const { contentHash, ...payload } = file;
+    const source = await resolveBuildingSourceSnapshot(file.source);
+    if (await hashCanonicalJson(payload) !== contentHash) throw invalid("Source file content hash mismatch.");
+    const material = await decodeMaterials(file);
+    return { file: freezeJson(file), sourceSnapshot: source.sourceSnapshot, ...material };
+  } catch (error) {
+    if (error instanceof Error && "code" in error && error.code === "building.sourceFileInvalid") throw error;
+    throw invalid(error instanceof Error ? error.message : "Invalid building source file.");
+  }
+}
+
+export async function createBuildingSourceFile(input: {
+  sourceSnapshot: BuildingSourceSnapshot; packedAtlas: PackedAtlas; debugExport: AtlasDebugExport;
+}): Promise<BuildingSourceFile> {
+  const source = captureBuildingSourceSnapshot(input.sourceSnapshot);
+  const { channels: encoded, ...debugMetadata } = input.debugExport;
+  const materials = ownJson({
+    atlas: { manifest: input.packedAtlas.manifest, contentHash: input.packedAtlas.contentHash, slotProvenance: input.packedAtlas.slotProvenance, diagnostics: input.packedAtlas.diagnostics },
+    channels: encoded, debugMetadata
+  }, optionalMaterial);
+  const raw = names.map((name) => ({ name, widthPx: input.packedAtlas.channels[name].widthPx, heightPx: input.packedAtlas.channels[name].heightPx, data: new Uint8ClampedArray(input.packedAtlas.channels[name].data) }));
+  const payload = source.schemaVersion === "0.5.0"
+    ? { schemaVersion: "0.5.0" as const, model: "building-window-width-batch-source-v5" as const, source, materials }
+    : source.schemaVersion === "0.4.0"
+    ? { schemaVersion: "0.4.0" as const, model: "building-window-width-source-v4" as const, source, materials }
+    : source.schemaVersion === "0.3.0"
+      ? { schemaVersion: "0.3.0" as const, model: "building-parameter-source-v3" as const, source, materials }
+    : source.schemaVersion === "0.2.0"
+      ? { schemaVersion: "0.2.0" as const, model: "building-window-floor-source-v2" as const, source, materials }
+      : { schemaVersion: "0.1.0" as const, model: "building-window-source-v1" as const, source, materials };
+  const parsed = await parseBuildingSourceFile({ ...payload, contentHash: await hashCanonicalJson(payload) });
+  for (const before of raw) {
+    const after = parsed.packedAtlas.channels[before.name];
+    if (before.widthPx !== after.widthPx || before.heightPx !== after.heightPx || before.data.length !== after.data.length || before.data.some((value, index) => value !== after.data[index])) throw invalid("Source PNG and active atlas bytes disagree: " + before.name);
+  }
+  return parsed.file;
+}

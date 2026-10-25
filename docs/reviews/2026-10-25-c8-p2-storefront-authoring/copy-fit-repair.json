@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "0.1.0",
+  "change": "One visible option label: Display glazing & entrance to Storefront, retaining the explanatory description.",
+  "reason": "Native430px capture showed clipping in the previous selector.",
+  "changedSourceFiles": [
+    "src/features/building-family/core/constructionStorefrontGraph.ts"
+  ],
+  "structuralOrMaterialLogicChanged": false,
+  "initialFiveChecksPassed": true,
+  "initialWebgpuStrictNativePassed": true,
+  "initialWebglFullNativeDelta": "native-01-webgl/full-native-reopen-delta.json",
+  "allFiveFinalChecksRerunning": true
+}

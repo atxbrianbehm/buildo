@@ -1,0 +1,13 @@
+
+> buildo@0.0.0 test
+> vitest run src/features/building-family/tests/ConstructionBuildingControls.test.tsx src/features/building-family/tests/constructionGenerationState.test.ts
+
+
+ RUN  v4.1.9 C:/Users/behmb/Documents/Cascade Projects/buildo
+
+
+ Test Files  2 passed (2)
+      Tests  23 passed (23)
+   Start at  02:02:45
+   Duration  2.18s (transform 621ms, setup 206ms, import 956ms, tests 985ms, environment 1.41s)
+

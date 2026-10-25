@@ -6,6 +6,10 @@ export const DEFAULT_STOREFRONT_PARAMETERS = Object.freeze({
   mode: 0 as 0 | 1, pierWidthM: 0.16, bulkheadHeightM: 0.55, headHeightM: 0.45,
   transomBaseM: 2.35, frameWidthM: 0.075, recessM: 0.14
 });
+export const CONSTRUCTION_FRONTAGE_OPTIONS = Object.freeze([
+  Object.freeze({ value: 0 as const, label: "Punched openings" }),
+  Object.freeze({ value: 1 as const, label: "Storefront" })
+]);
 
 function topology(graph: BayConstructionGraph) {
   return canonicalJson({ outputNodeId: graph.outputNodeId, nodes: graph.nodes.map(node => ({
@@ -31,4 +35,22 @@ export function withConstructionStorefront(input: unknown, mode: 0 | 1): BayCons
     ? { ...node, input: { ...node.input, nodeId: "frontage" } } : node);
   nodes.push({ id: "frontage", type: "PlaceStorefront", input: { nodeId: "entrance", socket: "scope" }, parameters: { ...DEFAULT_STOREFRONT_PARAMETERS, mode } });
   return BayConstructionGraphSchema.parse({ ...graph, schemaVersion: "0.6.0", nodes });
+}
+
+export function constructionHasStorefront(graph: BayConstructionGraph): boolean {
+  return graph.nodes.some(node => node.id === "frontage" && node.type === "PlaceStorefront" && node.parameters.mode === 1 && !node.bypassed);
+}
+
+/** Keep authored frontage over an immutable recipe, or explicitly release to punched openings. */
+export function retainConstructionStorefront(currentInput: unknown, generatedInput: unknown, preserve: boolean) {
+  const current = BayConstructionGraphSchema.parse(currentInput);
+  if (current.schemaVersion !== "0.6.0") return BayConstructionGraphSchema.parse(generatedInput);
+  const graph = withConstructionStorefront(generatedInput, 0);
+  if (preserve) {
+    const authored = current.nodes.find(node => node.id === "frontage" && node.type === "PlaceStorefront");
+    const target = graph.nodes.find(node => node.type === "PlaceStorefront")!;
+    if (authored?.type !== "PlaceStorefront") throw new Error("The registered frontage operator is missing.");
+    target.parameters = structuredClone(authored.parameters);
+  }
+  return BayConstructionGraphSchema.parse(graph);
 }

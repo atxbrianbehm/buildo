@@ -1,0 +1,183 @@
+{
+  "schemaVersion": "0.1.0",
+  "archive": "portable-projects.zip",
+  "archiveSha256": "17734142b635f314acf423ad80dd64daa1193c883bb429336ad54d0c4aa76ce3",
+  "uniqueProductFiles": 3,
+  "exports": [
+    {
+      "rawPath": "native-01-webgpu/legacy-default.json",
+      "sha256": "0aef65ab24151cdaf9ec9d40f65f86ec887f1e2a41933611163df6b106a867c3",
+      "bytes": 28011036,
+      "entry": "0aef65ab24151cdaf9ec9d40f65f86ec887f1e2a41933611163df6b106a867c3.json",
+      "schemaVersion": "0.4.0"
+    },
+    {
+      "rawPath": "native-01-webgpu/legacy-v6-reopened.json",
+      "sha256": "cc7920df89f5c55e10c4889cd19fd765c9a566f91967eb5ff4ae8f6b3d9f5323",
+      "bytes": 28065415,
+      "entry": "cc7920df89f5c55e10c4889cd19fd765c9a566f91967eb5ff4ae8f6b3d9f5323.json",
+      "schemaVersion": "0.6.0"
+    },
+    {
+      "rawPath": "native-02-webgpu/legacy-default.json",
+      "sha256": "0aef65ab24151cdaf9ec9d40f65f86ec887f1e2a41933611163df6b106a867c3",
+      "bytes": 28011036,
+      "entry": "0aef65ab24151cdaf9ec9d40f65f86ec887f1e2a41933611163df6b106a867c3.json",
+      "schemaVersion": "0.4.0"
+    },
+    {
+      "rawPath": "native-02-webgpu/legacy-v6-reopened.json",
+      "sha256": "cc7920df89f5c55e10c4889cd19fd765c9a566f91967eb5ff4ae8f6b3d9f5323",
+      "bytes": 28065415,
+      "entry": "cc7920df89f5c55e10c4889cd19fd765c9a566f91967eb5ff4ae8f6b3d9f5323.json",
+      "schemaVersion": "0.6.0"
+    },
+    {
+      "rawPath": "native-03-webgpu/cold-v7.json",
+      "sha256": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb",
+      "bytes": 28065825,
+      "entry": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb.json",
+      "schemaVersion": "0.7.0"
+    },
+    {
+      "rawPath": "native-03-webgpu/finished-v7.json",
+      "sha256": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb",
+      "bytes": 28065825,
+      "entry": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb.json",
+      "schemaVersion": "0.7.0"
+    },
+    {
+      "rawPath": "native-03-webgpu/legacy-default.json",
+      "sha256": "0aef65ab24151cdaf9ec9d40f65f86ec887f1e2a41933611163df6b106a867c3",
+      "bytes": 28011036,
+      "entry": "0aef65ab24151cdaf9ec9d40f65f86ec887f1e2a41933611163df6b106a867c3.json",
+      "schemaVersion": "0.4.0"
+    },
+    {
+      "rawPath": "native-03-webgpu/legacy-v6-reopened.json",
+      "sha256": "cc7920df89f5c55e10c4889cd19fd765c9a566f91967eb5ff4ae8f6b3d9f5323",
+      "bytes": 28065415,
+      "entry": "cc7920df89f5c55e10c4889cd19fd765c9a566f91967eb5ff4ae8f6b3d9f5323.json",
+      "schemaVersion": "0.6.0"
+    },
+    {
+      "rawPath": "native-03-webgpu/reopened-v7.json",
+      "sha256": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb",
+      "bytes": 28065825,
+      "entry": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb.json",
+      "schemaVersion": "0.7.0"
+    },
+    {
+      "rawPath": "native-04-webgpu/cold-v7.json",
+      "sha256": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb",
+      "bytes": 28065825,
+      "entry": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb.json",
+      "schemaVersion": "0.7.0"
+    },
+    {
+      "rawPath": "native-04-webgpu/finished-v7.json",
+      "sha256": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb",
+      "bytes": 28065825,
+      "entry": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb.json",
+      "schemaVersion": "0.7.0"
+    },
+    {
+      "rawPath": "native-04-webgpu/legacy-default.json",
+      "sha256": "0aef65ab24151cdaf9ec9d40f65f86ec887f1e2a41933611163df6b106a867c3",
+      "bytes": 28011036,
+      "entry": "0aef65ab24151cdaf9ec9d40f65f86ec887f1e2a41933611163df6b106a867c3.json",
+      "schemaVersion": "0.4.0"
+    },
+    {
+      "rawPath": "native-04-webgpu/legacy-v6-reopened.json",
+      "sha256": "cc7920df89f5c55e10c4889cd19fd765c9a566f91967eb5ff4ae8f6b3d9f5323",
+      "bytes": 28065415,
+      "entry": "cc7920df89f5c55e10c4889cd19fd765c9a566f91967eb5ff4ae8f6b3d9f5323.json",
+      "schemaVersion": "0.6.0"
+    },
+    {
+      "rawPath": "native-04-webgpu/reopened-v7.json",
+      "sha256": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb",
+      "bytes": 28065825,
+      "entry": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb.json",
+      "schemaVersion": "0.7.0"
+    },
+    {
+      "rawPath": "native-01-webgl/finished-v7.json",
+      "sha256": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb",
+      "bytes": 28065825,
+      "entry": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb.json",
+      "schemaVersion": "0.7.0"
+    },
+    {
+      "rawPath": "native-01-webgl/legacy-default.json",
+      "sha256": "0aef65ab24151cdaf9ec9d40f65f86ec887f1e2a41933611163df6b106a867c3",
+      "bytes": 28011036,
+      "entry": "0aef65ab24151cdaf9ec9d40f65f86ec887f1e2a41933611163df6b106a867c3.json",
+      "schemaVersion": "0.4.0"
+    },
+    {
+      "rawPath": "native-01-webgl/legacy-v6-reopened.json",
+      "sha256": "cc7920df89f5c55e10c4889cd19fd765c9a566f91967eb5ff4ae8f6b3d9f5323",
+      "bytes": 28065415,
+      "entry": "cc7920df89f5c55e10c4889cd19fd765c9a566f91967eb5ff4ae8f6b3d9f5323.json",
+      "schemaVersion": "0.6.0"
+    },
+    {
+      "rawPath": "native-02-webgl/finished-v7.json",
+      "sha256": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb",
+      "bytes": 28065825,
+      "entry": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb.json",
+      "schemaVersion": "0.7.0"
+    },
+    {
+      "rawPath": "native-02-webgl/legacy-default.json",
+      "sha256": "0aef65ab24151cdaf9ec9d40f65f86ec887f1e2a41933611163df6b106a867c3",
+      "bytes": 28011036,
+      "entry": "0aef65ab24151cdaf9ec9d40f65f86ec887f1e2a41933611163df6b106a867c3.json",
+      "schemaVersion": "0.4.0"
+    },
+    {
+      "rawPath": "native-02-webgl/legacy-v6-reopened.json",
+      "sha256": "cc7920df89f5c55e10c4889cd19fd765c9a566f91967eb5ff4ae8f6b3d9f5323",
+      "bytes": 28065415,
+      "entry": "cc7920df89f5c55e10c4889cd19fd765c9a566f91967eb5ff4ae8f6b3d9f5323.json",
+      "schemaVersion": "0.6.0"
+    },
+    {
+      "rawPath": "diagnostic-03-webgl/cold-v7.json",
+      "sha256": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb",
+      "bytes": 28065825,
+      "entry": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb.json",
+      "schemaVersion": "0.7.0"
+    },
+    {
+      "rawPath": "diagnostic-03-webgl/finished-v7.json",
+      "sha256": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb",
+      "bytes": 28065825,
+      "entry": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb.json",
+      "schemaVersion": "0.7.0"
+    },
+    {
+      "rawPath": "diagnostic-03-webgl/legacy-default.json",
+      "sha256": "0aef65ab24151cdaf9ec9d40f65f86ec887f1e2a41933611163df6b106a867c3",
+      "bytes": 28011036,
+      "entry": "0aef65ab24151cdaf9ec9d40f65f86ec887f1e2a41933611163df6b106a867c3.json",
+      "schemaVersion": "0.4.0"
+    },
+    {
+      "rawPath": "diagnostic-03-webgl/legacy-v6-reopened.json",
+      "sha256": "cc7920df89f5c55e10c4889cd19fd765c9a566f91967eb5ff4ae8f6b3d9f5323",
+      "bytes": 28065415,
+      "entry": "cc7920df89f5c55e10c4889cd19fd765c9a566f91967eb5ff4ae8f6b3d9f5323.json",
+      "schemaVersion": "0.6.0"
+    },
+    {
+      "rawPath": "diagnostic-03-webgl/reopened-v7.json",
+      "sha256": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb",
+      "bytes": 28065825,
+      "entry": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb.json",
+      "schemaVersion": "0.7.0"
+    }
+  ]
+}

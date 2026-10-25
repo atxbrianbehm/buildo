@@ -1,0 +1,22 @@
+2:22:21 AM [vite] (client) [optimizer] bundling dependencies...
+{"api":"webgpu","state":"legacy-default"}
+{"api":"webgpu","state":"legacy-v6-opened"}
+{"api":"webgpu","state":"legacy-restored"}
+{"api":"webgpu","state":"display-frontage"}
+{"api":"webgpu","state":"local-display-finish"}
+{"api":"webgpu","state":"bulkhead-edit"}
+{"api":"webgpu","state":"undo-bulkhead"}
+{"api":"webgpu","state":"redo-bulkhead"}
+{"api":"webgpu","state":"entrance-bay-edit"}
+{"api":"webgpu","state":"upper-casements"}
+{"api":"webgpu","state":"generated-storefront"}
+{"api":"webgpu","state":"opening-lock-retains-frontage"}
+{"api":"webgpu","state":"released-to-punched"}
+{"api":"webgpu","state":"depth-and-casements-with-frontage"}
+{"api":"webgpu","state":"advanced-frontage-history"}
+{"api":"webgpu","state":"restored-frontage-topology"}
+{"api":"webgpu","state":"final-storefront-source"}
+{"api":"webgpu","state":"opened-v7"}
+{"api":"webgpu","state":"room-return"}
+{"api":"webgpu","state":"cold-recovered-v7"}
+{"api":"webgpu","draws":20,"captures":17,"errors":[]}

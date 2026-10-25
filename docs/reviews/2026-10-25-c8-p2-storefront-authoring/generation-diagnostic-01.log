@@ -1,0 +1,41 @@
+
+> buildo@0.0.0 test
+> vitest run src/features/building-family/tests/constructionGenerationState.test.ts -t retains authored storefront
+
+
+ RUN  v4.1.9 C:/Users/behmb/Documents/Cascade Projects/buildo
+
+ ❯ src/features/building-family/tests/constructionGenerationState.test.ts (15 tests | 1 failed | 14 skipped) 154ms
+   × retains authored storefront and entrance choices, locks them, then releases to the literal recipe 153ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/building-family/tests/constructionGenerationState.test.ts > retains authored storefront and entrance choices, locks them, then releases to the literal recipe
+AssertionError: expected { bayIndex: 1, widthM: 1.1, …(1) } to match object { bayIndex: 1, widthM: 1.22 }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "bayIndex": 1,
+-   "widthM": 1.22,
++   "widthM": 1.1,
+  }
+
+ ❯ src/features/building-family/tests/constructionGenerationState.test.ts:224:77
+    222|   const d = await resolveWorkbenchGeneration(c.graph, next, { ...c.con…
+    223|   expect(d.graph.nodes.find(node => node.type === "PlaceStorefront")!.…
+    224|   expect(d.graph.nodes.find(node => node.type === "PlaceDoor")!.parame…
+       |                                                                             ^
+    225|   expect(d.graph.nodes.find(node => node.type === "AssembleWindow")!.p…
+    226|   const custom = structuredClone(edited); custom.nodes.find(node => no…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 14 skipped (15)
+   Start at  01:58:22
+   Duration  1.62s (transform 407ms, setup 92ms, import 569ms, tests 154ms, environment 649ms)
+
