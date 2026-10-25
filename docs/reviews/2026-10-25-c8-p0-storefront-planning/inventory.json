@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "0.1.0",
+  "files": [
+    {
+      "path": "before.json",
+      "bytes": 58563,
+      "sha256": "53d8ae70ab24db1156fdccb8956031f9fe25efd12f4b7923e3a3ed391c53db92"
+    },
+    {
+      "path": "checks-01.json",
+      "bytes": 55,
+      "sha256": "74408a2aab19d51afc35d0ca6ff6e347a5f9da6cd9f2ce1aa4f46cac719f6a31"
+    },
+    {
+      "path": "focused-01.log",
+      "bytes": 424,
+      "sha256": "0f4b9126b34c0ccafebffb7597df23b0814ed60fec1f2654c83843ad111f28cf"
+    },
+    {
+      "path": "lint-01.log",
+      "bytes": 37,
+      "sha256": "a21c6d2dedb756f860b052cb2d84cd603fbbe38ee53e1ad76ab9c5803f028958"
+    },
+    {
+      "path": "plan-after.md.txt",
+      "bytes": 297835,
+      "sha256": "b8d09f2558af955d5073ac49b2807a3d2ed830c3fdd260a58fccaf2ed4220c7c"
+    },
+    {
+      "path": "plans.json",
+      "bytes": 4119,
+      "sha256": "e7f2406b65cc26236a54dfd6767af7d4cef8d54000986b82c774d9faf4def8d9"
+    },
+    {
+      "path": "probe-01.log",
+      "bytes": 270,
+      "sha256": "aedf2391453b89bad5aeaf4aab2098570df997cf801628a495311f333e11db9b"
+    },
+    {
+      "path": "probe-01.mjs.txt",
+      "bytes": 1743,
+      "sha256": "5050731afd050e375e6df4e275f058ed7636ca9957347fc607ec245622145979"
+    },
+    {
+      "path": "probe-02.log",
+      "bytes": 185,
+      "sha256": "a2ac42578a61526d2e762686dfdc5608578710b1c00657e0d37a2120e4b476d7"
+    },
+    {
+      "path": "probe-02.mjs.txt",
+      "bytes": 1867,
+      "sha256": "852b409e9aa10ddc6957e1df1b67551e1f6a332616706fd0aef94a6958aba6a3"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2494,
+      "sha256": "f955eed46095bdb634db665b112399511f75e0e23b88ded4b5e506401566361d"
+    },
+    {
+      "path": "source/src/features/building-family/contracts/constructionStorefront.ts.txt",
+      "bytes": 2270,
+      "sha256": "12c76f84cc41c060ea643b9b864f7501c7d6a0d155ff5e04ba267501c7f9b9ef"
+    },
+    {
+      "path": "source/src/features/building-family/core/constructionStorefront.ts.txt",
+      "bytes": 2934,
+      "sha256": "2d8a82dd90d9bbb2eb710c2c19094ab7a58796226bf0468c2fc6fe1db5e933a3"
+    },
+    {
+      "path": "source/src/features/building-family/tests/constructionStorefront.test.ts.txt",
+      "bytes": 9248,
+      "sha256": "4e7c0ff6476d2e7422efeedf3808fdd5e412fbe8265a0b63bd57a8326c00d8a8"
+    },
+    {
+      "path": "typecheck-01.log",
+      "bytes": 49,
+      "sha256": "1927639a5b89b1406e25b817bb2c8efb1e16fccc181e86591db136d628e7f5e6"
+    },
+    {
+      "path": "verification.json",
+      "bytes": 1912,
+      "sha256": "20b62e1238fdbbcf7133139fd5c63dc0f4d2fee2d25e015c68a62772d729ae9f"
+    }
+  ]
+}

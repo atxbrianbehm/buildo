@@ -1,0 +1,13 @@
+
+> buildo@0.0.0 test
+> vitest run src/features/building-family/tests/constructionStorefront.test.ts src/features/building-family/tests/constructionWindowVocabulary.test.ts
+
+
+ RUN  v4.1.9 C:/Users/behmb/Documents/Cascade Projects/buildo
+
+
+ Test Files  2 passed (2)
+      Tests  38 passed (38)
+   Start at  01:34:18
+   Duration  2.04s (transform 444ms, setup 198ms, import 654ms, tests 618ms, environment 1.38s)
+

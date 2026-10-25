@@ -1,0 +1,13 @@
+import { createServer } from "vite";
+import { writeFileSync } from "node:fs";
+const server = await createServer({ configFile: false, cacheDir: "test-results/c8-p0-storefront-planning-2026-10-25/vite-cache", optimizeDeps: { noDiscovery: true, include: [] }, server: { middlewareMode: true, watch: null }, appType: "custom" });
+try {
+  const { resolveConstructionStorefront, readConstructionStorefrontPlan } = await server.ssrLoadModule("/src/features/building-family/core/constructionStorefront.ts");
+  const input = { schemaVersion:"0.1.0",kind:"construction-storefront-request",scope:{id:"building/study/front/floor/0/bay/0",face:"front",floorIndex:0,bayIndex:0,originM:[-5.6,0,-.36],sizeM:[2.8,4,.36]},assembly:"display",parameters:{pierWidthM:.16,bulkheadHeightM:.55,headHeightM:.45,transomBaseM:2.35,frameWidthM:.075,recessM:.14,entranceWidthM:1.22}};
+  const display = resolveConstructionStorefront(input);
+  const entrance = resolveConstructionStorefront({...input,assembly:"glazed-entrance"});
+  const wide = resolveConstructionStorefront({...input,scope:{...input.scope,sizeM:[3.2,4,.36]}});
+  for(const plan of [display,entrance,wide]) if(JSON.stringify(readConstructionStorefrontPlan(JSON.parse(JSON.stringify(plan))))!==JSON.stringify(plan)) throw new Error("Literal continuation changed the plan.");
+  writeFileSync(new URL("./plans.json",import.meta.url),JSON.stringify({schemaVersion:"0.1.0",display,entrance,wide,continuationExact:true,rendered:false,productIntegrated:false},null,2)+"\n");
+  console.log("STOREFRONT_P0_PROBE",JSON.stringify({displayWidthM:display.aperture.widthM,displayBottomM:display.aperture.bottomM,entranceWidthM:entrance.aperture.widthM,entranceBottomM:entrance.aperture.bottomM,transomBaseM:display.transomRail.bottomM,wideWidthM:wide.aperture.widthM,continuationExact:true}));
+} finally { await server.close(); }

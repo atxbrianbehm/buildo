@@ -1303,9 +1303,17 @@ All five checks pass (1,770 tests/123 files and eight standard browser workflows
 
 The phone gallery has eight new actual C7 images,103 total with all95 earlier identities retained. The local preview is restored. New assemblies are authored procedural choices, not UTDG historical data; architecture coverage remains unknown. No C7 commit/push, paid provider, release or installation was performed. The earlier public GitHub snapshot remains pending separate disclosure confirmation.
 
+## GitHub packet review workflow — 2026-10-25
+
+The user requested that completed packets continue as GitHub PRs, with merging reserved for the morning. Prepare separate branches and PRs for each new packet; stack dependent work on its preceding packet and state merge order explicitly. Do not push directly to `main`, enable auto-merge, or infer human product acceptance from publication.
+
+The prepared recovery range is `f8cb1486595856255a3b13a3961a42ef5554faba..8f0b1fc62cb3f25ce9a92f28ce0d5b5741c1d4f4` (nine existing commits). C7 is committed locally as `14a47b94b8b2bf477a33d8e92d402cd744620a64` on `codex/c7-window-vocabulary`; its 757 selected files include the sealed C7 evidence packet, with all318 source pins and730 inventory entries reverified. Committed review artifacts preserve literal bytes;25 application/maintained-doc paths differ only by Git line-ending normalization. Historical generated archives remain local.
+
+External publication is currently waiting on the exact-payload approval card: automatic approval review rejected the recovery branch push because public source/evidence disclosure at `https://github.com/atxbrianbehm/buildo.git` needed explicit destination/payload confirmation. The rejected command did not execute. No new PR or push occurred. Local PR bodies, publication manifests and committed-content checks are in `test-results/github-packets-2026-10-25/`. The earlier readiness receipt remains a historical pre-C7 snapshot.
+
 ## Ready Queue
 
-**Current result: C7 window assembly vocabulary is engineering complete.** The October25 directive was executed as one bounded milestone. [Actual geometry, checks and phone images](../reviews/2026-10-25-c7-window-vocabulary/README.md). Earlier broad review judgments remain pending without blocking the explicitly authorized C7 work. The next proposed vocabulary area is ground-floor storefront/entrance grammar; local structural targeting stays separate.
+**Current result: C7 window assembly vocabulary is engineering complete.** The October25 directive was executed as one bounded milestone. [Actual geometry, checks and phone images](../reviews/2026-10-25-c7-window-vocabulary/README.md). Earlier broad review judgments remain pending without blocking the explicitly authorized C7 work. [C8.P0 aperture planning](../reviews/2026-10-25-c8-p0-storefront-planning/README.md) is complete:38 focused tests plus typecheck/lint pass, and all332 preexisting source/config pins are unchanged. C8.P1 compiler geometry is the next unblocked local packet, followed by C8.P2 product integration. GitHub publication awaits the separate exact-payload approval; local structural targeting stays separate.
 
 | Packet | Bounded result | Required verification |
 |---|---|---|
@@ -1324,6 +1332,22 @@ Graph0.5 and project0.6 explicitly admit the new assembly parameter. Existing gr
 | Packet | Bounded result | Required verification |
 |---|---|---|
 | **C7 — complete** | Twin and six-light casement geometry, named controls and versioned continuation on the existing building. | All five checks, 1,770 tests/123 files; 18 native states on each backend; legacy compiler/recipes/native pixels unchanged; strict final v6/cold recovery, materials, finishes, locks and advanced access;103 phone-gallery images total. |
+
+### C8 — storefront and glazed-entrance vocabulary
+
+P0 result: strict owned request/plan0.1, explicit front-ground fit, grade-level entrance and aligned transom regions;24 new cases plus14 inherited C7 cases pass. [Actual plans, exact source and verification](../reviews/2026-10-25-c8-p0-storefront-planning/README.md). The app remains unchanged until P1/P2 execute.
+
+Continue the October25 building-vocabulary direction as a separate milestone after C7. The concrete success case is the existing authored masonry building switching from punched ground-floor windows to wide front display glazing, with a glazed entrance at grade, a shared transom line, retained masonry piers/bulkhead/head band and actual frame/pane geometry. Upper storeys and the side/rear elevations retain their existing assemblies. This is procedural vocabulary with unknown historical architecture coverage, not a live UTDG architecture claim.
+
+The active compiler currently runs `PlaceOpening` over the split scopes, then `PlaceDoor` replaces one front-ground opening. `AssembleWindow` consumes every non-door opening. Older `storefrontScopeSplit.ts` helpers belong to the earlier spec/kit lane; their clamping behavior must not silently rewrite authored fit or lift a door threshold above grade. Use the active construction scope/wall-solid path, not a second renderer or a preassembled storefront mesh.
+
+| Packet | Bounded result | Required verification |
+|---|---|---|
+| **C8.P0 — complete** | Strict versioned front-ground aperture planning for display and glazed-entrance bays. Explicit piers, bulkhead/head band, transom/frame clear regions and recess admission; owned data, deterministic continuation and rejection of infeasible requests. No construction-graph version, UI or runtime behavior change in this packet. | Physical partition/fit/grade-level tests, deterministic JSON readback, tamper/malformed-input/ownership tests, typecheck and lint; every preexisting source/config pin unchanged. Archive exact source, scope and results. |
+| **C8.P1 — ready** | Integrate the admitted plan into real construction graph/worker evaluation and procedural display/glazed-door assemblies. Use explicit new graph/protocol admission; preserve old readers/output and C7 layouts. Wall holes must match the frames and panes. | Compiler causality for width/height/entrance changes, real finite/wound geometry and metre UVs, no filled aperture or duplicate window/door geometry, wall/roof/upper/other-elevation invariants, protocol mismatch rejection and legacy hashes. Focused checks/typecheck/lint. |
+| **C8.P2 — follows P1** | One named ground-frontage choice and honest affected scope in grouped controls, with advanced graph access. Preserve authored/locked frontage on generation and release it explicitly; material/finish/history/project/checkpoint/cold continuity follow existing ownership. | All five repository checks and native WebGPU/WebGL workflow proof, actual whole/close/clay images, invalid-fit retention, zero material regeneration on structural switches, Undo/Redo/Save/Open/cold continuation and compact/keyboard usability. Update the phone gallery with actual rendered images. |
+
+P0 alone is groundwork, not a visible product capability. P1 and P2 are required follow-through; no human gate is inserted between them. Broader artist usability, sourced historical coverage and family/block/performance judgments remain distinct. Keep the accepted rectangular family and original pinned recipes; the authored graph owns frontage exceptions unless a later versioned recipe explicitly supplies them.
 
 ### UX1 — choose and test an artist-facing authoring workflow
 
