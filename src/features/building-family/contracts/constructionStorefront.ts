@@ -9,6 +9,16 @@ const jsonValue = z.unknown().superRefine((input, context) => {
   if (issue) context.addIssue({ code: "custom", path: issue.path, message: issue.message });
 });
 
+export const ConstructionStorefrontParametersSchema = z.object({
+  pierWidthM: z.number().finite().min(0.08).max(0.8),
+  bulkheadHeightM: z.number().finite().min(0.2).max(1.2),
+  headHeightM: z.number().finite().min(0.15).max(1.2),
+  transomBaseM: z.number().finite().min(1.9).max(3),
+  frameWidthM: z.number().finite().min(0.04).max(0.2),
+  recessM: z.number().finite().min(0.02).max(2),
+  entranceWidthM: z.number().finite().min(0.7).max(2.5)
+}).strict();
+
 const requestShape = z.object({
   schemaVersion: z.literal("0.1.0"),
   kind: z.literal("construction-storefront-request"),
@@ -21,15 +31,7 @@ const requestShape = z.object({
     sizeM: z.tuple([span, span, span])
   }).strict(),
   assembly: z.enum(["display", "glazed-entrance"]),
-  parameters: z.object({
-    pierWidthM: z.number().finite().min(0.08).max(0.8),
-    bulkheadHeightM: z.number().finite().min(0.2).max(1.2),
-    headHeightM: z.number().finite().min(0.15).max(1.2),
-    transomBaseM: z.number().finite().min(1.9).max(3),
-    frameWidthM: z.number().finite().min(0.04).max(0.2),
-    recessM: z.number().finite().min(0.02).max(2),
-    entranceWidthM: z.number().finite().min(0.7).max(2.5)
-  }).strict()
+  parameters: ConstructionStorefrontParametersSchema
 }).strict();
 
 /** Independent planning artifact; not yet an admitted construction graph operator. */

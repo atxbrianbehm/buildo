@@ -1,0 +1,76 @@
+import { BayConstructionGraphSchema, createBuildingConstructionGraph, repeatBayAsFacade, type BayConstructionGraph, type BayConstructionNode } from "../contracts/bayConstructionGraph";
+import type { BuildingSurfaceComposition } from "../contracts/surfaceComposition";
+
+export function emptyConstructionComposition(documentId: string): BuildingSurfaceComposition {
+  return { schemaVersion: "0.1.0", documentId, revision: 0, sources: [], layers: [] };
+}
+/** The ordered compositor is authored in the same graph/history/checkpoint as geometry. */
+export function setConstructionSurface(input: BayConstructionGraph, composition: BuildingSurfaceComposition): BayConstructionGraph {
+  const graph = BayConstructionGraphSchema.parse(input), existing = graph.nodes.find(node => node.type === "SetSurface");
+  if (existing) return BayConstructionGraphSchema.parse({ ...graph, schemaVersion: ["0.4.0", "0.5.0", "0.6.0"].includes(graph.schemaVersion) ? graph.schemaVersion : "0.3.0", nodes: graph.nodes.map(node => node.id === existing.id ? { ...existing, composition } : node) });
+  const output = graph.nodes.find(node => node.id === graph.outputNodeId);
+  if (!output || output.type !== "Output") throw new Error("Connect a construction output before adding a finish.");
+  const ids = new Set(graph.nodes.map(node => node.id));
+  const unique = (stem: string) => { let value = stem, index = 1; while (ids.has(value)) value = `${stem}_${index++}`; ids.add(value); return value; };
+  const joinId = unique("join"), surfaceId = unique("surface");
+  return BayConstructionGraphSchema.parse({ ...graph, schemaVersion: ["0.4.0", "0.5.0", "0.6.0"].includes(graph.schemaVersion) ? graph.schemaVersion : "0.3.0", nodes: [
+    ...graph.nodes.map(node => node.id === output.id ? { ...output, inputs: [{ nodeId: surfaceId, socket: "geometry" }] } : node),
+    { id: joinId, type: "JoinGeometry", inputs: output.inputs },
+    { id: surfaceId, type: "SetSurface", input: { nodeId: joinId, socket: "geometry" }, composition }
+  ] });
+}
+export function repeatConstructionWithSurfaces(graph: BayConstructionGraph): BayConstructionGraph {
+  const repeated = repeatBayAsFacade(graph), surface = graph.nodes.find(node => node.type === "SetSurface");
+  if (!surface) return repeated;
+  const output = graph.nodes.find(node => node.id === graph.outputNodeId);
+  const connected = output?.type === "Output" && output.inputs.length === 1 && output.inputs[0].nodeId === surface.id;
+  const wrapped = setConstructionSurface(repeated, surface.composition), nextSurface = wrapped.nodes.find(node => node.type === "SetSurface")!;
+  return BayConstructionGraphSchema.parse({ ...wrapped, nodes: wrapped.nodes.map(node => node.id === nextSurface.id ? { ...nextSurface, ...(surface.bypassed === undefined ? {} : { bypassed: surface.bypassed }) }
+    : node.id === wrapped.outputNodeId && !connected ? repeated.nodes.find(original => original.id === repeated.outputNodeId)! : node) });
+}
+export function validateConstructionSurfaceSources(graph: BayConstructionGraph, atlas: { contentHash: string; manifest: { slots: readonly { id: string }[] } }): void {
+  const slots = new Set(atlas.manifest.slots.map(slot => slot.id));
+  for (const node of graph.nodes) if (node.type === "SetSurface") for (const source of node.composition.sources)
+    if (source.atlasContentHash !== atlas.contentHash || !slots.has(source.slotId)) throw new Error("A finish source no longer matches this construction's saved material library.");
+}
+
+/** Explicit bounded conversion of the retained standard facade; custom branches remain untouched on rejection. */
+export function completeFacadeAsBuilding(input: BayConstructionGraph): BayConstructionGraph {
+  const graph=BayConstructionGraphSchema.parse(input);
+  if(["0.4.0", "0.5.0", "0.6.0"].includes(graph.schemaVersion)) return graph;
+  const facade=graph.nodes.find(node=>node.type === "FacadeScope"),floors=graph.nodes.find(node=>node.type === "SplitFloors"),bays=graph.nodes.find(node=>node.type === "SplitBays"),opening=graph.nodes.find(node=>node.type === "PlaceOpening"),window=graph.nodes.find(node=>node.type === "AssembleWindow"),selection=graph.nodes.find(node=>node.type === "SelectScopes"),bands=graph.nodes.find(node=>node.type === "ProfileTrim"),roof=graph.nodes.find(node=>node.type === "RoofCap"),surface=graph.nodes.find(node=>node.type === "SetSurface");
+  const expected:Record<string,string>={facade:"FacadeScope",floors:"SplitFloors",bays:"SplitBays",opening:"PlaceOpening",selection:"SelectScopes",wall:"EmitWall",window:"AssembleWindow",bands:"ProfileTrim",roof:"RoofCap",join:"JoinGeometry",surface:"SetSurface",output:"Output"};
+  const links:Record<string,string>={floors:"facade",bays:"floors",opening:"bays",selection:"opening",wall:"opening",window:"selection",bands:"floors",roof:"facade"};
+  const fail=()=>{throw new Error("Complete building supports the standard connected facade. Save custom branches before starting a new building.");};
+  if(!facade||!floors||!bays||!opening||!window||!selection||!bands||!roof||graph.outputNodeId!=="output") return fail();
+  if(graph.nodes.some(node=>expected[node.id]!==node.type || links[node.id] && (!('input' in node)||node.input.nodeId!==links[node.id])))return fail();
+  const nodeMap=new Map(graph.nodes.map(node=>[node.id,node]));
+  const collect=(id:string):string[]=>{const node=nodeMap.get(id)!;return 'inputs' in node?node.inputs.flatMap(link=>collect(link.nodeId)):node.type==='SetSurface'?collect(node.input.nodeId):[id];};
+  if(collect(graph.outputNodeId).sort().join(',')!==['bands','roof','wall','window'].join(','))return fail();
+  if(floors.bypassed||bays.bypassed||opening.bypassed)return fail();
+  const height=facade.parameters.heightM/floors.parameters.count,depth=Math.round(Math.max(facade.parameters.widthM*.75,bays.parameters.count*(opening.parameters.widthM+.3))*1e9)/1e9;
+  const output=nodeMap.get(graph.outputNodeId)!;const connected=output.type==='Output'&&output.inputs.length===1&&output.inputs[0].nodeId===surface?.id;
+  const result=createBuildingConstructionGraph(graph.documentId);
+  return BayConstructionGraphSchema.parse({...result,nodes:result.nodes.map(node=>{
+    if(node.type==='Footprint')return {...node,parameters:{widthM:facade.parameters.widthM,depthM:depth,wallDepthM:facade.parameters.wallDepthM}};
+    if(node.type==='Storeys')return {...node,parameters:{count:floors.parameters.count,groundHeightM:height,upperHeightM:height}};
+    if(node.type==='SplitBays')return {...node,parameters:{...bays.parameters}};
+    if(node.type==='PlaceOpening')return {...node,parameters:{...opening.parameters}};
+    if(node.type==='AssembleWindow')return {...node,parameters:{...window.parameters},bypassed:window.bypassed??false};
+    if(node.type==='SelectScopes')return {...node,parameters:{...selection.parameters},bypassed:selection.bypassed??false};
+    if(node.type==='PlaceDoor')return {...node,parameters:{...node.parameters,bayIndex:Math.min(1,bays.parameters.count-1),widthM:opening.parameters.widthM,heightM:opening.parameters.sillM+opening.parameters.heightM}};
+    if(node.type==='ProfileTrim')return {...node,parameters:{...bands.parameters},bypassed:bands.bypassed??false};
+    if(node.type==='BuildingRoof')return {...node,bypassed:roof.bypassed??false};
+    if(node.type==='EmitWall')return {...node,bypassed:(nodeMap.get('wall') as {bypassed?:boolean}).bypassed??false};
+    if(node.type==='SetSurface'&&surface)return {...node,composition:surface.composition,bypassed:surface.bypassed??false,input:surface.input};
+    if(node.type==='Output'&&surface&&!connected)return {...node,inputs:[{nodeId:'join',socket:'geometry'}]};
+    return node;
+  })});
+}
+
+export function constructionUsesOperator(graph: BayConstructionGraph, type: BayConstructionNode["type"], rootNodeId = graph.outputNodeId): boolean {
+  const nodes=new Map(graph.nodes.map(node=>[node.id,node])),visited=new Set<string>();
+  const visit=(id:string):boolean=>{if(visited.has(id))return false;visited.add(id);const node=nodes.get(id);if(!node)return false;if(node.type===type)return true;
+    return ('inputs' in node?node.inputs:'input' in node?[node.input]:[]).some(input=>visit(input.nodeId));};
+  return visit(rootNodeId);
+}

@@ -1,0 +1,180 @@
+{
+  "schemaVersion": "0.1.0",
+  "files": [
+    {
+      "path": "before.json",
+      "bytes": 59021,
+      "sha256": "b65513c2986c2283cbb79812b852bf1a066f7e0564c0193c5ee3a93bd810936c"
+    },
+    {
+      "path": "candidate.diff.txt",
+      "bytes": 43800,
+      "sha256": "d02191b815f6f805f5572ebb2cc8b3e4f57ced577bd0aff49af30e39e3b8cbb8"
+    },
+    {
+      "path": "checks-02.json",
+      "bytes": 55,
+      "sha256": "74408a2aab19d51afc35d0ca6ff6e347a5f9da6cd9f2ce1aa4f46cac719f6a31"
+    },
+    {
+      "path": "checks-03.json",
+      "bytes": 55,
+      "sha256": "74408a2aab19d51afc35d0ca6ff6e347a5f9da6cd9f2ce1aa4f46cac719f6a31"
+    },
+    {
+      "path": "compiled-cases.json",
+      "bytes": 73997,
+      "sha256": "b632ba76856799b148251a58111aafb5b14b5e46e2625abc48eca599e04dfa9b"
+    },
+    {
+      "path": "focused-01.log",
+      "bytes": 76451,
+      "sha256": "cc7b008b7dfc41df9f784b631dc9c5a27700a70eae30d77fafa29724209dd48f"
+    },
+    {
+      "path": "focused-02.log",
+      "bytes": 629,
+      "sha256": "21d10b6e1704782f66b06ee194b2d757be41103c4e80ec02c3070761cc3609ca"
+    },
+    {
+      "path": "focused-03.log",
+      "bytes": 629,
+      "sha256": "d17cfb4cbdab84446ecfb149fcab1a8e041a670a55ae235ca8434f2995cd2ae7"
+    },
+    {
+      "path": "lint-01.log",
+      "bytes": 37,
+      "sha256": "a21c6d2dedb756f860b052cb2d84cd603fbbe38ee53e1ad76ab9c5803f028958"
+    },
+    {
+      "path": "lint-02.log",
+      "bytes": 37,
+      "sha256": "a21c6d2dedb756f860b052cb2d84cd603fbbe38ee53e1ad76ab9c5803f028958"
+    },
+    {
+      "path": "lint-03.log",
+      "bytes": 37,
+      "sha256": "a21c6d2dedb756f860b052cb2d84cd603fbbe38ee53e1ad76ab9c5803f028958"
+    },
+    {
+      "path": "plan-after.md.txt",
+      "bytes": 298474,
+      "sha256": "854a573dff0545515c0a9062e113280070f2d4c4709625e4da408c394ac55769"
+    },
+    {
+      "path": "probe-01.log",
+      "bytes": 180,
+      "sha256": "5454be6ae7b9cbc041758f32f5fdacb871ba87cc1bb3fa63c8ca41030eab6954"
+    },
+    {
+      "path": "probe.mjs.txt",
+      "bytes": 2552,
+      "sha256": "a38ae6a0637b643182ee2f4e32913da7cbf1770face545bab5745dd318b108c3"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2925,
+      "sha256": "290bef96c96e525c2212d6395c539ff8dd853bdf039c6423534866364836209f"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/bayConstructionClient.ts.txt",
+      "bytes": 3132,
+      "sha256": "b7c108b1f7e6312e068ba3f2fc6ba3618eae1f95614db38a89824c0e66d14e22"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/bayConstructionWorkerProtocol.ts.txt",
+      "bytes": 5818,
+      "sha256": "fe14cf65cc5425b528cca92df80393c2b2db14646a4e52ba5593dfdc69df3b6e"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/bayWindowGeometry.ts.txt",
+      "bytes": 8967,
+      "sha256": "23ba98ba901c06aafda5104aab38fbbe2002c2ee7fe43ea1e1959122f5af9aa9"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/constructionStorefrontGeometry.ts.txt",
+      "bytes": 5121,
+      "sha256": "88b57849a9130618af8f6a5b64c0da3fff04177e19b2e78d737f3c56708a850b"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/evaluateConstruction.ts.txt",
+      "bytes": 2013,
+      "sha256": "16e208a2458c5ee8a0d9f0936b37b2bebfbe52e4b94c1557f1d130b860c83acf"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/evaluateFacadeConstruction.ts.txt",
+      "bytes": 30242,
+      "sha256": "a62259f53897237def6a0afc84db7c930cd6ae1b7df92ae43859fa9ce79118c6"
+    },
+    {
+      "path": "source/src/features/building-family/contracts/bayConstructionGraph.ts.txt",
+      "bytes": 15341,
+      "sha256": "da70d55e25e3cca18f3b19a6c64e9d41bc85ce391d9658248bab60553413769f"
+    },
+    {
+      "path": "source/src/features/building-family/contracts/constructionStorefront.ts.txt",
+      "bytes": 2349,
+      "sha256": "fd9278a4a25f06734ceccc9724cc65b4f7f0048ca6b2c99ce1a0b007fac0db5b"
+    },
+    {
+      "path": "source/src/features/building-family/core/constructionStorefrontGraph.ts.txt",
+      "bytes": 2220,
+      "sha256": "8dfd7b386ae202ef9cfb4fd725e7a6a2ef1ed3794b579329f5f1e731cb76d196"
+    },
+    {
+      "path": "source/src/features/building-family/core/constructionSurfaceAuthoring.ts.txt",
+      "bytes": 8210,
+      "sha256": "16d1c4a06a924e860cd8f7c5559b8aa9faf3dbe85d0c51305c214ee3841bebf3"
+    },
+    {
+      "path": "source/src/features/building-family/tests/bayConstructionWorker.test.ts.txt",
+      "bytes": 5042,
+      "sha256": "94a31cb27224bd360956413839177ed71a6a8be08ed9fab520b67a4a98c85a2d"
+    },
+    {
+      "path": "source/src/features/building-family/tests/ConstructionNodePanel.test.tsx.txt",
+      "bytes": 5669,
+      "sha256": "2a2d3c2c352627dafdfbbb398bea46622c352d9412fcc3f86a5c0269aa8e9caf"
+    },
+    {
+      "path": "source/src/features/building-family/tests/constructionStorefrontGeometry.test.ts.txt",
+      "bytes": 11502,
+      "sha256": "6cf5795b59e036d5ff8a498d8310ecd667af5c352e79f97b9bb004b51a7a33e8"
+    },
+    {
+      "path": "source/src/features/building-family/ui/BayConstructionWorkbench.tsx.txt",
+      "bytes": 36560,
+      "sha256": "fa4c1867ff3ced583910b3677807462517443568a7890df27720b751ec7b6909"
+    },
+    {
+      "path": "source/src/features/building-family/ui/ConstructionNodePanel.tsx.txt",
+      "bytes": 14946,
+      "sha256": "201fe373ee9a5329f3411ef67619055263ac9bc24624c66921ed827bcf5e1491"
+    },
+    {
+      "path": "source-whitespace-check.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "typecheck-01.log",
+      "bytes": 1264,
+      "sha256": "0f2d7ca579a9457531ad4c5a0099528ae811f1528717602aa6fd995aa3873024"
+    },
+    {
+      "path": "typecheck-02.log",
+      "bytes": 49,
+      "sha256": "1927639a5b89b1406e25b817bb2c8efb1e16fccc181e86591db136d628e7f5e6"
+    },
+    {
+      "path": "typecheck-03.log",
+      "bytes": 49,
+      "sha256": "1927639a5b89b1406e25b817bb2c8efb1e16fccc181e86591db136d628e7f5e6"
+    },
+    {
+      "path": "verification.json",
+      "bytes": 7100,
+      "sha256": "a856dc071d93f2c2302a7a560cde8fe7dda9690be4875e158c8dcd6421787201"
+    }
+  ]
+}

@@ -1,3 +1,6 @@
+import { resolveConstructionStorefront } from "../core/constructionStorefront";
+import type { ConstructionStorefrontPlan } from "../contracts/constructionStorefront";
+import { buildConstructionStorefrontGeometry } from "./constructionStorefrontGeometry";
 import { BayConstructionGraphSchema, type BayConstructionGraph, type BayConstructionNode } from "../contracts/bayConstructionGraph";
 import { RuntimeBuildingIRSchema, type MeshBatchIR, type RuntimeBuildingIR } from "../contracts/runtimeBuildingIR";
 import { hashCanonicalJson } from "../core/contentHash";
@@ -9,7 +12,7 @@ import { buildBayDoorGeometry } from "./bayWindowGeometry";
 import { constructionFacePose, constructionFacadeSolid, constructionProfileRing, poseMatrix, posedBounds, posedPoint, type ConstructionBuilding, type ConstructionFacePose, type ConstructionFootprint } from "./buildingShellGeometry";
 import { constructionSurfaceAt } from "./constructionSurfaceProgram";
 
-type Cell = { root: string; key: string; floorSplit: boolean; baySplit: boolean; scope: FacadeBayScope; face?: "front" | "right" | "rear" | "left"; pose?: ConstructionFacePose; building?: ConstructionBuilding };
+type Cell = { storefrontPlan?: ConstructionStorefrontPlan; root: string; key: string; floorSplit: boolean; baySplit: boolean; scope: FacadeBayScope; face?: "front" | "right" | "rear" | "left"; pose?: ConstructionFacePose; building?: ConstructionBuilding };
 type Stage = "facade" | "openings" | "trim" | "roof";
 type Part = { id: string; stage: Stage; bounds: Bounds3; mesh?: MeshBatchIR; prototype?: MeshBatchIR;
   translation?: [number, number, number]; pose?: ConstructionFacePose; wallCells?: Cell[]; cell?: Cell; role: string; nodeId: string };
@@ -42,7 +45,7 @@ function front(primitive: PrimitiveGeometry): PrimitiveGeometry {
 export async function evaluateFacadeConstruction(input: unknown, materials: BayConstructionMaterials = DEFAULT_BAY_MATERIALS,
   previewNodeId?: string): Promise<BayConstructionResult> {
   const graph = structuredClone(BayConstructionGraphSchema.parse(input));
-  if (!["0.2.0", "0.3.0", "0.4.0", "0.5.0"].includes(graph.schemaVersion)) throw new Error("Facade construction requires graph version 0.2.0 or 0.3.0.");
+  if (!["0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0"].includes(graph.schemaVersion)) throw new Error("Facade construction requires graph version 0.2.0 or 0.3.0.");
   const nodes = new Map(graph.nodes.map(node => [node.id, node]));
   if (previewNodeId && !nodes.has(previewNodeId)) throw new Error("The preview node is missing.");
   const values = new Map<string, Promise<Value>>(), trace: BayConstructionTrace[] = [];
@@ -118,12 +121,30 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
         }
         value = { kind: "scope", cells }; break;
       }
+      case "PlaceStorefront": {
+        const cells = await scopes(node.input.nodeId), { mode, ...parameters } = node.parameters;
+        if (!node.bypassed && mode === 1) {
+          const targets = cells.filter(cell => cell.face === "front" && cell.scope.floorIndex === 0);
+          if (!targets.length || targets.some(cell => !cell.building)) throw new Error("Storefronts require front ground-floor building scopes.");
+          if (targets.filter(cell => cell.scope.opening?.kind === "door").length !== 1) throw new Error("Storefronts require one existing ground-floor entrance.");
+          for (const cell of targets) {
+            const scope = cell.scope, entrance = scope.opening?.kind === "door";
+            const plan = resolveConstructionStorefront({ schemaVersion: "0.1.0", kind: "construction-storefront-request",
+              scope: { id: cell.key, face: cell.face, floorIndex: scope.floorIndex, bayIndex: scope.bayIndex, originM: scope.originM, sizeM: scope.sizeM },
+              assembly: entrance ? "glazed-entrance" : "display", parameters: { ...parameters, entranceWidthM: entrance ? scope.opening!.widthM : 1.22 } });
+            const a = plan.aperture;
+            scope.opening = { kind: entrance ? "door" : "window", widthM: a.widthM, heightM: a.heightM, centerAlongM: a.leftM + a.widthM / 2, centerYM: a.bottomM + a.heightM / 2 };
+            cell.storefrontPlan = plan;
+          }
+        }
+        value = { kind: "scope", cells }; break;
+      }
       case "AssembleDoor": {
         const cells = await scopes(node.input.nodeId), parts: Part[] = [];
         if (!node.bypassed) for (const cell of cells.filter(cell => cell.scope.opening?.kind === "door")) {
           const opening = cell.scope.opening!, p = node.parameters;
-          if (p.leafHeightM + p.frameWidthM*2 + .15 >= opening.heightM || p.frameWidthM*4 >= opening.widthM || p.recessM+.08 >= cell.scope.sizeM[2]) throw new Error("The door leaf, transom or recess does not fit its opening.");
-          const geometry = buildBayDoorGeometry(opening.widthM,opening.heightM,p.leafHeightM,p.frameWidthM,p.recessM,p.thresholdProjectionM);
+          if (!cell.storefrontPlan && (p.leafHeightM + p.frameWidthM*2 + .15 >= opening.heightM || p.frameWidthM*4 >= opening.widthM || p.recessM+.08 >= cell.scope.sizeM[2])) throw new Error("The door leaf, transom or recess does not fit its opening.");
+          const geometry = cell.storefrontPlan ? buildConstructionStorefrontGeometry(cell.storefrontPlan, p.thresholdProjectionM) : buildBayDoorGeometry(opening.widthM,opening.heightM,p.leafHeightM,p.frameWidthM,p.recessM,p.thresholdProjectionM);
           const shiftedGeometry = (primitives: PrimitiveGeometry[]) => primitives.map(primitive => ({ ...primitive,
             positions: primitive.positions.map((v,i)=>i%3===0?v+opening.centerAlongM:v), bounds: shifted(primitive.bounds,[opening.centerAlongM,0,0]) }));
           parts.push(makeMesh(node,cell,"frame",shiftedGeometry(geometry.frame),"openings",materials.frame),makeMesh(node,cell,"leaf",shiftedGeometry(geometry.leaf),"openings","door.primary"),makeMesh(node,cell,"hardware",shiftedGeometry(geometry.hardware),"openings","ornament.primary"),makeMesh(node,cell,"glass",shiftedGeometry(geometry.glass),"openings",materials.glass),makeMesh(node,cell,"trim",shiftedGeometry(geometry.trim),"trim",materials.trim));
@@ -185,7 +206,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
       }
       case "EmitWall": {
         const cells = await scopes(node.input.nodeId);
-        if (["0.4.0", "0.5.0"].includes(graph.schemaVersion) && cells.every(cell=>cell.building)) {
+        if (["0.4.0", "0.5.0", "0.6.0"].includes(graph.schemaVersion) && cells.every(cell=>cell.building)) {
           const faces = new Map<string,Cell[]>(); for(const cell of cells) faces.set(cell.root,[...(faces.get(cell.root)??[]),cell]);
           value = { kind: "geometry", parts: node.bypassed ? [] : [...faces.values()].map(group=>{
             const cell={...group[0],key:group[0].root},part=makeMesh(node,cell,"wall",[constructionFacadeSolid(group.map(cell=>cell.scope))],"facade",materials.wall);
@@ -199,11 +220,19 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
           const opening = cell.scope.opening, p = node.parameters;
           if (opening?.kind === "door") continue;
           if (!opening) throw new Error(`Node ${node.id}: connect scopes containing openings.`);
-          if (p.frameWidthM * 4 >= Math.min(opening.widthM, opening.heightM) || p.recessM + 0.08 >= cell.scope.sizeM[2]) throw new Error(`Node ${node.id}: frame or recess does not fit the wall.`);
+          if (!cell.storefrontPlan && (p.frameWidthM * 4 >= Math.min(opening.widthM, opening.heightM) || p.recessM + 0.08 >= cell.scope.sizeM[2])) throw new Error(`Node ${node.id}: frame or recess does not fit the wall.`);
           const sillM = Math.round((opening.centerYM - cell.scope.originM[1] - opening.heightM / 2) * 1e9) / 1e9;
           const metricTimberUvs=Boolean(cell.building);
-          const key = JSON.stringify(metricTimberUvs ? [opening.widthM, opening.heightM, sillM, p, "metric-timber-uv-v1"] : [opening.widthM, opening.heightM, sillM, p]);
+          const key = JSON.stringify(cell.storefrontPlan ? [opening.widthM, opening.heightM, sillM, cell.storefrontPlan.source.parameters, "storefront-v1"] : metricTimberUvs ? [opening.widthM, opening.heightM, sillM, p, "metric-timber-uv-v1"] : [opening.widthM, opening.heightM, sillM, p]);
           if (!templates.has(key)) templates.set(key, (async () => {
+            if (cell.storefrontPlan) {
+              const geometry = buildConstructionStorefrontGeometry(cell.storefrontPlan);
+              const batches = (["frame", "glass", "trim"] as const).map(role => {
+                const combined = combinePrimitiveGeometry(geometry[role].map(front));
+                return { batchId: "storefront." + role, role, materialSlotId: materials[role], positions: combined.positions, normals: combined.normals, uvs: combined.uvs, indices: combined.indices };
+              });
+              return { hash: (await hashCanonicalJson(JSON.parse(key))).slice(0, 20), batches };
+            }
             const template: BayConstructionGraph = { schemaVersion: "0.1.0", kind: "bay-construction", documentId: graph.documentId, outputNodeId: "output", nodes: [
               { id: "facade", type: "FacadeScope", parameters: { widthM: cell.scope.sizeM[0], heightM: cell.scope.sizeM[1], wallDepthM: cell.scope.sizeM[2] } },
               { id: "opening", type: "PlaceOpening", input: { nodeId: "facade", socket: "scope" }, parameters: { widthM: opening.widthM, heightM: opening.heightM, sillM } },

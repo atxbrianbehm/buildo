@@ -1,0 +1,439 @@
+diff --git a/src/features/building-family/compiler/bayConstructionClient.ts b/src/features/building-family/compiler/bayConstructionClient.ts
+index 37b7afa..0b7cb25 100644
+--- a/src/features/building-family/compiler/bayConstructionClient.ts
++++ b/src/features/building-family/compiler/bayConstructionClient.ts
+@@ -24,7 +24,7 @@ export class BayConstructionClient {
+     const requestId = ++this.sequence;
+     return new Promise((resolve, reject) => {
+       this.pending.set(requestId, { resolve, reject });
+-      try { this.worker.postMessage({ schemaVersion: graph.schemaVersion === "0.5.0" ? "0.5.0" : graph.schemaVersion === "0.4.0" ? "0.4.0" : graph.schemaVersion === "0.3.0" ? "0.3.0" : graph.schemaVersion === "0.2.0" || previewNodeId ? "0.2.0" : "0.1.0", type: "evaluate-bay", requestId, graph,
++      try { this.worker.postMessage({ schemaVersion: graph.schemaVersion === "0.6.0" ? "0.6.0" : graph.schemaVersion === "0.5.0" ? "0.5.0" : graph.schemaVersion === "0.4.0" ? "0.4.0" : graph.schemaVersion === "0.3.0" ? "0.3.0" : graph.schemaVersion === "0.2.0" || previewNodeId ? "0.2.0" : "0.1.0", type: "evaluate-bay", requestId, graph,
+         ...(previewNodeId ? { previewNodeId } : {}) }); }
+       catch (error) { this.pending.delete(requestId); reject(error instanceof Error ? error : new Error("Cannot start construction evaluation.")); }
+     });
+diff --git a/src/features/building-family/compiler/bayConstructionWorkerProtocol.ts b/src/features/building-family/compiler/bayConstructionWorkerProtocol.ts
+index c1863bc..21c4ef7 100644
+--- a/src/features/building-family/compiler/bayConstructionWorkerProtocol.ts
++++ b/src/features/building-family/compiler/bayConstructionWorkerProtocol.ts
+@@ -5,31 +5,32 @@ import { BuildingSurfaceCompositionSchema } from "../contracts/surfaceCompositio
+ import { constructionSurfaceAt } from "./constructionSurfaceProgram";
+ 
+ export const BayConstructionWorkerRequestSchema = z.object({
+-  schemaVersion: z.enum(["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0"]), type: z.literal("evaluate-bay"),
++  schemaVersion: z.enum(["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0"]), type: z.literal("evaluate-bay"),
+   requestId: z.number().int().positive(), graph: BayConstructionGraphSchema,
+   previewNodeId: z.string().min(1).max(80).optional()
+ }).strict().superRefine((request, context) => {
+   if (request.schemaVersion === "0.1.0" && (request.graph.schemaVersion !== "0.1.0" || request.previewNodeId)) {
+     context.addIssue({ code: "custom", message: "Facade graphs and previews require worker protocol 0.2.0." });
+   }
++  if ((request.graph.schemaVersion === "0.6.0") !== (request.schemaVersion === "0.6.0")) context.addIssue({ code: "custom", message: "Storefront graphs require matching worker protocol 0.6.0." });
+   if (request.graph.schemaVersion === "0.5.0" && request.schemaVersion !== "0.5.0") context.addIssue({ code: "custom", message: "Window vocabulary graphs require worker protocol 0.5.0." });
+   if (request.graph.schemaVersion === "0.4.0" && request.schemaVersion !== "0.4.0") context.addIssue({ code: "custom", message: "Whole-building graphs require worker protocol 0.4.0." });
+   if (request.graph.schemaVersion === "0.3.0" && request.schemaVersion !== "0.3.0") context.addIssue({ code: "custom", message: "Surface graphs require worker protocol 0.3.0." });
+ });
+ const vector = z.tuple([z.number().finite(), z.number().finite(), z.number().finite()]);
+ export const BayConstructionWorkerReplySchema = z.discriminatedUnion("type", [
+-  z.object({ schemaVersion: z.enum(["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0"]), type: z.literal("bay-result"),
++  z.object({ schemaVersion: z.enum(["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0"]), type: z.literal("bay-result"),
+     requestId: z.number().int().positive(),
+     result: z.object({ graph: BayConstructionGraphSchema, ir: RuntimeBuildingIRSchema,
+       prototypes: z.array(MeshBatchIRSchema).max(512).optional(), previewNodeId: z.string().optional(),
+       surfaceComposition: BuildingSurfaceCompositionSchema.optional(),
+-      trace: z.array(z.object({ nodeId: z.string(), type: z.enum(["FacadeScope", "PlaceOpening", "EmitWall", "AssembleWindow", "Output", "SplitFloors", "SplitBays", "SelectScopes", "ProfileTrim", "RoofCap", "JoinGeometry", "SetSurface", "Footprint", "Storeys", "PlaceDoor", "AssembleDoor", "BuildingRoof"]),
++      trace: z.array(z.object({ nodeId: z.string(), type: z.enum(["FacadeScope", "PlaceOpening", "EmitWall", "AssembleWindow", "Output", "SplitFloors", "SplitBays", "SelectScopes", "ProfileTrim", "RoofCap", "JoinGeometry", "SetSurface", "Footprint", "Storeys", "PlaceDoor", "AssembleDoor", "BuildingRoof", "PlaceStorefront"]),
+         output: z.enum(["scope", "geometry", "footprint"]), openingCount: z.number().int().nonnegative(),
+         meshCount: z.number().int().nonnegative(), bounds: z.object({ min: vector, max: vector }).strict(),
+         scopeCount: z.number().int().nonnegative().max(256).optional(), scopeNames: z.array(z.string()).max(256).optional()
+       }).strict()) }).strict()
+   }).strict(),
+-  z.object({ schemaVersion: z.enum(["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0"]), type: z.literal("bay-error"),
++  z.object({ schemaVersion: z.enum(["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0"]), type: z.literal("bay-error"),
+     requestId: z.number().int().nonnegative(), message: z.string() }).strict()
+ ]).superRefine((reply, context) => {
+   if (reply.type !== "bay-result") return;
+@@ -37,9 +38,10 @@ export const BayConstructionWorkerReplySchema = z.discriminatedUnion("type", [
+   if (reply.schemaVersion === "0.1.0" && (result.graph.schemaVersion !== "0.1.0" || result.prototypes || result.previewNodeId)) {
+     context.addIssue({ code: "custom", message: "Facade results require worker protocol 0.2.0." });
+   }
++  if ((result.graph.schemaVersion === "0.6.0") !== (reply.schemaVersion === "0.6.0")) context.addIssue({ code: "custom", message: "Storefront results require matching worker protocol 0.6.0." });
+   if (result.graph.schemaVersion === "0.5.0" && reply.schemaVersion !== "0.5.0") context.addIssue({ code: "custom", message: "Window vocabulary results require worker protocol 0.5.0." });
+   if (result.graph.schemaVersion === "0.4.0" && reply.schemaVersion !== "0.4.0") context.addIssue({ code: "custom", message: "Whole-building results require worker protocol 0.4.0." });
+-  if (!["0.3.0", "0.4.0", "0.5.0"].includes(reply.schemaVersion) && (result.graph.schemaVersion === "0.3.0" || result.surfaceComposition)) context.addIssue({ code: "custom", message: "Surface results require worker protocol 0.3.0." });
++  if (!["0.3.0", "0.4.0", "0.5.0", "0.6.0"].includes(reply.schemaVersion) && (result.graph.schemaVersion === "0.3.0" || result.surfaceComposition)) context.addIssue({ code: "custom", message: "Surface results require worker protocol 0.3.0." });
+   const expectedComposition = constructionSurfaceAt(result.graph, result.previewNodeId ?? result.graph.outputNodeId);
+   if (JSON.stringify(result.surfaceComposition ?? null) !== JSON.stringify(expectedComposition ?? null)) context.addIssue({ code: "custom", message: "Surface instructions do not match the executed graph output." });
+   if (!result.prototypes) {
+diff --git a/src/features/building-family/compiler/bayWindowGeometry.ts b/src/features/building-family/compiler/bayWindowGeometry.ts
+index 8e7e51d..b6832bb 100644
+--- a/src/features/building-family/compiler/bayWindowGeometry.ts
++++ b/src/features/building-family/compiler/bayWindowGeometry.ts
+@@ -31,6 +31,8 @@ function rail(length: number, width: number, depth: number, center: [number, num
+   return { positions, normals, uvs, indices, bounds };
+ }
+ 
++export { rail as buildConstructionTimberRail };
++
+ /** Parametric double-hung construction: fixed jambs, two offset sash rings, two panes. */
+ export function buildBayWindowGeometry(width: number, height: number, frameWidth: number, recess: number, centerY: number, metricUvs = false, layout: 0 | 1 | 2 = 0) {
+   if (layout !== 0) return buildCasementWindowGeometry(width, height, frameWidth, recess, centerY, metricUvs, layout);
+diff --git a/src/features/building-family/compiler/evaluateConstruction.ts b/src/features/building-family/compiler/evaluateConstruction.ts
+index d1787de..645857f 100644
+--- a/src/features/building-family/compiler/evaluateConstruction.ts
++++ b/src/features/building-family/compiler/evaluateConstruction.ts
+@@ -7,7 +7,7 @@ import { constructionSurfaceAt, constructionSurfaceTrace, legacySurfaceProjectio
+ export async function evaluateConstruction(input: unknown, previewNodeId?: string, materials: BayConstructionMaterials = DEFAULT_BAY_MATERIALS) {
+   const graph = BayConstructionGraphSchema.parse(input);
+   if (graph.schemaVersion === "0.1.0" && !previewNodeId) return evaluateBayConstruction(graph, materials);
+-  if (["0.3.0", "0.4.0", "0.5.0"].includes(graph.schemaVersion)) {
++  if (["0.3.0", "0.4.0", "0.5.0", "0.6.0"].includes(graph.schemaVersion)) {
+     const fullProjection = legacySurfaceProjection(graph), selectedProjection = previewNodeId ? legacySurfaceProjection(graph, previewNodeId) : fullProjection;
+     if (fullProjection && selectedProjection) {
+       const full = await evaluateBayConstruction(fullProjection, materials), selected = previewNodeId ? await evaluateBayConstruction(selectedProjection, materials) : full;
+diff --git a/src/features/building-family/compiler/evaluateFacadeConstruction.ts b/src/features/building-family/compiler/evaluateFacadeConstruction.ts
+index 71a5289..ea6b38c 100644
+--- a/src/features/building-family/compiler/evaluateFacadeConstruction.ts
++++ b/src/features/building-family/compiler/evaluateFacadeConstruction.ts
+@@ -1,3 +1,6 @@
++import { resolveConstructionStorefront } from "../core/constructionStorefront";
++import type { ConstructionStorefrontPlan } from "../contracts/constructionStorefront";
++import { buildConstructionStorefrontGeometry } from "./constructionStorefrontGeometry";
+ import { BayConstructionGraphSchema, type BayConstructionGraph, type BayConstructionNode } from "../contracts/bayConstructionGraph";
+ import { RuntimeBuildingIRSchema, type MeshBatchIR, type RuntimeBuildingIR } from "../contracts/runtimeBuildingIR";
+ import { hashCanonicalJson } from "../core/contentHash";
+@@ -9,7 +12,7 @@ import { buildBayDoorGeometry } from "./bayWindowGeometry";
+ import { constructionFacePose, constructionFacadeSolid, constructionProfileRing, poseMatrix, posedBounds, posedPoint, type ConstructionBuilding, type ConstructionFacePose, type ConstructionFootprint } from "./buildingShellGeometry";
+ import { constructionSurfaceAt } from "./constructionSurfaceProgram";
+ 
+-type Cell = { root: string; key: string; floorSplit: boolean; baySplit: boolean; scope: FacadeBayScope; face?: "front" | "right" | "rear" | "left"; pose?: ConstructionFacePose; building?: ConstructionBuilding };
++type Cell = { storefrontPlan?: ConstructionStorefrontPlan; root: string; key: string; floorSplit: boolean; baySplit: boolean; scope: FacadeBayScope; face?: "front" | "right" | "rear" | "left"; pose?: ConstructionFacePose; building?: ConstructionBuilding };
+ type Stage = "facade" | "openings" | "trim" | "roof";
+ type Part = { id: string; stage: Stage; bounds: Bounds3; mesh?: MeshBatchIR; prototype?: MeshBatchIR;
+   translation?: [number, number, number]; pose?: ConstructionFacePose; wallCells?: Cell[]; cell?: Cell; role: string; nodeId: string };
+@@ -42,7 +45,7 @@ function front(primitive: PrimitiveGeometry): PrimitiveGeometry {
+ export async function evaluateFacadeConstruction(input: unknown, materials: BayConstructionMaterials = DEFAULT_BAY_MATERIALS,
+   previewNodeId?: string): Promise<BayConstructionResult> {
+   const graph = structuredClone(BayConstructionGraphSchema.parse(input));
+-  if (!["0.2.0", "0.3.0", "0.4.0", "0.5.0"].includes(graph.schemaVersion)) throw new Error("Facade construction requires graph version 0.2.0 or 0.3.0.");
++  if (!["0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0"].includes(graph.schemaVersion)) throw new Error("Facade construction requires graph version 0.2.0 or 0.3.0.");
+   const nodes = new Map(graph.nodes.map(node => [node.id, node]));
+   if (previewNodeId && !nodes.has(previewNodeId)) throw new Error("The preview node is missing.");
+   const values = new Map<string, Promise<Value>>(), trace: BayConstructionTrace[] = [];
+@@ -118,12 +121,30 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
+         }
+         value = { kind: "scope", cells }; break;
+       }
++      case "PlaceStorefront": {
++        const cells = await scopes(node.input.nodeId), { mode, ...parameters } = node.parameters;
++        if (!node.bypassed && mode === 1) {
++          const targets = cells.filter(cell => cell.face === "front" && cell.scope.floorIndex === 0);
++          if (!targets.length || targets.some(cell => !cell.building)) throw new Error("Storefronts require front ground-floor building scopes.");
++          if (targets.filter(cell => cell.scope.opening?.kind === "door").length !== 1) throw new Error("Storefronts require one existing ground-floor entrance.");
++          for (const cell of targets) {
++            const scope = cell.scope, entrance = scope.opening?.kind === "door";
++            const plan = resolveConstructionStorefront({ schemaVersion: "0.1.0", kind: "construction-storefront-request",
++              scope: { id: cell.key, face: cell.face, floorIndex: scope.floorIndex, bayIndex: scope.bayIndex, originM: scope.originM, sizeM: scope.sizeM },
++              assembly: entrance ? "glazed-entrance" : "display", parameters: { ...parameters, entranceWidthM: entrance ? scope.opening!.widthM : 1.22 } });
++            const a = plan.aperture;
++            scope.opening = { kind: entrance ? "door" : "window", widthM: a.widthM, heightM: a.heightM, centerAlongM: a.leftM + a.widthM / 2, centerYM: a.bottomM + a.heightM / 2 };
++            cell.storefrontPlan = plan;
++          }
++        }
++        value = { kind: "scope", cells }; break;
++      }
+       case "AssembleDoor": {
+         const cells = await scopes(node.input.nodeId), parts: Part[] = [];
+         if (!node.bypassed) for (const cell of cells.filter(cell => cell.scope.opening?.kind === "door")) {
+           const opening = cell.scope.opening!, p = node.parameters;
+-          if (p.leafHeightM + p.frameWidthM*2 + .15 >= opening.heightM || p.frameWidthM*4 >= opening.widthM || p.recessM+.08 >= cell.scope.sizeM[2]) throw new Error("The door leaf, transom or recess does not fit its opening.");
+-          const geometry = buildBayDoorGeometry(opening.widthM,opening.heightM,p.leafHeightM,p.frameWidthM,p.recessM,p.thresholdProjectionM);
++          if (!cell.storefrontPlan && (p.leafHeightM + p.frameWidthM*2 + .15 >= opening.heightM || p.frameWidthM*4 >= opening.widthM || p.recessM+.08 >= cell.scope.sizeM[2])) throw new Error("The door leaf, transom or recess does not fit its opening.");
++          const geometry = cell.storefrontPlan ? buildConstructionStorefrontGeometry(cell.storefrontPlan, p.thresholdProjectionM) : buildBayDoorGeometry(opening.widthM,opening.heightM,p.leafHeightM,p.frameWidthM,p.recessM,p.thresholdProjectionM);
+           const shiftedGeometry = (primitives: PrimitiveGeometry[]) => primitives.map(primitive => ({ ...primitive,
+             positions: primitive.positions.map((v,i)=>i%3===0?v+opening.centerAlongM:v), bounds: shifted(primitive.bounds,[opening.centerAlongM,0,0]) }));
+           parts.push(makeMesh(node,cell,"frame",shiftedGeometry(geometry.frame),"openings",materials.frame),makeMesh(node,cell,"leaf",shiftedGeometry(geometry.leaf),"openings","door.primary"),makeMesh(node,cell,"hardware",shiftedGeometry(geometry.hardware),"openings","ornament.primary"),makeMesh(node,cell,"glass",shiftedGeometry(geometry.glass),"openings",materials.glass),makeMesh(node,cell,"trim",shiftedGeometry(geometry.trim),"trim",materials.trim));
+@@ -185,7 +206,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
+       }
+       case "EmitWall": {
+         const cells = await scopes(node.input.nodeId);
+-        if (["0.4.0", "0.5.0"].includes(graph.schemaVersion) && cells.every(cell=>cell.building)) {
++        if (["0.4.0", "0.5.0", "0.6.0"].includes(graph.schemaVersion) && cells.every(cell=>cell.building)) {
+           const faces = new Map<string,Cell[]>(); for(const cell of cells) faces.set(cell.root,[...(faces.get(cell.root)??[]),cell]);
+           value = { kind: "geometry", parts: node.bypassed ? [] : [...faces.values()].map(group=>{
+             const cell={...group[0],key:group[0].root},part=makeMesh(node,cell,"wall",[constructionFacadeSolid(group.map(cell=>cell.scope))],"facade",materials.wall);
+@@ -199,11 +220,19 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
+           const opening = cell.scope.opening, p = node.parameters;
+           if (opening?.kind === "door") continue;
+           if (!opening) throw new Error(`Node ${node.id}: connect scopes containing openings.`);
+-          if (p.frameWidthM * 4 >= Math.min(opening.widthM, opening.heightM) || p.recessM + 0.08 >= cell.scope.sizeM[2]) throw new Error(`Node ${node.id}: frame or recess does not fit the wall.`);
++          if (!cell.storefrontPlan && (p.frameWidthM * 4 >= Math.min(opening.widthM, opening.heightM) || p.recessM + 0.08 >= cell.scope.sizeM[2])) throw new Error(`Node ${node.id}: frame or recess does not fit the wall.`);
+           const sillM = Math.round((opening.centerYM - cell.scope.originM[1] - opening.heightM / 2) * 1e9) / 1e9;
+           const metricTimberUvs=Boolean(cell.building);
+-          const key = JSON.stringify(metricTimberUvs ? [opening.widthM, opening.heightM, sillM, p, "metric-timber-uv-v1"] : [opening.widthM, opening.heightM, sillM, p]);
++          const key = JSON.stringify(cell.storefrontPlan ? [opening.widthM, opening.heightM, sillM, cell.storefrontPlan.source.parameters, "storefront-v1"] : metricTimberUvs ? [opening.widthM, opening.heightM, sillM, p, "metric-timber-uv-v1"] : [opening.widthM, opening.heightM, sillM, p]);
+           if (!templates.has(key)) templates.set(key, (async () => {
++            if (cell.storefrontPlan) {
++              const geometry = buildConstructionStorefrontGeometry(cell.storefrontPlan);
++              const batches = (["frame", "glass", "trim"] as const).map(role => {
++                const combined = combinePrimitiveGeometry(geometry[role].map(front));
++                return { batchId: "storefront." + role, role, materialSlotId: materials[role], positions: combined.positions, normals: combined.normals, uvs: combined.uvs, indices: combined.indices };
++              });
++              return { hash: (await hashCanonicalJson(JSON.parse(key))).slice(0, 20), batches };
++            }
+             const template: BayConstructionGraph = { schemaVersion: "0.1.0", kind: "bay-construction", documentId: graph.documentId, outputNodeId: "output", nodes: [
+               { id: "facade", type: "FacadeScope", parameters: { widthM: cell.scope.sizeM[0], heightM: cell.scope.sizeM[1], wallDepthM: cell.scope.sizeM[2] } },
+               { id: "opening", type: "PlaceOpening", input: { nodeId: "facade", socket: "scope" }, parameters: { widthM: opening.widthM, heightM: opening.heightM, sillM } },
+diff --git a/src/features/building-family/contracts/bayConstructionGraph.ts b/src/features/building-family/contracts/bayConstructionGraph.ts
+index 1e3e7cc..e950d10 100644
+--- a/src/features/building-family/contracts/bayConstructionGraph.ts
++++ b/src/features/building-family/contracts/bayConstructionGraph.ts
+@@ -1,4 +1,5 @@
+ import { z } from "zod";
++import { ConstructionStorefrontParametersSchema } from "./constructionStorefront";
+ import { findBuildingDocumentJsonIssue } from "./buildingDocument";
+ import { BuildingSurfaceCompositionSchema } from "./surfaceComposition";
+ 
+@@ -16,6 +17,7 @@ export const BayConstructionNodeSchema = z.discriminatedUnion("type", [
+   z.object({ id, type: z.literal("Storeys"), input: footprintInput, parameters: z.object({ count: z.number().int().min(1).max(12), groundHeightM: z.number().finite().min(2.5).max(8), upperHeightM: z.number().finite().min(2.5).max(8) }).strict() }).strict(),
+   z.object({ id, type: z.literal("PlaceDoor"), input: scopeInput, bypassed: z.boolean().optional(), parameters: z.object({ bayIndex: z.number().int().min(0).max(19), widthM: z.number().finite().min(0.7).max(2.5), heightM: z.number().finite().min(2).max(4) }).strict() }).strict(),
+   z.object({ id, type: z.literal("AssembleDoor"), input: scopeInput, bypassed: z.boolean().optional(), parameters: z.object({ recessM: z.number().finite().min(0.02).max(2), frameWidthM: z.number().finite().min(0.04).max(0.2), leafHeightM: z.number().finite().min(1.9).max(2.7), thresholdProjectionM: z.number().finite().min(0.02).max(0.4) }).strict() }).strict(),
++  z.object({ id, type: z.literal("PlaceStorefront"), input: scopeInput, bypassed: z.boolean().optional(), parameters: ConstructionStorefrontParametersSchema.omit({ entranceWidthM: true }).extend({ mode: z.union([z.literal(0), z.literal(1)]) }).strict() }).strict(),
+   z.object({ id, type: z.literal("BuildingRoof"), input: scopeInput, bypassed: z.boolean().optional(), parameters: z.object({ parapetHeightM: z.number().finite().min(0.2).max(1.2), copingProjectionM: z.number().finite().min(0.02).max(0.2), corniceHeightM: z.number().finite().min(0.1).max(0.6), corniceProjectionM: z.number().finite().min(0.08).max(0.4) }).strict() }).strict(),
+   z.object({ id, type: z.literal("FacadeScope"),
+     parameters: z.object({ widthM: metres, heightM: metres, wallDepthM: metres }).strict()
+@@ -50,7 +52,7 @@ export const BayConstructionNodeSchema = z.discriminatedUnion("type", [
+ export type BayConstructionNode = z.infer<typeof BayConstructionNodeSchema>;
+ 
+ const shape = z.object({
+-  schemaVersion: z.enum(["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0"]),
++  schemaVersion: z.enum(["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0"]),
+   kind: z.literal("bay-construction"),
+   documentId: id,
+   nodes: z.array(BayConstructionNodeSchema).min(2).max(128),
+@@ -60,8 +62,9 @@ const shape = z.object({
+   const issue = (message: string, path: Array<string | number> = ["nodes"]) =>
+     context.addIssue({ code: "custom", message, path });
+   for (const node of graph.nodes) {
+-    if (["Footprint", "Storeys", "PlaceDoor", "AssembleDoor", "BuildingRoof"].includes(node.type) && !["0.4.0", "0.5.0"].includes(graph.schemaVersion)) issue("Whole-building operators require construction graph version 0.4.0.");
+-    if (["JoinGeometry", "SetSurface"].includes(node.type) && !["0.3.0", "0.4.0", "0.5.0"].includes(graph.schemaVersion)) issue("Surface operators require construction graph version 0.3.0.");
++    if (node.type === "PlaceStorefront" && graph.schemaVersion !== "0.6.0") issue("Storefront operators require construction graph version 0.6.0.");
++    if (["Footprint", "Storeys", "PlaceDoor", "AssembleDoor", "BuildingRoof"].includes(node.type) && !["0.4.0", "0.5.0", "0.6.0"].includes(graph.schemaVersion)) issue("Whole-building operators require construction graph version 0.4.0.");
++    if (["JoinGeometry", "SetSurface"].includes(node.type) && !["0.3.0", "0.4.0", "0.5.0", "0.6.0"].includes(graph.schemaVersion)) issue("Surface operators require construction graph version 0.3.0.");
+     if (node.type === "SetSurface") {
+       if (node.composition.documentId !== graph.documentId) issue("Surface composition must belong to the construction document.");
+       for (const layer of node.composition.layers) {
+@@ -75,8 +78,8 @@ const shape = z.object({
+       issue("Facade operators and bypass require construction graph version 0.2.0.");
+     }
+     if (node.type === "AssembleWindow") {
+-      if (graph.schemaVersion === "0.5.0" && node.parameters.layout === undefined) issue("Window vocabulary graphs require an explicit assembly layout.");
+-      if (graph.schemaVersion !== "0.5.0" && node.parameters.layout !== undefined) issue("Window assembly layouts require construction graph version 0.5.0.");
++      if (["0.5.0", "0.6.0"].includes(graph.schemaVersion) && node.parameters.layout === undefined) issue("Window vocabulary graphs require an explicit assembly layout.");
++      if (!["0.5.0", "0.6.0"].includes(graph.schemaVersion) && node.parameters.layout !== undefined) issue("Window assembly layouts require construction graph version 0.5.0.");
+     }
+     if (nodes.has(node.id)) issue("Node IDs must be unique.");
+     nodes.set(node.id, node);
+@@ -121,7 +124,7 @@ export type BayConstructionGraph = z.infer<typeof BayConstructionGraphSchema>;
+ 
+ export function constructionOutputSocket(type: BayConstructionNode["type"]): "scope" | "geometry" | "footprint" | undefined {
+   if (type === "Footprint") return "footprint";
+-  if (["Storeys", "PlaceDoor", "FacadeScope", "SplitFloors", "SplitBays", "SelectScopes", "PlaceOpening"].includes(type)) return "scope";
++  if (["Storeys", "PlaceDoor", "PlaceStorefront", "FacadeScope", "SplitFloors", "SplitBays", "SelectScopes", "PlaceOpening"].includes(type)) return "scope";
+   if (["EmitWall", "AssembleWindow", "ProfileTrim", "RoofCap", "JoinGeometry", "SetSurface", "AssembleDoor", "BuildingRoof"].includes(type)) return "geometry";
+ }
+ 
+diff --git a/src/features/building-family/contracts/constructionStorefront.ts b/src/features/building-family/contracts/constructionStorefront.ts
+index fc9950a..9a5e360 100644
+--- a/src/features/building-family/contracts/constructionStorefront.ts
++++ b/src/features/building-family/contracts/constructionStorefront.ts
+@@ -9,6 +9,16 @@ const jsonValue = z.unknown().superRefine((input, context) => {
+   if (issue) context.addIssue({ code: "custom", path: issue.path, message: issue.message });
+ });
+ 
++export const ConstructionStorefrontParametersSchema = z.object({
++  pierWidthM: z.number().finite().min(0.08).max(0.8),
++  bulkheadHeightM: z.number().finite().min(0.2).max(1.2),
++  headHeightM: z.number().finite().min(0.15).max(1.2),
++  transomBaseM: z.number().finite().min(1.9).max(3),
++  frameWidthM: z.number().finite().min(0.04).max(0.2),
++  recessM: z.number().finite().min(0.02).max(2),
++  entranceWidthM: z.number().finite().min(0.7).max(2.5)
++}).strict();
++
+ const requestShape = z.object({
+   schemaVersion: z.literal("0.1.0"),
+   kind: z.literal("construction-storefront-request"),
+@@ -21,15 +31,7 @@ const requestShape = z.object({
+     sizeM: z.tuple([span, span, span])
+   }).strict(),
+   assembly: z.enum(["display", "glazed-entrance"]),
+-  parameters: z.object({
+-    pierWidthM: z.number().finite().min(0.08).max(0.8),
+-    bulkheadHeightM: z.number().finite().min(0.2).max(1.2),
+-    headHeightM: z.number().finite().min(0.15).max(1.2),
+-    transomBaseM: z.number().finite().min(1.9).max(3),
+-    frameWidthM: z.number().finite().min(0.04).max(0.2),
+-    recessM: z.number().finite().min(0.02).max(2),
+-    entranceWidthM: z.number().finite().min(0.7).max(2.5)
+-  }).strict()
++  parameters: ConstructionStorefrontParametersSchema
+ }).strict();
+ 
+ /** Independent planning artifact; not yet an admitted construction graph operator. */
+diff --git a/src/features/building-family/core/constructionSurfaceAuthoring.ts b/src/features/building-family/core/constructionSurfaceAuthoring.ts
+index 01a2bed..c90af67 100644
+--- a/src/features/building-family/core/constructionSurfaceAuthoring.ts
++++ b/src/features/building-family/core/constructionSurfaceAuthoring.ts
+@@ -7,13 +7,13 @@ export function emptyConstructionComposition(documentId: string): BuildingSurfac
+ /** The ordered compositor is authored in the same graph/history/checkpoint as geometry. */
+ export function setConstructionSurface(input: BayConstructionGraph, composition: BuildingSurfaceComposition): BayConstructionGraph {
+   const graph = BayConstructionGraphSchema.parse(input), existing = graph.nodes.find(node => node.type === "SetSurface");
+-  if (existing) return BayConstructionGraphSchema.parse({ ...graph, schemaVersion: ["0.4.0", "0.5.0"].includes(graph.schemaVersion) ? graph.schemaVersion : "0.3.0", nodes: graph.nodes.map(node => node.id === existing.id ? { ...existing, composition } : node) });
++  if (existing) return BayConstructionGraphSchema.parse({ ...graph, schemaVersion: ["0.4.0", "0.5.0", "0.6.0"].includes(graph.schemaVersion) ? graph.schemaVersion : "0.3.0", nodes: graph.nodes.map(node => node.id === existing.id ? { ...existing, composition } : node) });
+   const output = graph.nodes.find(node => node.id === graph.outputNodeId);
+   if (!output || output.type !== "Output") throw new Error("Connect a construction output before adding a finish.");
+   const ids = new Set(graph.nodes.map(node => node.id));
+   const unique = (stem: string) => { let value = stem, index = 1; while (ids.has(value)) value = `${stem}_${index++}`; ids.add(value); return value; };
+   const joinId = unique("join"), surfaceId = unique("surface");
+-  return BayConstructionGraphSchema.parse({ ...graph, schemaVersion: ["0.4.0", "0.5.0"].includes(graph.schemaVersion) ? graph.schemaVersion : "0.3.0", nodes: [
++  return BayConstructionGraphSchema.parse({ ...graph, schemaVersion: ["0.4.0", "0.5.0", "0.6.0"].includes(graph.schemaVersion) ? graph.schemaVersion : "0.3.0", nodes: [
+     ...graph.nodes.map(node => node.id === output.id ? { ...output, inputs: [{ nodeId: surfaceId, socket: "geometry" }] } : node),
+     { id: joinId, type: "JoinGeometry", inputs: output.inputs },
+     { id: surfaceId, type: "SetSurface", input: { nodeId: joinId, socket: "geometry" }, composition }
+@@ -37,7 +37,7 @@ export function validateConstructionSurfaceSources(graph: BayConstructionGraph,
+ /** Explicit bounded conversion of the retained standard facade; custom branches remain untouched on rejection. */
+ export function completeFacadeAsBuilding(input: BayConstructionGraph): BayConstructionGraph {
+   const graph=BayConstructionGraphSchema.parse(input);
+-  if(["0.4.0", "0.5.0"].includes(graph.schemaVersion)) return graph;
++  if(["0.4.0", "0.5.0", "0.6.0"].includes(graph.schemaVersion)) return graph;
+   const facade=graph.nodes.find(node=>node.type === "FacadeScope"),floors=graph.nodes.find(node=>node.type === "SplitFloors"),bays=graph.nodes.find(node=>node.type === "SplitBays"),opening=graph.nodes.find(node=>node.type === "PlaceOpening"),window=graph.nodes.find(node=>node.type === "AssembleWindow"),selection=graph.nodes.find(node=>node.type === "SelectScopes"),bands=graph.nodes.find(node=>node.type === "ProfileTrim"),roof=graph.nodes.find(node=>node.type === "RoofCap"),surface=graph.nodes.find(node=>node.type === "SetSurface");
+   const expected:Record<string,string>={facade:"FacadeScope",floors:"SplitFloors",bays:"SplitBays",opening:"PlaceOpening",selection:"SelectScopes",wall:"EmitWall",window:"AssembleWindow",bands:"ProfileTrim",roof:"RoofCap",join:"JoinGeometry",surface:"SetSurface",output:"Output"};
+   const links:Record<string,string>={floors:"facade",bays:"floors",opening:"bays",selection:"opening",wall:"opening",window:"selection",bands:"floors",roof:"facade"};
+diff --git a/src/features/building-family/tests/ConstructionNodePanel.test.tsx b/src/features/building-family/tests/ConstructionNodePanel.test.tsx
+index 96ba856..bf4d671 100644
+--- a/src/features/building-family/tests/ConstructionNodePanel.test.tsx
++++ b/src/features/building-family/tests/ConstructionNodePanel.test.tsx
+@@ -2,10 +2,26 @@ import { fireEvent, render, screen } from "@testing-library/react";
+ import { vi } from "vitest";
+ import { ConstructionNodePanel } from "../ui/ConstructionNodePanel";
+ import { createBayConstructionGraph, repeatBayAsFacade, type BayConstructionNode } from "../contracts/bayConstructionGraph";
++import { createBuildingConstructionGraph, BayConstructionGraphSchema } from "../contracts/bayConstructionGraph";
++import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
+ const names: Record<BayConstructionNode["type"], string> = {
+-  Footprint: "Footprint", Storeys: "Storeys", PlaceDoor: "Entrance layout", AssembleDoor: "Door assembly", BuildingRoof: "Complete roof", FacadeScope: "Facade scope", SplitFloors: "Split floors", SplitBays: "Split bays", PlaceOpening: "Opening layout", SelectScopes: "Select scopes",
++  PlaceStorefront: "Ground frontage", Footprint: "Footprint", Storeys: "Storeys", PlaceDoor: "Entrance layout", AssembleDoor: "Door assembly", BuildingRoof: "Complete roof", FacadeScope: "Facade scope", SplitFloors: "Split floors", SplitBays: "Split bays", PlaceOpening: "Opening layout", SelectScopes: "Select scopes",
+   EmitWall: "Wall", AssembleWindow: "Window assembly", ProfileTrim: "Profile trim", RoofCap: "Roof cap", Output: "Output", JoinGeometry: "Join geometry", SetSurface: "Surface finish"
+ };
++it("offers storefront operators only after explicit migration and keeps version 0.6 when adding a window", () => {
++  const onChange = vi.fn(), onSelect = vi.fn(), legacy = createBuildingConstructionGraph();
++  const view = render(<ConstructionNodePanel graph={legacy} selected="selection" names={names} disabled={false} onChange={onChange} onSelect={onSelect} />);
++  expect(screen.queryByRole("option", { name: "Ground frontage" })).not.toBeInTheDocument();
++  const graph = withConstructionStorefront(legacy, 1);
++  view.rerender(<ConstructionNodePanel graph={graph} selected="selection" names={names} disabled={false} onChange={onChange} onSelect={onSelect} />);
++  expect(screen.getByRole("option", { name: "Ground frontage" })).toBeInTheDocument();
++  fireEvent.change(screen.getByRole("combobox", { name: "Operator to add" }), { target: { value: "AssembleWindow" } });
++  fireEvent.click(screen.getByRole("button", { name: "Add node" }));
++  const next = BayConstructionGraphSchema.parse(onChange.mock.calls[0][0]);
++  expect(next.schemaVersion).toBe("0.6.0");
++  expect(next.nodes.find(node => node.id === "AssembleWindow_1" && node.type === "AssembleWindow")).toMatchObject({ parameters: { layout: 0 } });
++  expect(graph.nodes).toHaveLength(15);
++});
+ it("connects real compatible ports and diagnoses an incompatible connection without altering source", () => {
+   const graph = repeatBayAsFacade(createBayConstructionGraph()), onChange = vi.fn();
+   render(<ConstructionNodePanel graph={graph} selected="facade" names={names} disabled={false} onChange={onChange} onSelect={() => {}} />);
+diff --git a/src/features/building-family/tests/bayConstructionWorker.test.ts b/src/features/building-family/tests/bayConstructionWorker.test.ts
+index 65b22e1..b1bf9fa 100644
+--- a/src/features/building-family/tests/bayConstructionWorker.test.ts
++++ b/src/features/building-family/tests/bayConstructionWorker.test.ts
+@@ -2,6 +2,9 @@ import { BayConstructionClient, type BayConstructionWorkerEndpoint } from "../co
+ import { BayConstructionWorkerRequestSchema } from "../compiler/bayConstructionWorkerProtocol";
+ import { evaluateBayConstruction } from "../compiler/evaluateBayConstruction";
+ import { createBayConstructionGraph } from "../contracts/bayConstructionGraph";
++import { createBuildingConstructionGraph } from "../contracts/bayConstructionGraph";
++import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
++import { evaluateConstruction } from "../compiler/evaluateConstruction";
+ 
+ class Endpoint implements BayConstructionWorkerEndpoint {
+   messages: unknown[] = [];
+@@ -20,6 +23,17 @@ class Endpoint implements BayConstructionWorkerEndpoint {
+   }
+ }
+ describe("owned construction worker client", () => {
++  it("sends a storefront graph with protocol 0.6 and accepts its actual compiled reply", async () => {
++    const endpoint = new Endpoint(), client = new BayConstructionClient(endpoint);
++    const graph = withConstructionStorefront(createBuildingConstructionGraph(), 1), pending = client.evaluate(graph);
++    const request = BayConstructionWorkerRequestSchema.parse(endpoint.messages[0]);
++    expect(request.schemaVersion).toBe("0.6.0"); expect(request.graph).toEqual(graph);
++    const result = await evaluateConstruction(request.graph);
++    endpoint.emit({ schemaVersion: "0.6.0", type: "bay-result", requestId: request.requestId, result });
++    expect(await pending).toEqual(result);
++    client.dispose(); expect(endpoint.terminated).toBe(1);
++    expect(endpoint.listeners.message.size + endpoint.listeners.error.size).toBe(0);
++  });
+   it("matches out-of-order replies to owned graph instructions", async () => {
+     const endpoint = new Endpoint(), client = new BayConstructionClient(endpoint), graph = createBayConstructionGraph();
+     const first = client.evaluate(graph);
+diff --git a/src/features/building-family/ui/BayConstructionWorkbench.tsx b/src/features/building-family/ui/BayConstructionWorkbench.tsx
+index 18a4c6b..2b682ab 100644
+--- a/src/features/building-family/ui/BayConstructionWorkbench.tsx
++++ b/src/features/building-family/ui/BayConstructionWorkbench.tsx
+@@ -34,7 +34,7 @@ interface Props {
+   onInitialFailure?: () => void;
+ }
+ const names: Record<BayConstructionNode["type"], string> = {
+-  Footprint: "Footprint", Storeys: "Storeys", PlaceDoor: "Entrance layout", AssembleDoor: "Door assembly", BuildingRoof: "Complete roof", FacadeScope: "Facade scope", PlaceOpening: "Opening layout", EmitWall: "Wall", AssembleWindow: "Window assembly", Output: "Output",
++  Footprint: "Footprint", Storeys: "Storeys", PlaceStorefront: "Ground frontage", PlaceDoor: "Entrance layout", AssembleDoor: "Door assembly", BuildingRoof: "Complete roof", FacadeScope: "Facade scope", PlaceOpening: "Opening layout", EmitWall: "Wall", AssembleWindow: "Window assembly", Output: "Output",
+   SplitFloors: "Split floors", SplitBays: "Split bays", SelectScopes: "Select scopes", ProfileTrim: "Profile trim", RoofCap: "Roof cap", JoinGeometry: "Join geometry", SetSurface: "Surface finish"
+ };
+ const labels: Record<string, string> = {
+diff --git a/src/features/building-family/ui/ConstructionNodePanel.tsx b/src/features/building-family/ui/ConstructionNodePanel.tsx
+index e7f2607..8208b3b 100644
+--- a/src/features/building-family/ui/ConstructionNodePanel.tsx
++++ b/src/features/building-family/ui/ConstructionNodePanel.tsx
+@@ -1,3 +1,4 @@
++import { DEFAULT_STOREFRONT_PARAMETERS } from "../core/constructionStorefrontGraph";
+ import { useEffect, useRef, useState } from "react";
+ import { BayConstructionNodeSchema, constructionOutputSocket, type BayConstructionGraph, type BayConstructionNode } from "../contracts/bayConstructionGraph";
+ import { emptyConstructionComposition } from "../core/constructionSurfaceAuthoring";
+@@ -22,10 +23,11 @@ const buildingPositions: Record<string,Point> = {
+   join:{x:1008,y:322},surface:{x:1254,y:322},output:{x:1500,y:322}
+ };
+ function initialPoint(version: BayConstructionGraph["schemaVersion"], id: string, index: number): Point {
+-  if (["0.4.0", "0.5.0"].includes(version)) return buildingPositions[id] ?? defaultPoint(id,index);
++  if (["0.4.0", "0.5.0", "0.6.0"].includes(version)) return buildingPositions[id] ?? defaultPoint(id,index);
+   return version === "0.3.0" && id === "output" ? {x:1254,y:322} : id === "join" ? {x:762,y:322} : id === "surface" ? {x:1008,y:322} : defaultPoint(id,index);
+ }
+ const defaults: Record<BayConstructionNode["type"], Record<string, number>> = {
++  PlaceStorefront: { ...DEFAULT_STOREFRONT_PARAMETERS },
+   Footprint: { widthM: 11.2, depthM: 8.4, wallDepthM: .36 }, Storeys: { count: 3, groundHeightM: 4, upperHeightM: 3.7 }, PlaceDoor: { bayIndex: 1, widthM: 1.22, heightM: 2.9 }, AssembleDoor: { recessM: .14, frameWidthM: .075, leafHeightM: 2.3, thresholdProjectionM: .15 }, BuildingRoof: { parapetHeightM: .55, copingProjectionM: .06, corniceHeightM: .3, corniceProjectionM: .24 },
+   FacadeScope: { widthM: 2.8, heightM: 3.8, wallDepthM: 0.36 }, SplitFloors: { count: 3 }, SplitBays: { count: 4 },
+   PlaceOpening: { widthM: 1.22, heightM: 2.12, sillM: 0.78 }, AssembleWindow: { recessM: 0.14, frameWidthM: 0.055, sillProjectionM: 0.12 },
+@@ -58,7 +60,7 @@ export function ConstructionNodePanel({ graph, selected, disabled, names, onSele
+     else if ((p.y + 110) * zoom > container.scrollTop + container.clientHeight) container.scrollTop = (p.y + 110) * zoom - container.clientHeight;
+   }, [selected, zoom, graph.nodes, graph.schemaVersion, positions]);
+   function replace(node: BayConstructionNode) {
+-    onChange({ ...graph, schemaVersion: ["0.3.0", "0.4.0", "0.5.0"].includes(graph.schemaVersion) ? graph.schemaVersion : "0.2.0", nodes: graph.nodes.map(value => value.id === node.id ? node : value) });
++    onChange({ ...graph, schemaVersion: ["0.3.0", "0.4.0", "0.5.0", "0.6.0"].includes(graph.schemaVersion) ? graph.schemaVersion : "0.2.0", nodes: graph.nodes.map(value => value.id === node.id ? node : value) });
+   }
+   function connect(target: BayConstructionNode) {
+     const source = graph.nodes.find(node => node.id === connection);
+@@ -86,8 +88,8 @@ export function ConstructionNodePanel({ graph, selected, disabled, names, onSele
+         ...(Object.keys(defaults[addType]).length ? { parameters: defaults[addType] } : {}) };
+     const result = BayConstructionNodeSchema.safeParse(raw);
+     if (!result.success || (addType === "SetSurface" ? !geometry || graph.nodes.some(node => node.type === "SetSurface") : !upstream && !["FacadeScope", "Footprint", "Storeys", "Output", "JoinGeometry"].includes(addType))) { setError("Add a compatible source first; use one final surface finish node."); return; }
+-    const added = graph.schemaVersion === "0.5.0" && result.data.type === "AssembleWindow" ? { ...result.data, parameters: { ...result.data.parameters, layout: 0 as const } } : result.data;
+-    onChange({ ...graph, schemaVersion: graph.schemaVersion === "0.5.0" ? "0.5.0" : graph.schemaVersion === "0.4.0" || ["Footprint", "Storeys", "PlaceDoor", "AssembleDoor", "BuildingRoof"].includes(addType) ? "0.4.0" : graph.schemaVersion === "0.3.0" || ["SetSurface", "JoinGeometry"].includes(addType) ? "0.3.0" : "0.2.0", nodes: [...graph.nodes, added] }); onSelect(id); setError(null);
++    const added = ["0.5.0", "0.6.0"].includes(graph.schemaVersion) && result.data.type === "AssembleWindow" ? { ...result.data, parameters: { ...result.data.parameters, layout: 0 as const } } : result.data;
++    onChange({ ...graph, schemaVersion: graph.schemaVersion === "0.6.0" ? "0.6.0" : graph.schemaVersion === "0.5.0" ? "0.5.0" : graph.schemaVersion === "0.4.0" || ["Footprint", "Storeys", "PlaceDoor", "AssembleDoor", "BuildingRoof"].includes(addType) ? "0.4.0" : graph.schemaVersion === "0.3.0" || ["SetSurface", "JoinGeometry"].includes(addType) ? "0.3.0" : "0.2.0", nodes: [...graph.nodes, added] }); onSelect(id); setError(null);
+   }
+   const node = graph.nodes.find(value => value.id === selected);
+   const connectingNode = graph.nodes.find(value => value.id === connection);
+@@ -144,7 +146,7 @@ export function ConstructionNodePanel({ graph, selected, disabled, names, onSele
+     </div>
+     <div className="construction-graph__toolbar">
+       <select aria-label="Operator to add" value={addType} disabled={disabled} onChange={event => setAddType(event.currentTarget.value as BayConstructionNode["type"])}>
+-        {Object.entries(names).map(([type, label]) => <option key={type} value={type}>{label}</option>)}
++        {Object.entries(names).filter(([type]) => type !== "PlaceStorefront" || graph.schemaVersion === "0.6.0").map(([type, label]) => <option key={type} value={type}>{label}</option>)}
+       </select><button type="button" disabled={disabled || graph.nodes.length >= 128} onClick={add}>Add node</button>
+       <button type="button" disabled={disabled || !node || graph.nodes.length <= 2} onClick={() => {
+         onChange({ ...graph, nodes: graph.nodes.filter(value => value.id !== selected) }); onSelect(graph.nodes.find(value => value.id !== selected)!.id); setConnection(null);

@@ -7,7 +7,7 @@ import { constructionSurfaceAt, constructionSurfaceTrace, legacySurfaceProjectio
 export async function evaluateConstruction(input: unknown, previewNodeId?: string, materials: BayConstructionMaterials = DEFAULT_BAY_MATERIALS) {
   const graph = BayConstructionGraphSchema.parse(input);
   if (graph.schemaVersion === "0.1.0" && !previewNodeId) return evaluateBayConstruction(graph, materials);
-  if (["0.3.0", "0.4.0", "0.5.0"].includes(graph.schemaVersion)) {
+  if (["0.3.0", "0.4.0", "0.5.0", "0.6.0"].includes(graph.schemaVersion)) {
     const fullProjection = legacySurfaceProjection(graph), selectedProjection = previewNodeId ? legacySurfaceProjection(graph, previewNodeId) : fullProjection;
     if (fullProjection && selectedProjection) {
       const full = await evaluateBayConstruction(fullProjection, materials), selected = previewNodeId ? await evaluateBayConstruction(selectedProjection, materials) : full;

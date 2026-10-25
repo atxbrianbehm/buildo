@@ -31,6 +31,8 @@ function rail(length: number, width: number, depth: number, center: [number, num
   return { positions, normals, uvs, indices, bounds };
 }
 
+export { rail as buildConstructionTimberRail };
+
 /** Parametric double-hung construction: fixed jambs, two offset sash rings, two panes. */
 export function buildBayWindowGeometry(width: number, height: number, frameWidth: number, recess: number, centerY: number, metricUvs = false, layout: 0 | 1 | 2 = 0) {
   if (layout !== 0) return buildCasementWindowGeometry(width, height, frameWidth, recess, centerY, metricUvs, layout);

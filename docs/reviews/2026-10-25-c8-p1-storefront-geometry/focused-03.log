@@ -1,0 +1,13 @@
+
+> buildo@0.0.0 test
+> vitest run src/features/building-family/tests/constructionStorefrontGeometry.test.ts src/features/building-family/tests/constructionStorefront.test.ts src/features/building-family/tests/constructionWindowVocabulary.test.ts src/features/building-family/tests/ConstructionNodePanel.test.tsx src/features/building-family/tests/bayConstructionWorker.test.ts
+
+
+ RUN  v4.1.9 C:/Users/behmb/Documents/Cascade Projects/buildo
+
+
+ Test Files  5 passed (5)
+      Tests  62 passed (62)
+   Start at  01:46:57
+   Duration  2.33s (transform 824ms, setup 458ms, import 1.40s, tests 1.90s, environment 3.33s)
+
