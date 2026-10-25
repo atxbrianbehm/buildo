@@ -1,0 +1,21 @@
+12:47:35 AM [vite] (client) [optimizer] scanning dependencies...
+12:47:37 AM [vite] (client) [optimizer] bundling dependencies...
+{"api":"webgpu","state":"legacy-default"}
+{"api":"webgpu","state":"legacy-v5-opened"}
+{"api":"webgpu","state":"legacy-restored"}
+{"api":"webgpu","state":"twin-casement"}
+{"api":"webgpu","state":"local-finish-twin"}
+{"api":"webgpu","state":"six-light-casement"}
+{"api":"webgpu","state":"undo-to-twin"}
+{"api":"webgpu","state":"redo-to-six"}
+{"api":"webgpu","state":"generated-six-with-finish"}
+{"api":"webgpu","state":"opening-lock-retains-six"}
+{"api":"webgpu","state":"explicit-release-to-double-hung"}
+{"api":"webgpu","state":"depth-with-twin"}
+{"api":"webgpu","state":"advanced-six"}
+{"api":"webgpu","state":"restored-vocabulary-topology"}
+{"api":"webgpu","state":"final-six-light-source"}
+{"api":"webgpu","state":"opened-v6"}
+{"api":"webgpu","state":"room-return"}
+{"api":"webgpu","state":"cold-recovered-v6"}
+{"api":"webgpu","draws":18,"captures":14,"errors":[]}

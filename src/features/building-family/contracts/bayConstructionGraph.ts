@@ -8,6 +8,9 @@ const scopeInput = z.object({ nodeId: id, socket: z.literal("scope") }).strict()
 const footprintInput = z.object({ nodeId: id, socket: z.literal("footprint") }).strict();
 const geometryInput = z.object({ nodeId: id, socket: z.literal("geometry") }).strict();
 
+export const ConstructionWindowLayoutSchema = z.union([z.literal(0), z.literal(1), z.literal(2)]);
+export type ConstructionWindowLayout = z.infer<typeof ConstructionWindowLayoutSchema>;
+
 export const BayConstructionNodeSchema = z.discriminatedUnion("type", [
   z.object({ id, type: z.literal("Footprint"), parameters: z.object({ widthM: metres, depthM: metres, wallDepthM: metres }).strict() }).strict(),
   z.object({ id, type: z.literal("Storeys"), input: footprintInput, parameters: z.object({ count: z.number().int().min(1).max(12), groundHeightM: z.number().finite().min(2.5).max(8), upperHeightM: z.number().finite().min(2.5).max(8) }).strict() }).strict(),
@@ -25,7 +28,8 @@ export const BayConstructionNodeSchema = z.discriminatedUnion("type", [
     parameters: z.object({
       recessM: z.number().finite().min(0.02).max(2),
       frameWidthM: z.number().finite().min(0.025).max(0.2),
-      sillProjectionM: z.number().finite().min(0.02).max(0.4)
+      sillProjectionM: z.number().finite().min(0.02).max(0.4),
+      layout: ConstructionWindowLayoutSchema.optional()
     }).strict()
   }).strict(),
   z.object({ id, type: z.literal("SplitFloors"), input: scopeInput, bypassed: z.boolean().optional(),
@@ -46,7 +50,7 @@ export const BayConstructionNodeSchema = z.discriminatedUnion("type", [
 export type BayConstructionNode = z.infer<typeof BayConstructionNodeSchema>;
 
 const shape = z.object({
-  schemaVersion: z.enum(["0.1.0", "0.2.0", "0.3.0", "0.4.0"]),
+  schemaVersion: z.enum(["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0"]),
   kind: z.literal("bay-construction"),
   documentId: id,
   nodes: z.array(BayConstructionNodeSchema).min(2).max(128),
@@ -56,8 +60,8 @@ const shape = z.object({
   const issue = (message: string, path: Array<string | number> = ["nodes"]) =>
     context.addIssue({ code: "custom", message, path });
   for (const node of graph.nodes) {
-    if (["Footprint", "Storeys", "PlaceDoor", "AssembleDoor", "BuildingRoof"].includes(node.type) && graph.schemaVersion !== "0.4.0") issue("Whole-building operators require construction graph version 0.4.0.");
-    if (["JoinGeometry", "SetSurface"].includes(node.type) && !["0.3.0", "0.4.0"].includes(graph.schemaVersion)) issue("Surface operators require construction graph version 0.3.0.");
+    if (["Footprint", "Storeys", "PlaceDoor", "AssembleDoor", "BuildingRoof"].includes(node.type) && !["0.4.0", "0.5.0"].includes(graph.schemaVersion)) issue("Whole-building operators require construction graph version 0.4.0.");
+    if (["JoinGeometry", "SetSurface"].includes(node.type) && !["0.3.0", "0.4.0", "0.5.0"].includes(graph.schemaVersion)) issue("Surface operators require construction graph version 0.3.0.");
     if (node.type === "SetSurface") {
       if (node.composition.documentId !== graph.documentId) issue("Surface composition must belong to the construction document.");
       for (const layer of node.composition.layers) {
@@ -69,6 +73,10 @@ const shape = z.object({
     }
     if (graph.schemaVersion === "0.1.0" && (!["FacadeScope", "PlaceOpening", "EmitWall", "AssembleWindow", "Output"].includes(node.type) || "bypassed" in node)) {
       issue("Facade operators and bypass require construction graph version 0.2.0.");
+    }
+    if (node.type === "AssembleWindow") {
+      if (graph.schemaVersion === "0.5.0" && node.parameters.layout === undefined) issue("Window vocabulary graphs require an explicit assembly layout.");
+      if (graph.schemaVersion !== "0.5.0" && node.parameters.layout !== undefined) issue("Window assembly layouts require construction graph version 0.5.0.");
     }
     if (nodes.has(node.id)) issue("Node IDs must be unique.");
     nodes.set(node.id, node);

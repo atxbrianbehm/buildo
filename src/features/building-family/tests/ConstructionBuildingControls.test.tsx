@@ -46,3 +46,11 @@ it("does not offer edits to a bypassed assembly as visible geometry changes",()=
   const graph=createBuildingConstructionGraph();graph.nodes.find(node=>node.type==="AssembleWindow")!.bypassed=true;mount(graph);
   expect(screen.getByLabelText("Recess (m)")).toBeDisabled();expect(screen.getAllByText(/bypassed in the advanced graph/).length).toBe(3);
 });
+
+it("offers named real assembly choices while preserving shared and bypass boundaries",()=>{
+  const graph=createBuildingConstructionGraph(),before=structuredClone(graph),view=mount(graph);
+  expect(screen.getByRole("combobox",{name:"Window assembly"})).toHaveValue("0");
+  fireEvent.change(screen.getByRole("combobox",{name:"Window assembly"}),{target:{value:"2"}});
+  expect(view.onFieldChange).toHaveBeenCalledWith("window","layout","2");expect(graph).toEqual(before);
+  expect(screen.getByRole("option",{name:"Twin casement"})).toBeInTheDocument();expect(screen.getByRole("option",{name:"Six-light casement"})).toBeInTheDocument();
+});

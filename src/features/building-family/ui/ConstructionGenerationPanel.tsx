@@ -39,10 +39,10 @@ export function ConstructionGenerationPanel({ controls, lineage, reference, onRe
             onChange={event => { const file = event.currentTarget.files?.[0]; event.currentTarget.value = ""; if (file) onReferenceFile(file); }} /></div>
         {reference ? <p role="status">Ready for next generation: {reference.id}, revision {reference.revision}. Architecture coverage: {reference.architectureCoverage}. {reference.coverageNotes}</p> : null}
         <div className="construction-generation__locks">
-          {([ ["lockFootprint", "Lock footprint"], ["lockStoreys", "Lock storeys"], ["lockOpenings", "Lock openings"], ["preserveAuthored", "Keep edited dimensions"] ] as const).map(([field, label]) =>
+          {([ ["lockFootprint", "Lock footprint"], ["lockStoreys", "Lock storeys"], ["lockOpenings", "Lock openings"], ["preserveAuthored", "Keep edited dimensions and assemblies"] ] as const).map(([field, label]) =>
             <label key={field}><input type="checkbox" aria-label={label} checked={controls[field]} onChange={event => onChange({ ...controls, [field]: event.currentTarget.checked })} /><span>{label}</span></label>)}
         </div>
-        <p>Reroll varies unlocked construction. Edited dimensions and finishes stay yours. A changed material seed replaces the material library and starts a new undo history.</p>
+        <p>Reroll varies unlocked construction. Keep edited dimensions and assemblies, or lock openings, to retain your window assembly. Surface finishes stay yours. A changed material seed replaces the material library and starts a new undo history.</p>
         <div className="control-panel__actions"><button type="submit">Generate building</button>
           <button type="button" onClick={() => onGenerate(true)}>Reroll unlocked</button></div>
       </fieldset>

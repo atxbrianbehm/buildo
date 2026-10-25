@@ -32,7 +32,8 @@ function rail(length: number, width: number, depth: number, center: [number, num
 }
 
 /** Parametric double-hung construction: fixed jambs, two offset sash rings, two panes. */
-export function buildBayWindowGeometry(width: number, height: number, frameWidth: number, recess: number, centerY: number, metricUvs = false) {
+export function buildBayWindowGeometry(width: number, height: number, frameWidth: number, recess: number, centerY: number, metricUvs = false, layout: 0 | 1 | 2 = 0) {
+  if (layout !== 0) return buildCasementWindowGeometry(width, height, frameWidth, recess, centerY, metricUvs, layout);
   const frame: PrimitiveGeometry[] = [], glass: PrimitiveGeometry[] = [];
   function rectangularFrame(w: number, h: number, timber: number, depth: number, y: number, z: number) {
     frame.push(rail(h, timber, depth, [-(w - timber) / 2, y, z], true, metricUvs),
@@ -51,6 +52,33 @@ export function buildBayWindowGeometry(width: number, height: number, frameWidth
       size: [sashWidth - timber * 2, sashHeight - timber * 2, 0.006] }));
   }
   return { frame, glass };
+}
+
+/** Real casement leaves, central mullion, glazing bars and individual clear panes. */
+function buildCasementWindowGeometry(width: number, height: number, timber: number, recess: number, centerY: number, metricUvs: boolean, layout: 1 | 2) {
+  if (layout !== 1 && layout !== 2) throw new Error("Unsupported window assembly layout.");
+  const frame: PrimitiveGeometry[] = [], glass: PrimitiveGeometry[] = [];
+  const mullion = Math.max(.035, timber * .8), leafTimber = timber * .65, gap = .006;
+  const leafWidth = (width - timber * 2 - mullion) / 2 - gap;
+  const leafHeight = height - timber * 2 - gap, clearWidth = leafWidth - leafTimber * 2, clearHeight = leafHeight - leafTimber * 2;
+  const rows = layout === 2 ? 3 : 1, bar = Math.max(.016, timber * .42), paneHeight = (clearHeight - (rows - 1) * bar) / rows;
+  if (clearWidth < .035 || paneHeight < .035) throw new Error("Casement glazing does not fit: widen the opening or reduce its frame width.");
+  const ring = (w: number, h: number, section: number, depth: number, x: number, y: number, z: number) => frame.push(
+    rail(h, section, depth, [x-(w-section)/2,y,z], true, metricUvs), rail(h, section, depth, [x+(w-section)/2,y,z], true, metricUvs),
+    rail(w-section*2, section, depth, [x,y-(h-section)/2,z], false, metricUvs), rail(w-section*2, section, depth, [x,y+(h-section)/2,z], false, metricUvs));
+  ring(width,height,timber,.08,0,centerY,-recess-.04);
+  frame.push(rail(height-timber*2,mullion,.07,[0,centerY,-recess-.045],true,metricUvs));
+  const leafFront = -recess-.012;
+  for (const side of [-1,1]) {
+    const x = side * (mullion/2 + (width-timber*2-mullion)/4);
+    ring(leafWidth,leafHeight,leafTimber,.034,x,centerY,leafFront-.017);
+    const bottom = centerY-clearHeight/2;
+    for (let row=0;row<rows;row++) {
+      glass.push(buildBoxPrimitive({center:[x,bottom+paneHeight/2+row*(paneHeight+bar),leafFront-.025],size:[clearWidth,paneHeight,.006]}));
+      if (row<rows-1) frame.push(rail(clearWidth,bar,.026,[x,bottom+(row+1)*paneHeight+row*bar+bar/2,leafFront-.014],false,metricUvs));
+    }
+  }
+  return {frame,glass};
 }
 
 /** A paneled door, separate transom glass and chamfered threshold, built from dimensions. */

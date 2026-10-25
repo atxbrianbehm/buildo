@@ -1,0 +1,3655 @@
+{
+  "schemaVersion": "0.1.0",
+  "files": [
+    {
+      "path": "baseline.mjs.txt",
+      "bytes": 1204,
+      "sha256": "05dd30c909faf8dd08e50f0f176b354119b1f520a43e4bfb662ff79902680ab0"
+    },
+    {
+      "path": "before-source/eslint.config.js.txt",
+      "bytes": 1167,
+      "sha256": "ebd72019a926815cc06067cdd066a14045811e5c784d7c0d47dd71830426d53f"
+    },
+    {
+      "path": "before-source/package-lock.json.txt",
+      "bytes": 141592,
+      "sha256": "200722a24fc5f411f9da0718d74864069871b2dd648205ffc3824f546ebefeaa"
+    },
+    {
+      "path": "before-source/package.json.txt",
+      "bytes": 1131,
+      "sha256": "609f87639a2a698c02933850768881be0c1fd1d59710596c1ac99b7de9f498d1"
+    },
+    {
+      "path": "before-source/scripts/capture-period-compare.mjs.txt",
+      "bytes": 4903,
+      "sha256": "5fa91c09ebaba038aac2d88aac75ae724d58a1dd0e15ff2575f709333a2ae831"
+    },
+    {
+      "path": "before-source/scripts/capture-r1-baseline.mjs.txt",
+      "bytes": 43621,
+      "sha256": "dd2e0effdb6da943e7bd33f3c4088453591f312982dc1cc7969309b1daaf69c8"
+    },
+    {
+      "path": "before-source/scripts/capture-r1-masonry-discriminator.mjs.txt",
+      "bytes": 15273,
+      "sha256": "cfc7f765dfc0d71afa20872826a538507e2cd449fec9b50b204a3c314f829c4c"
+    },
+    {
+      "path": "before-source/scripts/capture-r1-periodic-wall-material.mjs.txt",
+      "bytes": 1334,
+      "sha256": "bf9bbcbc59c843be38218243668a452e2ab0ab3d33feee4899fd8fa39ba91afd"
+    },
+    {
+      "path": "before-source/scripts/capture-r1-primary-wall-material.mjs.txt",
+      "bytes": 1242,
+      "sha256": "b4ebf36d8057477e68b8c409784ac68ab9c9490e4d5283e80bcb8934cb7c4c72"
+    },
+    {
+      "path": "before-source/scripts/capture-r1-wall-phase-production.mjs.txt",
+      "bytes": 28128,
+      "sha256": "9514f9efb9deb0b05c078da7729bacf9cf58895df2474f0458f078665419b366"
+    },
+    {
+      "path": "before-source/scripts/capture-r1-wall-phase.mjs.txt",
+      "bytes": 22034,
+      "sha256": "d02288dd8502dba2e6ae5a7d92ac8ea854c7fd8919807b053d7b7aef02dc1a79"
+    },
+    {
+      "path": "before-source/scripts/capture-r1-wall-seams.mjs.txt",
+      "bytes": 16673,
+      "sha256": "0d46e38d8d9c3416e2f16af45bcb795234b0845e7583df073014cf4bd9212cd9"
+    },
+    {
+      "path": "before-source/scripts/dev-server.mjs.txt",
+      "bytes": 384,
+      "sha256": "42b56c044bf9e3459ee541037d2dccc319eebd38a70070e8401eeedfec7c6247"
+    },
+    {
+      "path": "before-source/scripts/diagnostics/r1-baseline-browser.mjs.txt",
+      "bytes": 3808,
+      "sha256": "927bed4efce7bbfc976a9a560f93c1cbd2845801e5ff14a29f755d199622b7c8"
+    },
+    {
+      "path": "before-source/scripts/diagnostics/r1-baseline.html.txt",
+      "bytes": 653,
+      "sha256": "723752f03b868c178d1b1d10745590d445973ab825947dc7621d14b112fd6b76"
+    },
+    {
+      "path": "before-source/scripts/diagnostics/r1-building-capture.mjs.txt",
+      "bytes": 31263,
+      "sha256": "1afee7904b4e812b72e1b8a614431221f2805413cb7e1e3e837f420c6eb42606"
+    },
+    {
+      "path": "before-source/scripts/diagnostics/r1-material-sampling.mjs.txt",
+      "bytes": 23593,
+      "sha256": "a96b7679798e0c99a5f901d18dd739bf340188119645ae38bb2ab3cd565a8854"
+    },
+    {
+      "path": "before-source/scripts/diagnostics/r1-periodic-masonry-oracle.mjs.txt",
+      "bytes": 5380,
+      "sha256": "f95b401051b3da83dac0e0bf27a611c5e40d15ec97e8810bf9d60afa96f95fa7"
+    },
+    {
+      "path": "before-source/scripts/diagnostics/r1-primary-wall-material-proof.mjs.txt",
+      "bytes": 11774,
+      "sha256": "13904aa57ecd38eab204f5908ed1b8d5e4e8dcf4656309655c20dc3b3e25be72"
+    },
+    {
+      "path": "before-source/scripts/diagnostics/r1-primary-wall-periodic-proof.mjs.txt",
+      "bytes": 15556,
+      "sha256": "8b7ec679ef43e19553de59bc6c9cba3a2d91aadf26ca1af1d4a7ef7ddcb5e5ca"
+    },
+    {
+      "path": "before-source/scripts/diagnostics/r1-wall-phase-attribution.mjs.txt",
+      "bytes": 44857,
+      "sha256": "efaf013d93f24c804a3e660da670c37129e1550162664eba50756eb4fb521d4e"
+    },
+    {
+      "path": "before-source/scripts/diagnostics/r1-wall-phase-browser.mjs.txt",
+      "bytes": 31105,
+      "sha256": "463f2485cb0e711408abc3a5dea2aa4d57703c31383c4306d806e5cf67f7b109"
+    },
+    {
+      "path": "before-source/scripts/diagnostics/r1-wall-phase-production-browser.mjs.txt",
+      "bytes": 11255,
+      "sha256": "fbaa70372d63f01403863df0993f5d8d37e3f0dc8a5f72465688c1dd56f836e2"
+    },
+    {
+      "path": "before-source/scripts/diagnostics/r1-wall-seam-attribution.mjs.txt",
+      "bytes": 27873,
+      "sha256": "9e82789ed5cdc11731d26647a42770b22028663c12eb021b1904f4d32a032427"
+    },
+    {
+      "path": "before-source/scripts/e2e-smoke.mjs.txt",
+      "bytes": 226579,
+      "sha256": "db6d95ccdcd22b61b7afad9b44bba49c577a3e2b15d9dca5956ce785d7007665"
+    },
+    {
+      "path": "before-source/src/app/App.css.txt",
+      "bytes": 86981,
+      "sha256": "1edb05d7950e2f12a0e8fc869e9dbb3d00b7fd44814d3b4e551bcddfa8c2cccf"
+    },
+    {
+      "path": "before-source/src/app/App.test.tsx.txt",
+      "bytes": 209411,
+      "sha256": "87de77799326ea869b1cffc09a6659a93f344cc0a8d9c20a5e729c18ce97947d"
+    },
+    {
+      "path": "before-source/src/app/App.tsx.txt",
+      "bytes": 82280,
+      "sha256": "3fa028d92868b76bc879837ca0acab66d8ca7866cb7c119d6f62fdd46ad2e756"
+    },
+    {
+      "path": "before-source/src/app/main.tsx.txt",
+      "bytes": 209,
+      "sha256": "575d9e34bd914b74d70286812a3a33d3121b075cb43723003cff0c2a64e64846"
+    },
+    {
+      "path": "before-source/src/app/runEventSelectors.ts.txt",
+      "bytes": 440,
+      "sha256": "c3cfc9212c6b89343178620bc728559925c238c33944ca6b88812c8831b87716"
+    },
+    {
+      "path": "before-source/src/features/building-family/art-kit/artKitContracts.ts.txt",
+      "bytes": 8276,
+      "sha256": "7ef65bed63bc11ca7d67090d490f80a5db989785da7c05966bff1600e6d3f9ab"
+    },
+    {
+      "path": "before-source/src/features/building-family/art-kit/artKitFacadePlanSummary.ts.txt",
+      "bytes": 3634,
+      "sha256": "414ac2c88dbfbcbae7fffe51f8d3d41969134d2acc8e3c5cc0da3874d66cd7e7"
+    },
+    {
+      "path": "before-source/src/features/building-family/art-kit/facadeModulePlanner.ts.txt",
+      "bytes": 21005,
+      "sha256": "ed2845014dee4746b8ecb10e5cf896c59328993bf4c138f95a3005f5c8eb530f"
+    },
+    {
+      "path": "before-source/src/features/building-family/art-kit/index.ts.txt",
+      "bytes": 559,
+      "sha256": "53b0f7230c9f8cf71a3a1810c0e45497a0d41f7c7e1d8cd09af8fbc0d70d9201"
+    },
+    {
+      "path": "before-source/src/features/building-family/art-kit/late19cApartmentKit.ts.txt",
+      "bytes": 13820,
+      "sha256": "82d5a87d1831c5001b0010b236ac5958c5892a70128c80f0d476418181e170b9"
+    },
+    {
+      "path": "before-source/src/features/building-family/art-kit/moduleInstanceBuilder.ts.txt",
+      "bytes": 3079,
+      "sha256": "4716be980f53630b83dd0af7fd7f8a8f0e4346a09d22c7cc271d235b19b4b632"
+    },
+    {
+      "path": "before-source/src/features/building-family/art-kit/moduleSnapGrid.ts.txt",
+      "bytes": 4310,
+      "sha256": "35fe9bf2b70396ed2b0a56fc9c26683cd7cf10342dd3c58e789746e780218e93"
+    },
+    {
+      "path": "before-source/src/features/building-family/compiler/bayConstruction.worker.ts.txt",
+      "bytes": 1692,
+      "sha256": "11756a085021e9d53e3b6ff11cd380c58dbe908b863ef428b1dc01f44d28dec1"
+    },
+    {
+      "path": "before-source/src/features/building-family/compiler/bayConstructionClient.ts.txt",
+      "bytes": 3105,
+      "sha256": "33f8db72c7bde47cdb41ac6790099e8fc4448e52ad2cfd0cf7b6f52826d8dce7"
+    },
+    {
+      "path": "before-source/src/features/building-family/compiler/bayConstructionWorkerProtocol.ts.txt",
+      "bytes": 5017,
+      "sha256": "9458259ada71b67a3535c11514b0e1e38b32c02f40a5854997c743b7b7de0e6d"
+    },
+    {
+      "path": "before-source/src/features/building-family/compiler/bayWindowGeometry.ts.txt",
+      "bytes": 6643,
+      "sha256": "e09992f62d5b8919ed1c2cd2215f18df71fe9cdc2a9fec7587bfc5b1d07bc443"
+    },
+    {
+      "path": "before-source/src/features/building-family/compiler/buildingCompiler.ts.txt",
+      "bytes": 39634,
+      "sha256": "6ddf54c5b85b536939b37c1ba6716be83ae6cbb49ad475a630132bd9bfd7c332"
+    },
+    {
+      "path": "before-source/src/features/building-family/compiler/buildingGraphBuilder.ts.txt",
+      "bytes": 10546,
+      "sha256": "ed2e920de926979287419cf7e541a2396f41331f3be043eb4853695215f3b1ae"
+    },
+    {
+      "path": "before-source/src/features/building-family/compiler/buildingShellGeometry.ts.txt",
+      "bytes": 7843,
+      "sha256": "d3e206bee5018885d9113f97927fd04506e5c0462e3baa85341bf85c0e4769f8"
+    },
+    {
+      "path": "before-source/src/features/building-family/compiler/compiler.worker.ts.txt",
+      "bytes": 555,
+      "sha256": "c0a54e974bba16cfc28d88c6c86c5e675be0573bf7a5b1141e3cd248d0914a34"
+    },
+    {
+      "path": "before-source/src/features/building-family/compiler/compilerClient.ts.txt",
+      "bytes": 7326,
+      "sha256": "68d7e40a20ab1aaac2b83046343d94547f1229a35686dfbdc4afb89b9c937981"
+    },
+    {
+      "path": "before-source/src/features/building-family/compiler/compilerWorkerProtocol.ts.txt",
+      "bytes": 4990,
+      "sha256": "aa03ded22ae122440d4b612f9a9e7382c521b44d7fad9f6bbc25513949f628fb"
+    },
+    {
+      "path": "before-source/src/features/building-family/compiler/compilerWorkerRuntime.ts.txt",
+      "bytes": 4510,
+      "sha256": "9b3beeb7e7478dc2873a262c1d2b2bfde7d67a1a04c77cf736fab08e40fe7980"
+    },
+    {
+      "path": "before-source/src/features/building-family/compiler/componentGalleryBuilder.ts.txt",
+      "bytes": 7898,
+      "sha256": "cdf7dc9decb57882e7455dd97723f4494dbc4916ca7c8cc78fbefa6f4d5c44af"
+    },
+    {
+      "path": "before-source/src/features/building-family/compiler/constructionSurfaceProgram.ts.txt",
+      "bytes": 4374,
+      "sha256": "efb667b97f0bc35f405553feb671ceff8767a569afe941dd25e3b042af6e7dfe"
+    },
+    {
+      "path": "before-source/src/features/building-family/compiler/evaluateBayConstruction.ts.txt",
+      "bytes": 11627,
+      "sha256": "b9e3adc96af50d28b4bb1bd98a82ab290967e23f5b2a4426fbe3096fef24ed6d"
+    },
+    {
+      "path": "before-source/src/features/building-family/compiler/evaluateConstruction.ts.txt",
+      "bytes": 2038,
+      "sha256": "abcbe38a85a2ea1f0234042f949099e1aec4ea55619aa9caa24c78940dac300f"
+    },
+    {
+      "path": "before-source/src/features/building-family/compiler/evaluateFacadeConstruction.ts.txt",
+      "bytes": 27733,
+      "sha256": "b4847bbd9153e217e551b7db600804c558fc6ce712c1ec7ad5e4bd6184119bab"
+    },
+    {
+      "path": "before-source/src/features/building-family/compiler/expanders/index.ts.txt",
+      "bytes": 5265,
+      "sha256": "c62d242468f4bf957daf55181c738b62279f4a01c7822d78d9650f3cf9443610"
+    },
+    {
+      "path": "before-source/src/features/building-family/compiler/facadeSplitPlan.ts.txt",
+      "bytes": 28599,
+      "sha256": "092e1e7a382677775553464189a8b2323b49ef5c6ab8673c04700400c21621aa"
+    },
+    {
+      "path": "before-source/src/features/building-family/compiler/facadeWallSubdivision.ts.txt",
+      "bytes": 13369,
+      "sha256": "9faaca8975cdfa7687816952281ce9e98af0ba9b1401cf59976697f3d7eb721d"
+    },
+    {
+      "path": "before-source/src/features/building-family/compiler/frontTrimClearance.ts.txt",
+      "bytes": 4403,
+      "sha256": "bd8d472e5bb956b1bb60d59699f509250a1e116bc69345b355db83508d10228d"
+    },
+    {
+      "path": "before-source/src/features/building-family/compiler/openingGeometry.ts.txt",
+      "bytes": 14060,
+      "sha256": "0a97a6ccf1204e85a119c628166d4dcd722eafa8d18517825a1de617f9bbc316"
+    },
+    {
+      "path": "before-source/src/features/building-family/compiler/openingSlotBinding.ts.txt",
+      "bytes": 11834,
+      "sha256": "81cada9144abbe9f64f0b12d6ade28683dc3a315a3f6c9c2eade5fc145239773"
+    },
+    {
+      "path": "before-source/src/features/building-family/compiler/primitiveGeometry.ts.txt",
+      "bytes": 4882,
+      "sha256": "8ef63e76a9781bbb79c177613e94e8826d1452a4bc5016c04bd09087093de92f"
+    },
+    {
+      "path": "before-source/src/features/building-family/compiler/profiledTrimGeometry.ts.txt",
+      "bytes": 19210,
+      "sha256": "3f6e5daeb03f69768df640b686ae5094ee810c7b691446e2b6265687927e6d4e"
+    },
+    {
+      "path": "before-source/src/features/building-family/compiler/profileLibrary.ts.txt",
+      "bytes": 6266,
+      "sha256": "b6ce70e4a7e0fa039341446f84b78a4109f3cac9878e4f3db5b2d9a22053c140"
+    },
+    {
+      "path": "before-source/src/features/building-family/compiler/profileSweepGeometry.ts.txt",
+      "bytes": 8853,
+      "sha256": "82aca74110c39c5128fa2a7041d2e9941a40962122681ce620df22d8e7a8c5ca"
+    },
+    {
+      "path": "before-source/src/features/building-family/compiler/storefrontScopeSplit.ts.txt",
+      "bytes": 2570,
+      "sha256": "345522a27f93c750f223c06b0df9d2c36165ff27f0864b8523bc00672cc08ea4"
+    },
+    {
+      "path": "before-source/src/features/building-family/components/componentCatalogBuilder.ts.txt",
+      "bytes": 2927,
+      "sha256": "f4aee1c81fbe83bdda53bbb124820c9f7033dfd3e7dad4189d349d6dae5836fc"
+    },
+    {
+      "path": "before-source/src/features/building-family/components/frameBuilder.ts.txt",
+      "bytes": 1183,
+      "sha256": "9894d45113ffe059dc601c05f73a241a1ca85f6603968ec6dfe5fd940a8b39c8"
+    },
+    {
+      "path": "before-source/src/features/building-family/components/openingAssemblyBuilder.ts.txt",
+      "bytes": 5729,
+      "sha256": "a29604fc039e027d8e834e7f139a139e64a99f9b5de5b2f0c8fe5a3024414312"
+    },
+    {
+      "path": "before-source/src/features/building-family/components/primitiveBuilders.ts.txt",
+      "bytes": 1731,
+      "sha256": "de0d64d3a571ce70436d3b915cb5d3552be3937fe0645d7709c002f7aa7942f9"
+    },
+    {
+      "path": "before-source/src/features/building-family/components/profiledTrimBuilder.ts.txt",
+      "bytes": 4306,
+      "sha256": "73d79a72230c1ef69c7f9184cf6e1038853d233cdb2f8e09acfa1d7fbf71af03"
+    },
+    {
+      "path": "before-source/src/features/building-family/components/profileSweepBuilder.ts.txt",
+      "bytes": 184,
+      "sha256": "193b8f58b90c6857422dda5853c8b71580efe97ebaf5531744fe4bef4a3f5a1b"
+    },
+    {
+      "path": "before-source/src/features/building-family/components/quoinBuilder.ts.txt",
+      "bytes": 780,
+      "sha256": "cd58efd6b1a5dc786aa0464d772f47eea2c2bfd9b5335cb683f18e38113e3929"
+    },
+    {
+      "path": "before-source/src/features/building-family/components/roofBuilder.ts.txt",
+      "bytes": 951,
+      "sha256": "98b8802e6939443799d5f4b532cdf51378ed7d598d47525f948d30f0d1960157"
+    },
+    {
+      "path": "before-source/src/features/building-family/contracts/atlasManifest.ts.txt",
+      "bytes": 1685,
+      "sha256": "1fa6fc09d56da6e4795da049bfd35c5f7aa063b6c208ca4197a581b4a8804980"
+    },
+    {
+      "path": "before-source/src/features/building-family/contracts/bayConstructionGraph.ts.txt",
+      "bytes": 14297,
+      "sha256": "60a597bf53c5f0c663bed802a611134803585f149654042a89a7201cf3b1de77"
+    },
+    {
+      "path": "before-source/src/features/building-family/contracts/buildingDocument.ts.txt",
+      "bytes": 9468,
+      "sha256": "7d8cb88cb0fe0963f25094a7d86e976b53256949f4957fdb578728cc0cf59ac5"
+    },
+    {
+      "path": "before-source/src/features/building-family/contracts/buildingFamilySpec.ts.txt",
+      "bytes": 1564,
+      "sha256": "36fdd468f1496f362dac1761b6cf42c7bbcdfb004b289ced2d1dd7cc6a44a7d7"
+    },
+    {
+      "path": "before-source/src/features/building-family/contracts/buildingGraph.ts.txt",
+      "bytes": 1026,
+      "sha256": "258d07a2b00f7dc5bd4752c6eb8ca6f8a3fd5536ea93bd0abb4a2243224a02c5"
+    },
+    {
+      "path": "before-source/src/features/building-family/contracts/buildingIntent.ts.txt",
+      "bytes": 1100,
+      "sha256": "f69c230a96e40dbca5f4680adf8b32532e8b70c03cc00a7ac16cb835c4335a83"
+    },
+    {
+      "path": "before-source/src/features/building-family/contracts/componentRecipe.ts.txt",
+      "bytes": 1348,
+      "sha256": "49053f5f10db361ebbb3e10ba1b740e33d3bb9713036e63be1c6fd2c7cd884a0"
+    },
+    {
+      "path": "before-source/src/features/building-family/contracts/constructionGeneration.ts.txt",
+      "bytes": 5876,
+      "sha256": "306c6d48ea3746e1536d0e30365da811fbb39943ccb695ee8e57f380620af0f0"
+    },
+    {
+      "path": "before-source/src/features/building-family/contracts/generationRun.ts.txt",
+      "bytes": 1256,
+      "sha256": "d3abec0b6768020737a020be0cfa48322643f5c7a0869801205d21ecdc5a3b7f"
+    },
+    {
+      "path": "before-source/src/features/building-family/contracts/historicalStylePack.ts.txt",
+      "bytes": 2812,
+      "sha256": "5b001291235fda3e2a936797eab159857990c791e6ee9b35d65087d0abaceaba"
+    },
+    {
+      "path": "before-source/src/features/building-family/contracts/index.ts.txt",
+      "bytes": 309,
+      "sha256": "79b84d3597abe9190b9ee384320d02e39d50fdb8240c343d34c2fd62a2b7b73c"
+    },
+    {
+      "path": "before-source/src/features/building-family/contracts/moduleInstanceSet.ts.txt",
+      "bytes": 1337,
+      "sha256": "2ebd8dec163ed90fa175601fb5cdf71fb32b972b6380cb750089f681b8badee0"
+    },
+    {
+      "path": "before-source/src/features/building-family/contracts/runtimeBuildingIR.ts.txt",
+      "bytes": 1663,
+      "sha256": "a7c40f8a9693ac318ea918f0d0687949021540106a8cc3d2099d0117f976feee"
+    },
+    {
+      "path": "before-source/src/features/building-family/contracts/shared.ts.txt",
+      "bytes": 954,
+      "sha256": "a274949f0282bcf916ed7a6cd71ab2ba44bb2e8fc6a2d9c12f320c34e4b0b50e"
+    },
+    {
+      "path": "before-source/src/features/building-family/contracts/surfaceBaseAppearance.ts.txt",
+      "bytes": 1063,
+      "sha256": "14d4c46d32c67c55d06005aeeef7041bf08928a691a70a77920d18e72e53ed74"
+    },
+    {
+      "path": "before-source/src/features/building-family/contracts/surfaceComposition.ts.txt",
+      "bytes": 12886,
+      "sha256": "8933635c2421b77b3768f161e8bd3785e227077cb7ee60a9ecec4d50982c4101"
+    },
+    {
+      "path": "before-source/src/features/building-family/core/buildingSeedVariation.ts.txt",
+      "bytes": 6248,
+      "sha256": "a4ae182fa94353c478d83dda32739a43d8a41036f1ced84fe4e9205c060e6312"
+    },
+    {
+      "path": "before-source/src/features/building-family/core/canonicalJson.ts.txt",
+      "bytes": 888,
+      "sha256": "f935e2704a8538ac10e5bc86e73fff8a7049e3db4a010022d0f03dfc5cb6e0c3"
+    },
+    {
+      "path": "before-source/src/features/building-family/core/constructionAppearance.ts.txt",
+      "bytes": 910,
+      "sha256": "048be34ded15b442b58360f9209b711b1a98ea728bb931fa13d54df6ebc53f73"
+    },
+    {
+      "path": "before-source/src/features/building-family/core/constructionGenerationResolver.ts.txt",
+      "bytes": 10536,
+      "sha256": "ab32c45952883d8d885efdec6eef8c4f9e3e5165385923b6c612e84f20c98a11"
+    },
+    {
+      "path": "before-source/src/features/building-family/core/constructionGenerationSource.ts.txt",
+      "bytes": 1517,
+      "sha256": "b00c4ca1ffbebe5339058dc073acb933f1ce67bd1e3f70918ae64ff460de353c"
+    },
+    {
+      "path": "before-source/src/features/building-family/core/constructionRecipeCatalog.ts.txt",
+      "bytes": 6868,
+      "sha256": "24c12715cd57940cfa54904144ece5bce9e73f8cfad2dfc9fcdc16095665e8ee"
+    },
+    {
+      "path": "before-source/src/features/building-family/core/constructionSurfaceAuthoring.ts.txt",
+      "bytes": 8184,
+      "sha256": "a846be0d5bf9f3b3037d679d59a081e02fe4af590b71db7ff4fe12b5380985d6"
+    },
+    {
+      "path": "before-source/src/features/building-family/core/contentHash.ts.txt",
+      "bytes": 735,
+      "sha256": "c971fc747448a9ac1558398fabf4e68d021cbaeb8cb779a3374d50a92607a49e"
+    },
+    {
+      "path": "before-source/src/features/building-family/core/diagnostics.ts.txt",
+      "bytes": 513,
+      "sha256": "10249bd7301f9836a526bd84664186a7205b09e0718b5c25decef3bcb066cafe"
+    },
+    {
+      "path": "before-source/src/features/building-family/core/invalidation.ts.txt",
+      "bytes": 9136,
+      "sha256": "0e51d2335b4a11c61d3c6d20c628fa26e6c586626d05e5aaedf37db8f09a15c9"
+    },
+    {
+      "path": "before-source/src/features/building-family/core/resolveBuildingDocument.ts.txt",
+      "bytes": 7198,
+      "sha256": "03521e3682b601174e7d462a1ef987a78d57dedc9944113a84fd3142a30c5ffa"
+    },
+    {
+      "path": "before-source/src/features/building-family/core/seedTree.ts.txt",
+      "bytes": 2357,
+      "sha256": "ab5fbb5a70d13cb7de44577e6cad0a187bc73e9b7b80a268f4f606f64d9f37c4"
+    },
+    {
+      "path": "before-source/src/features/building-family/core/semanticPaths.ts.txt",
+      "bytes": 634,
+      "sha256": "040de458c1e5f572ede7ecb77c6b2c023b710cfb1592f25f70bb1e9efb7a0078"
+    },
+    {
+      "path": "before-source/src/features/building-family/core/specNormalizer.ts.txt",
+      "bytes": 8982,
+      "sha256": "e5f465c37d0a7015c8f8faf39a88933f977d542d36209342e88ed008fff12f65"
+    },
+    {
+      "path": "before-source/src/features/building-family/materials/artifactCache.ts.txt",
+      "bytes": 3701,
+      "sha256": "a355d6f168f051f6a52b8aaf4970375e984daa9f521528c33336d094f6834239"
+    },
+    {
+      "path": "before-source/src/features/building-family/materials/artKitMaterialSet.ts.txt",
+      "bytes": 6156,
+      "sha256": "21852e0d7a3f958a660f032223b41d92c75f86d6eff30c00165dc293809223a3"
+    },
+    {
+      "path": "before-source/src/features/building-family/materials/atlasDebugExport.ts.txt",
+      "bytes": 9912,
+      "sha256": "10d954fe7df4a9452309bd73d2c3bddff25e1f6aa6e6067454dd9c116b312fdb"
+    },
+    {
+      "path": "before-source/src/features/building-family/materials/atlasLabFixture.ts.txt",
+      "bytes": 3885,
+      "sha256": "fb90cd5a8f69dcc3f4635c51771df3aa71efbbe83678dd9d6f911677b9b6dc27"
+    },
+    {
+      "path": "before-source/src/features/building-family/materials/atlasPacker.ts.txt",
+      "bytes": 15483,
+      "sha256": "3a0b3eed1aa268cb497d044586559704784de739b286db1b7eee0735b98df554"
+    },
+    {
+      "path": "before-source/src/features/building-family/materials/atlasPlanner.ts.txt",
+      "bytes": 16920,
+      "sha256": "8d7fa3fb11fc02e388bafb4a77ac4ccb4f9d9f7add1003a7f2cb0f2f94d24d7f"
+    },
+    {
+      "path": "before-source/src/features/building-family/materials/composeSurfaceTile.ts.txt",
+      "bytes": 20574,
+      "sha256": "7a976e53739d4999b65c6b36b1eafa5050de71853aece16b03b45ee118f2a5bb"
+    },
+    {
+      "path": "before-source/src/features/building-family/materials/constructionReferenceMaterials.ts.txt",
+      "bytes": 12658,
+      "sha256": "17c11cacc0eada7d36771477912c0060c50d71295d014bc63240a2a360d8644a"
+    },
+    {
+      "path": "before-source/src/features/building-family/materials/indexedDbArtifactPersistence.ts.txt",
+      "bytes": 5401,
+      "sha256": "84ec093461bb77810249bfb74b427e8da70990d05a99c60339c26ec0ccdbcb9f"
+    },
+    {
+      "path": "before-source/src/features/building-family/materials/normalFromHeight.ts.txt",
+      "bytes": 1996,
+      "sha256": "fff0f7089eea2c7abfede62f5dcbb9f2e53a2274e82115dcdeb2cf04bbc9561a"
+    },
+    {
+      "path": "before-source/src/features/building-family/materials/periodicBlend.ts.txt",
+      "bytes": 1260,
+      "sha256": "d3dd24412957780601fd0c6b57da8706561689642f4eee4ba228b30d940327e5"
+    },
+    {
+      "path": "before-source/src/features/building-family/materials/periodicMasonryRaster.ts.txt",
+      "bytes": 9552,
+      "sha256": "bc668a8a248d72154746054d5ec38067367163d571a14fbc0a8d6e811d724eff"
+    },
+    {
+      "path": "before-source/src/features/building-family/materials/providers/fixtureMaterialProvider.ts.txt",
+      "bytes": 4374,
+      "sha256": "d4e3a8e9b0e89c2f8abc79cfc564b548b725a352d577b7e7ebe24704471eff75"
+    },
+    {
+      "path": "before-source/src/features/building-family/materials/providers/proceduralMaterialProvider.ts.txt",
+      "bytes": 19387,
+      "sha256": "8129f106e7b2143f65fc92960ed5d3b394931e71985647679fe4fab4063e4151"
+    },
+    {
+      "path": "before-source/src/features/building-family/materials/remoteMaterialImageBridge.ts.txt",
+      "bytes": 5129,
+      "sha256": "5922eb09cdd61457ece4a1856e5fdc753d52acceeb5cc82434d2bc9c80bfbe15"
+    },
+    {
+      "path": "before-source/src/features/building-family/materials/remoteMaterialOverlay.ts.txt",
+      "bytes": 7627,
+      "sha256": "96d94fc27660694f8808b9bfba0fde6ed06b8978cff6cbe3d145ed80326901c4"
+    },
+    {
+      "path": "before-source/src/features/building-family/materials/remoteMaterialProofPacket.ts.txt",
+      "bytes": 5751,
+      "sha256": "67aa0eae00af6c201f3c39ea796a87201652210765867a502f0dcc6aed836910"
+    },
+    {
+      "path": "before-source/src/features/building-family/materials/resolveSurfaceBindings.ts.txt",
+      "bytes": 12034,
+      "sha256": "f8a65ebd2ca42c30a882e3672eb734af9548a0c4448c40c714f9e2c2567b834a"
+    },
+    {
+      "path": "before-source/src/features/building-family/materials/surfaceBaseAppearance.ts.txt",
+      "bytes": 1968,
+      "sha256": "040fa37d136c428101751e9669f4ec01eebac19ea84f84814304fc9aea7787a6"
+    },
+    {
+      "path": "before-source/src/features/building-family/performance/familyBenchmarkDocumentation.ts.txt",
+      "bytes": 3686,
+      "sha256": "6c11b643f496f9765c35b2b814bdc32b539d25876c4cf6904a7fad74d1262bac"
+    },
+    {
+      "path": "before-source/src/features/building-family/performance/familyBenchmarkProfilePacket.ts.txt",
+      "bytes": 13136,
+      "sha256": "5207ef4981de54e515410f3ee4b4fe23aeb8a62f7f9fd39e3541e985c421d6da"
+    },
+    {
+      "path": "before-source/src/features/building-family/performance/familyBenchmarkScene.ts.txt",
+      "bytes": 8408,
+      "sha256": "588121e4a6b5624f0fba9146eab842ca7be23f3d9bee220546ae2f82dfa34e75"
+    },
+    {
+      "path": "before-source/src/features/building-family/performance/familyOrbitBenchmarkScene.ts.txt",
+      "bytes": 12306,
+      "sha256": "5d8b593da047714d227b5861c039e0279205ce84fd256be04a4efe08af02ded7"
+    },
+    {
+      "path": "before-source/src/features/building-family/psg/fixtures/late19cCommercialPrompt.psg.json.txt",
+      "bytes": 918,
+      "sha256": "99acf8084640549111e5bc7f8664b1d9dfe0ae820329c1642175da0a2d3653fa"
+    },
+    {
+      "path": "before-source/src/features/building-family/psg/localRulePromptInterpreter.ts.txt",
+      "bytes": 2573,
+      "sha256": "7f3f9ac74f4af10acd81da0dfdf7467b9303ad3f56828790116a3ab620ec3b59"
+    },
+    {
+      "path": "before-source/src/features/building-family/psg/psgBuildingIntentAdapter.ts.txt",
+      "bytes": 4139,
+      "sha256": "e36a7627de0842b5ef30342477632b95fef796bf8c9a75f451e6ab60d9068338"
+    },
+    {
+      "path": "before-source/src/features/building-family/qa/clayQualityGate.ts.txt",
+      "bytes": 7708,
+      "sha256": "752334d1ef97f1388d8dbe6f73e9e3cd7389358aacf25d5eae073379e3578058"
+    },
+    {
+      "path": "before-source/src/features/building-family/qa/facadeSplitObservability.ts.txt",
+      "bytes": 1973,
+      "sha256": "ad4e5b839495b3620a341412b9c1555ed926f877de39b8254f8f5fcbffd0be7c"
+    },
+    {
+      "path": "before-source/src/features/building-family/qa/moduleQualityReport.ts.txt",
+      "bytes": 16290,
+      "sha256": "0bdd766331c4d4fff734883b4dce28691589ae004f1fed55e8561b04ae591cc0"
+    },
+    {
+      "path": "before-source/src/features/building-family/qa/openingLayoutComparison.ts.txt",
+      "bytes": 13576,
+      "sha256": "ed85ff031b0a3f0c58214dcdb5561a8fe0c41be330acb5da84c50ec7bec190d7"
+    },
+    {
+      "path": "before-source/src/features/building-family/qa/periodReferenceCatalog.ts.txt",
+      "bytes": 7271,
+      "sha256": "8cba35f0e956aad9b2218d1ec658f5642256b19cde083d2dca9ff42907d54c98"
+    },
+    {
+      "path": "before-source/src/features/building-family/qa/r1BaselineContracts.ts.txt",
+      "bytes": 21546,
+      "sha256": "7ac25181852f2c4afe6323bbdd948ac239e879e45c29b5bca712736686ad5ddd"
+    },
+    {
+      "path": "before-source/src/features/building-family/qa/r1MasonryAppearance.ts.txt",
+      "bytes": 18577,
+      "sha256": "9f4b2174825dc891543d8472aa081ea5bd631e1bc967d0036efe28dbbf99208a"
+    },
+    {
+      "path": "before-source/src/features/building-family/qa/r1MasonryCoverage.ts.txt",
+      "bytes": 27122,
+      "sha256": "05a8e56037dad0ac7b869b165f205a4ebd29c307a9d588ce15f19710bb1f47e9"
+    },
+    {
+      "path": "before-source/src/features/building-family/qa/r1PeriodicSampling.ts.txt",
+      "bytes": 31149,
+      "sha256": "3487a67b5bf2192c40f3c00292344cef2b7d18aa5ae6ee50b4c76dcfce259c6f"
+    },
+    {
+      "path": "before-source/src/features/building-family/qa/r1WallPhase.ts.txt",
+      "bytes": 52544,
+      "sha256": "d2f675ea468dcba4c47d1ce6537fbf6cd70b6e75e1126409f3da6591bf9c6b9c"
+    },
+    {
+      "path": "before-source/src/features/building-family/qa/r1WallPhaseProduction.ts.txt",
+      "bytes": 20893,
+      "sha256": "901ca916b1fe8132143d9b09f8cb79ace37e9993c96d1ad6b81bde7508581259"
+    },
+    {
+      "path": "before-source/src/features/building-family/qa/r1WallSeams.ts.txt",
+      "bytes": 15254,
+      "sha256": "19e1fe34690212f21bcf6dfb733d4c9c7bb910becc436d8539176690efd7d411"
+    },
+    {
+      "path": "before-source/src/features/building-family/qa/visualQaPacket.ts.txt",
+      "bytes": 8386,
+      "sha256": "ede76b7e2232c1014e0255578fa84b58228e5821c2b207e93578ce3580d942d9"
+    },
+    {
+      "path": "before-source/src/features/building-family/renderer-three/assemblyRendererFactory.ts.txt",
+      "bytes": 4607,
+      "sha256": "9d25c84743cfe20f407c4b0c8c01c337b50f8fd93c23a83a42c0bf7afc53b56f"
+    },
+    {
+      "path": "before-source/src/features/building-family/renderer-three/buildingAtlasMaterialFactory.ts.txt",
+      "bytes": 3234,
+      "sha256": "7ec8edc57fb9bd19ad881bf5117c95da20c27ed87de57391ad16d6c45db01732"
+    },
+    {
+      "path": "before-source/src/features/building-family/renderer-three/buildingAtlasTextureFactory.ts.txt",
+      "bytes": 4348,
+      "sha256": "6931aa769b52381635ec8387bd48e1bd843f9084df8bc40ca8e1b7f729d2dd31"
+    },
+    {
+      "path": "before-source/src/features/building-family/renderer-three/buildingSceneAdapter.ts.txt",
+      "bytes": 22887,
+      "sha256": "f63eeea40accc2c14ffd94ff382b1474ad964ba9841065e9ea3cdb48ce3c89c9"
+    },
+    {
+      "path": "before-source/src/features/building-family/renderer-three/constructionFrameSelection.ts.txt",
+      "bytes": 4234,
+      "sha256": "2cba32c7a5fc46bf42db9d5e0a3fd632ee45e6826e77b5167770edcf79aed005"
+    },
+    {
+      "path": "before-source/src/features/building-family/renderer-three/familyRuntime.ts.txt",
+      "bytes": 8447,
+      "sha256": "3d19d6ce556ca64084ca583fe8cca2aa41f57d0232f9df7180035f8688f588a5"
+    },
+    {
+      "path": "before-source/src/features/building-family/renderer-three/recipeGeometryFactory.ts.txt",
+      "bytes": 3109,
+      "sha256": "cdc31545d95a672b8d640408fe217f489a3bd27264c17d9850f26510ec52e4cb"
+    },
+    {
+      "path": "before-source/src/features/building-family/renderer-three/resourceDisposal.ts.txt",
+      "bytes": 1595,
+      "sha256": "dd77dad13234bdf369cc081990ea7dc019845a681d09e563fe059cf7fd237c93"
+    },
+    {
+      "path": "before-source/src/features/building-family/renderer-three/surfaceMaterialRuntime.ts.txt",
+      "bytes": 20084,
+      "sha256": "f64b443e7dbbecd5657602431a4ccc145d660fec378b77630bf4bd0840e048fd"
+    },
+    {
+      "path": "before-source/src/features/building-family/renderer-three/wallAtlasGeometry.ts.txt",
+      "bytes": 12579,
+      "sha256": "4224ddd6c63dcea3289a53fb73cb46430a111617a8dd9182153f95f36d854907"
+    },
+    {
+      "path": "before-source/src/features/building-family/state/artifactRegistry.ts.txt",
+      "bytes": 7466,
+      "sha256": "84d382c82911f00e5e14ddee66ee32073968fbf59919a88e5e28ae23670ae2bb"
+    },
+    {
+      "path": "before-source/src/features/building-family/state/bayConstructionProject.ts.txt",
+      "bytes": 4440,
+      "sha256": "4d1f76c494815fa14240f68c9409922a1a1c67f1c505bb4248a3aac14666b7ca"
+    },
+    {
+      "path": "before-source/src/features/building-family/state/buildingRunController.ts.txt",
+      "bytes": 81676,
+      "sha256": "8c1f41a678dedbcd4289e2fb76111173b34885830533184a7319d3f593b4d95d"
+    },
+    {
+      "path": "before-source/src/features/building-family/state/buildingSourceCheckpoint.ts.txt",
+      "bytes": 8939,
+      "sha256": "bc2fad403ee01b295063e135cc286712fc6f77f93971457e74bbd9efe28dbda4"
+    },
+    {
+      "path": "before-source/src/features/building-family/state/buildingSourceCheckpointWriter.ts.txt",
+      "bytes": 8788,
+      "sha256": "0016232163f2b16d37a746190929236b14ec44ec722f8613814f6f80fa5403c2"
+    },
+    {
+      "path": "before-source/src/features/building-family/state/buildingSourceFile.ts.txt",
+      "bytes": 32476,
+      "sha256": "28be641ec3375d12681ef2fa832b6b73d79787d37bbf1d245324e1d3f41557b4"
+    },
+    {
+      "path": "before-source/src/features/building-family/state/buildingStore.ts.txt",
+      "bytes": 13082,
+      "sha256": "9df203894f9190e8d56289a5734e531b06090e6b4742b65cc68b6a9f7b3712a1"
+    },
+    {
+      "path": "before-source/src/features/building-family/state/buildingSurfaceSourceFile.ts.txt",
+      "bytes": 6812,
+      "sha256": "4fd362345902d450f82cd1690aba31adba94c11277193959c9fda9783cf5df04"
+    },
+    {
+      "path": "before-source/src/features/building-family/state/buildingSurfaceSourceRestore.ts.txt",
+      "bytes": 2566,
+      "sha256": "82e2aa1a969b0c26aeec7d94363e939308cda7320500a169379e0011ce73c781"
+    },
+    {
+      "path": "before-source/src/features/building-family/state/completedFamilyExportBundle.ts.txt",
+      "bytes": 4231,
+      "sha256": "3c3e9d343b5defb555b463e43522855103fe116d0ea8d36c6c5677f47ca6b0bb"
+    },
+    {
+      "path": "before-source/src/features/building-family/state/completedFamilyExportImport.ts.txt",
+      "bytes": 5659,
+      "sha256": "51c92106c6ec4947f10018f7a47516d9ee675fc286afb47a7c6eb10aa0133a54"
+    },
+    {
+      "path": "before-source/src/features/building-family/state/completedFamilyExportVerifier.ts.txt",
+      "bytes": 15412,
+      "sha256": "8d5de9bcb40037ff5ca81d506635466f098faf7320cf8a6e37753600e77238ee"
+    },
+    {
+      "path": "before-source/src/features/building-family/state/completedFamilyPersistence.ts.txt",
+      "bytes": 14490,
+      "sha256": "9b9aeae7f6a702391c63b630288b091325604e8008f1631f4497e87243650a38"
+    },
+    {
+      "path": "before-source/src/features/building-family/state/constructionCheckpoint.ts.txt",
+      "bytes": 5352,
+      "sha256": "316331801e9e1453d45f4240481b6b53b239e242f9e3a4871664dd06eb53ca4f"
+    },
+    {
+      "path": "before-source/src/features/building-family/state/constructionCheckpointWriter.ts.txt",
+      "bytes": 7535,
+      "sha256": "5b88fa7f1e817a4cbdf51e992db27a2323df580f798e38805ca03835fdd53e34"
+    },
+    {
+      "path": "before-source/src/features/building-family/state/constructionGenerationState.ts.txt",
+      "bytes": 14266,
+      "sha256": "4edf24b645115f1379ed842a77c8d3903816ebfbfddeeac35fda15d249cccd24"
+    },
+    {
+      "path": "before-source/src/features/building-family/state/constructionHistory.ts.txt",
+      "bytes": 5629,
+      "sha256": "e3cf999673ae1f4b0b72e6adc1de28eb36fc450f90532f2ea1388d0a5721859c"
+    },
+    {
+      "path": "before-source/src/features/building-family/state/remoteMaterialApplicationCoordinator.ts.txt",
+      "bytes": 6473,
+      "sha256": "9b1ae25a68944be6143b3f4b4ae58277001692159a813644c768b3b177d4adde"
+    },
+    {
+      "path": "before-source/src/features/building-family/state/remoteMaterialRouteClient.ts.txt",
+      "bytes": 4204,
+      "sha256": "714dc9d106ed63bd6ef76c3793e231cce25db742c079dbb34a9ec6e470a7ba47"
+    },
+    {
+      "path": "before-source/src/features/building-family/state/useConstructionWorkspace.ts.txt",
+      "bytes": 6490,
+      "sha256": "299b07522898468fc0dc8cbb1eaa086cd287ef345d2b8c6b20e4f8687fd55d3d"
+    },
+    {
+      "path": "before-source/src/features/building-family/style-packs/late-19c-commercial-demo.json.txt",
+      "bytes": 3759,
+      "sha256": "9629636da706ff3f2078e834f2fca298974675e1c7ac0034961aade8cb798699"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/ArtifactTracePanel.test.tsx.txt",
+      "bytes": 4800,
+      "sha256": "7941fe559646e51b857476ad1b0e216041e0293e984ee01035cb4400c023d8d9"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/artKitContracts.test.ts.txt",
+      "bytes": 6172,
+      "sha256": "eca26e335f5fd8dc8e873984a44aab581010bf78b045c9c6eb5b0175f247deb1"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/artKitFacadePlanSummary.test.ts.txt",
+      "bytes": 3136,
+      "sha256": "15978a4d2a3f42ae8c7ac03c41ff43262ba5b0ef530ef4d4725458b9a1e1e444"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/ArtKitLab.test.tsx.txt",
+      "bytes": 2621,
+      "sha256": "1db76001ac13da31552514024ba54b062f08a0eb5b48c86924b72acf1776d298"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/artKitMaterialSet.test.ts.txt",
+      "bytes": 2604,
+      "sha256": "def25811716f940ebf9d90df6ae0e6a59c0bbc373fbf99b4d0453f75554cb989"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/AssemblyHall.test.tsx.txt",
+      "bytes": 79689,
+      "sha256": "4e4802af61f2b9cb094d80738377e4495271b3c24a632a36512b74de3b5f277e"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/assemblyHallFixture.test.ts.txt",
+      "bytes": 84438,
+      "sha256": "202e7f6acebda132f6a46188b00eef835179227b9ab35c42b8fb583d7e02343d"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/assemblyRendererFactory.test.ts.txt",
+      "bytes": 5518,
+      "sha256": "b450e9960b5fcbd0807732d7f1120baefe50e212ea60bc376a0680431ae2719a"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/atlasArtifactCache.test.ts.txt",
+      "bytes": 2956,
+      "sha256": "50d499369ce504fb679da46f2663d95d79e6752dfb1b130bc73ab0bbfc334356"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/atlasDebugExport.test.tsx.txt",
+      "bytes": 12483,
+      "sha256": "44785069736bae098fe1c1d695e7d3496fba905f3ce14cfc40bea8524289ce67"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/atlasLabFixture.test.ts.txt",
+      "bytes": 1588,
+      "sha256": "63fd134330f12952697d402aabd85a07e903a48fa1e82a6be896477f7a9ab338"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/atlasPacker.test.ts.txt",
+      "bytes": 6040,
+      "sha256": "dc890db47ab00d0e15a09de5acf54f89a0f98482638d34fa492610283b0e962a"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/atlasPlanner.test.ts.txt",
+      "bytes": 5272,
+      "sha256": "fd47d20dfe0598f5396cf3508c7e03be1d969e282ba050777a7e0a70ab8d8534"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/bayConstructionGraph.test.ts.txt",
+      "bytes": 10655,
+      "sha256": "ff30545f307069d94a3e0b9852774108d57031fc5dba5430ae3122870b6aff72"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/bayConstructionWorkbench.test.tsx.txt",
+      "bytes": 47028,
+      "sha256": "dea1b821a672e2be51d687dba70c3b7511bcc62edbccfa90ca1159f8065bb65b"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/bayConstructionWorker.test.ts.txt",
+      "bytes": 3967,
+      "sha256": "d5c540d042e07c68cec0a95248c9f9a68ed20af251fe62287f2494186e433dbb"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/browserPngLayerDecoder.test.ts.txt",
+      "bytes": 3478,
+      "sha256": "86dc106c7afe53c0e690a2071e1b8451591704b1b4a7e7cd30ca7cf21b551b19"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/buildingAtlasTextureFactory.test.ts.txt",
+      "bytes": 5091,
+      "sha256": "89e7746a643fa1935e4ba10737baa4db35b399f8f81098e82e5fa60145efb8f9"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/buildingCompiler.test.ts.txt",
+      "bytes": 29453,
+      "sha256": "510c02f192b82ef969a626750d380b89a14cc450cb741cea32ffaa3504453cb7"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/buildingCompilerWorker.test.ts.txt",
+      "bytes": 73524,
+      "sha256": "5cc9253289c3eaa248a139f96d2174398b8ffbc715a3aae8fea9d3d8f160c23e"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/buildingConstruction.test.ts.txt",
+      "bytes": 10509,
+      "sha256": "8a7b2aa3f45e672d640d88581b6f656837f4e0e95cc0bd9799007bb675b1d7ad"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/buildingDocument.test.ts.txt",
+      "bytes": 9775,
+      "sha256": "cf8baec3aa09a592d539ee6f4c3a82cad8b58b246abd1386d4fec7214724278b"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/buildingFamilyRuntime.test.ts.txt",
+      "bytes": 8297,
+      "sha256": "1b3a555612ff1746fa1b10b530f468d8cdc249daeb5912d4327947ad49c3203e"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/buildingGraphBuilder.test.ts.txt",
+      "bytes": 5938,
+      "sha256": "3acd24a859af7dfd3de42bb90c5046c4a79ee1c237190ab508d1ba8ff4e4b337"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/buildingSceneAdapter.test.ts.txt",
+      "bytes": 23602,
+      "sha256": "cb8aeb26ad7e5cf7dbdd16006a24d16f3422465c3f6750a1ae1759c594d76043"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/buildingSeedVariation.test.ts.txt",
+      "bytes": 2250,
+      "sha256": "789d4dba52092a6a9435b1cce3293da163ef687e50a813538c64e99e9e38c7a4"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/buildingSourceCheckpoint.test.ts.txt",
+      "bytes": 25144,
+      "sha256": "92284ca5e45ff0a25e64433def9f8ac7f353722ea349d938ab5f6b835e48b117"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/buildingSourceCheckpointWriter.test.ts.txt",
+      "bytes": 27477,
+      "sha256": "2397a935dafba54b0274c5dcec69caf8cd47ed8468479e7cebf7e3922d914d19"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/buildingSourceFile.test.ts.txt",
+      "bytes": 75748,
+      "sha256": "7328d47607a496dab08a798f5177ff58d5ff2f8b91b2395c4c56cd6b6aaea1aa"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/buildingState.test.ts.txt",
+      "bytes": 419535,
+      "sha256": "f35ab5eb770e205402001fe17a6f1f2676a9f65eac458a414a9b2fa1a7f22ae9"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/buildingSurfaceSourceCheckpoint.test.ts.txt",
+      "bytes": 11125,
+      "sha256": "2d802abe682e364e3c15acbceeb8857d78e920c22dfd692775fa06ad84549dda"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/buildingSurfaceSourceController.test.ts.txt",
+      "bytes": 18579,
+      "sha256": "93d67c89d19eabe6d4a7fd34987a8928f7a6c436368356628c2b9f3e67c8f4c6"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/buildingSurfaceSourceFile.test.ts.txt",
+      "bytes": 12692,
+      "sha256": "bdb3952e98d3e1173b492549252a8424a72bd0c9fdb4fe81ea3746503aa0f355"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/buildingSurfaceSourceRestore.test.ts.txt",
+      "bytes": 15754,
+      "sha256": "696668ce6fc77931a823e2ba7c2654d50e8bfacfc6a0ebcc077fda3bf0360bc1"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/canonicalJson.test.ts.txt",
+      "bytes": 532,
+      "sha256": "05f1574a76b7a5d5b1f42adf638d87a672a0d8bc32d0930813d8c386ca407c5a"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/clayQualityGate.test.ts.txt",
+      "bytes": 1504,
+      "sha256": "214536846f5e3020e0e7f8e135fe6330f84d0619216a431c5eb316f9799cd909"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/completedFamilyExportBundle.test.ts.txt",
+      "bytes": 6182,
+      "sha256": "45ab265928295adf0901511ab1f9744958163aebd4c28978c4a1c42a6d9f2596"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/completedFamilyPersistence.test.ts.txt",
+      "bytes": 25012,
+      "sha256": "20a54d00fd15508e7bc03da779a297ba965998d254069b2b430bab1b55ce1f48"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/componentCatalogBuilder.test.ts.txt",
+      "bytes": 4639,
+      "sha256": "76f8867fe424624906c33be7cd87b8965ddc8b18883a08430f690cb3c5922edb"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/ComponentForge.test.tsx.txt",
+      "bytes": 5679,
+      "sha256": "818d06c5fd115a4bab9a0d5f9367e72d8ab66cff88021d91859f9700eb0f15d9"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/componentGalleryBuilder.test.ts.txt",
+      "bytes": 10605,
+      "sha256": "f32c6400e6dfae03f21e46864c2aeff4dab2da5836a5410a51ac156848395333"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/ConstructionBuildingControls.test.tsx.txt",
+      "bytes": 4774,
+      "sha256": "062d3d81de075e778626c8f434a8bd504b9cbf8c87826c96ffaec74925ee72f0"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/constructionCheckpoint.test.ts.txt",
+      "bytes": 9470,
+      "sha256": "e7ccd21accad4f1cb30f99432b6d16f85c28cbe47a96e4a8cfd5b5752ae38daf"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/constructionGenerationResolver.test.ts.txt",
+      "bytes": 11466,
+      "sha256": "3409d9aecd98bed44629374b490829be0ef204d2f25471c222c3ba22a49a928b"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/constructionGenerationSource.test.ts.txt",
+      "bytes": 11150,
+      "sha256": "4698dc6c0d73d680b1f0dab1e10967b600af81290550517497dd84c12d352d85"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/constructionGenerationState.test.ts.txt",
+      "bytes": 15945,
+      "sha256": "963893fc2d4c2f6ce8976c020e1baf8c4d0145b1c20ef4e201d8f54fb6e86f56"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/constructionHistory.test.ts.txt",
+      "bytes": 3039,
+      "sha256": "5e5dba8e342ed0cb799bc9178b5c1e22dff6b1e2a4059c6c15aa4e3013652e98"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/ConstructionNodePanel.test.tsx.txt",
+      "bytes": 4237,
+      "sha256": "219d9ebf1fc8f7a2f34f61b8371d7e6a78e69049edb2489993bdb61c4d90a1f3"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/constructionRecipeCatalog.test.ts.txt",
+      "bytes": 12658,
+      "sha256": "92e44ac671c5b761b766d445f18d4e187a0fdcdf17393b2f702e1b0109d08d47"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/constructionReferenceMaterials.test.ts.txt",
+      "bytes": 13109,
+      "sha256": "ba761f8fee368b45222f0a45346fbafe04053b826ed9f1fb3247d55c88d05d35"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/constructionSurfaceProgram.test.ts.txt",
+      "bytes": 5651,
+      "sha256": "82a1a02ad3fbec56d80bef0f214fd69db8008281c97d801118db62a69175db27"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/constructionSurfaceRuntime.test.ts.txt",
+      "bytes": 23967,
+      "sha256": "10d81dcd4f51eca05a61b5c1a8cc9cd5207b4607b26c1fe46a80354329c8fa99"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/contracts.test.ts.txt",
+      "bytes": 4176,
+      "sha256": "d0dd3490de1ca6a69c0e57919e36d51da34c1e5a9e340ee7baf59cf740beb210"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/expanders.test.ts.txt",
+      "bytes": 2945,
+      "sha256": "4ce1f88e072a60b4a2bd9ca6b93a1390356e0819a10e7689d5a18f07a009d2f3"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/facadeConstruction.test.ts.txt",
+      "bytes": 9364,
+      "sha256": "478ea3e2b99d0128d66bb86798b14daf223d859802addf89807e1d5ce79de5df"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/facadeModulePlanner.test.ts.txt",
+      "bytes": 15567,
+      "sha256": "6e4e99f2288fa2a2922eafbfc8c5c4e5458395cb0de33c76d67f065492d97223"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/facadeSplitObservability.test.ts.txt",
+      "bytes": 2508,
+      "sha256": "6d4fb9123662f828f5299dd8afe7b1c4fbe768780baf8f204e4307671460afd1"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/facadeSplitPlan.test.ts.txt",
+      "bytes": 85231,
+      "sha256": "e37be31f2fdd1d29ecc34afd7805dc6e1419049d2378efb36731fda02c59db6e"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/facadeWallSubdivision.test.ts.txt",
+      "bytes": 7344,
+      "sha256": "625f253d9d542dbaf808fbdd8bd84d9dd78dbcab25cf427bc7c1de05510712e4"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/familyBenchmarkDocumentation.test.ts.txt",
+      "bytes": 2483,
+      "sha256": "5addf4fe362de44d48a650c661dc3748b04e0025f0c95dff51175dd2a0b3979e"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/familyBenchmarkProfilePacket.test.ts.txt",
+      "bytes": 4691,
+      "sha256": "68151622761ac967176f2f476e0fc001d330777afe70ee7e4a2b15a2a278a783"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/familyBenchmarkScene.test.ts.txt",
+      "bytes": 3807,
+      "sha256": "306262ae045442be854c359ae8615cd3cea2aa7bad98a44b2371c57924780a91"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/familyOrbitBenchmarkScene.test.ts.txt",
+      "bytes": 3535,
+      "sha256": "20e4a27e862b194241e6b5e228eb399c321b8efd2bb69f9f8d2656eb16ace128"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/frontTrimClearance.test.ts.txt",
+      "bytes": 8975,
+      "sha256": "b6730c5c5b83b27a0b0b26c120546478b2d7c027e5576feada4a5b8231f093ea"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/indexedDbArtifactPersistence.test.ts.txt",
+      "bytes": 14843,
+      "sha256": "5741c739d77f4984793bfb75bbaecb569abdf8aa8c4f459a5dbe1f9f8714db9d"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/invalidation.test.ts.txt",
+      "bytes": 9863,
+      "sha256": "75552a9a4c0581065b39f39811791208f39fa6a43f98499362d7af8835615d75"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/localRulePromptInterpreter.test.ts.txt",
+      "bytes": 645,
+      "sha256": "3519f0276b31c4b3751041c70ecbea7e36d5b152635af0ce89846448c16fa5f5"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/moduleInstanceBuilder.test.ts.txt",
+      "bytes": 3033,
+      "sha256": "229cd516be57dffc6bdbba47610d4cedbf07e7e261679b2fda1978c3cdccb8b2"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/moduleQualityReport.test.ts.txt",
+      "bytes": 4426,
+      "sha256": "874ca511ce1d6614bdd08bd489bd47fca5e1a37d28e8401bd5c01f13f00b76f4"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/moduleSnapGrid.test.ts.txt",
+      "bytes": 3632,
+      "sha256": "eb6702c892d5331ded7ca053784b578d11b1f69a573a13d9bbf61a3e32577ad4"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/openingApertureVisibility.test.ts.txt",
+      "bytes": 26983,
+      "sha256": "0ef09f8533f9db3a6aa9821283ce278d54c3fa4f9ecf803b1712bd1975639e14"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/openingAssemblyBuilder.test.ts.txt",
+      "bytes": 3031,
+      "sha256": "515b860cd76102dc5cf7f6270cceb152d558cffd37a8deb13df8c506aeb7e309"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/openingGeometry.test.ts.txt",
+      "bytes": 9631,
+      "sha256": "8b8b7da7a5913348469be2b80c19b45674ad38d503317d283703bae08b3fd4d5"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/openingLayoutComparison.test.ts.txt",
+      "bytes": 13724,
+      "sha256": "56166cbdea12109bbc970da30cbac2e88ac3f344049522fef17b4891f25c3871"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/openingSlotBinding.test.ts.txt",
+      "bytes": 13885,
+      "sha256": "4412c1f8427fb01511fb2c906d0907ec278b49601fb5a7ae20489d01db1efe55"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/periodComparisonNotes.fixture.test.ts.txt",
+      "bytes": 1632,
+      "sha256": "683060bbc12544ce6ae1adcae184f3f808763e9190dda861946508d02037ec9b"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/periodicMasonryIntegration.test.ts.txt",
+      "bytes": 18223,
+      "sha256": "fb4ae730efd7baff384cbd1269c899ea870b4fc5a4065d17af1f7c55897af942"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/periodicMasonryRaster.test.ts.txt",
+      "bytes": 16858,
+      "sha256": "69a952fd8e55ed1936851e177a5a0c72d277b74872ffcdfe86fde4b30d69a9d2"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/periodReferenceCatalog.test.ts.txt",
+      "bytes": 4561,
+      "sha256": "cea0807838596df797043e970c75b9495530178437e1703d0e3dbdf5b29a3625"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/PeriodReferenceLab.test.tsx.txt",
+      "bytes": 3357,
+      "sha256": "027c496c31fae595c5f477f81c2ba9bdfd3945384af6c710b3fad3bf1751072d"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/proceduralMaterialProvider.test.ts.txt",
+      "bytes": 12464,
+      "sha256": "25055d8e651ebf8d413728d750b550df4f9849a5747c3ddbc64fa4016c7005bd"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/profiledTrimBuilder.test.ts.txt",
+      "bytes": 3387,
+      "sha256": "8cb5919d2e4ac14ca20b1bd35df8260560fef965880c0a49d8ac981d93b550b3"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/profiledTrimGeometry.test.ts.txt",
+      "bytes": 16097,
+      "sha256": "39cfa5e4459cfd8955574ded843941c2150724d262395ce9f7f8590a97b5bffa"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/profileLibraryG7.test.ts.txt",
+      "bytes": 3551,
+      "sha256": "e20125cd037cd22fce674d067700cb21d5fc4b10ec131b8d11d036c7be6176f4"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/profileSweepGeometry.test.ts.txt",
+      "bytes": 2294,
+      "sha256": "a09c660ae833b179082c6313931fdda14c384526b157afa07d6fbe6bb7b74120"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/psgBuildingIntentAdapter.test.ts.txt",
+      "bytes": 1335,
+      "sha256": "6f1f3c1ffba580c7d83e30e62402a90ab334c438067a745c6ead2a380d4bd5f8"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/psgToSpec.integration.test.ts.txt",
+      "bytes": 1738,
+      "sha256": "9bc6114d27aea283e4e3a99434697c0ac091332bb151015830c4f9d0f27b1674"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/quoinBuilder.test.ts.txt",
+      "bytes": 1566,
+      "sha256": "14daab88e55f6445da39bcee749f7b1ffddc9409830806df0c4f5076265c4f3e"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/r1BaselineContracts.test.ts.txt",
+      "bytes": 13119,
+      "sha256": "cccc867d9af4c85790ade1f88ddad682662d80613ecc5fc299f270044667702c"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/r1MasonryAppearance.test.ts.txt",
+      "bytes": 22086,
+      "sha256": "f18b6bc14c6250b7273a0e4f3b6d2f49298a5971a85e62fd9b8af7c3b3542486"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/r1MasonryCoverage.test.ts.txt",
+      "bytes": 28905,
+      "sha256": "55c098be5a25e2986c0ebe39275278274647df6a8ff174e07558f10b83868601"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/r1PeriodicSampling.test.ts.txt",
+      "bytes": 27431,
+      "sha256": "c74529efc282e9f6210b32db9494c208fdbc57ef4d5eff5a899218a1058163b2"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/r1WallPhase.test.ts.txt",
+      "bytes": 39006,
+      "sha256": "70e52ca3c0fa1a8b6f5cddefe275b34fc2cc68e8cc97b0e98d2202e4d5d5376e"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/r1WallPhaseProduction.test.ts.txt",
+      "bytes": 20644,
+      "sha256": "d01a6898b8701dd67aaa8b2cc51b87fb3c96c519868b0d53b068789f379af651"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/r1WallSamplingComparison.test.ts.txt",
+      "bytes": 7112,
+      "sha256": "78222aecaa9df5832020cb7707944fb59a1a0f3d545af9571ee765f50f83f341"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/r1WallSeams.test.ts.txt",
+      "bytes": 22949,
+      "sha256": "630971f2e6677d431c56edb72baa1fd8359874caeadad75d25d348fccaeba5f0"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/remoteMaterialApplicationCoordinator.test.ts.txt",
+      "bytes": 8663,
+      "sha256": "c6ff6d662f0b11e78b2a04c2667d6b0c91be0f1aa566b2261af1ae384b081635"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/remoteMaterialImageBridge.test.ts.txt",
+      "bytes": 6169,
+      "sha256": "d2303ccbdff24f22fa808e6abc73f1230e65e81ac3d3ef55d55a602dd8cf7130"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/remoteMaterialOverlay.test.ts.txt",
+      "bytes": 8288,
+      "sha256": "d5f50747a1c1bbf8c14909985114616789b6dcf7c267ae389b968a27e93e7bd3"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/remoteMaterialProofPacket.test.ts.txt",
+      "bytes": 5850,
+      "sha256": "0570be8c5e6419c3cf6f7ac080c66fe363152cf42471d7d1f092218d13163586"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/remoteMaterialRouteClient.test.ts.txt",
+      "bytes": 8999,
+      "sha256": "3fd3ce05b9e146bc793f86407aa69ca340a42f073c79345a2ad9652f8db1744d"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/resolveBuildingDocument.test.ts.txt",
+      "bytes": 14318,
+      "sha256": "8cfc11d37ed7e2a5468d06f2458cc2d8523b95a7c1a79b3d15a6ea334f856e2b"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/resourceDisposal.test.ts.txt",
+      "bytes": 4331,
+      "sha256": "8363d7605a61eb2edadf92b7c2d1cbfa302a738683aa26bc7f2dd01c12fbec7f"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/SampleBuildingGallery.test.tsx.txt",
+      "bytes": 2895,
+      "sha256": "bb559a36c5596147ed22b069733c0295e42baa73d4b0a7672ee9277aa80cb60c"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/seedTree.test.ts.txt",
+      "bytes": 1024,
+      "sha256": "7388fbcf658cde8c815f51e4b4562f9b6cef24dba3865a284d2ba3c7ae17d161"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/specNormalizer.test.ts.txt",
+      "bytes": 16173,
+      "sha256": "b6a0e9dac0e7d43522eb487014698275190cd17a6c0142e5c316ef9965d2ffd3"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/storefrontScopeSplit.test.ts.txt",
+      "bytes": 5414,
+      "sha256": "a7dce701f5a440da7aab0f080793a1d8fb2b035dd783bc9e9e6ca0cc8a8654b8"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/surfaceBaseAppearance.test.ts.txt",
+      "bytes": 9415,
+      "sha256": "5a0f38c8668ea256d5804efa65e7c4cef7efde9fab995c5328a2c185796c6034"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/surfaceComposition.test.ts.txt",
+      "bytes": 23092,
+      "sha256": "8eb9c93f9decd6f3f55d4bc682f0c11d3faf9036415fe96414d0f4561ed28922"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/surfaceMaterialRuntime.test.ts.txt",
+      "bytes": 25408,
+      "sha256": "dc36997cefbdb1a97fb13a8ed3f24e55fc94808775e44d592f1a166940dffd85"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/surfaceTileComposition.test.ts.txt",
+      "bytes": 29508,
+      "sha256": "d87dafe381a9d149a9e8dd5a0fdc4272a455a1ad6d76967487fe331954e22c06"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/useConstructionWorkspace.test.tsx.txt",
+      "bytes": 6299,
+      "sha256": "fdbb656126c67c4e432858fd1b7526799b6a1fa639b2281316ec825a03b06d52"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/utdgResearchBrief.test.ts.txt",
+      "bytes": 1622,
+      "sha256": "04b868f8f25be33d2f89dad828b4f97348fca0e8a1b71de46891ca511672e4b5"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/visualQaPacket.test.ts.txt",
+      "bytes": 2266,
+      "sha256": "fa17f1e7f4868b614af1b98c6e38faade563c8d408d827b15cbbb8dfc12bd572"
+    },
+    {
+      "path": "before-source/src/features/building-family/tests/wallAtlasSampling.test.ts.txt",
+      "bytes": 21362,
+      "sha256": "e59eb7e0940cc44ee3eca5f8eb5d12d97be552f94696a4e235a4ba680d64f348"
+    },
+    {
+      "path": "before-source/src/features/building-family/ui/ArtifactTracePanel.tsx.txt",
+      "bytes": 8432,
+      "sha256": "c3930a61f51a17c12d0a9caf21017a27bfcca081acf1d70b78a80e7808333b09"
+    },
+    {
+      "path": "before-source/src/features/building-family/ui/ArtKitLab.tsx.txt",
+      "bytes": 11199,
+      "sha256": "9b9a46d62084800257f679bdb3f6a609b038ab17d085c2f3d5e158722d92b552"
+    },
+    {
+      "path": "before-source/src/features/building-family/ui/AssemblyHall.tsx.txt",
+      "bytes": 94726,
+      "sha256": "cc4c0c39423fbccf6ae5301a70b176951962767b863dc65d58027c8ee8cde3b3"
+    },
+    {
+      "path": "before-source/src/features/building-family/ui/assemblyHallFixture.ts.txt",
+      "bytes": 29453,
+      "sha256": "795c5340886be123e971052de7bc12ee4024e548332f986587c9071d230d7286"
+    },
+    {
+      "path": "before-source/src/features/building-family/ui/AtlasLab.tsx.txt",
+      "bytes": 9330,
+      "sha256": "9f68f8f79b6b1ea7b28d9847329f603d6729e720774d152d920052ada456805e"
+    },
+    {
+      "path": "before-source/src/features/building-family/ui/bayConstructionFixture.ts.txt",
+      "bytes": 18627,
+      "sha256": "3d9e66b790dc9c10b6cf54777f972b8d15c59db6127e836278edc716435305a5"
+    },
+    {
+      "path": "before-source/src/features/building-family/ui/BayConstructionWorkbench.tsx.txt",
+      "bytes": 36310,
+      "sha256": "01bf1c86ddee7d9de04ec57a9ac45d984a24e141924eeb9aab8531678cdf89f6"
+    },
+    {
+      "path": "before-source/src/features/building-family/ui/browserPngLayerDecoder.ts.txt",
+      "bytes": 4732,
+      "sha256": "f368f5e17846ddff1b14704a2052b256205bca3ec0b053c79d56d855a2ac0137"
+    },
+    {
+      "path": "before-source/src/features/building-family/ui/ComponentForge.tsx.txt",
+      "bytes": 11642,
+      "sha256": "7ecd804d28854642916d9c9f5f79efb77f787a912a1a87ef1338fb071a09a382"
+    },
+    {
+      "path": "before-source/src/features/building-family/ui/constructionBuildingBindings.ts.txt",
+      "bytes": 1185,
+      "sha256": "588a4d6022a7b7488f3a1194189a438f1ee6beff14e8ddaa6d839be7ea5c8c91"
+    },
+    {
+      "path": "before-source/src/features/building-family/ui/ConstructionBuildingControls.tsx.txt",
+      "bytes": 5892,
+      "sha256": "8bf3c4e6624a656819726cd7e2c3e8354df778fd639cc728dcb3861e56ff9edf"
+    },
+    {
+      "path": "before-source/src/features/building-family/ui/ConstructionGenerationPanel.tsx.txt",
+      "bytes": 6010,
+      "sha256": "45de5ff63eefadf24c8f272a4e0e852e4bf12db17140fd3f769b26884c2247b8"
+    },
+    {
+      "path": "before-source/src/features/building-family/ui/ConstructionNodePanel.tsx.txt",
+      "bytes": 14542,
+      "sha256": "c46efe996f7eb72e800a9d6ebc09d7986754b43761c1deb40ed8a13e47920af8"
+    },
+    {
+      "path": "before-source/src/features/building-family/ui/ConstructionSurfacePanel.tsx.txt",
+      "bytes": 6969,
+      "sha256": "c1433f5acae5d52d68b83ee505f6f9be1acb47bbcff56b923d9dcfa5a37c1fdc"
+    },
+    {
+      "path": "before-source/src/features/building-family/ui/PeriodReferenceLab.tsx.txt",
+      "bytes": 11262,
+      "sha256": "01904a904fa6ac3d3b91bc171dc9ed1adf5126d6f46879c961c297610649d922"
+    },
+    {
+      "path": "before-source/src/features/building-family/ui/PromptTracePanel.tsx.txt",
+      "bytes": 4501,
+      "sha256": "5c1778e9aa031a36a94d254ef99d291e7e29dcb04020a1485e239fe76e423cc0"
+    },
+    {
+      "path": "before-source/src/features/building-family/ui/SampleBuildingGallery.tsx.txt",
+      "bytes": 15213,
+      "sha256": "bf324ba792d7c8001c376152b22f102e58c753dad3b78aa4b29107a8431785af"
+    },
+    {
+      "path": "before-source/src/features/building-family/utdg/index.ts.txt",
+      "bytes": 414,
+      "sha256": "191076a9e48c58394fcb15312667677b7a90879d722e0b4841184b4d8be5071f"
+    },
+    {
+      "path": "before-source/src/features/building-family/utdg/textureDescriptionContracts.ts.txt",
+      "bytes": 3492,
+      "sha256": "8b58c6d68d4d723ef0d523fc86e69b83fb804a752d5b74ad1bcaaef12d6a274d"
+    },
+    {
+      "path": "before-source/src/features/prompt-spaghetti/contracts/psgDocument.ts.txt",
+      "bytes": 2069,
+      "sha256": "cf49e15d669f00a14b1a21abda3a9a1fde807cbef603aba91dc98c2c73d53e3d"
+    },
+    {
+      "path": "before-source/src/features/prompt-spaghetti/core/evaluatePsg.ts.txt",
+      "bytes": 3734,
+      "sha256": "cbb9767cb92037ea95c6163fc1a8072d81d8a18a51909e7760acb22c316f1384"
+    },
+    {
+      "path": "before-source/src/features/prompt-spaghetti/core/evaluationTrace.ts.txt",
+      "bytes": 179,
+      "sha256": "33d5808f4d592b674b1594d090b54e5eed749cd02522b8c92089fe6b331ab373"
+    },
+    {
+      "path": "before-source/src/features/prompt-spaghetti/fixtures/legacy-v2.psg.json.txt",
+      "bytes": 1402,
+      "sha256": "3ba99594bba596bb636429a4180ec612e1fead7b1524ecae843366ef2aa200b2"
+    },
+    {
+      "path": "before-source/src/features/prompt-spaghetti/io/exportPsg.ts.txt",
+      "bytes": 200,
+      "sha256": "167865b627646cbf447767cf9b3507a5261de4c6704908b8b03bc3178df806c6"
+    },
+    {
+      "path": "before-source/src/features/prompt-spaghetti/io/importPsg.ts.txt",
+      "bytes": 189,
+      "sha256": "fdf05224481413d5bbdb06abb5e8e75139e63f8b6cca66bda77233e4c8df8050"
+    },
+    {
+      "path": "before-source/src/features/prompt-spaghetti/tests/evaluatePsg.test.ts.txt",
+      "bytes": 949,
+      "sha256": "18bb2b0daafaf1abad9999eedbb3c6521b709ecaee2f3bf7d2e03fe6c531ef06"
+    },
+    {
+      "path": "before-source/src/features/prompt-spaghetti/tests/legacyV2Compatibility.test.ts.txt",
+      "bytes": 574,
+      "sha256": "d364dc722a083625ba0f5dd8004d468823c22bc4e4d3dfb03034d611de0ed986"
+    },
+    {
+      "path": "before-source/src/test/setup.ts.txt",
+      "bytes": 44,
+      "sha256": "d494b5796f05a8593031aaac07417cfc85d53778b63681fd0cdb7be136448aff"
+    },
+    {
+      "path": "before-source/src/vite-env.d.ts.txt",
+      "bytes": 39,
+      "sha256": "bf144e3cdae616e27b064c8c2b94b14525e220fb3facc4cb4884d21b65eb5aa5"
+    },
+    {
+      "path": "before-source/vitest.config.ts.txt",
+      "bytes": 381,
+      "sha256": "ef7cfb763835181b9f1f9e636c2f3bd911dc41a37ba334435da2625a0ee9f113"
+    },
+    {
+      "path": "before.json",
+      "bytes": 55811,
+      "sha256": "c6dd17f3147169bda7b4d32ea1e3bcf1362a4ee4b2662f6f7509bee4e27b1f20"
+    },
+    {
+      "path": "build-final-01.log",
+      "bytes": 977,
+      "sha256": "47943a1fa94b9ae048fb95cee9c089b8ee303d7363c5cbb0903244d3b2ec609c"
+    },
+    {
+      "path": "capture-vocabulary-01.mjs.txt",
+      "bytes": 48882,
+      "sha256": "54b06238d845e367c99d2e83cca58667170743f67bfb63f62c1cef000f9c617d"
+    },
+    {
+      "path": "capture-vocabulary-02.mjs.txt",
+      "bytes": 49219,
+      "sha256": "8c84f3dc4b6924c2ad5db5adb766e3b5a9571ff2983f4d2b0ad0472b28e9a506"
+    },
+    {
+      "path": "closeout-docs/design-qa.md.txt",
+      "bytes": 6142,
+      "sha256": "bdb33f104dc925799566b54022394f9b764665b866ce9a81e7eed1b6316b97d6"
+    },
+    {
+      "path": "closeout-docs/docs/architecture/dynamic-building-family-integration.md.txt",
+      "bytes": 195297,
+      "sha256": "485d2cc0d5b66c760fea0483a472c50b97f5e95c21443c3ba500d9e704f97452"
+    },
+    {
+      "path": "closeout-docs/docs/plans/building-authoring-revival.md.txt",
+      "bytes": 293880,
+      "sha256": "ef439244d6f9aa5213d35d4b3aeececc1d3aa58ad13a6746c161c0fe8eaeb8dd"
+    },
+    {
+      "path": "closeout-docs/README.md.txt",
+      "bytes": 5174,
+      "sha256": "f35ffc64f5173944cad2f71245051a209adf2d28b4e794c3ab13ec0b485779ef"
+    },
+    {
+      "path": "design-qa.md",
+      "bytes": 6142,
+      "sha256": "bdb33f104dc925799566b54022394f9b764665b866ce9a81e7eed1b6316b97d6"
+    },
+    {
+      "path": "diff-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "focused-01.log",
+      "bytes": 1714,
+      "sha256": "946a55113af91f9d106f2390a8eb6dbba4c1889d103d238ebb50e3faf3f567b2"
+    },
+    {
+      "path": "focused-02.log",
+      "bytes": 251,
+      "sha256": "93e53ed3567e6ff9f4e28464905f738c067cfc2972c61a38f159e1c4583000a5"
+    },
+    {
+      "path": "inspector-comparison.png",
+      "bytes": 590202,
+      "sha256": "79e698dd54f671270c227a55149645c352fd63a108cf665d2e5d31e96a3cf60a"
+    },
+    {
+      "path": "legacy-baseline.json",
+      "bytes": 720,
+      "sha256": "c1de66d0ab2af7d07fa098b4f40cbaabc57ff92def1c85bf1a66aa3fe46c9cc9"
+    },
+    {
+      "path": "lint-01.log",
+      "bytes": 37,
+      "sha256": "a21c6d2dedb756f860b052cb2d84cd603fbbe38ee53e1ad76ab9c5803f028958"
+    },
+    {
+      "path": "lint-final-01.log",
+      "bytes": 37,
+      "sha256": "a21c6d2dedb756f860b052cb2d84cd603fbbe38ee53e1ad76ab9c5803f028958"
+    },
+    {
+      "path": "notion-proof.json",
+      "bytes": 484,
+      "sha256": "82e572ad46d4db802db734a956c05f4c2c40c229af35c9457f06ef4f0c5a573f"
+    },
+    {
+      "path": "notion-upload-results.json",
+      "bytes": 4108,
+      "sha256": "3fe4abdef8b736e3ab86046480046f170b0586ae2128cb173423c468abe61cc9"
+    },
+    {
+      "path": "portable-manifest.json",
+      "bytes": 3015,
+      "sha256": "06ad798e32a08012010263bb8a2e316d7572b96eaeba894379bd1798129efcdb"
+    },
+    {
+      "path": "portable-projects.zip",
+      "bytes": 11611027,
+      "sha256": "4f487a9754f0f1d80030d1a4f52deb3dcfa51c861548c7044bb44b959ed37ac1"
+    },
+    {
+      "path": "preview-check.json",
+      "bytes": 439,
+      "sha256": "0510c7dfa09e20d909122871cd3f81163157a5aa3325b9650a3f32708d80bf38"
+    },
+    {
+      "path": "preview-check.log",
+      "bytes": 67,
+      "sha256": "8d4b70d6210cd4e2b543c21250d1dd49fbce24d6effd495f46d8a51eaad952e4"
+    },
+    {
+      "path": "preview-twin.png",
+      "bytes": 483875,
+      "sha256": "af847e764c50837e93cd8c8df71b87c41dd92016d7cf69e8dc01cacae758282f"
+    },
+    {
+      "path": "preview.json",
+      "bytes": 331,
+      "sha256": "60e63445a0613169eb066f7cc339f72e3679cf0e77bf69611edb2bb1cb39e26c"
+    },
+    {
+      "path": "prior-root-design-qa.md",
+      "bytes": 7718,
+      "sha256": "e8f346943e0cb35fd10ef79e0b72bf177313d23c862c8f7a7cab8cff59a3d65f"
+    },
+    {
+      "path": "README.md",
+      "bytes": 5538,
+      "sha256": "382d7af17976a7b5590693ed270a96016d324ee33f8c54f6979cf7fba19579db"
+    },
+    {
+      "path": "required-checks-01.json",
+      "bytes": 965,
+      "sha256": "156f8c0ca5687bf50941d4c27b6e8827effd0b1251a0ee3d18b6d08f43bf52e2"
+    },
+    {
+      "path": "select-keyboard-focus.png",
+      "bytes": 485952,
+      "sha256": "7ec215ff58bfead8b858f0467db4a7df43d209ae963854a070e28f5f50c3b06e"
+    },
+    {
+      "path": "serve-preview.mjs.txt",
+      "bytes": 822,
+      "sha256": "d54a0616214065283e9ed25f01778af4a70ffcee3de249405831389d4e63adf2"
+    },
+    {
+      "path": "source/eslint.config.js.txt",
+      "bytes": 1167,
+      "sha256": "ebd72019a926815cc06067cdd066a14045811e5c784d7c0d47dd71830426d53f"
+    },
+    {
+      "path": "source/package-lock.json.txt",
+      "bytes": 141592,
+      "sha256": "200722a24fc5f411f9da0718d74864069871b2dd648205ffc3824f546ebefeaa"
+    },
+    {
+      "path": "source/package.json.txt",
+      "bytes": 1131,
+      "sha256": "609f87639a2a698c02933850768881be0c1fd1d59710596c1ac99b7de9f498d1"
+    },
+    {
+      "path": "source/scripts/capture-period-compare.mjs.txt",
+      "bytes": 4903,
+      "sha256": "5fa91c09ebaba038aac2d88aac75ae724d58a1dd0e15ff2575f709333a2ae831"
+    },
+    {
+      "path": "source/scripts/capture-r1-baseline.mjs.txt",
+      "bytes": 43621,
+      "sha256": "dd2e0effdb6da943e7bd33f3c4088453591f312982dc1cc7969309b1daaf69c8"
+    },
+    {
+      "path": "source/scripts/capture-r1-masonry-discriminator.mjs.txt",
+      "bytes": 15273,
+      "sha256": "cfc7f765dfc0d71afa20872826a538507e2cd449fec9b50b204a3c314f829c4c"
+    },
+    {
+      "path": "source/scripts/capture-r1-periodic-wall-material.mjs.txt",
+      "bytes": 1334,
+      "sha256": "bf9bbcbc59c843be38218243668a452e2ab0ab3d33feee4899fd8fa39ba91afd"
+    },
+    {
+      "path": "source/scripts/capture-r1-primary-wall-material.mjs.txt",
+      "bytes": 1242,
+      "sha256": "b4ebf36d8057477e68b8c409784ac68ab9c9490e4d5283e80bcb8934cb7c4c72"
+    },
+    {
+      "path": "source/scripts/capture-r1-wall-phase-production.mjs.txt",
+      "bytes": 28128,
+      "sha256": "9514f9efb9deb0b05c078da7729bacf9cf58895df2474f0458f078665419b366"
+    },
+    {
+      "path": "source/scripts/capture-r1-wall-phase.mjs.txt",
+      "bytes": 22034,
+      "sha256": "d02288dd8502dba2e6ae5a7d92ac8ea854c7fd8919807b053d7b7aef02dc1a79"
+    },
+    {
+      "path": "source/scripts/capture-r1-wall-seams.mjs.txt",
+      "bytes": 16673,
+      "sha256": "0d46e38d8d9c3416e2f16af45bcb795234b0845e7583df073014cf4bd9212cd9"
+    },
+    {
+      "path": "source/scripts/dev-server.mjs.txt",
+      "bytes": 384,
+      "sha256": "42b56c044bf9e3459ee541037d2dccc319eebd38a70070e8401eeedfec7c6247"
+    },
+    {
+      "path": "source/scripts/diagnostics/r1-baseline-browser.mjs.txt",
+      "bytes": 3808,
+      "sha256": "927bed4efce7bbfc976a9a560f93c1cbd2845801e5ff14a29f755d199622b7c8"
+    },
+    {
+      "path": "source/scripts/diagnostics/r1-baseline.html.txt",
+      "bytes": 653,
+      "sha256": "723752f03b868c178d1b1d10745590d445973ab825947dc7621d14b112fd6b76"
+    },
+    {
+      "path": "source/scripts/diagnostics/r1-building-capture.mjs.txt",
+      "bytes": 31263,
+      "sha256": "1afee7904b4e812b72e1b8a614431221f2805413cb7e1e3e837f420c6eb42606"
+    },
+    {
+      "path": "source/scripts/diagnostics/r1-material-sampling.mjs.txt",
+      "bytes": 23593,
+      "sha256": "a96b7679798e0c99a5f901d18dd739bf340188119645ae38bb2ab3cd565a8854"
+    },
+    {
+      "path": "source/scripts/diagnostics/r1-periodic-masonry-oracle.mjs.txt",
+      "bytes": 5380,
+      "sha256": "f95b401051b3da83dac0e0bf27a611c5e40d15ec97e8810bf9d60afa96f95fa7"
+    },
+    {
+      "path": "source/scripts/diagnostics/r1-primary-wall-material-proof.mjs.txt",
+      "bytes": 11774,
+      "sha256": "13904aa57ecd38eab204f5908ed1b8d5e4e8dcf4656309655c20dc3b3e25be72"
+    },
+    {
+      "path": "source/scripts/diagnostics/r1-primary-wall-periodic-proof.mjs.txt",
+      "bytes": 15556,
+      "sha256": "8b7ec679ef43e19553de59bc6c9cba3a2d91aadf26ca1af1d4a7ef7ddcb5e5ca"
+    },
+    {
+      "path": "source/scripts/diagnostics/r1-wall-phase-attribution.mjs.txt",
+      "bytes": 44857,
+      "sha256": "efaf013d93f24c804a3e660da670c37129e1550162664eba50756eb4fb521d4e"
+    },
+    {
+      "path": "source/scripts/diagnostics/r1-wall-phase-browser.mjs.txt",
+      "bytes": 31105,
+      "sha256": "463f2485cb0e711408abc3a5dea2aa4d57703c31383c4306d806e5cf67f7b109"
+    },
+    {
+      "path": "source/scripts/diagnostics/r1-wall-phase-production-browser.mjs.txt",
+      "bytes": 11255,
+      "sha256": "fbaa70372d63f01403863df0993f5d8d37e3f0dc8a5f72465688c1dd56f836e2"
+    },
+    {
+      "path": "source/scripts/diagnostics/r1-wall-seam-attribution.mjs.txt",
+      "bytes": 27873,
+      "sha256": "9e82789ed5cdc11731d26647a42770b22028663c12eb021b1904f4d32a032427"
+    },
+    {
+      "path": "source/scripts/e2e-smoke.mjs.txt",
+      "bytes": 226579,
+      "sha256": "db6d95ccdcd22b61b7afad9b44bba49c577a3e2b15d9dca5956ce785d7007665"
+    },
+    {
+      "path": "source/src/app/App.css.txt",
+      "bytes": 87379,
+      "sha256": "129deabe6805023f78b6948b299e4335c73f62b60aa90133db2849ec0b86b3de"
+    },
+    {
+      "path": "source/src/app/App.test.tsx.txt",
+      "bytes": 209411,
+      "sha256": "87de77799326ea869b1cffc09a6659a93f344cc0a8d9c20a5e729c18ce97947d"
+    },
+    {
+      "path": "source/src/app/App.tsx.txt",
+      "bytes": 82280,
+      "sha256": "3fa028d92868b76bc879837ca0acab66d8ca7866cb7c119d6f62fdd46ad2e756"
+    },
+    {
+      "path": "source/src/app/main.tsx.txt",
+      "bytes": 209,
+      "sha256": "575d9e34bd914b74d70286812a3a33d3121b075cb43723003cff0c2a64e64846"
+    },
+    {
+      "path": "source/src/app/runEventSelectors.ts.txt",
+      "bytes": 440,
+      "sha256": "c3cfc9212c6b89343178620bc728559925c238c33944ca6b88812c8831b87716"
+    },
+    {
+      "path": "source/src/features/building-family/art-kit/artKitContracts.ts.txt",
+      "bytes": 8276,
+      "sha256": "7ef65bed63bc11ca7d67090d490f80a5db989785da7c05966bff1600e6d3f9ab"
+    },
+    {
+      "path": "source/src/features/building-family/art-kit/artKitFacadePlanSummary.ts.txt",
+      "bytes": 3634,
+      "sha256": "414ac2c88dbfbcbae7fffe51f8d3d41969134d2acc8e3c5cc0da3874d66cd7e7"
+    },
+    {
+      "path": "source/src/features/building-family/art-kit/facadeModulePlanner.ts.txt",
+      "bytes": 21005,
+      "sha256": "ed2845014dee4746b8ecb10e5cf896c59328993bf4c138f95a3005f5c8eb530f"
+    },
+    {
+      "path": "source/src/features/building-family/art-kit/index.ts.txt",
+      "bytes": 559,
+      "sha256": "53b0f7230c9f8cf71a3a1810c0e45497a0d41f7c7e1d8cd09af8fbc0d70d9201"
+    },
+    {
+      "path": "source/src/features/building-family/art-kit/late19cApartmentKit.ts.txt",
+      "bytes": 13820,
+      "sha256": "82d5a87d1831c5001b0010b236ac5958c5892a70128c80f0d476418181e170b9"
+    },
+    {
+      "path": "source/src/features/building-family/art-kit/moduleInstanceBuilder.ts.txt",
+      "bytes": 3079,
+      "sha256": "4716be980f53630b83dd0af7fd7f8a8f0e4346a09d22c7cc271d235b19b4b632"
+    },
+    {
+      "path": "source/src/features/building-family/art-kit/moduleSnapGrid.ts.txt",
+      "bytes": 4310,
+      "sha256": "35fe9bf2b70396ed2b0a56fc9c26683cd7cf10342dd3c58e789746e780218e93"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/bayConstruction.worker.ts.txt",
+      "bytes": 1692,
+      "sha256": "11756a085021e9d53e3b6ff11cd380c58dbe908b863ef428b1dc01f44d28dec1"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/bayConstructionClient.ts.txt",
+      "bytes": 3149,
+      "sha256": "64176b5fe3478a45fa5c426feab5a164b34dc97f9e641aa810aca5e61489fdbe"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/bayConstructionWorkerProtocol.ts.txt",
+      "bytes": 5433,
+      "sha256": "b69afe990a1446eef50d35f2bfa53b7dc773a19ed129209bed43431b70fc4ab5"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/bayWindowGeometry.ts.txt",
+      "bytes": 8916,
+      "sha256": "698ad6358bb35af7a148e3141af7dc74968045ce147872be52652a0768bdd423"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/buildingCompiler.ts.txt",
+      "bytes": 39634,
+      "sha256": "6ddf54c5b85b536939b37c1ba6716be83ae6cbb49ad475a630132bd9bfd7c332"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/buildingGraphBuilder.ts.txt",
+      "bytes": 10546,
+      "sha256": "ed2e920de926979287419cf7e541a2396f41331f3be043eb4853695215f3b1ae"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/buildingShellGeometry.ts.txt",
+      "bytes": 7843,
+      "sha256": "d3e206bee5018885d9113f97927fd04506e5c0462e3baa85341bf85c0e4769f8"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/compiler.worker.ts.txt",
+      "bytes": 555,
+      "sha256": "c0a54e974bba16cfc28d88c6c86c5e675be0573bf7a5b1141e3cd248d0914a34"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/compilerClient.ts.txt",
+      "bytes": 7326,
+      "sha256": "68d7e40a20ab1aaac2b83046343d94547f1229a35686dfbdc4afb89b9c937981"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/compilerWorkerProtocol.ts.txt",
+      "bytes": 4990,
+      "sha256": "aa03ded22ae122440d4b612f9a9e7382c521b44d7fad9f6bbc25513949f628fb"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/compilerWorkerRuntime.ts.txt",
+      "bytes": 4510,
+      "sha256": "9b3beeb7e7478dc2873a262c1d2b2bfde7d67a1a04c77cf736fab08e40fe7980"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/componentGalleryBuilder.ts.txt",
+      "bytes": 7898,
+      "sha256": "cdf7dc9decb57882e7455dd97723f4494dbc4916ca7c8cc78fbefa6f4d5c44af"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/constructionSurfaceProgram.ts.txt",
+      "bytes": 4374,
+      "sha256": "efb667b97f0bc35f405553feb671ceff8767a569afe941dd25e3b042af6e7dfe"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/evaluateBayConstruction.ts.txt",
+      "bytes": 11680,
+      "sha256": "80dbe2aa8ea568d9b3fd8e0305927c86bd0d84e1833e8f4bb75933e4189eb958"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/evaluateConstruction.ts.txt",
+      "bytes": 2029,
+      "sha256": "ca3e588070f6668575162b56aa7fa3689ccbcb779fc54133f21c18479811dc11"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/evaluateFacadeConstruction.ts.txt",
+      "bytes": 27868,
+      "sha256": "7bb7f7ce9891cae15d1a2d5cafc47305a72b8f4ecea13e2d9d2b07ceb61ec8aa"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/expanders/index.ts.txt",
+      "bytes": 5265,
+      "sha256": "c62d242468f4bf957daf55181c738b62279f4a01c7822d78d9650f3cf9443610"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/facadeSplitPlan.ts.txt",
+      "bytes": 28599,
+      "sha256": "092e1e7a382677775553464189a8b2323b49ef5c6ab8673c04700400c21621aa"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/facadeWallSubdivision.ts.txt",
+      "bytes": 13369,
+      "sha256": "9faaca8975cdfa7687816952281ce9e98af0ba9b1401cf59976697f3d7eb721d"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/frontTrimClearance.ts.txt",
+      "bytes": 4403,
+      "sha256": "bd8d472e5bb956b1bb60d59699f509250a1e116bc69345b355db83508d10228d"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/openingGeometry.ts.txt",
+      "bytes": 14060,
+      "sha256": "0a97a6ccf1204e85a119c628166d4dcd722eafa8d18517825a1de617f9bbc316"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/openingSlotBinding.ts.txt",
+      "bytes": 11834,
+      "sha256": "81cada9144abbe9f64f0b12d6ade28683dc3a315a3f6c9c2eade5fc145239773"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/primitiveGeometry.ts.txt",
+      "bytes": 4882,
+      "sha256": "8ef63e76a9781bbb79c177613e94e8826d1452a4bc5016c04bd09087093de92f"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/profiledTrimGeometry.ts.txt",
+      "bytes": 19210,
+      "sha256": "3f6e5daeb03f69768df640b686ae5094ee810c7b691446e2b6265687927e6d4e"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/profileLibrary.ts.txt",
+      "bytes": 6266,
+      "sha256": "b6ce70e4a7e0fa039341446f84b78a4109f3cac9878e4f3db5b2d9a22053c140"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/profileSweepGeometry.ts.txt",
+      "bytes": 8853,
+      "sha256": "82aca74110c39c5128fa2a7041d2e9941a40962122681ce620df22d8e7a8c5ca"
+    },
+    {
+      "path": "source/src/features/building-family/compiler/storefrontScopeSplit.ts.txt",
+      "bytes": 2570,
+      "sha256": "345522a27f93c750f223c06b0df9d2c36165ff27f0864b8523bc00672cc08ea4"
+    },
+    {
+      "path": "source/src/features/building-family/components/componentCatalogBuilder.ts.txt",
+      "bytes": 2927,
+      "sha256": "f4aee1c81fbe83bdda53bbb124820c9f7033dfd3e7dad4189d349d6dae5836fc"
+    },
+    {
+      "path": "source/src/features/building-family/components/frameBuilder.ts.txt",
+      "bytes": 1183,
+      "sha256": "9894d45113ffe059dc601c05f73a241a1ca85f6603968ec6dfe5fd940a8b39c8"
+    },
+    {
+      "path": "source/src/features/building-family/components/openingAssemblyBuilder.ts.txt",
+      "bytes": 5729,
+      "sha256": "a29604fc039e027d8e834e7f139a139e64a99f9b5de5b2f0c8fe5a3024414312"
+    },
+    {
+      "path": "source/src/features/building-family/components/primitiveBuilders.ts.txt",
+      "bytes": 1731,
+      "sha256": "de0d64d3a571ce70436d3b915cb5d3552be3937fe0645d7709c002f7aa7942f9"
+    },
+    {
+      "path": "source/src/features/building-family/components/profiledTrimBuilder.ts.txt",
+      "bytes": 4306,
+      "sha256": "73d79a72230c1ef69c7f9184cf6e1038853d233cdb2f8e09acfa1d7fbf71af03"
+    },
+    {
+      "path": "source/src/features/building-family/components/profileSweepBuilder.ts.txt",
+      "bytes": 184,
+      "sha256": "193b8f58b90c6857422dda5853c8b71580efe97ebaf5531744fe4bef4a3f5a1b"
+    },
+    {
+      "path": "source/src/features/building-family/components/quoinBuilder.ts.txt",
+      "bytes": 780,
+      "sha256": "cd58efd6b1a5dc786aa0464d772f47eea2c2bfd9b5335cb683f18e38113e3929"
+    },
+    {
+      "path": "source/src/features/building-family/components/roofBuilder.ts.txt",
+      "bytes": 951,
+      "sha256": "98b8802e6939443799d5f4b532cdf51378ed7d598d47525f948d30f0d1960157"
+    },
+    {
+      "path": "source/src/features/building-family/contracts/atlasManifest.ts.txt",
+      "bytes": 1685,
+      "sha256": "1fa6fc09d56da6e4795da049bfd35c5f7aa063b6c208ca4197a581b4a8804980"
+    },
+    {
+      "path": "source/src/features/building-family/contracts/bayConstructionGraph.ts.txt",
+      "bytes": 14947,
+      "sha256": "20a32f5783db9c7dc12bfc223e29d9192e6f2fd6a240046215f41acebb7f7bae"
+    },
+    {
+      "path": "source/src/features/building-family/contracts/buildingDocument.ts.txt",
+      "bytes": 9468,
+      "sha256": "7d8cb88cb0fe0963f25094a7d86e976b53256949f4957fdb578728cc0cf59ac5"
+    },
+    {
+      "path": "source/src/features/building-family/contracts/buildingFamilySpec.ts.txt",
+      "bytes": 1564,
+      "sha256": "36fdd468f1496f362dac1761b6cf42c7bbcdfb004b289ced2d1dd7cc6a44a7d7"
+    },
+    {
+      "path": "source/src/features/building-family/contracts/buildingGraph.ts.txt",
+      "bytes": 1026,
+      "sha256": "258d07a2b00f7dc5bd4752c6eb8ca6f8a3fd5536ea93bd0abb4a2243224a02c5"
+    },
+    {
+      "path": "source/src/features/building-family/contracts/buildingIntent.ts.txt",
+      "bytes": 1100,
+      "sha256": "f69c230a96e40dbca5f4680adf8b32532e8b70c03cc00a7ac16cb835c4335a83"
+    },
+    {
+      "path": "source/src/features/building-family/contracts/componentRecipe.ts.txt",
+      "bytes": 1348,
+      "sha256": "49053f5f10db361ebbb3e10ba1b740e33d3bb9713036e63be1c6fd2c7cd884a0"
+    },
+    {
+      "path": "source/src/features/building-family/contracts/constructionGeneration.ts.txt",
+      "bytes": 5876,
+      "sha256": "306c6d48ea3746e1536d0e30365da811fbb39943ccb695ee8e57f380620af0f0"
+    },
+    {
+      "path": "source/src/features/building-family/contracts/generationRun.ts.txt",
+      "bytes": 1256,
+      "sha256": "d3abec0b6768020737a020be0cfa48322643f5c7a0869801205d21ecdc5a3b7f"
+    },
+    {
+      "path": "source/src/features/building-family/contracts/historicalStylePack.ts.txt",
+      "bytes": 2812,
+      "sha256": "5b001291235fda3e2a936797eab159857990c791e6ee9b35d65087d0abaceaba"
+    },
+    {
+      "path": "source/src/features/building-family/contracts/index.ts.txt",
+      "bytes": 309,
+      "sha256": "79b84d3597abe9190b9ee384320d02e39d50fdb8240c343d34c2fd62a2b7b73c"
+    },
+    {
+      "path": "source/src/features/building-family/contracts/moduleInstanceSet.ts.txt",
+      "bytes": 1337,
+      "sha256": "2ebd8dec163ed90fa175601fb5cdf71fb32b972b6380cb750089f681b8badee0"
+    },
+    {
+      "path": "source/src/features/building-family/contracts/runtimeBuildingIR.ts.txt",
+      "bytes": 1663,
+      "sha256": "a7c40f8a9693ac318ea918f0d0687949021540106a8cc3d2099d0117f976feee"
+    },
+    {
+      "path": "source/src/features/building-family/contracts/shared.ts.txt",
+      "bytes": 954,
+      "sha256": "a274949f0282bcf916ed7a6cd71ab2ba44bb2e8fc6a2d9c12f320c34e4b0b50e"
+    },
+    {
+      "path": "source/src/features/building-family/contracts/surfaceBaseAppearance.ts.txt",
+      "bytes": 1063,
+      "sha256": "14d4c46d32c67c55d06005aeeef7041bf08928a691a70a77920d18e72e53ed74"
+    },
+    {
+      "path": "source/src/features/building-family/contracts/surfaceComposition.ts.txt",
+      "bytes": 12886,
+      "sha256": "8933635c2421b77b3768f161e8bd3785e227077cb7ee60a9ecec4d50982c4101"
+    },
+    {
+      "path": "source/src/features/building-family/core/buildingSeedVariation.ts.txt",
+      "bytes": 6248,
+      "sha256": "a4ae182fa94353c478d83dda32739a43d8a41036f1ced84fe4e9205c060e6312"
+    },
+    {
+      "path": "source/src/features/building-family/core/canonicalJson.ts.txt",
+      "bytes": 888,
+      "sha256": "f935e2704a8538ac10e5bc86e73fff8a7049e3db4a010022d0f03dfc5cb6e0c3"
+    },
+    {
+      "path": "source/src/features/building-family/core/constructionAppearance.ts.txt",
+      "bytes": 910,
+      "sha256": "048be34ded15b442b58360f9209b711b1a98ea728bb931fa13d54df6ebc53f73"
+    },
+    {
+      "path": "source/src/features/building-family/core/constructionGenerationResolver.ts.txt",
+      "bytes": 10536,
+      "sha256": "ab32c45952883d8d885efdec6eef8c4f9e3e5165385923b6c612e84f20c98a11"
+    },
+    {
+      "path": "source/src/features/building-family/core/constructionGenerationSource.ts.txt",
+      "bytes": 1517,
+      "sha256": "b00c4ca1ffbebe5339058dc073acb933f1ce67bd1e3f70918ae64ff460de353c"
+    },
+    {
+      "path": "source/src/features/building-family/core/constructionRecipeCatalog.ts.txt",
+      "bytes": 6868,
+      "sha256": "24c12715cd57940cfa54904144ece5bce9e73f8cfad2dfc9fcdc16095665e8ee"
+    },
+    {
+      "path": "source/src/features/building-family/core/constructionSurfaceAuthoring.ts.txt",
+      "bytes": 8259,
+      "sha256": "ac000d11c5a8fe23e7cae1a63d4d828d525da1295ce980c0b60d9e5674a28531"
+    },
+    {
+      "path": "source/src/features/building-family/core/constructionWindowVocabulary.ts.txt",
+      "bytes": 2319,
+      "sha256": "f9f291b21ea3f2c6bdea182a3f327370963d4bcb85fdcc8976f216eec5df3689"
+    },
+    {
+      "path": "source/src/features/building-family/core/contentHash.ts.txt",
+      "bytes": 735,
+      "sha256": "c971fc747448a9ac1558398fabf4e68d021cbaeb8cb779a3374d50a92607a49e"
+    },
+    {
+      "path": "source/src/features/building-family/core/diagnostics.ts.txt",
+      "bytes": 513,
+      "sha256": "10249bd7301f9836a526bd84664186a7205b09e0718b5c25decef3bcb066cafe"
+    },
+    {
+      "path": "source/src/features/building-family/core/invalidation.ts.txt",
+      "bytes": 9136,
+      "sha256": "0e51d2335b4a11c61d3c6d20c628fa26e6c586626d05e5aaedf37db8f09a15c9"
+    },
+    {
+      "path": "source/src/features/building-family/core/resolveBuildingDocument.ts.txt",
+      "bytes": 7198,
+      "sha256": "03521e3682b601174e7d462a1ef987a78d57dedc9944113a84fd3142a30c5ffa"
+    },
+    {
+      "path": "source/src/features/building-family/core/seedTree.ts.txt",
+      "bytes": 2357,
+      "sha256": "ab5fbb5a70d13cb7de44577e6cad0a187bc73e9b7b80a268f4f606f64d9f37c4"
+    },
+    {
+      "path": "source/src/features/building-family/core/semanticPaths.ts.txt",
+      "bytes": 634,
+      "sha256": "040de458c1e5f572ede7ecb77c6b2c023b710cfb1592f25f70bb1e9efb7a0078"
+    },
+    {
+      "path": "source/src/features/building-family/core/specNormalizer.ts.txt",
+      "bytes": 8982,
+      "sha256": "e5f465c37d0a7015c8f8faf39a88933f977d542d36209342e88ed008fff12f65"
+    },
+    {
+      "path": "source/src/features/building-family/materials/artifactCache.ts.txt",
+      "bytes": 3701,
+      "sha256": "a355d6f168f051f6a52b8aaf4970375e984daa9f521528c33336d094f6834239"
+    },
+    {
+      "path": "source/src/features/building-family/materials/artKitMaterialSet.ts.txt",
+      "bytes": 6156,
+      "sha256": "21852e0d7a3f958a660f032223b41d92c75f86d6eff30c00165dc293809223a3"
+    },
+    {
+      "path": "source/src/features/building-family/materials/atlasDebugExport.ts.txt",
+      "bytes": 9912,
+      "sha256": "10d954fe7df4a9452309bd73d2c3bddff25e1f6aa6e6067454dd9c116b312fdb"
+    },
+    {
+      "path": "source/src/features/building-family/materials/atlasLabFixture.ts.txt",
+      "bytes": 3885,
+      "sha256": "fb90cd5a8f69dcc3f4635c51771df3aa71efbbe83678dd9d6f911677b9b6dc27"
+    },
+    {
+      "path": "source/src/features/building-family/materials/atlasPacker.ts.txt",
+      "bytes": 15483,
+      "sha256": "3a0b3eed1aa268cb497d044586559704784de739b286db1b7eee0735b98df554"
+    },
+    {
+      "path": "source/src/features/building-family/materials/atlasPlanner.ts.txt",
+      "bytes": 16920,
+      "sha256": "8d7fa3fb11fc02e388bafb4a77ac4ccb4f9d9f7add1003a7f2cb0f2f94d24d7f"
+    },
+    {
+      "path": "source/src/features/building-family/materials/composeSurfaceTile.ts.txt",
+      "bytes": 20574,
+      "sha256": "7a976e53739d4999b65c6b36b1eafa5050de71853aece16b03b45ee118f2a5bb"
+    },
+    {
+      "path": "source/src/features/building-family/materials/constructionReferenceMaterials.ts.txt",
+      "bytes": 12658,
+      "sha256": "17c11cacc0eada7d36771477912c0060c50d71295d014bc63240a2a360d8644a"
+    },
+    {
+      "path": "source/src/features/building-family/materials/indexedDbArtifactPersistence.ts.txt",
+      "bytes": 5401,
+      "sha256": "84ec093461bb77810249bfb74b427e8da70990d05a99c60339c26ec0ccdbcb9f"
+    },
+    {
+      "path": "source/src/features/building-family/materials/normalFromHeight.ts.txt",
+      "bytes": 1996,
+      "sha256": "fff0f7089eea2c7abfede62f5dcbb9f2e53a2274e82115dcdeb2cf04bbc9561a"
+    },
+    {
+      "path": "source/src/features/building-family/materials/periodicBlend.ts.txt",
+      "bytes": 1260,
+      "sha256": "d3dd24412957780601fd0c6b57da8706561689642f4eee4ba228b30d940327e5"
+    },
+    {
+      "path": "source/src/features/building-family/materials/periodicMasonryRaster.ts.txt",
+      "bytes": 9552,
+      "sha256": "bc668a8a248d72154746054d5ec38067367163d571a14fbc0a8d6e811d724eff"
+    },
+    {
+      "path": "source/src/features/building-family/materials/providers/fixtureMaterialProvider.ts.txt",
+      "bytes": 4374,
+      "sha256": "d4e3a8e9b0e89c2f8abc79cfc564b548b725a352d577b7e7ebe24704471eff75"
+    },
+    {
+      "path": "source/src/features/building-family/materials/providers/proceduralMaterialProvider.ts.txt",
+      "bytes": 19387,
+      "sha256": "8129f106e7b2143f65fc92960ed5d3b394931e71985647679fe4fab4063e4151"
+    },
+    {
+      "path": "source/src/features/building-family/materials/remoteMaterialImageBridge.ts.txt",
+      "bytes": 5129,
+      "sha256": "5922eb09cdd61457ece4a1856e5fdc753d52acceeb5cc82434d2bc9c80bfbe15"
+    },
+    {
+      "path": "source/src/features/building-family/materials/remoteMaterialOverlay.ts.txt",
+      "bytes": 7627,
+      "sha256": "96d94fc27660694f8808b9bfba0fde6ed06b8978cff6cbe3d145ed80326901c4"
+    },
+    {
+      "path": "source/src/features/building-family/materials/remoteMaterialProofPacket.ts.txt",
+      "bytes": 5751,
+      "sha256": "67aa0eae00af6c201f3c39ea796a87201652210765867a502f0dcc6aed836910"
+    },
+    {
+      "path": "source/src/features/building-family/materials/resolveSurfaceBindings.ts.txt",
+      "bytes": 12034,
+      "sha256": "f8a65ebd2ca42c30a882e3672eb734af9548a0c4448c40c714f9e2c2567b834a"
+    },
+    {
+      "path": "source/src/features/building-family/materials/surfaceBaseAppearance.ts.txt",
+      "bytes": 1968,
+      "sha256": "040fa37d136c428101751e9669f4ec01eebac19ea84f84814304fc9aea7787a6"
+    },
+    {
+      "path": "source/src/features/building-family/performance/familyBenchmarkDocumentation.ts.txt",
+      "bytes": 3686,
+      "sha256": "6c11b643f496f9765c35b2b814bdc32b539d25876c4cf6904a7fad74d1262bac"
+    },
+    {
+      "path": "source/src/features/building-family/performance/familyBenchmarkProfilePacket.ts.txt",
+      "bytes": 13136,
+      "sha256": "5207ef4981de54e515410f3ee4b4fe23aeb8a62f7f9fd39e3541e985c421d6da"
+    },
+    {
+      "path": "source/src/features/building-family/performance/familyBenchmarkScene.ts.txt",
+      "bytes": 8408,
+      "sha256": "588121e4a6b5624f0fba9146eab842ca7be23f3d9bee220546ae2f82dfa34e75"
+    },
+    {
+      "path": "source/src/features/building-family/performance/familyOrbitBenchmarkScene.ts.txt",
+      "bytes": 12306,
+      "sha256": "5d8b593da047714d227b5861c039e0279205ce84fd256be04a4efe08af02ded7"
+    },
+    {
+      "path": "source/src/features/building-family/psg/fixtures/late19cCommercialPrompt.psg.json.txt",
+      "bytes": 918,
+      "sha256": "99acf8084640549111e5bc7f8664b1d9dfe0ae820329c1642175da0a2d3653fa"
+    },
+    {
+      "path": "source/src/features/building-family/psg/localRulePromptInterpreter.ts.txt",
+      "bytes": 2573,
+      "sha256": "7f3f9ac74f4af10acd81da0dfdf7467b9303ad3f56828790116a3ab620ec3b59"
+    },
+    {
+      "path": "source/src/features/building-family/psg/psgBuildingIntentAdapter.ts.txt",
+      "bytes": 4139,
+      "sha256": "e36a7627de0842b5ef30342477632b95fef796bf8c9a75f451e6ab60d9068338"
+    },
+    {
+      "path": "source/src/features/building-family/qa/clayQualityGate.ts.txt",
+      "bytes": 7708,
+      "sha256": "752334d1ef97f1388d8dbe6f73e9e3cd7389358aacf25d5eae073379e3578058"
+    },
+    {
+      "path": "source/src/features/building-family/qa/facadeSplitObservability.ts.txt",
+      "bytes": 1973,
+      "sha256": "ad4e5b839495b3620a341412b9c1555ed926f877de39b8254f8f5fcbffd0be7c"
+    },
+    {
+      "path": "source/src/features/building-family/qa/moduleQualityReport.ts.txt",
+      "bytes": 16290,
+      "sha256": "0bdd766331c4d4fff734883b4dce28691589ae004f1fed55e8561b04ae591cc0"
+    },
+    {
+      "path": "source/src/features/building-family/qa/openingLayoutComparison.ts.txt",
+      "bytes": 13576,
+      "sha256": "ed85ff031b0a3f0c58214dcdb5561a8fe0c41be330acb5da84c50ec7bec190d7"
+    },
+    {
+      "path": "source/src/features/building-family/qa/periodReferenceCatalog.ts.txt",
+      "bytes": 7271,
+      "sha256": "8cba35f0e956aad9b2218d1ec658f5642256b19cde083d2dca9ff42907d54c98"
+    },
+    {
+      "path": "source/src/features/building-family/qa/r1BaselineContracts.ts.txt",
+      "bytes": 21546,
+      "sha256": "7ac25181852f2c4afe6323bbdd948ac239e879e45c29b5bca712736686ad5ddd"
+    },
+    {
+      "path": "source/src/features/building-family/qa/r1MasonryAppearance.ts.txt",
+      "bytes": 18577,
+      "sha256": "9f4b2174825dc891543d8472aa081ea5bd631e1bc967d0036efe28dbbf99208a"
+    },
+    {
+      "path": "source/src/features/building-family/qa/r1MasonryCoverage.ts.txt",
+      "bytes": 27122,
+      "sha256": "05a8e56037dad0ac7b869b165f205a4ebd29c307a9d588ce15f19710bb1f47e9"
+    },
+    {
+      "path": "source/src/features/building-family/qa/r1PeriodicSampling.ts.txt",
+      "bytes": 31149,
+      "sha256": "3487a67b5bf2192c40f3c00292344cef2b7d18aa5ae6ee50b4c76dcfce259c6f"
+    },
+    {
+      "path": "source/src/features/building-family/qa/r1WallPhase.ts.txt",
+      "bytes": 52544,
+      "sha256": "d2f675ea468dcba4c47d1ce6537fbf6cd70b6e75e1126409f3da6591bf9c6b9c"
+    },
+    {
+      "path": "source/src/features/building-family/qa/r1WallPhaseProduction.ts.txt",
+      "bytes": 20893,
+      "sha256": "901ca916b1fe8132143d9b09f8cb79ace37e9993c96d1ad6b81bde7508581259"
+    },
+    {
+      "path": "source/src/features/building-family/qa/r1WallSeams.ts.txt",
+      "bytes": 15254,
+      "sha256": "19e1fe34690212f21bcf6dfb733d4c9c7bb910becc436d8539176690efd7d411"
+    },
+    {
+      "path": "source/src/features/building-family/qa/visualQaPacket.ts.txt",
+      "bytes": 8386,
+      "sha256": "ede76b7e2232c1014e0255578fa84b58228e5821c2b207e93578ce3580d942d9"
+    },
+    {
+      "path": "source/src/features/building-family/renderer-three/assemblyRendererFactory.ts.txt",
+      "bytes": 4607,
+      "sha256": "9d25c84743cfe20f407c4b0c8c01c337b50f8fd93c23a83a42c0bf7afc53b56f"
+    },
+    {
+      "path": "source/src/features/building-family/renderer-three/buildingAtlasMaterialFactory.ts.txt",
+      "bytes": 3234,
+      "sha256": "7ec8edc57fb9bd19ad881bf5117c95da20c27ed87de57391ad16d6c45db01732"
+    },
+    {
+      "path": "source/src/features/building-family/renderer-three/buildingAtlasTextureFactory.ts.txt",
+      "bytes": 4348,
+      "sha256": "6931aa769b52381635ec8387bd48e1bd843f9084df8bc40ca8e1b7f729d2dd31"
+    },
+    {
+      "path": "source/src/features/building-family/renderer-three/buildingSceneAdapter.ts.txt",
+      "bytes": 22887,
+      "sha256": "f63eeea40accc2c14ffd94ff382b1474ad964ba9841065e9ea3cdb48ce3c89c9"
+    },
+    {
+      "path": "source/src/features/building-family/renderer-three/constructionFrameSelection.ts.txt",
+      "bytes": 4234,
+      "sha256": "2cba32c7a5fc46bf42db9d5e0a3fd632ee45e6826e77b5167770edcf79aed005"
+    },
+    {
+      "path": "source/src/features/building-family/renderer-three/familyRuntime.ts.txt",
+      "bytes": 8447,
+      "sha256": "3d19d6ce556ca64084ca583fe8cca2aa41f57d0232f9df7180035f8688f588a5"
+    },
+    {
+      "path": "source/src/features/building-family/renderer-three/recipeGeometryFactory.ts.txt",
+      "bytes": 3109,
+      "sha256": "cdc31545d95a672b8d640408fe217f489a3bd27264c17d9850f26510ec52e4cb"
+    },
+    {
+      "path": "source/src/features/building-family/renderer-three/resourceDisposal.ts.txt",
+      "bytes": 1595,
+      "sha256": "dd77dad13234bdf369cc081990ea7dc019845a681d09e563fe059cf7fd237c93"
+    },
+    {
+      "path": "source/src/features/building-family/renderer-three/surfaceMaterialRuntime.ts.txt",
+      "bytes": 20084,
+      "sha256": "f64b443e7dbbecd5657602431a4ccc145d660fec378b77630bf4bd0840e048fd"
+    },
+    {
+      "path": "source/src/features/building-family/renderer-three/wallAtlasGeometry.ts.txt",
+      "bytes": 12579,
+      "sha256": "4224ddd6c63dcea3289a53fb73cb46430a111617a8dd9182153f95f36d854907"
+    },
+    {
+      "path": "source/src/features/building-family/state/artifactRegistry.ts.txt",
+      "bytes": 7466,
+      "sha256": "84d382c82911f00e5e14ddee66ee32073968fbf59919a88e5e28ae23670ae2bb"
+    },
+    {
+      "path": "source/src/features/building-family/state/bayConstructionProject.ts.txt",
+      "bytes": 4610,
+      "sha256": "0d96e2b17fe7ee1dd35170549c0c342dcdb459507ada2d81972b9c6d4f6ac326"
+    },
+    {
+      "path": "source/src/features/building-family/state/buildingRunController.ts.txt",
+      "bytes": 81676,
+      "sha256": "8c1f41a678dedbcd4289e2fb76111173b34885830533184a7319d3f593b4d95d"
+    },
+    {
+      "path": "source/src/features/building-family/state/buildingSourceCheckpoint.ts.txt",
+      "bytes": 8939,
+      "sha256": "bc2fad403ee01b295063e135cc286712fc6f77f93971457e74bbd9efe28dbda4"
+    },
+    {
+      "path": "source/src/features/building-family/state/buildingSourceCheckpointWriter.ts.txt",
+      "bytes": 8788,
+      "sha256": "0016232163f2b16d37a746190929236b14ec44ec722f8613814f6f80fa5403c2"
+    },
+    {
+      "path": "source/src/features/building-family/state/buildingSourceFile.ts.txt",
+      "bytes": 32476,
+      "sha256": "28be641ec3375d12681ef2fa832b6b73d79787d37bbf1d245324e1d3f41557b4"
+    },
+    {
+      "path": "source/src/features/building-family/state/buildingStore.ts.txt",
+      "bytes": 13082,
+      "sha256": "9df203894f9190e8d56289a5734e531b06090e6b4742b65cc68b6a9f7b3712a1"
+    },
+    {
+      "path": "source/src/features/building-family/state/buildingSurfaceSourceFile.ts.txt",
+      "bytes": 6812,
+      "sha256": "4fd362345902d450f82cd1690aba31adba94c11277193959c9fda9783cf5df04"
+    },
+    {
+      "path": "source/src/features/building-family/state/buildingSurfaceSourceRestore.ts.txt",
+      "bytes": 2566,
+      "sha256": "82e2aa1a969b0c26aeec7d94363e939308cda7320500a169379e0011ce73c781"
+    },
+    {
+      "path": "source/src/features/building-family/state/completedFamilyExportBundle.ts.txt",
+      "bytes": 4231,
+      "sha256": "3c3e9d343b5defb555b463e43522855103fe116d0ea8d36c6c5677f47ca6b0bb"
+    },
+    {
+      "path": "source/src/features/building-family/state/completedFamilyExportImport.ts.txt",
+      "bytes": 5659,
+      "sha256": "51c92106c6ec4947f10018f7a47516d9ee675fc286afb47a7c6eb10aa0133a54"
+    },
+    {
+      "path": "source/src/features/building-family/state/completedFamilyExportVerifier.ts.txt",
+      "bytes": 15412,
+      "sha256": "8d5de9bcb40037ff5ca81d506635466f098faf7320cf8a6e37753600e77238ee"
+    },
+    {
+      "path": "source/src/features/building-family/state/completedFamilyPersistence.ts.txt",
+      "bytes": 14490,
+      "sha256": "9b9aeae7f6a702391c63b630288b091325604e8008f1631f4497e87243650a38"
+    },
+    {
+      "path": "source/src/features/building-family/state/constructionCheckpoint.ts.txt",
+      "bytes": 5352,
+      "sha256": "316331801e9e1453d45f4240481b6b53b239e242f9e3a4871664dd06eb53ca4f"
+    },
+    {
+      "path": "source/src/features/building-family/state/constructionCheckpointWriter.ts.txt",
+      "bytes": 7535,
+      "sha256": "5b88fa7f1e817a4cbdf51e992db27a2323df580f798e38805ca03835fdd53e34"
+    },
+    {
+      "path": "source/src/features/building-family/state/constructionGenerationState.ts.txt",
+      "bytes": 14610,
+      "sha256": "eeff4b76e8b613799bcad3db75808f61e4c37bf5472a80e637b4811cdc36665e"
+    },
+    {
+      "path": "source/src/features/building-family/state/constructionHistory.ts.txt",
+      "bytes": 5629,
+      "sha256": "e3cf999673ae1f4b0b72e6adc1de28eb36fc450f90532f2ea1388d0a5721859c"
+    },
+    {
+      "path": "source/src/features/building-family/state/remoteMaterialApplicationCoordinator.ts.txt",
+      "bytes": 6473,
+      "sha256": "9b1ae25a68944be6143b3f4b4ae58277001692159a813644c768b3b177d4adde"
+    },
+    {
+      "path": "source/src/features/building-family/state/remoteMaterialRouteClient.ts.txt",
+      "bytes": 4204,
+      "sha256": "714dc9d106ed63bd6ef76c3793e231cce25db742c079dbb34a9ec6e470a7ba47"
+    },
+    {
+      "path": "source/src/features/building-family/state/useConstructionWorkspace.ts.txt",
+      "bytes": 6490,
+      "sha256": "299b07522898468fc0dc8cbb1eaa086cd287ef345d2b8c6b20e4f8687fd55d3d"
+    },
+    {
+      "path": "source/src/features/building-family/style-packs/late-19c-commercial-demo.json.txt",
+      "bytes": 3759,
+      "sha256": "9629636da706ff3f2078e834f2fca298974675e1c7ac0034961aade8cb798699"
+    },
+    {
+      "path": "source/src/features/building-family/tests/ArtifactTracePanel.test.tsx.txt",
+      "bytes": 4800,
+      "sha256": "7941fe559646e51b857476ad1b0e216041e0293e984ee01035cb4400c023d8d9"
+    },
+    {
+      "path": "source/src/features/building-family/tests/artKitContracts.test.ts.txt",
+      "bytes": 6172,
+      "sha256": "eca26e335f5fd8dc8e873984a44aab581010bf78b045c9c6eb5b0175f247deb1"
+    },
+    {
+      "path": "source/src/features/building-family/tests/artKitFacadePlanSummary.test.ts.txt",
+      "bytes": 3136,
+      "sha256": "15978a4d2a3f42ae8c7ac03c41ff43262ba5b0ef530ef4d4725458b9a1e1e444"
+    },
+    {
+      "path": "source/src/features/building-family/tests/ArtKitLab.test.tsx.txt",
+      "bytes": 2621,
+      "sha256": "1db76001ac13da31552514024ba54b062f08a0eb5b48c86924b72acf1776d298"
+    },
+    {
+      "path": "source/src/features/building-family/tests/artKitMaterialSet.test.ts.txt",
+      "bytes": 2604,
+      "sha256": "def25811716f940ebf9d90df6ae0e6a59c0bbc373fbf99b4d0453f75554cb989"
+    },
+    {
+      "path": "source/src/features/building-family/tests/AssemblyHall.test.tsx.txt",
+      "bytes": 79689,
+      "sha256": "4e4802af61f2b9cb094d80738377e4495271b3c24a632a36512b74de3b5f277e"
+    },
+    {
+      "path": "source/src/features/building-family/tests/assemblyHallFixture.test.ts.txt",
+      "bytes": 84438,
+      "sha256": "202e7f6acebda132f6a46188b00eef835179227b9ab35c42b8fb583d7e02343d"
+    },
+    {
+      "path": "source/src/features/building-family/tests/assemblyRendererFactory.test.ts.txt",
+      "bytes": 5518,
+      "sha256": "b450e9960b5fcbd0807732d7f1120baefe50e212ea60bc376a0680431ae2719a"
+    },
+    {
+      "path": "source/src/features/building-family/tests/atlasArtifactCache.test.ts.txt",
+      "bytes": 2956,
+      "sha256": "50d499369ce504fb679da46f2663d95d79e6752dfb1b130bc73ab0bbfc334356"
+    },
+    {
+      "path": "source/src/features/building-family/tests/atlasDebugExport.test.tsx.txt",
+      "bytes": 12483,
+      "sha256": "44785069736bae098fe1c1d695e7d3496fba905f3ce14cfc40bea8524289ce67"
+    },
+    {
+      "path": "source/src/features/building-family/tests/atlasLabFixture.test.ts.txt",
+      "bytes": 1588,
+      "sha256": "63fd134330f12952697d402aabd85a07e903a48fa1e82a6be896477f7a9ab338"
+    },
+    {
+      "path": "source/src/features/building-family/tests/atlasPacker.test.ts.txt",
+      "bytes": 6040,
+      "sha256": "dc890db47ab00d0e15a09de5acf54f89a0f98482638d34fa492610283b0e962a"
+    },
+    {
+      "path": "source/src/features/building-family/tests/atlasPlanner.test.ts.txt",
+      "bytes": 5272,
+      "sha256": "fd47d20dfe0598f5396cf3508c7e03be1d969e282ba050777a7e0a70ab8d8534"
+    },
+    {
+      "path": "source/src/features/building-family/tests/bayConstructionGraph.test.ts.txt",
+      "bytes": 10655,
+      "sha256": "ff30545f307069d94a3e0b9852774108d57031fc5dba5430ae3122870b6aff72"
+    },
+    {
+      "path": "source/src/features/building-family/tests/bayConstructionWorkbench.test.tsx.txt",
+      "bytes": 49101,
+      "sha256": "08d503b1915c7dd6a667c58749f7f356343deb820db8aa5b8e712c2ec51ef3cb"
+    },
+    {
+      "path": "source/src/features/building-family/tests/bayConstructionWorker.test.ts.txt",
+      "bytes": 3967,
+      "sha256": "d5c540d042e07c68cec0a95248c9f9a68ed20af251fe62287f2494186e433dbb"
+    },
+    {
+      "path": "source/src/features/building-family/tests/browserPngLayerDecoder.test.ts.txt",
+      "bytes": 3478,
+      "sha256": "86dc106c7afe53c0e690a2071e1b8451591704b1b4a7e7cd30ca7cf21b551b19"
+    },
+    {
+      "path": "source/src/features/building-family/tests/buildingAtlasTextureFactory.test.ts.txt",
+      "bytes": 5091,
+      "sha256": "89e7746a643fa1935e4ba10737baa4db35b399f8f81098e82e5fa60145efb8f9"
+    },
+    {
+      "path": "source/src/features/building-family/tests/buildingCompiler.test.ts.txt",
+      "bytes": 29453,
+      "sha256": "510c02f192b82ef969a626750d380b89a14cc450cb741cea32ffaa3504453cb7"
+    },
+    {
+      "path": "source/src/features/building-family/tests/buildingCompilerWorker.test.ts.txt",
+      "bytes": 73524,
+      "sha256": "5cc9253289c3eaa248a139f96d2174398b8ffbc715a3aae8fea9d3d8f160c23e"
+    },
+    {
+      "path": "source/src/features/building-family/tests/buildingConstruction.test.ts.txt",
+      "bytes": 10509,
+      "sha256": "8a7b2aa3f45e672d640d88581b6f656837f4e0e95cc0bd9799007bb675b1d7ad"
+    },
+    {
+      "path": "source/src/features/building-family/tests/buildingDocument.test.ts.txt",
+      "bytes": 9775,
+      "sha256": "cf8baec3aa09a592d539ee6f4c3a82cad8b58b246abd1386d4fec7214724278b"
+    },
+    {
+      "path": "source/src/features/building-family/tests/buildingFamilyRuntime.test.ts.txt",
+      "bytes": 8297,
+      "sha256": "1b3a555612ff1746fa1b10b530f468d8cdc249daeb5912d4327947ad49c3203e"
+    },
+    {
+      "path": "source/src/features/building-family/tests/buildingGraphBuilder.test.ts.txt",
+      "bytes": 5938,
+      "sha256": "3acd24a859af7dfd3de42bb90c5046c4a79ee1c237190ab508d1ba8ff4e4b337"
+    },
+    {
+      "path": "source/src/features/building-family/tests/buildingSceneAdapter.test.ts.txt",
+      "bytes": 23602,
+      "sha256": "cb8aeb26ad7e5cf7dbdd16006a24d16f3422465c3f6750a1ae1759c594d76043"
+    },
+    {
+      "path": "source/src/features/building-family/tests/buildingSeedVariation.test.ts.txt",
+      "bytes": 2250,
+      "sha256": "789d4dba52092a6a9435b1cce3293da163ef687e50a813538c64e99e9e38c7a4"
+    },
+    {
+      "path": "source/src/features/building-family/tests/buildingSourceCheckpoint.test.ts.txt",
+      "bytes": 25144,
+      "sha256": "92284ca5e45ff0a25e64433def9f8ac7f353722ea349d938ab5f6b835e48b117"
+    },
+    {
+      "path": "source/src/features/building-family/tests/buildingSourceCheckpointWriter.test.ts.txt",
+      "bytes": 27477,
+      "sha256": "2397a935dafba54b0274c5dcec69caf8cd47ed8468479e7cebf7e3922d914d19"
+    },
+    {
+      "path": "source/src/features/building-family/tests/buildingSourceFile.test.ts.txt",
+      "bytes": 75748,
+      "sha256": "7328d47607a496dab08a798f5177ff58d5ff2f8b91b2395c4c56cd6b6aaea1aa"
+    },
+    {
+      "path": "source/src/features/building-family/tests/buildingState.test.ts.txt",
+      "bytes": 419535,
+      "sha256": "f35ab5eb770e205402001fe17a6f1f2676a9f65eac458a414a9b2fa1a7f22ae9"
+    },
+    {
+      "path": "source/src/features/building-family/tests/buildingSurfaceSourceCheckpoint.test.ts.txt",
+      "bytes": 11125,
+      "sha256": "2d802abe682e364e3c15acbceeb8857d78e920c22dfd692775fa06ad84549dda"
+    },
+    {
+      "path": "source/src/features/building-family/tests/buildingSurfaceSourceController.test.ts.txt",
+      "bytes": 18579,
+      "sha256": "93d67c89d19eabe6d4a7fd34987a8928f7a6c436368356628c2b9f3e67c8f4c6"
+    },
+    {
+      "path": "source/src/features/building-family/tests/buildingSurfaceSourceFile.test.ts.txt",
+      "bytes": 12692,
+      "sha256": "bdb3952e98d3e1173b492549252a8424a72bd0c9fdb4fe81ea3746503aa0f355"
+    },
+    {
+      "path": "source/src/features/building-family/tests/buildingSurfaceSourceRestore.test.ts.txt",
+      "bytes": 15754,
+      "sha256": "696668ce6fc77931a823e2ba7c2654d50e8bfacfc6a0ebcc077fda3bf0360bc1"
+    },
+    {
+      "path": "source/src/features/building-family/tests/canonicalJson.test.ts.txt",
+      "bytes": 532,
+      "sha256": "05f1574a76b7a5d5b1f42adf638d87a672a0d8bc32d0930813d8c386ca407c5a"
+    },
+    {
+      "path": "source/src/features/building-family/tests/clayQualityGate.test.ts.txt",
+      "bytes": 1504,
+      "sha256": "214536846f5e3020e0e7f8e135fe6330f84d0619216a431c5eb316f9799cd909"
+    },
+    {
+      "path": "source/src/features/building-family/tests/completedFamilyExportBundle.test.ts.txt",
+      "bytes": 6182,
+      "sha256": "45ab265928295adf0901511ab1f9744958163aebd4c28978c4a1c42a6d9f2596"
+    },
+    {
+      "path": "source/src/features/building-family/tests/completedFamilyPersistence.test.ts.txt",
+      "bytes": 25012,
+      "sha256": "20a54d00fd15508e7bc03da779a297ba965998d254069b2b430bab1b55ce1f48"
+    },
+    {
+      "path": "source/src/features/building-family/tests/componentCatalogBuilder.test.ts.txt",
+      "bytes": 4639,
+      "sha256": "76f8867fe424624906c33be7cd87b8965ddc8b18883a08430f690cb3c5922edb"
+    },
+    {
+      "path": "source/src/features/building-family/tests/ComponentForge.test.tsx.txt",
+      "bytes": 5679,
+      "sha256": "818d06c5fd115a4bab9a0d5f9367e72d8ab66cff88021d91859f9700eb0f15d9"
+    },
+    {
+      "path": "source/src/features/building-family/tests/componentGalleryBuilder.test.ts.txt",
+      "bytes": 10605,
+      "sha256": "f32c6400e6dfae03f21e46864c2aeff4dab2da5836a5410a51ac156848395333"
+    },
+    {
+      "path": "source/src/features/building-family/tests/ConstructionBuildingControls.test.tsx.txt",
+      "bytes": 5422,
+      "sha256": "dc4b1eb5533fb5459e7fde27ee3e02739144db43c6d8ed3726921a092424b5cd"
+    },
+    {
+      "path": "source/src/features/building-family/tests/constructionCheckpoint.test.ts.txt",
+      "bytes": 9470,
+      "sha256": "e7ccd21accad4f1cb30f99432b6d16f85c28cbe47a96e4a8cfd5b5752ae38daf"
+    },
+    {
+      "path": "source/src/features/building-family/tests/constructionGenerationResolver.test.ts.txt",
+      "bytes": 11466,
+      "sha256": "3409d9aecd98bed44629374b490829be0ef204d2f25471c222c3ba22a49a928b"
+    },
+    {
+      "path": "source/src/features/building-family/tests/constructionGenerationSource.test.ts.txt",
+      "bytes": 11150,
+      "sha256": "4698dc6c0d73d680b1f0dab1e10967b600af81290550517497dd84c12d352d85"
+    },
+    {
+      "path": "source/src/features/building-family/tests/constructionGenerationState.test.ts.txt",
+      "bytes": 17647,
+      "sha256": "a3558635232a75c3e9f19f9088a3ed4bf44f129c11ad5659bbb7f752f71afddb"
+    },
+    {
+      "path": "source/src/features/building-family/tests/constructionHistory.test.ts.txt",
+      "bytes": 3039,
+      "sha256": "5e5dba8e342ed0cb799bc9178b5c1e22dff6b1e2a4059c6c15aa4e3013652e98"
+    },
+    {
+      "path": "source/src/features/building-family/tests/ConstructionNodePanel.test.tsx.txt",
+      "bytes": 4237,
+      "sha256": "219d9ebf1fc8f7a2f34f61b8371d7e6a78e69049edb2489993bdb61c4d90a1f3"
+    },
+    {
+      "path": "source/src/features/building-family/tests/constructionRecipeCatalog.test.ts.txt",
+      "bytes": 12658,
+      "sha256": "92e44ac671c5b761b766d445f18d4e187a0fdcdf17393b2f702e1b0109d08d47"
+    },
+    {
+      "path": "source/src/features/building-family/tests/constructionReferenceMaterials.test.ts.txt",
+      "bytes": 13109,
+      "sha256": "ba761f8fee368b45222f0a45346fbafe04053b826ed9f1fb3247d55c88d05d35"
+    },
+    {
+      "path": "source/src/features/building-family/tests/constructionSurfaceProgram.test.ts.txt",
+      "bytes": 5651,
+      "sha256": "82a1a02ad3fbec56d80bef0f214fd69db8008281c97d801118db62a69175db27"
+    },
+    {
+      "path": "source/src/features/building-family/tests/constructionSurfaceRuntime.test.ts.txt",
+      "bytes": 23967,
+      "sha256": "10d81dcd4f51eca05a61b5c1a8cc9cd5207b4607b26c1fe46a80354329c8fa99"
+    },
+    {
+      "path": "source/src/features/building-family/tests/constructionWindowVocabulary.test.ts.txt",
+      "bytes": 8375,
+      "sha256": "5e55dd2cd92ee2b598103b8e0ca9d1a1c0e1cb6ed79db8c2c8149855bccf1ccb"
+    },
+    {
+      "path": "source/src/features/building-family/tests/contracts.test.ts.txt",
+      "bytes": 4176,
+      "sha256": "d0dd3490de1ca6a69c0e57919e36d51da34c1e5a9e340ee7baf59cf740beb210"
+    },
+    {
+      "path": "source/src/features/building-family/tests/expanders.test.ts.txt",
+      "bytes": 2945,
+      "sha256": "4ce1f88e072a60b4a2bd9ca6b93a1390356e0819a10e7689d5a18f07a009d2f3"
+    },
+    {
+      "path": "source/src/features/building-family/tests/facadeConstruction.test.ts.txt",
+      "bytes": 9364,
+      "sha256": "478ea3e2b99d0128d66bb86798b14daf223d859802addf89807e1d5ce79de5df"
+    },
+    {
+      "path": "source/src/features/building-family/tests/facadeModulePlanner.test.ts.txt",
+      "bytes": 15567,
+      "sha256": "6e4e99f2288fa2a2922eafbfc8c5c4e5458395cb0de33c76d67f065492d97223"
+    },
+    {
+      "path": "source/src/features/building-family/tests/facadeSplitObservability.test.ts.txt",
+      "bytes": 2508,
+      "sha256": "6d4fb9123662f828f5299dd8afe7b1c4fbe768780baf8f204e4307671460afd1"
+    },
+    {
+      "path": "source/src/features/building-family/tests/facadeSplitPlan.test.ts.txt",
+      "bytes": 85231,
+      "sha256": "e37be31f2fdd1d29ecc34afd7805dc6e1419049d2378efb36731fda02c59db6e"
+    },
+    {
+      "path": "source/src/features/building-family/tests/facadeWallSubdivision.test.ts.txt",
+      "bytes": 7344,
+      "sha256": "625f253d9d542dbaf808fbdd8bd84d9dd78dbcab25cf427bc7c1de05510712e4"
+    },
+    {
+      "path": "source/src/features/building-family/tests/familyBenchmarkDocumentation.test.ts.txt",
+      "bytes": 2483,
+      "sha256": "5addf4fe362de44d48a650c661dc3748b04e0025f0c95dff51175dd2a0b3979e"
+    },
+    {
+      "path": "source/src/features/building-family/tests/familyBenchmarkProfilePacket.test.ts.txt",
+      "bytes": 4691,
+      "sha256": "68151622761ac967176f2f476e0fc001d330777afe70ee7e4a2b15a2a278a783"
+    },
+    {
+      "path": "source/src/features/building-family/tests/familyBenchmarkScene.test.ts.txt",
+      "bytes": 3807,
+      "sha256": "306262ae045442be854c359ae8615cd3cea2aa7bad98a44b2371c57924780a91"
+    },
+    {
+      "path": "source/src/features/building-family/tests/familyOrbitBenchmarkScene.test.ts.txt",
+      "bytes": 3535,
+      "sha256": "20e4a27e862b194241e6b5e228eb399c321b8efd2bb69f9f8d2656eb16ace128"
+    },
+    {
+      "path": "source/src/features/building-family/tests/frontTrimClearance.test.ts.txt",
+      "bytes": 8975,
+      "sha256": "b6730c5c5b83b27a0b0b26c120546478b2d7c027e5576feada4a5b8231f093ea"
+    },
+    {
+      "path": "source/src/features/building-family/tests/indexedDbArtifactPersistence.test.ts.txt",
+      "bytes": 14843,
+      "sha256": "5741c739d77f4984793bfb75bbaecb569abdf8aa8c4f459a5dbe1f9f8714db9d"
+    },
+    {
+      "path": "source/src/features/building-family/tests/invalidation.test.ts.txt",
+      "bytes": 9863,
+      "sha256": "75552a9a4c0581065b39f39811791208f39fa6a43f98499362d7af8835615d75"
+    },
+    {
+      "path": "source/src/features/building-family/tests/localRulePromptInterpreter.test.ts.txt",
+      "bytes": 645,
+      "sha256": "3519f0276b31c4b3751041c70ecbea7e36d5b152635af0ce89846448c16fa5f5"
+    },
+    {
+      "path": "source/src/features/building-family/tests/moduleInstanceBuilder.test.ts.txt",
+      "bytes": 3033,
+      "sha256": "229cd516be57dffc6bdbba47610d4cedbf07e7e261679b2fda1978c3cdccb8b2"
+    },
+    {
+      "path": "source/src/features/building-family/tests/moduleQualityReport.test.ts.txt",
+      "bytes": 4426,
+      "sha256": "874ca511ce1d6614bdd08bd489bd47fca5e1a37d28e8401bd5c01f13f00b76f4"
+    },
+    {
+      "path": "source/src/features/building-family/tests/moduleSnapGrid.test.ts.txt",
+      "bytes": 3632,
+      "sha256": "eb6702c892d5331ded7ca053784b578d11b1f69a573a13d9bbf61a3e32577ad4"
+    },
+    {
+      "path": "source/src/features/building-family/tests/openingApertureVisibility.test.ts.txt",
+      "bytes": 26983,
+      "sha256": "0ef09f8533f9db3a6aa9821283ce278d54c3fa4f9ecf803b1712bd1975639e14"
+    },
+    {
+      "path": "source/src/features/building-family/tests/openingAssemblyBuilder.test.ts.txt",
+      "bytes": 3031,
+      "sha256": "515b860cd76102dc5cf7f6270cceb152d558cffd37a8deb13df8c506aeb7e309"
+    },
+    {
+      "path": "source/src/features/building-family/tests/openingGeometry.test.ts.txt",
+      "bytes": 9631,
+      "sha256": "8b8b7da7a5913348469be2b80c19b45674ad38d503317d283703bae08b3fd4d5"
+    },
+    {
+      "path": "source/src/features/building-family/tests/openingLayoutComparison.test.ts.txt",
+      "bytes": 13724,
+      "sha256": "56166cbdea12109bbc970da30cbac2e88ac3f344049522fef17b4891f25c3871"
+    },
+    {
+      "path": "source/src/features/building-family/tests/openingSlotBinding.test.ts.txt",
+      "bytes": 13885,
+      "sha256": "4412c1f8427fb01511fb2c906d0907ec278b49601fb5a7ae20489d01db1efe55"
+    },
+    {
+      "path": "source/src/features/building-family/tests/periodComparisonNotes.fixture.test.ts.txt",
+      "bytes": 1632,
+      "sha256": "683060bbc12544ce6ae1adcae184f3f808763e9190dda861946508d02037ec9b"
+    },
+    {
+      "path": "source/src/features/building-family/tests/periodicMasonryIntegration.test.ts.txt",
+      "bytes": 18223,
+      "sha256": "fb4ae730efd7baff384cbd1269c899ea870b4fc5a4065d17af1f7c55897af942"
+    },
+    {
+      "path": "source/src/features/building-family/tests/periodicMasonryRaster.test.ts.txt",
+      "bytes": 16858,
+      "sha256": "69a952fd8e55ed1936851e177a5a0c72d277b74872ffcdfe86fde4b30d69a9d2"
+    },
+    {
+      "path": "source/src/features/building-family/tests/periodReferenceCatalog.test.ts.txt",
+      "bytes": 4561,
+      "sha256": "cea0807838596df797043e970c75b9495530178437e1703d0e3dbdf5b29a3625"
+    },
+    {
+      "path": "source/src/features/building-family/tests/PeriodReferenceLab.test.tsx.txt",
+      "bytes": 3357,
+      "sha256": "027c496c31fae595c5f477f81c2ba9bdfd3945384af6c710b3fad3bf1751072d"
+    },
+    {
+      "path": "source/src/features/building-family/tests/proceduralMaterialProvider.test.ts.txt",
+      "bytes": 12464,
+      "sha256": "25055d8e651ebf8d413728d750b550df4f9849a5747c3ddbc64fa4016c7005bd"
+    },
+    {
+      "path": "source/src/features/building-family/tests/profiledTrimBuilder.test.ts.txt",
+      "bytes": 3387,
+      "sha256": "8cb5919d2e4ac14ca20b1bd35df8260560fef965880c0a49d8ac981d93b550b3"
+    },
+    {
+      "path": "source/src/features/building-family/tests/profiledTrimGeometry.test.ts.txt",
+      "bytes": 16097,
+      "sha256": "39cfa5e4459cfd8955574ded843941c2150724d262395ce9f7f8590a97b5bffa"
+    },
+    {
+      "path": "source/src/features/building-family/tests/profileLibraryG7.test.ts.txt",
+      "bytes": 3551,
+      "sha256": "e20125cd037cd22fce674d067700cb21d5fc4b10ec131b8d11d036c7be6176f4"
+    },
+    {
+      "path": "source/src/features/building-family/tests/profileSweepGeometry.test.ts.txt",
+      "bytes": 2294,
+      "sha256": "a09c660ae833b179082c6313931fdda14c384526b157afa07d6fbe6bb7b74120"
+    },
+    {
+      "path": "source/src/features/building-family/tests/psgBuildingIntentAdapter.test.ts.txt",
+      "bytes": 1335,
+      "sha256": "6f1f3c1ffba580c7d83e30e62402a90ab334c438067a745c6ead2a380d4bd5f8"
+    },
+    {
+      "path": "source/src/features/building-family/tests/psgToSpec.integration.test.ts.txt",
+      "bytes": 1738,
+      "sha256": "9bc6114d27aea283e4e3a99434697c0ac091332bb151015830c4f9d0f27b1674"
+    },
+    {
+      "path": "source/src/features/building-family/tests/quoinBuilder.test.ts.txt",
+      "bytes": 1566,
+      "sha256": "14daab88e55f6445da39bcee749f7b1ffddc9409830806df0c4f5076265c4f3e"
+    },
+    {
+      "path": "source/src/features/building-family/tests/r1BaselineContracts.test.ts.txt",
+      "bytes": 13119,
+      "sha256": "cccc867d9af4c85790ade1f88ddad682662d80613ecc5fc299f270044667702c"
+    },
+    {
+      "path": "source/src/features/building-family/tests/r1MasonryAppearance.test.ts.txt",
+      "bytes": 22086,
+      "sha256": "f18b6bc14c6250b7273a0e4f3b6d2f49298a5971a85e62fd9b8af7c3b3542486"
+    },
+    {
+      "path": "source/src/features/building-family/tests/r1MasonryCoverage.test.ts.txt",
+      "bytes": 28905,
+      "sha256": "55c098be5a25e2986c0ebe39275278274647df6a8ff174e07558f10b83868601"
+    },
+    {
+      "path": "source/src/features/building-family/tests/r1PeriodicSampling.test.ts.txt",
+      "bytes": 27431,
+      "sha256": "c74529efc282e9f6210b32db9494c208fdbc57ef4d5eff5a899218a1058163b2"
+    },
+    {
+      "path": "source/src/features/building-family/tests/r1WallPhase.test.ts.txt",
+      "bytes": 39006,
+      "sha256": "70e52ca3c0fa1a8b6f5cddefe275b34fc2cc68e8cc97b0e98d2202e4d5d5376e"
+    },
+    {
+      "path": "source/src/features/building-family/tests/r1WallPhaseProduction.test.ts.txt",
+      "bytes": 20644,
+      "sha256": "d01a6898b8701dd67aaa8b2cc51b87fb3c96c519868b0d53b068789f379af651"
+    },
+    {
+      "path": "source/src/features/building-family/tests/r1WallSamplingComparison.test.ts.txt",
+      "bytes": 7112,
+      "sha256": "78222aecaa9df5832020cb7707944fb59a1a0f3d545af9571ee765f50f83f341"
+    },
+    {
+      "path": "source/src/features/building-family/tests/r1WallSeams.test.ts.txt",
+      "bytes": 22949,
+      "sha256": "630971f2e6677d431c56edb72baa1fd8359874caeadad75d25d348fccaeba5f0"
+    },
+    {
+      "path": "source/src/features/building-family/tests/remoteMaterialApplicationCoordinator.test.ts.txt",
+      "bytes": 8663,
+      "sha256": "c6ff6d662f0b11e78b2a04c2667d6b0c91be0f1aa566b2261af1ae384b081635"
+    },
+    {
+      "path": "source/src/features/building-family/tests/remoteMaterialImageBridge.test.ts.txt",
+      "bytes": 6169,
+      "sha256": "d2303ccbdff24f22fa808e6abc73f1230e65e81ac3d3ef55d55a602dd8cf7130"
+    },
+    {
+      "path": "source/src/features/building-family/tests/remoteMaterialOverlay.test.ts.txt",
+      "bytes": 8288,
+      "sha256": "d5f50747a1c1bbf8c14909985114616789b6dcf7c267ae389b968a27e93e7bd3"
+    },
+    {
+      "path": "source/src/features/building-family/tests/remoteMaterialProofPacket.test.ts.txt",
+      "bytes": 5850,
+      "sha256": "0570be8c5e6419c3cf6f7ac080c66fe363152cf42471d7d1f092218d13163586"
+    },
+    {
+      "path": "source/src/features/building-family/tests/remoteMaterialRouteClient.test.ts.txt",
+      "bytes": 8999,
+      "sha256": "3fd3ce05b9e146bc793f86407aa69ca340a42f073c79345a2ad9652f8db1744d"
+    },
+    {
+      "path": "source/src/features/building-family/tests/resolveBuildingDocument.test.ts.txt",
+      "bytes": 14318,
+      "sha256": "8cfc11d37ed7e2a5468d06f2458cc2d8523b95a7c1a79b3d15a6ea334f856e2b"
+    },
+    {
+      "path": "source/src/features/building-family/tests/resourceDisposal.test.ts.txt",
+      "bytes": 4331,
+      "sha256": "8363d7605a61eb2edadf92b7c2d1cbfa302a738683aa26bc7f2dd01c12fbec7f"
+    },
+    {
+      "path": "source/src/features/building-family/tests/SampleBuildingGallery.test.tsx.txt",
+      "bytes": 2895,
+      "sha256": "bb559a36c5596147ed22b069733c0295e42baa73d4b0a7672ee9277aa80cb60c"
+    },
+    {
+      "path": "source/src/features/building-family/tests/seedTree.test.ts.txt",
+      "bytes": 1024,
+      "sha256": "7388fbcf658cde8c815f51e4b4562f9b6cef24dba3865a284d2ba3c7ae17d161"
+    },
+    {
+      "path": "source/src/features/building-family/tests/specNormalizer.test.ts.txt",
+      "bytes": 16173,
+      "sha256": "b6a0e9dac0e7d43522eb487014698275190cd17a6c0142e5c316ef9965d2ffd3"
+    },
+    {
+      "path": "source/src/features/building-family/tests/storefrontScopeSplit.test.ts.txt",
+      "bytes": 5414,
+      "sha256": "a7dce701f5a440da7aab0f080793a1d8fb2b035dd783bc9e9e6ca0cc8a8654b8"
+    },
+    {
+      "path": "source/src/features/building-family/tests/surfaceBaseAppearance.test.ts.txt",
+      "bytes": 9415,
+      "sha256": "5a0f38c8668ea256d5804efa65e7c4cef7efde9fab995c5328a2c185796c6034"
+    },
+    {
+      "path": "source/src/features/building-family/tests/surfaceComposition.test.ts.txt",
+      "bytes": 23092,
+      "sha256": "8eb9c93f9decd6f3f55d4bc682f0c11d3faf9036415fe96414d0f4561ed28922"
+    },
+    {
+      "path": "source/src/features/building-family/tests/surfaceMaterialRuntime.test.ts.txt",
+      "bytes": 25408,
+      "sha256": "dc36997cefbdb1a97fb13a8ed3f24e55fc94808775e44d592f1a166940dffd85"
+    },
+    {
+      "path": "source/src/features/building-family/tests/surfaceTileComposition.test.ts.txt",
+      "bytes": 29508,
+      "sha256": "d87dafe381a9d149a9e8dd5a0fdc4272a455a1ad6d76967487fe331954e22c06"
+    },
+    {
+      "path": "source/src/features/building-family/tests/useConstructionWorkspace.test.tsx.txt",
+      "bytes": 6299,
+      "sha256": "fdbb656126c67c4e432858fd1b7526799b6a1fa639b2281316ec825a03b06d52"
+    },
+    {
+      "path": "source/src/features/building-family/tests/utdgResearchBrief.test.ts.txt",
+      "bytes": 1622,
+      "sha256": "04b868f8f25be33d2f89dad828b4f97348fca0e8a1b71de46891ca511672e4b5"
+    },
+    {
+      "path": "source/src/features/building-family/tests/visualQaPacket.test.ts.txt",
+      "bytes": 2266,
+      "sha256": "fa17f1e7f4868b614af1b98c6e38faade563c8d408d827b15cbbb8dfc12bd572"
+    },
+    {
+      "path": "source/src/features/building-family/tests/wallAtlasSampling.test.ts.txt",
+      "bytes": 21362,
+      "sha256": "e59eb7e0940cc44ee3eca5f8eb5d12d97be552f94696a4e235a4ba680d64f348"
+    },
+    {
+      "path": "source/src/features/building-family/ui/ArtifactTracePanel.tsx.txt",
+      "bytes": 8432,
+      "sha256": "c3930a61f51a17c12d0a9caf21017a27bfcca081acf1d70b78a80e7808333b09"
+    },
+    {
+      "path": "source/src/features/building-family/ui/ArtKitLab.tsx.txt",
+      "bytes": 11199,
+      "sha256": "9b9a46d62084800257f679bdb3f6a609b038ab17d085c2f3d5e158722d92b552"
+    },
+    {
+      "path": "source/src/features/building-family/ui/AssemblyHall.tsx.txt",
+      "bytes": 94726,
+      "sha256": "cc4c0c39423fbccf6ae5301a70b176951962767b863dc65d58027c8ee8cde3b3"
+    },
+    {
+      "path": "source/src/features/building-family/ui/assemblyHallFixture.ts.txt",
+      "bytes": 29453,
+      "sha256": "795c5340886be123e971052de7bc12ee4024e548332f986587c9071d230d7286"
+    },
+    {
+      "path": "source/src/features/building-family/ui/AtlasLab.tsx.txt",
+      "bytes": 9330,
+      "sha256": "9f68f8f79b6b1ea7b28d9847329f603d6729e720774d152d920052ada456805e"
+    },
+    {
+      "path": "source/src/features/building-family/ui/bayConstructionFixture.ts.txt",
+      "bytes": 18627,
+      "sha256": "3d9e66b790dc9c10b6cf54777f972b8d15c59db6127e836278edc716435305a5"
+    },
+    {
+      "path": "source/src/features/building-family/ui/BayConstructionWorkbench.tsx.txt",
+      "bytes": 36969,
+      "sha256": "121b9860f2a187655d5a9611f203fe4829188d3f15be849e19e8fd467c9cb993"
+    },
+    {
+      "path": "source/src/features/building-family/ui/browserPngLayerDecoder.ts.txt",
+      "bytes": 4732,
+      "sha256": "f368f5e17846ddff1b14704a2052b256205bca3ec0b053c79d56d855a2ac0137"
+    },
+    {
+      "path": "source/src/features/building-family/ui/ComponentForge.tsx.txt",
+      "bytes": 11642,
+      "sha256": "7ecd804d28854642916d9c9f5f79efb77f787a912a1a87ef1338fb071a09a382"
+    },
+    {
+      "path": "source/src/features/building-family/ui/constructionBuildingBindings.ts.txt",
+      "bytes": 1202,
+      "sha256": "a541a21dbd3451350b948ac125e665e7a5dc383b7e36a5e3b54ef64c0d8742ba"
+    },
+    {
+      "path": "source/src/features/building-family/ui/ConstructionBuildingControls.tsx.txt",
+      "bytes": 6772,
+      "sha256": "5874c2e4d2ad55b35080d49615fd9f9bb37adb4d759e309edaa19b20bbf64527"
+    },
+    {
+      "path": "source/src/features/building-family/ui/ConstructionGenerationPanel.tsx.txt",
+      "bytes": 6100,
+      "sha256": "d0e64d1c5f979e50efd16f72654a27973c419d15f5cf7f7551aa47a520314a6f"
+    },
+    {
+      "path": "source/src/features/building-family/ui/ConstructionNodePanel.tsx.txt",
+      "bytes": 14797,
+      "sha256": "6e7338d00c2926b5a29d13042ced70521f7c7bb9abe0c9e55b46546e6ad7a842"
+    },
+    {
+      "path": "source/src/features/building-family/ui/ConstructionSurfacePanel.tsx.txt",
+      "bytes": 6969,
+      "sha256": "c1433f5acae5d52d68b83ee505f6f9be1acb47bbcff56b923d9dcfa5a37c1fdc"
+    },
+    {
+      "path": "source/src/features/building-family/ui/PeriodReferenceLab.tsx.txt",
+      "bytes": 11262,
+      "sha256": "01904a904fa6ac3d3b91bc171dc9ed1adf5126d6f46879c961c297610649d922"
+    },
+    {
+      "path": "source/src/features/building-family/ui/PromptTracePanel.tsx.txt",
+      "bytes": 4501,
+      "sha256": "5c1778e9aa031a36a94d254ef99d291e7e29dcb04020a1485e239fe76e423cc0"
+    },
+    {
+      "path": "source/src/features/building-family/ui/SampleBuildingGallery.tsx.txt",
+      "bytes": 15213,
+      "sha256": "bf324ba792d7c8001c376152b22f102e58c753dad3b78aa4b29107a8431785af"
+    },
+    {
+      "path": "source/src/features/building-family/utdg/index.ts.txt",
+      "bytes": 414,
+      "sha256": "191076a9e48c58394fcb15312667677b7a90879d722e0b4841184b4d8be5071f"
+    },
+    {
+      "path": "source/src/features/building-family/utdg/textureDescriptionContracts.ts.txt",
+      "bytes": 3492,
+      "sha256": "8b58c6d68d4d723ef0d523fc86e69b83fb804a752d5b74ad1bcaaef12d6a274d"
+    },
+    {
+      "path": "source/src/features/prompt-spaghetti/contracts/psgDocument.ts.txt",
+      "bytes": 2069,
+      "sha256": "cf49e15d669f00a14b1a21abda3a9a1fde807cbef603aba91dc98c2c73d53e3d"
+    },
+    {
+      "path": "source/src/features/prompt-spaghetti/core/evaluatePsg.ts.txt",
+      "bytes": 3734,
+      "sha256": "cbb9767cb92037ea95c6163fc1a8072d81d8a18a51909e7760acb22c316f1384"
+    },
+    {
+      "path": "source/src/features/prompt-spaghetti/core/evaluationTrace.ts.txt",
+      "bytes": 179,
+      "sha256": "33d5808f4d592b674b1594d090b54e5eed749cd02522b8c92089fe6b331ab373"
+    },
+    {
+      "path": "source/src/features/prompt-spaghetti/fixtures/legacy-v2.psg.json.txt",
+      "bytes": 1402,
+      "sha256": "3ba99594bba596bb636429a4180ec612e1fead7b1524ecae843366ef2aa200b2"
+    },
+    {
+      "path": "source/src/features/prompt-spaghetti/io/exportPsg.ts.txt",
+      "bytes": 200,
+      "sha256": "167865b627646cbf447767cf9b3507a5261de4c6704908b8b03bc3178df806c6"
+    },
+    {
+      "path": "source/src/features/prompt-spaghetti/io/importPsg.ts.txt",
+      "bytes": 189,
+      "sha256": "fdf05224481413d5bbdb06abb5e8e75139e63f8b6cca66bda77233e4c8df8050"
+    },
+    {
+      "path": "source/src/features/prompt-spaghetti/tests/evaluatePsg.test.ts.txt",
+      "bytes": 949,
+      "sha256": "18bb2b0daafaf1abad9999eedbb3c6521b709ecaee2f3bf7d2e03fe6c531ef06"
+    },
+    {
+      "path": "source/src/features/prompt-spaghetti/tests/legacyV2Compatibility.test.ts.txt",
+      "bytes": 574,
+      "sha256": "d364dc722a083625ba0f5dd8004d468823c22bc4e4d3dfb03034d611de0ed986"
+    },
+    {
+      "path": "source/src/test/setup.ts.txt",
+      "bytes": 44,
+      "sha256": "d494b5796f05a8593031aaac07417cfc85d53778b63681fd0cdb7be136448aff"
+    },
+    {
+      "path": "source/src/vite-env.d.ts.txt",
+      "bytes": 39,
+      "sha256": "bf144e3cdae616e27b064c8c2b94b14525e220fb3facc4cb4884d21b65eb5aa5"
+    },
+    {
+      "path": "source/vitest.config.ts.txt",
+      "bytes": 381,
+      "sha256": "ef7cfb763835181b9f1f9e636c2f3bd911dc41a37ba334435da2625a0ee9f113"
+    },
+    {
+      "path": "test-e2e-final-01.log",
+      "bytes": 234509,
+      "sha256": "211454eaf8af5a27bafb69a45079ec56ab0ee2b46fccf0eee15cb9587572f4e5"
+    },
+    {
+      "path": "test-final-01.log",
+      "bytes": 301,
+      "sha256": "9b9d0185dcfb345379891b4fc8d5deb2582d44857ba9f5456dc8ac6fc566a212"
+    },
+    {
+      "path": "typecheck-01.log",
+      "bytes": 49,
+      "sha256": "1927639a5b89b1406e25b817bb2c8efb1e16fccc181e86591db136d628e7f5e6"
+    },
+    {
+      "path": "typecheck-02.log",
+      "bytes": 49,
+      "sha256": "1927639a5b89b1406e25b817bb2c8efb1e16fccc181e86591db136d628e7f5e6"
+    },
+    {
+      "path": "typecheck-final-01.log",
+      "bytes": 49,
+      "sha256": "1927639a5b89b1406e25b817bb2c8efb1e16fccc181e86591db136d628e7f5e6"
+    },
+    {
+      "path": "verification.json",
+      "bytes": 91307,
+      "sha256": "fff1d5afa39e359d8d1441c2795bd768b3b45748f5be78db446d045f78ba284a"
+    },
+    {
+      "path": "verify-preview.mjs.txt",
+      "bytes": 2152,
+      "sha256": "c10585215de0e2e79009e07843931b397452067ad1beab132898726eb46c0db0"
+    },
+    {
+      "path": "webgl/cold-recovered.png",
+      "bytes": 468430,
+      "sha256": "959b3ffb5862541ed1fb70c269cdfb30e52138caa702b2f11dfe4e4578439a5d"
+    },
+    {
+      "path": "webgl/compact.png",
+      "bytes": 204725,
+      "sha256": "9823bc5eb0487e857da576750f7df70a0e4d8e4da9932e99a1cda2c8a7ccedfc"
+    },
+    {
+      "path": "webgl/custom-topology.png",
+      "bytes": 532599,
+      "sha256": "641a707658be35c4a49308a8cfa4e52c0abfd82c7f452b2e77795b4c5a679171"
+    },
+    {
+      "path": "webgl/final-building.png",
+      "bytes": 468430,
+      "sha256": "959b3ffb5862541ed1fb70c269cdfb30e52138caa702b2f11dfe4e4578439a5d"
+    },
+    {
+      "path": "webgl/infeasible-last-good.png",
+      "bytes": 498258,
+      "sha256": "fe344cb83715b5ca5b59ecf88683b8c66c48dcceb887d4bcd7ed8386d3e9b2b8"
+    },
+    {
+      "path": "webgl/legacy-default.png",
+      "bytes": 421519,
+      "sha256": "746597e29b42981e08ad8717d9efe9244e8c6f9c76821b5632d2614b29b2236e"
+    },
+    {
+      "path": "webgl/native-cold-recovered.png",
+      "bytes": 621698,
+      "sha256": "f188490116b8ad4e69553e87eb3aeeed275453e0dc25cbe2dc7af906db56fec2"
+    },
+    {
+      "path": "webgl/native-final-building.png",
+      "bytes": 621698,
+      "sha256": "f188490116b8ad4e69553e87eb3aeeed275453e0dc25cbe2dc7af906db56fec2"
+    },
+    {
+      "path": "webgl/native-legacy-default.png",
+      "bytes": 566503,
+      "sha256": "7f26ee00c9ac3c4830aacfc74f8023e2baaba209f8feec67bd3feb9dc89dd74b"
+    },
+    {
+      "path": "webgl/native-opened-v6.png",
+      "bytes": 621698,
+      "sha256": "f188490116b8ad4e69553e87eb3aeeed275453e0dc25cbe2dc7af906db56fec2"
+    },
+    {
+      "path": "webgl/native-six-light-casement.png",
+      "bytes": 578319,
+      "sha256": "f8aeb17669ced5d3cdd30c4c30216dac4a45f1b0fbb512570af71a84091abf98"
+    },
+    {
+      "path": "webgl/native-six-light-clay-close.png",
+      "bytes": 140801,
+      "sha256": "7f5da67abf96074f4ff2650b41e7b84ef59d26cdc8d72d472284e438820d5e53"
+    },
+    {
+      "path": "webgl/native-six-light-close.png",
+      "bytes": 793159,
+      "sha256": "c8d8afcba25088f3bfb717860669f76082f2fa23006aaca545e12c11fa5e664d"
+    },
+    {
+      "path": "webgl/native-twin-casement.png",
+      "bytes": 568025,
+      "sha256": "4c406e170468320b4c7176b3a5fe677fd08e0673efc94bafb5f1449821fffcee"
+    },
+    {
+      "path": "webgl/native-twin-close.png",
+      "bytes": 751366,
+      "sha256": "ebabc2446f5ab38970f40c6db863bb53d06cb4a3b4cdd237518735722e310b68"
+    },
+    {
+      "path": "webgl/opened-v6.png",
+      "bytes": 468430,
+      "sha256": "959b3ffb5862541ed1fb70c269cdfb30e52138caa702b2f11dfe4e4578439a5d"
+    },
+    {
+      "path": "webgl/receipt.json",
+      "bytes": 975365,
+      "sha256": "4850698748d9477a9b1b6b6038118e55bfec5a30de515cbb4986b5408c7c42d2"
+    },
+    {
+      "path": "webgl/run.log",
+      "bytes": 4327,
+      "sha256": "53515bb933b77a3153e4b9f296c9973b30cffc80f7fc4224dc156d6b352fb1d1"
+    },
+    {
+      "path": "webgl/six-light-casement.png",
+      "bytes": 431483,
+      "sha256": "822b5094d0208c4181b8b38ffd165f2fbff3c21571f80f5a1f316eb278d5e718"
+    },
+    {
+      "path": "webgl/six-light-clay-close.png",
+      "bytes": 100019,
+      "sha256": "0529a43bb6dabf8a592d79158193553809061542bdb1286bf59aebdf196c7987"
+    },
+    {
+      "path": "webgl/six-light-close.png",
+      "bytes": 474098,
+      "sha256": "4630e92ee396dd8fa68269479fa481cc29a6b0653c050fa4fb6b08fd68355fc7"
+    },
+    {
+      "path": "webgl/six-light-inspector.png",
+      "bytes": 491185,
+      "sha256": "84f88bc87fbb5f8729e9565c1def2862679378e8c830cab4226cc205ac9abd75"
+    },
+    {
+      "path": "webgl/tablet.png",
+      "bytes": 308461,
+      "sha256": "caf18fb2ceeb74b69ac121b31f4eafc780544f80932350db562d4aae81b21222"
+    },
+    {
+      "path": "webgl/twin-casement.png",
+      "bytes": 423379,
+      "sha256": "c4533ad541432097bbe9c5827c3834cf91d5fda2e66597aadef10db9044935c2"
+    },
+    {
+      "path": "webgl/twin-close.png",
+      "bytes": 449328,
+      "sha256": "2eab3d7ed21624c0dc5fd27e246312182050e204f269c59c5c7dbb325705d039"
+    },
+    {
+      "path": "webgl/twin-inspector.png",
+      "bytes": 486698,
+      "sha256": "2beff4850c3e8e56159369889f618cd11d0d1e3c46dcc42e6713f971288cceeb"
+    },
+    {
+      "path": "webgl-first-attempt/failure.png",
+      "bytes": 532557,
+      "sha256": "43b6e2dc6882199db5713416b3f6080498dcab884af1b9ad5a2db9037302b04f"
+    },
+    {
+      "path": "webgl-first-attempt/failure.txt",
+      "bytes": 377,
+      "sha256": "bf2229d50f13ea3af93c78ddf10abcbd072b9a444e800521fa89ee3ac3ad23b9"
+    },
+    {
+      "path": "webgl-first-attempt/interior-difference.png",
+      "bytes": 1885,
+      "sha256": "316423d4ba9bf2b2f1ce42089d7f86dce1b5d9f030a18d50d6b311fef8a01f01"
+    },
+    {
+      "path": "webgl-first-attempt/native-final-building.png",
+      "bytes": 621698,
+      "sha256": "f188490116b8ad4e69553e87eb3aeeed275453e0dc25cbe2dc7af906db56fec2"
+    },
+    {
+      "path": "webgl-first-attempt/opened-minus-final-diagnostic.png",
+      "bytes": 13717,
+      "sha256": "3f3d1f94bbcefdf4e71aeeabf9ba56f125b74d1d78fa79e7ad104ea9321bc4db"
+    },
+    {
+      "path": "webgl-first-attempt/opened-page-crop.png",
+      "bytes": 468852,
+      "sha256": "da8e32b77730bec9b12ff7ea65f059dfbf00c4a4095b9d3930611ebe5b8ea264"
+    },
+    {
+      "path": "webgl-first-attempt/partial-draws.json",
+      "bytes": 768132,
+      "sha256": "8dee5b00500f5180b5814a7e11db444de7fea4d46456f6f4fdb1fde6a4d55e92"
+    },
+    {
+      "path": "webgl-first-attempt/run.log",
+      "bytes": 4491,
+      "sha256": "6bce43d1aa39666c548dbcfcd364278ed329ecf03568328a418407a7c86e0106"
+    },
+    {
+      "path": "webgpu/cold-recovered.png",
+      "bytes": 465405,
+      "sha256": "353ad2a447079be867408c85712811e7fbcff6a3c501d9f1daf36947f0c73dfe"
+    },
+    {
+      "path": "webgpu/compact.png",
+      "bytes": 202144,
+      "sha256": "368a0c8334db4b9fad33546444799c82393433958954ab9efed38858d42dfc19"
+    },
+    {
+      "path": "webgpu/custom-topology.png",
+      "bytes": 529494,
+      "sha256": "fba85235a2e8493613e0dd7948aa066e128d547b193a4c657a3f7c22d0ff137f"
+    },
+    {
+      "path": "webgpu/final-building.png",
+      "bytes": 465405,
+      "sha256": "353ad2a447079be867408c85712811e7fbcff6a3c501d9f1daf36947f0c73dfe"
+    },
+    {
+      "path": "webgpu/infeasible-last-good.png",
+      "bytes": 496251,
+      "sha256": "e7273d3f028e1da295a9cd7f7f27d96dd192c72504d61a5899ac64d99da05b4d"
+    },
+    {
+      "path": "webgpu/legacy-default.png",
+      "bytes": 418732,
+      "sha256": "42af49e7865813bdb99107447aa1a7236f462d03da63d43849c69fafe62bdc90"
+    },
+    {
+      "path": "webgpu/native-cold-recovered.png",
+      "bytes": 623076,
+      "sha256": "c6b39c268ced49c4c71a9c29889433bf50a46b8bdcd46cb4dc04fbc8c8462eca"
+    },
+    {
+      "path": "webgpu/native-final-building.png",
+      "bytes": 623076,
+      "sha256": "c6b39c268ced49c4c71a9c29889433bf50a46b8bdcd46cb4dc04fbc8c8462eca"
+    },
+    {
+      "path": "webgpu/native-legacy-default.png",
+      "bytes": 568011,
+      "sha256": "4ddf5ebf3d96dba62159e018a5e21a1615df0dfd104433cf2e12a6cc1f1e0793"
+    },
+    {
+      "path": "webgpu/native-six-light-casement.png",
+      "bytes": 580182,
+      "sha256": "839dbed392fd09fff0e347c1532dfc36bd01f0e01574fcf9a98c3226a6630903"
+    },
+    {
+      "path": "webgpu/native-six-light-clay-close.png",
+      "bytes": 142472,
+      "sha256": "a3c471e37ef37f4bcc8ad01b040ac2963c5e75ee856a2a939ef571aee3ea2c4e"
+    },
+    {
+      "path": "webgpu/native-six-light-close.png",
+      "bytes": 784895,
+      "sha256": "afff8ac0c3a9582c75a1fb4fd261ae5d6f6cefc30bda9c437badacfcdc7d72d7"
+    },
+    {
+      "path": "webgpu/native-twin-casement.png",
+      "bytes": 569294,
+      "sha256": "04e3cc8744227680263dc65b1c14cfa081c2e49d6beec8d5c6da774178d67d77"
+    },
+    {
+      "path": "webgpu/native-twin-close.png",
+      "bytes": 742571,
+      "sha256": "1143efa488aad1786af10f2348b118e00a78974ac717d745a428bcafe7948f11"
+    },
+    {
+      "path": "webgpu/receipt.json",
+      "bytes": 945135,
+      "sha256": "b95843772e6876a78ae013649ed58bc19dd79d689c8a7661fc32be1a23cfe442"
+    },
+    {
+      "path": "webgpu/run.log",
+      "bytes": 1019,
+      "sha256": "2d79acac52d4920c46b3720c096727c3fad132398a3c081b1c3985fcd7701fcb"
+    },
+    {
+      "path": "webgpu/six-light-casement.png",
+      "bytes": 429416,
+      "sha256": "4fab5dd9d50a24afe65ddab0cd998bfd38ba874ab8133c9f22e2907f3f415b19"
+    },
+    {
+      "path": "webgpu/six-light-clay-close.png",
+      "bytes": 90112,
+      "sha256": "894b5abbccdf5a58bfd3665f66d3945894c42e820df0176996c2601174bae1bb"
+    },
+    {
+      "path": "webgpu/six-light-close.png",
+      "bytes": 462727,
+      "sha256": "f7fef7f5adc813fa5d89f81d1a982cb98481f05929b3adfbd3bfcf8eb01f7d11"
+    },
+    {
+      "path": "webgpu/six-light-inspector.png",
+      "bytes": 488959,
+      "sha256": "8b393e9e570082b40d3ca1bb893ab2e887093674ec58cbc07d764a63a1d9477b"
+    },
+    {
+      "path": "webgpu/tablet.png",
+      "bytes": 306124,
+      "sha256": "2a3c6e8c415839f3bdbb2ff22c4862c128dce1bffa1c277f32cd046c00b65b42"
+    },
+    {
+      "path": "webgpu/twin-casement.png",
+      "bytes": 420930,
+      "sha256": "ef47e8e362230097b2ec80b1ad0b0d3d10c9b4dc074bd1c13ba9ade704e232f8"
+    },
+    {
+      "path": "webgpu/twin-close.png",
+      "bytes": 438301,
+      "sha256": "b414e210d189bfdc7ba370d0e5d7ebb12de26ee0edf6276ecc69dfab46e71e2b"
+    },
+    {
+      "path": "webgpu/twin-inspector.png",
+      "bytes": 484246,
+      "sha256": "872e185e648a4df37fed5d7e4dd6afae5fab5073889abd7043bd758445ba0f98"
+    },
+    {
+      "path": "window-vocabulary-comparison.png",
+      "bytes": 520888,
+      "sha256": "5388a4efd0c5e8673bc61f952ae32faa820d668ae56f980b39ce2ab1bef3db7f"
+    }
+  ]
+}

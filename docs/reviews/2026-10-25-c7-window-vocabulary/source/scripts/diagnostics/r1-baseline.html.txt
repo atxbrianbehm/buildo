@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Buildo R1 baseline capture</title>
+    <style>
+      html, body { margin: 0; padding: 0; background: #e7ece7; font-family: Arial, sans-serif; }
+      .assembly-hall__intro, .assembly-hall__viewport-chrome { display: none; }
+      .assembly-hall__viewport { width: 1280px; height: 800px; position: relative; overflow: hidden; }
+      .assembly-hall__canvas { display: block; width: 1280px; height: 800px; }
+      .assembly-hall__stage { width: 1280px; }
+    </style>
+  </head>
+  <body>
+    <script type="module" src="./r1-baseline-browser.mjs"></script>
+  </body>
+</html>

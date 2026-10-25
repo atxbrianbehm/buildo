@@ -1,0 +1,8 @@
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ 'ef5c2f8c4c78f242801755b72a7cdf741e407f27a6545a3791f3945b4d798a13'
+- 'f188490116b8ad4e69553e87eb3aeeed275453e0dc25cbe2dc7af906db56fec2'
+
+    at file:///C:/Users/behmb/Documents/Cascade%20Projects/buildo/test-results/c7-window-vocabulary-2026-10-25/capture-vocabulary-01.mjs:175:175
+[]

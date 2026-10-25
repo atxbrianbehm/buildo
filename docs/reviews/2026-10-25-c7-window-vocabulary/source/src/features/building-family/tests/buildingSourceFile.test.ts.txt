@@ -1,0 +1,1045 @@
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { canonicalJson } from "../core/canonicalJson";
+import { hashCanonicalJson } from "../core/contentHash";
+import {
+  BuildingSourceFileSchema, BuildingSourceSnapshotSchema, createBuildingSourceFile, createBuildingSourceSnapshot,
+  deriveBuildingSourceBayEdit, deriveBuildingSourceFloorEdit, deriveBuildingSourceRoofEdit, deriveBuildingSourceWindowEdit, parseBuildingSourceFile, resolveBuildingSourceSnapshot, withBuildingSourceRevision,
+  type BuildingSourceFile, type BuildingSourceSnapshot
+} from "../state/buildingSourceFile";
+import { defaultBuildingPromptControls } from "../state/buildingStore";
+import { createAssemblyHallFixture, type AssemblyHallFixture } from "../ui/assemblyHallFixture";
+import { buildAssemblyHallSourceWindowSplit } from "../ui/assemblyHallFixture";
+import { deriveBuildingSourceWindowWidthEdit } from "../state/buildingSourceFile";
+import type { BuildingWindowWidthOverride } from "../contracts/buildingDocument";
+
+const names = ["baseColor", "normal", "orm", "height", "opacity"] as const;
+const clone = <T,>(input: T): T => JSON.parse(JSON.stringify(input)) as T;
+async function refreshSource(source: BuildingSourceSnapshot): Promise<void> {
+  source.document.intentRef.contentHash = await hashCanonicalJson(source.intent);
+  source.document.stylePackRef.contentHash = await hashCanonicalJson(source.stylePack);
+  const { sourceContentHash: omitted, ...payload } = source;
+  void omitted;
+  source.sourceContentHash = await hashCanonicalJson({ ...payload, document: { ...source.document, revision: 0 } });
+}
+async function refreshFile(file: BuildingSourceFile): Promise<void> {
+  const { contentHash: omitted, ...payload } = file;
+  void omitted;
+  file.contentHash = await hashCanonicalJson(payload);
+}
+
+describe("R2.P3 building source file boundary", () => {
+  let fixture: AssemblyHallFixture;
+  let source: BuildingSourceSnapshot;
+  let file: BuildingSourceFile;
+  beforeAll(async () => {
+    fixture = await createAssemblyHallFixture({
+      sourceIdentity: { documentId: "source-codec-fixture", revision: 4 },
+      promptControls: { ...defaultBuildingPromptControls, seeds: { family: "fam", building: "building-seed-variant-07", material: "mat", trim: "trim" } }
+    });
+    if (!fixture.sourceSnapshot) throw new Error("Expected captured source");
+    source = fixture.sourceSnapshot;
+    file = await createBuildingSourceFile({ sourceSnapshot: source, packedAtlas: fixture.packedAtlas, debugExport: fixture.debugExport });
+  }, 30_000);
+  afterAll(() => { fixture?.familyRuntime.dispose(); });
+
+  it("round-trips original source and all five exact material channels with one encoded representation", async () => {
+    const parsed = await parseBuildingSourceFile(clone(file));
+    expect(canonicalJson(parsed.sourceSnapshot)).toBe(canonicalJson(source));
+    expect(parsed.sourceSnapshot.document.documentId).toBe("source-codec-fixture");
+    expect(parsed.sourceSnapshot.document.revision).toBe(4);
+    expect(Object.isFrozen(parsed.sourceSnapshot.intent.psg.evaluatedVariables)).toBe(true);
+    expect(Object.keys(file.materials.debugMetadata)).not.toContain("channels");
+    expect(Object.keys(file)).toEqual(["schemaVersion", "model", "source", "materials", "contentHash"]);
+    expect("artifacts" in file).toBe(false);
+    expect(canonicalJson(parsed.debugExport)).toBe(canonicalJson(fixture.debugExport));
+    for (const name of names) {
+      expect(Array.from(parsed.packedAtlas.channels[name].data)).toEqual(Array.from(fixture.packedAtlas.channels[name].data));
+      expect(parsed.packedAtlas.channels[name].widthPx).toBe(fixture.packedAtlas.channels[name].widthPx);
+      expect(parsed.packedAtlas.channels[name].heightPx).toBe(fixture.packedAtlas.channels[name].heightPx);
+    }
+  });
+
+  it("revises an owned clone without freezing or changing the caller's parsed snapshot", async () => {
+    const mutable = clone(source);
+    const before = canonicalJson(mutable);
+    const revised = withBuildingSourceRevision(mutable, 9);
+    expect(canonicalJson(mutable)).toBe(before);
+    expect(Object.isFrozen(mutable)).toBe(false);
+    expect(Object.isFrozen(mutable.intent.psg.evaluatedVariables)).toBe(false);
+    expect(revised.document.revision).toBe(9);
+    expect(revised.sourceContentHash).toBe(source.sourceContentHash);
+    expect(revised.intent).not.toBe(mutable.intent);
+    expect((await resolveBuildingSourceSnapshot(revised)).sourceSnapshot.document.revision).toBe(9);
+  });
+
+  it("captures identity, controls and unknown dependency values before its first await", async () => {
+    const input = { documentId: "captured-id", revision: 7, controls: clone(source.controlsView), intent: clone(source.intent), stylePack: clone(source.stylePack) };
+    const expected = await createBuildingSourceSnapshot(clone(input));
+    const pending = createBuildingSourceSnapshot(input);
+    input.documentId = "late-id"; input.revision = 99;
+    input.controls.windowFamily = "tall-rectangular";
+    input.intent.psg.evaluatedVariables.late = { changed: true };
+    input.stylePack.id = "late-style";
+    const result = await pending;
+    expect(canonicalJson(result)).toBe(canonicalJson(expected));
+  });
+
+  it("captures encoded metadata and active bytes synchronously before saving", async () => {
+    const packedAtlas = structuredClone(fixture.packedAtlas);
+    const debugExport = clone(fixture.debugExport);
+    const mutableSource = clone(source);
+    const pending = createBuildingSourceFile({ sourceSnapshot: mutableSource, packedAtlas, debugExport });
+    mutableSource.document.documentId = "late-source";
+    packedAtlas.channels.baseColor.data[0] ^= 255;
+    debugExport.channels[0].channelHash = "0".repeat(64);
+    expect(canonicalJson(await pending)).toBe(canonicalJson(file));
+  });
+
+  it("rejects an outer receipt change", async () => {
+    await expect(parseBuildingSourceFile({ ...clone(file), contentHash: "0".repeat(64) })).rejects.toMatchObject({ code: "building.sourceFileInvalid" });
+  });
+
+  it("checks original input references independently of source and file receipts", async () => {
+    const changed = clone(file);
+    changed.source.intent.psg.evaluatedVariables.changed = true;
+    const { sourceContentHash: omitted, ...payload } = changed.source;
+    void omitted;
+    changed.source.sourceContentHash = await hashCanonicalJson({ ...payload, document: { ...changed.source.document, revision: 0 } });
+    await refreshFile(changed);
+    await expect(parseBuildingSourceFile(changed)).rejects.toMatchObject({ code: "building.sourceFileInvalid" });
+  });
+
+  it.each(["window", "seeds", "locks"] as const)("rejects captured original/document %s disagreement even with valid refreshed refs and receipts", async (field) => {
+    const changed = clone(file);
+    if (field === "window") changed.source.intent.requested.windowFamily = "tall-rectangular";
+    if (field === "seeds") changed.source.intent.seeds.building = "different-building";
+    if (field === "locks") changed.source.intent.locks.push({ semanticPath: "component/window", scope: "building", lockedValue: { componentKey: "window" }, reason: "different lock" });
+    await refreshSource(changed.source); await refreshFile(changed);
+    await expect(parseBuildingSourceFile(changed)).rejects.toMatchObject({ code: "building.sourceFileInvalid" });
+  });
+
+  it("rejects a controls view inconsistent with the authoritative document", async () => {
+    const changed = clone(file);
+    changed.source.controlsView.windowFamily = "tall-rectangular";
+    await refreshSource(changed.source); await refreshFile(changed);
+    await expect(parseBuildingSourceFile(changed)).rejects.toMatchObject({ code: "building.sourceFileInvalid" });
+  });
+
+  it("rejects unsupported additional authored fields instead of silently expanding v1", async () => {
+    const changed = clone(file);
+    changed.source.document.authored.roofType = "flat";
+    await refreshSource(changed.source); await refreshFile(changed);
+    await expect(parseBuildingSourceFile(changed)).rejects.toMatchObject({ code: "building.sourceFileInvalid" });
+  });
+
+  it.each(["channelHash", "byteLength", "debugHash", "duplicateChannel"] as const)("checks %s after the file receipt is refreshed", async (field) => {
+    const changed = clone(file);
+    if (field === "channelHash") changed.materials.channels[0].channelHash = "0".repeat(64);
+    if (field === "byteLength") changed.materials.channels[0].byteLength -= 4;
+    if (field === "debugHash") changed.materials.debugMetadata.exportHash = "0".repeat(64);
+    if (field === "duplicateChannel") changed.materials.channels[1].name = changed.materials.channels[0].name;
+    await refreshFile(changed);
+    await expect(parseBuildingSourceFile(changed)).rejects.toMatchObject({ code: "building.sourceFileInvalid" });
+  });
+
+  it("rejects PNG bytes that disagree with the live atlas rather than rerendering them", async () => {
+    const packedAtlas = structuredClone(fixture.packedAtlas);
+    packedAtlas.channels.height.data[0] ^= 255;
+    await expect(createBuildingSourceFile({ sourceSnapshot: source, packedAtlas, debugExport: fixture.debugExport })).rejects.toMatchObject({ code: "building.sourceFileInvalid" });
+  });
+
+  it.each([() => 1, new Date(0), new Map(), Number.NaN, BigInt(1), Symbol("unsafe")])("rejects unsafe opaque dependency values at the standalone schema boundary", (value) => {
+    const changed = clone(file);
+    changed.source.intent.psg.evaluatedVariables.unsafe = value;
+    expect(BuildingSourceFileSchema.safeParse(changed).success).toBe(false);
+  });
+
+  it("rejects unsafe diagnostic payloads before unknown schema fields can strip them", () => {
+    const changed = clone(file);
+    changed.materials.debugMetadata.diagnostics.push({ code: "unsafe", severity: "error", message: "unsafe diagnostic", received: () => 1 });
+    expect(BuildingSourceFileSchema.safeParse(changed).success).toBe(false);
+  });
+  describe("R2.P4 pinned source window derivation", () => {
+    function otherWindow(): string {
+      const value = source.stylePack.componentFamilies.windows.find((family) => family !== source.document.authored.windowFamily);
+      if (!value) throw new Error("The source fixture needs a second permitted window family.");
+      return value;
+    }
+
+    it("preserves an identical source and revision without freezing the caller", async () => {
+      const mutable = clone(source);
+      const before = canonicalJson(mutable);
+      const derived = await deriveBuildingSourceWindowEdit({ sourceSnapshot: mutable, windowFamily: source.controlsView.windowFamily });
+      expect(canonicalJson(derived)).toBe(before);
+      expect(derived).not.toBe(mutable);
+      expect(Object.isFrozen(mutable.intent)).toBe(false);
+      expect(derived.document.revision).toBe(source.document.revision);
+    });
+
+    it("changes only the captured window request, matching choice/view and content receipts", async () => {
+      const before = clone(source);
+      const windowFamily = otherWindow();
+      const edited = await deriveBuildingSourceWindowEdit({ sourceSnapshot: before, windowFamily });
+      expect(canonicalJson(before)).toBe(canonicalJson(source));
+      expect(edited.document.revision).toBe(before.document.revision);
+      expect(edited.intent.requested.windowFamily).toBe(windowFamily);
+      expect(edited.controlsView.windowFamily).toBe(windowFamily);
+      expect(edited.document.authored.windowFamily).toBe(windowFamily);
+      expect(edited.document.intentRef.contentHash).toBe(await hashCanonicalJson(edited.intent));
+      expect(edited.document.intentRef.contentHash).not.toBe(before.document.intentRef.contentHash);
+      expect(edited.sourceContentHash).not.toBe(before.sourceContentHash);
+      const masked = clone(edited);
+      masked.intent.requested.windowFamily = before.intent.requested.windowFamily;
+      masked.controlsView.windowFamily = before.controlsView.windowFamily;
+      masked.document.authored.windowFamily = before.document.authored.windowFamily;
+      masked.document.intentRef.contentHash = before.document.intentRef.contentHash;
+      masked.sourceContentHash = before.sourceContentHash;
+      expect(canonicalJson(masked)).toBe(canonicalJson(before));
+      expect((await resolveBuildingSourceSnapshot(edited)).spec.selectedFamilies.window).toBe(windowFamily);
+    });
+
+    it("keeps a non-installed pinned style and its correlated floor stack", async () => {
+      const style = clone(source.stylePack);
+      style.massing.floorHeightM.typical.min = 4.25;
+      style.massing.floorHeightM.typical.max = 4.25;
+      const pinned = await createBuildingSourceSnapshot({ documentId: "p4-codec-pinned", revision: 7, controls: source.controlsView, intent: source.intent, stylePack: style });
+      const edited = await deriveBuildingSourceWindowEdit({ sourceSnapshot: pinned.sourceSnapshot, windowFamily: otherWindow() });
+      expect(edited.stylePack).toEqual(style);
+      expect(edited.document.stylePackRef).toEqual(pinned.sourceSnapshot.document.stylePackRef);
+      expect((await resolveBuildingSourceSnapshot(edited)).spec.massing.floorHeightsM).toEqual(pinned.spec.massing.floorHeightsM);
+      expect(edited.compilation).toEqual(pinned.sourceSnapshot.compilation);
+      expect(edited.document.revision).toBe(7);
+    });
+
+    it("owns the baseline and proposed window before its first await", async () => {
+      const input = { sourceSnapshot: clone(source), windowFamily: otherWindow() };
+      const proposed = input.windowFamily;
+      const pending = deriveBuildingSourceWindowEdit(input);
+      input.windowFamily = source.controlsView.windowFamily;
+      input.sourceSnapshot.stylePack.id = "late-style";
+      input.sourceSnapshot.document.documentId = "late-document";
+      input.sourceSnapshot.intent.psg.evaluatedVariables.late = true;
+      const edited = await pending;
+      expect(edited.document.documentId).toBe(source.document.documentId);
+      expect(edited.stylePack).toEqual(source.stylePack);
+      expect(edited.intent.requested.windowFamily).toBe(proposed);
+      expect(edited.intent.psg.evaluatedVariables).toEqual(source.intent.psg.evaluatedVariables);
+    });
+
+    it("rejects an invalid proposed choice without rewriting the accepted source", async () => {
+      const mutable = clone(source);
+      const before = canonicalJson(mutable);
+      await expect(deriveBuildingSourceWindowEdit({ sourceSnapshot: mutable, windowFamily: "not-a-permitted-window" })).rejects.toMatchObject({ code: "building.documentResolutionRejected" });
+      expect(canonicalJson(mutable)).toBe(before);
+    });
+
+    it("validates the original source receipt before deriving any edit", async () => {
+      const changed = clone(source);
+      changed.intent.psg.evaluatedVariables.invalid = true;
+      await expect(deriveBuildingSourceWindowEdit({ sourceSnapshot: changed, windowFamily: otherWindow() })).rejects.toMatchObject({ code: "building.sourceFileInvalid" });
+    });
+  });
+
+  describe("R2.P5 versioned authored floor source", () => {
+    async function floorSource() {
+      const style = clone(source.stylePack);
+      style.massing.floorHeightM.typical.min = 4.25;
+      style.massing.floorHeightM.typical.max = 4.25;
+      const pinned = await createBuildingSourceSnapshot({ documentId: "p5-codec-floor", revision: 7, controls: source.controlsView, intent: source.intent, stylePack: style });
+      const floorCount = source.controlsView.floorCount + 1;
+      const edited = await deriveBuildingSourceFloorEdit({ sourceSnapshot: pinned.sourceSnapshot, floorCount });
+      return { pinned, edited, floorCount };
+    }
+    it("keeps the generated v1 payload and literal serializer at the legacy formula", async () => {
+      const controls = source.controlsView;
+      const document = {
+        schemaVersion: "0.1.0", documentId: source.document.documentId, revision: source.document.revision,
+        intentRef: { contentHash: await hashCanonicalJson(source.intent) },
+        stylePackRef: { stylePackId: source.stylePack.id, contentHash: await hashCanonicalJson(source.stylePack) },
+        seeds: controls.seeds, authored: { windowFamily: controls.windowFamily }, locks: source.intent.locks
+      };
+      const payload = { schemaVersion: "0.1.0", document, intent: source.intent, stylePack: source.stylePack,
+        compilation: { detailLevel: controls.detailLevel, fidelityMode: controls.fidelityMode }, controlsView: controls };
+      const expectedSource = { ...payload, sourceContentHash: await hashCanonicalJson({ ...payload, document: { ...document, revision: 0 } }) };
+      const expectedPayload = { schemaVersion: "0.1.0", model: "building-window-source-v1", source: expectedSource, materials: file.materials };
+      const expectedFile = { ...expectedPayload, contentHash: await hashCanonicalJson(expectedPayload) };
+      expect(JSON.stringify(file, null, 2)).toBe(JSON.stringify(expectedFile, null, 2));
+      const parsed = await parseBuildingSourceFile(JSON.parse(JSON.stringify(expectedFile)) as unknown);
+      const saved = await createBuildingSourceFile({ sourceSnapshot: parsed.sourceSnapshot, packedAtlas: parsed.packedAtlas, debugExport: parsed.debugExport });
+      expect(JSON.stringify(saved, null, 2)).toBe(JSON.stringify(expectedFile, null, 2));
+      expect(parsed.sourceSnapshot.schemaVersion).toBe("0.1.0");
+      expect(parsed.sourceSnapshot.document.authored.floorCount).toBeUndefined();
+      const otherWindow = source.stylePack.componentFamilies.windows.find((value) => value !== controls.windowFamily);
+      if (!otherWindow) throw new Error("Expected another permitted window family");
+      const window = await deriveBuildingSourceWindowEdit({ sourceSnapshot: parsed.sourceSnapshot, windowFamily: otherWindow });
+      const windowFile = await createBuildingSourceFile({ sourceSnapshot: window, packedAtlas: parsed.packedAtlas, debugExport: parsed.debugExport });
+      expect(windowFile.schemaVersion).toBe("0.1.0");
+      expect(windowFile.model).toBe("building-window-source-v1");
+      expect(windowFile.source.document.authored.floorCount).toBeUndefined();
+    });
+    it("keeps a same-floor no-op in its original version, content and revision", async () => {
+      const mutable = clone(source);
+      const original = canonicalJson(mutable);
+      const unchanged = await deriveBuildingSourceFloorEdit({ sourceSnapshot: mutable, floorCount: mutable.controlsView.floorCount });
+      expect(canonicalJson(unchanged)).toBe(original);
+      expect(unchanged.schemaVersion).toBe("0.1.0");
+      expect(unchanged).not.toBe(mutable);
+      expect(Object.isFrozen(mutable.intent)).toBe(false);
+      const { edited, floorCount } = await floorSource();
+      const v2 = await deriveBuildingSourceFloorEdit({ sourceSnapshot: edited, floorCount });
+      expect(canonicalJson(v2)).toBe(canonicalJson(edited));
+      expect(v2.schemaVersion).toBe("0.2.0");
+      expect(v2.document.revision).toBe(7);
+    });
+    it("upgrades only the authored floor mask while preserving pinned correlated heights", async () => {
+      const { pinned, edited, floorCount } = await floorSource();
+      expect(edited.schemaVersion).toBe("0.2.0");
+      expect(edited.document.schemaVersion).toBe("0.1.0");
+      expect(edited.document.authored).toEqual({ floorCount, windowFamily: pinned.sourceSnapshot.controlsView.windowFamily });
+      expect(edited.intent.requested.floorCount).toBe(floorCount);
+      expect(edited.controlsView.floorCount).toBe(floorCount);
+      expect(edited.document.revision).toBe(7);
+      expect(edited.document.intentRef.contentHash).toBe(await hashCanonicalJson(edited.intent));
+      expect(edited.sourceContentHash).not.toBe(pinned.sourceSnapshot.sourceContentHash);
+      const masked = clone(edited);
+      masked.schemaVersion = pinned.sourceSnapshot.schemaVersion;
+      masked.intent.requested.floorCount = pinned.sourceSnapshot.intent.requested.floorCount;
+      masked.controlsView.floorCount = pinned.sourceSnapshot.controlsView.floorCount;
+      delete masked.document.authored.floorCount;
+      masked.document.intentRef.contentHash = pinned.sourceSnapshot.document.intentRef.contentHash;
+      masked.sourceContentHash = pinned.sourceSnapshot.sourceContentHash;
+      expect(canonicalJson(masked)).toBe(canonicalJson(pinned.sourceSnapshot));
+      const resolved = await resolveBuildingSourceSnapshot(edited);
+      expect(resolved.spec.massing.floorHeightsM).toHaveLength(floorCount);
+      expect(resolved.spec.massing.floorHeightsM.slice(1)).toEqual(Array(floorCount - 1).fill(4.25));
+      expect(resolved.sourceSnapshot.stylePack).toEqual(pinned.sourceSnapshot.stylePack);
+    });
+    it("retains v2 floor authority through a later window derivation and revision clone", async () => {
+      const { edited, floorCount } = await floorSource();
+      const windowFamily = edited.stylePack.componentFamilies.windows.find((value) => value !== edited.controlsView.windowFamily);
+      if (!windowFamily) throw new Error("Expected another permitted window family");
+      const window = await deriveBuildingSourceWindowEdit({ sourceSnapshot: edited, windowFamily });
+      expect(window.schemaVersion).toBe("0.2.0");
+      expect(window.document.authored).toEqual({ floorCount, windowFamily });
+      expect(window.intent.requested.floorCount).toBe(floorCount);
+      expect(window.controlsView.floorCount).toBe(floorCount);
+      expect((await resolveBuildingSourceSnapshot(window)).spec.massing.floorHeightsM).toEqual((await resolveBuildingSourceSnapshot(edited)).spec.massing.floorHeightsM);
+      const revised = withBuildingSourceRevision(window, 9);
+      expect(revised.schemaVersion).toBe("0.2.0");
+      expect(revised.document.authored.floorCount).toBe(floorCount);
+      expect(revised.sourceContentHash).toBe(window.sourceContentHash);
+      expect(window.document.revision).toBe(7);
+    });
+    it("round-trips a strict v2 file with exact five-channel bytes and literal Save/Open/Save", async () => {
+      const { edited } = await floorSource();
+      const saved = await createBuildingSourceFile({ sourceSnapshot: edited, packedAtlas: fixture.packedAtlas, debugExport: fixture.debugExport });
+      expect(saved.schemaVersion).toBe("0.2.0");
+      expect(saved.model).toBe("building-window-floor-source-v2");
+      const serialized = JSON.stringify(saved, null, 2);
+      const opened = await parseBuildingSourceFile(JSON.parse(serialized) as unknown);
+      const again = await createBuildingSourceFile({ sourceSnapshot: opened.sourceSnapshot, packedAtlas: opened.packedAtlas, debugExport: opened.debugExport });
+      expect(JSON.stringify(again, null, 2)).toBe(serialized);
+      expect(canonicalJson(opened.sourceSnapshot)).toBe(canonicalJson(edited));
+      expect(canonicalJson(opened.debugExport)).toBe(canonicalJson(fixture.debugExport));
+      for (const name of names) {
+        expect(opened.packedAtlas.channels[name].widthPx).toBe(fixture.packedAtlas.channels[name].widthPx);
+        expect(opened.packedAtlas.channels[name].heightPx).toBe(fixture.packedAtlas.channels[name].heightPx);
+        expect(Array.from(opened.packedAtlas.channels[name].data)).toEqual(Array.from(fixture.packedAtlas.channels[name].data));
+      }
+    });
+    it.each([-1, 1.5, Number.NaN, 999])("rejects an invalid authored floor %s without changing the accepted source", async (floorCount) => {
+      const mutable = clone(source);
+      const before = canonicalJson(mutable);
+      await expect(deriveBuildingSourceFloorEdit({ sourceSnapshot: mutable, floorCount })).rejects.toMatchObject({ code: "building.documentResolutionRejected" });
+      expect(canonicalJson(mutable)).toBe(before);
+      expect(Object.isFrozen(mutable.intent)).toBe(false);
+    });
+    it("captures the proposed floor and baseline before its first await", async () => {
+      const input = { sourceSnapshot: clone(source), floorCount: source.controlsView.floorCount + 1 };
+      const proposed = input.floorCount;
+      const pending = deriveBuildingSourceFloorEdit(input);
+      input.floorCount = 999;
+      input.sourceSnapshot.document.documentId = "late-document";
+      input.sourceSnapshot.intent.psg.evaluatedVariables.late = true;
+      input.sourceSnapshot.stylePack.id = "late-style";
+      const edited = await pending;
+      expect(edited.document.documentId).toBe(source.document.documentId);
+      expect(edited.document.authored.floorCount).toBe(proposed);
+      expect(edited.stylePack).toEqual(source.stylePack);
+      expect(edited.intent.psg.evaluatedVariables).toEqual(source.intent.psg.evaluatedVariables);
+    });
+    it.each(["intent", "controls", "document"] as const)("rejects v2 %s floor disagreement after all receipts are refreshed", async (field) => {
+      const { edited } = await floorSource();
+      const saved = clone(await createBuildingSourceFile({ sourceSnapshot: edited, packedAtlas: fixture.packedAtlas, debugExport: fixture.debugExport }));
+      if (field === "intent") saved.source.intent.requested.floorCount = edited.controlsView.floorCount + 1;
+      if (field === "controls") saved.source.controlsView.floorCount = edited.controlsView.floorCount + 1;
+      if (field === "document") saved.source.document.authored.floorCount = edited.controlsView.floorCount + 1;
+      await refreshSource(saved.source); await refreshFile(saved);
+      await expect(parseBuildingSourceFile(saved)).rejects.toMatchObject({ code: "building.sourceFileInvalid" });
+    });
+    it("rejects crossed file/snapshot versions and models independently of outer receipts", async () => {
+      const { edited } = await floorSource();
+      const v2 = await createBuildingSourceFile({ sourceSnapshot: edited, packedAtlas: fixture.packedAtlas, debugExport: fixture.debugExport });
+      const crossed = [
+        { ...clone(file), source: clone(v2.source) },
+        { ...clone(v2), source: clone(file.source) },
+        { ...clone(v2), model: "building-window-source-v1" },
+        { ...clone(file), model: "building-window-floor-source-v2" }
+      ];
+      for (const value of crossed) {
+        const { contentHash: omitted, ...payload } = value;
+        void omitted;
+        const refreshed = { ...payload, contentHash: await hashCanonicalJson(payload) };
+        expect(BuildingSourceFileSchema.safeParse(refreshed).success).toBe(false);
+        await expect(parseBuildingSourceFile(refreshed)).rejects.toMatchObject({ code: "building.sourceFileInvalid" });
+      }
+      const missingFloor = clone(edited);
+      delete missingFloor.document.authored.floorCount;
+      expect(BuildingSourceSnapshotSchema.safeParse(missingFloor).success).toBe(false);
+      const extraChoice = clone(edited);
+      extraChoice.document.authored.bayCount = extraChoice.controlsView.bayCount;
+      expect(BuildingSourceSnapshotSchema.safeParse(extraChoice).success).toBe(false);
+    });
+    it("validates the original receipt before deriving an authored floor", async () => {
+      const changed = clone(source);
+      changed.intent.psg.evaluatedVariables.invalid = true;
+      await expect(deriveBuildingSourceFloorEdit({ sourceSnapshot: changed, floorCount: source.controlsView.floorCount + 1 })).rejects.toMatchObject({ code: "building.sourceFileInvalid" });
+    });
+  });
+
+
+  describe("R2.P7 declared parameter source and bay authority", () => {
+    async function parameterSource(authored: BuildingSourceSnapshot["document"]["authored"], mutate?: (value: BuildingSourceSnapshot) => void) {
+      const value = clone(source);
+      value.schemaVersion = "0.3.0";
+      value.document.authored = clone(authored);
+      mutate?.(value);
+      await refreshSource(value);
+      return (await resolveBuildingSourceSnapshot(value)).sourceSnapshot;
+    }
+    async function sixBayV2() {
+      const style = clone(source.stylePack);
+      style.massing.floorHeightM.typical.min = 4.25; style.massing.floorHeightM.typical.max = 4.25;
+      const controls = { ...source.controlsView, bayCount: 6 };
+      const intent = { ...source.intent, requested: { ...source.intent.requested, bayCount: 6 } };
+      const pinned = await createBuildingSourceSnapshot({ documentId: "p7-codec-bays", revision: 7, controls, intent, stylePack: style });
+      return deriveBuildingSourceFloorEdit({ sourceSnapshot: pinned.sourceSnapshot, floorCount: 5 });
+    }
+    function allAuthored() {
+      const controls = source.controlsView;
+      return { floorCount: controls.floorCount, bayCount: controls.bayCount, roofType: controls.roofType,
+        trimDensity: controls.trimDensity, windowFamily: controls.windowFamily, corniceFamily: controls.corniceFamily };
+    }
+
+    it("preserves old v1 and v2 literal files and versions on a same-bay no-op", async () => {
+      for (const accepted of [source, await sixBayV2()]) {
+        const saved = await createBuildingSourceFile({ sourceSnapshot: accepted, packedAtlas: fixture.packedAtlas, debugExport: fixture.debugExport });
+        const serialized = JSON.stringify(saved, null, 2);
+        const same = await deriveBuildingSourceBayEdit({ sourceSnapshot: accepted, bayCount: accepted.controlsView.bayCount });
+        expect(canonicalJson(same)).toBe(canonicalJson(accepted));
+        expect(same.schemaVersion).toBe(accepted.schemaVersion);
+        expect(same.document.authored.bayCount).toBeUndefined();
+        const parsed = await parseBuildingSourceFile(JSON.parse(serialized) as unknown);
+        const again = await createBuildingSourceFile({ sourceSnapshot: same, packedAtlas: parsed.packedAtlas, debugExport: parsed.debugExport });
+        expect(JSON.stringify(again, null, 2)).toBe(serialized);
+      }
+    });
+
+    it("upgrades only the explicit bay mask and preserves pinned floor/window authorities", async () => {
+      const accepted = await sixBayV2();
+      const edited = await deriveBuildingSourceBayEdit({ sourceSnapshot: accepted, bayCount: 7 });
+      expect(edited.schemaVersion).toBe("0.3.0");
+      expect(edited.document.schemaVersion).toBe("0.1.0");
+      expect(edited.document.authored).toEqual({ floorCount: 5, bayCount: 7, windowFamily: accepted.controlsView.windowFamily });
+      expect(edited.intent.requested.bayCount).toBe(7); expect(edited.controlsView.bayCount).toBe(7);
+      expect(edited.document.revision).toBe(7);
+      expect(edited.document.intentRef.contentHash).toBe(await hashCanonicalJson(edited.intent));
+      expect(edited.sourceContentHash).not.toBe(accepted.sourceContentHash);
+      const masked = clone(edited);
+      masked.schemaVersion = accepted.schemaVersion;
+      delete masked.document.authored.bayCount;
+      masked.intent.requested.bayCount = accepted.intent.requested.bayCount;
+      masked.controlsView.bayCount = accepted.controlsView.bayCount;
+      masked.document.intentRef.contentHash = accepted.document.intentRef.contentHash;
+      masked.sourceContentHash = accepted.sourceContentHash;
+      expect(canonicalJson(masked)).toBe(canonicalJson(accepted));
+      const resolved = await resolveBuildingSourceSnapshot(edited);
+      expect(resolved.spec.facade.frontBayCount).toBe(7);
+      expect(resolved.spec.componentParameters.requestedBayCount).toBe(7);
+      expect(resolved.spec.massing.floorHeightsM).toHaveLength(5);
+      expect(resolved.spec.massing.floorHeightsM.slice(1)).toEqual(Array(4).fill(4.25));
+    });
+
+    it("retains v3 and its declared bays through later floor and window edits", async () => {
+      const bay = await deriveBuildingSourceBayEdit({ sourceSnapshot: await sixBayV2(), bayCount: 7 });
+      const floor = await deriveBuildingSourceFloorEdit({ sourceSnapshot: bay, floorCount: 6 });
+      const windowFamily = floor.stylePack.componentFamilies.windows.find((family) => family !== floor.controlsView.windowFamily);
+      if (!windowFamily) throw new Error("Expected another permitted window family");
+      const window = await deriveBuildingSourceWindowEdit({ sourceSnapshot: floor, windowFamily });
+      expect(window.schemaVersion).toBe("0.3.0");
+      expect(window.document.authored).toEqual({ floorCount: 6, bayCount: 7, windowFamily });
+      expect(window.stylePack).toEqual(bay.stylePack);
+      expect(window.document.revision).toBe(7);
+      const revised = withBuildingSourceRevision(window, 10);
+      expect(revised.schemaVersion).toBe("0.3.0");
+      expect(revised.sourceContentHash).toBe(window.sourceContentHash);
+      expect(revised.document.authored).toEqual(window.document.authored);
+      const resolved = await resolveBuildingSourceSnapshot(revised);
+      expect(resolved.spec.facade.frontBayCount).toBe(7);
+      expect(resolved.spec.massing.floorHeightsM).toHaveLength(6);
+      expect(resolved.spec.selectedFamilies.window).toBe(windowFamily);
+    });
+
+    it("accepts a nonempty subset without window/floor and leaves no-op proposals unowned", async () => {
+      const accepted = await parameterSource({ bayCount: source.controlsView.bayCount });
+      expect(accepted.document.authored).toEqual({ bayCount: source.controlsView.bayCount });
+      const resolved = await resolveBuildingSourceSnapshot(accepted);
+      expect(resolved.spec.selectedFamilies.window).toBe("tall-rectangular");
+      expect(accepted.controlsView.windowFamily).toBe("tall-arched");
+      const sameWindow = await deriveBuildingSourceWindowEdit({ sourceSnapshot: accepted, windowFamily: accepted.controlsView.windowFamily });
+      const sameFloor = await deriveBuildingSourceFloorEdit({ sourceSnapshot: accepted, floorCount: accepted.controlsView.floorCount });
+      expect(canonicalJson(sameWindow)).toBe(canonicalJson(accepted));
+      expect(canonicalJson(sameFloor)).toBe(canonicalJson(accepted));
+      const realWindow = await deriveBuildingSourceWindowEdit({ sourceSnapshot: accepted, windowFamily: "tall-rectangular" });
+      expect(realWindow.document.authored).toEqual({ bayCount: accepted.controlsView.bayCount, windowFamily: "tall-rectangular" });
+      const realFloor = await deriveBuildingSourceFloorEdit({ sourceSnapshot: accepted, floorCount: accepted.controlsView.floorCount + 1 });
+      expect(realFloor.schemaVersion).toBe("0.3.0");
+      expect(realFloor.document.authored).toEqual({ bayCount: accepted.controlsView.bayCount, floorCount: accepted.controlsView.floorCount + 1 });
+    });
+
+    it("keeps unrelated unowned out-of-range proposals as diagnosed proposals", async () => {
+      const accepted = await parameterSource({ bayCount: 7 }, (value) => {
+        value.controlsView.floorCount = 15; value.intent.requested.floorCount = 15;
+      });
+      const edited = await deriveBuildingSourceBayEdit({ sourceSnapshot: accepted, bayCount: 6 });
+      expect(edited.document.authored).toEqual({ bayCount: 6 });
+      expect(edited.controlsView.floorCount).toBe(15); expect(edited.intent.requested.floorCount).toBe(15);
+      const resolved = await resolveBuildingSourceSnapshot(edited);
+      expect(resolved.spec.massing.floorCount).toBe(edited.stylePack.massing.floorCount.max);
+      expect(resolved.spec.diagnostics.some((diagnostic) => diagnostic.path === "requested.floorCount" && diagnostic.severity === "warning")).toBe(true);
+    });
+
+    it.each(["floorCount", "bayCount", "roofType", "trimDensity", "windowFamily", "corniceFamily"] as const)("checks original intent and controls for every declared %s", async (field) => {
+      const accepted = await parameterSource(allAuthored());
+      const alternatives = { floorCount: accepted.controlsView.floorCount + 1, bayCount: accepted.controlsView.bayCount + 1,
+        roofType: "gable", trimDensity: "restrained", windowFamily: "tall-rectangular", corniceFamily: "different-cornice" };
+      for (const target of ["intent", "controls", "document"] as const) {
+        const changed = clone(accepted);
+        if (target === "intent") changed.intent.requested = { ...changed.intent.requested, [field]: alternatives[field] };
+        if (target === "controls") changed.controlsView = { ...changed.controlsView, [field]: alternatives[field] };
+        if (target === "document") changed.document.authored = { ...changed.document.authored, [field]: alternatives[field] };
+        await refreshSource(changed);
+        await expect(resolveBuildingSourceSnapshot(changed)).rejects.toMatchObject({ code: "building.sourceFileInvalid" });
+      }
+    });
+
+    it("retains all six explicitly declared keys when a single bay edit is derived", async () => {
+      const accepted = await parameterSource(allAuthored());
+      const edited = await deriveBuildingSourceBayEdit({ sourceSnapshot: accepted, bayCount: 6 });
+      expect(edited.document.authored).toEqual({ ...accepted.document.authored, bayCount: 6 });
+      expect(edited.document.revision).toBe(accepted.document.revision);
+      expect((await resolveBuildingSourceSnapshot(edited)).spec.facade.frontBayCount).toBe(6);
+    });
+
+    it("owns the proposed bay, accepted subset and dependencies before its first await", async () => {
+      const accepted = await parameterSource({ roofType: "flat" });
+      const input = { sourceSnapshot: clone(accepted), bayCount: 6 };
+      const pending = deriveBuildingSourceBayEdit(input);
+      input.bayCount = 999;
+      input.sourceSnapshot.document.authored.roofType = "gable";
+      input.sourceSnapshot.document.documentId = "late-document";
+      input.sourceSnapshot.intent.psg.evaluatedVariables.late = true;
+      input.sourceSnapshot.stylePack.id = "late-style";
+      const edited = await pending;
+      expect(edited.document.documentId).toBe(accepted.document.documentId);
+      expect(edited.document.authored).toEqual({ roofType: "flat", bayCount: 6 });
+      expect(edited.stylePack).toEqual(accepted.stylePack);
+      expect(edited.intent.psg.evaluatedVariables).toEqual(accepted.intent.psg.evaluatedVariables);
+      expect(Object.isFrozen(input.sourceSnapshot.intent)).toBe(false);
+    });
+
+    it.each([-1, 1.5, Number.NaN, 999])("rejects invalid authored bay %s without changing accepted inputs", async (bayCount) => {
+      const accepted = clone(await sixBayV2()); const original = canonicalJson(accepted);
+      await expect(deriveBuildingSourceBayEdit({ sourceSnapshot: accepted, bayCount })).rejects.toMatchObject({ code: "building.documentResolutionRejected" });
+      expect(canonicalJson(accepted)).toBe(original);
+      expect(Object.isFrozen(accepted.intent)).toBe(false);
+    });
+
+    it("rejects empty/unknown subsets, a competing field-set and receipt tamper", async () => {
+      const accepted = await parameterSource({ bayCount: 7 });
+      const empty = { ...clone(accepted), document: { ...clone(accepted.document), authored: {} } };
+      const unknown = { ...clone(accepted), document: { ...clone(accepted.document), authored: { bayCount: 7, unknownParameter: 1 } } };
+      expect(BuildingSourceSnapshotSchema.safeParse(empty).success).toBe(false);
+      expect(BuildingSourceSnapshotSchema.safeParse(unknown).success).toBe(false);
+      expect(BuildingSourceSnapshotSchema.safeParse({ ...clone(accepted), authoredFields: ["bayCount"] }).success).toBe(false);
+      const changed = clone(accepted); changed.document.authored.floorCount = changed.controlsView.floorCount;
+      await expect(resolveBuildingSourceSnapshot(changed)).rejects.toMatchObject({ code: "building.sourceFileInvalid" });
+      const invalidBaseline = clone(accepted); invalidBaseline.intent.psg.evaluatedVariables.changed = true;
+      await expect(deriveBuildingSourceBayEdit({ sourceSnapshot: invalidBaseline, bayCount: 6 })).rejects.toMatchObject({ code: "building.sourceFileInvalid" });
+    });
+
+    it("round-trips a paired v3 file literally with all five saved channel bytes", async () => {
+      const accepted = await deriveBuildingSourceBayEdit({ sourceSnapshot: await sixBayV2(), bayCount: 7 });
+      const saved = await createBuildingSourceFile({ sourceSnapshot: accepted, packedAtlas: fixture.packedAtlas, debugExport: fixture.debugExport });
+      expect(saved.schemaVersion).toBe("0.3.0"); expect(saved.model).toBe("building-parameter-source-v3");
+      const serialized = JSON.stringify(saved, null, 2);
+      const parsed = await parseBuildingSourceFile(JSON.parse(serialized) as unknown);
+      const again = await createBuildingSourceFile({ sourceSnapshot: parsed.sourceSnapshot, packedAtlas: parsed.packedAtlas, debugExport: parsed.debugExport });
+      expect(JSON.stringify(again, null, 2)).toBe(serialized);
+      expect(canonicalJson(parsed.sourceSnapshot)).toBe(canonicalJson(accepted));
+      for (const name of names) expect(Array.from(parsed.packedAtlas.channels[name].data)).toEqual(Array.from(fixture.packedAtlas.channels[name].data));
+      const v2 = await createBuildingSourceFile({ sourceSnapshot: await sixBayV2(), packedAtlas: fixture.packedAtlas, debugExport: fixture.debugExport });
+      for (const value of [{ ...clone(file), source: clone(saved.source) }, { ...clone(v2), source: clone(saved.source) },
+        { ...clone(saved), source: clone(file.source) }, { ...clone(saved), source: clone(v2.source) }, { ...clone(saved), model: "building-window-floor-source-v2" }]) {
+        const { contentHash: omitted, ...payload } = value; void omitted;
+        const refreshed = { ...payload, contentHash: await hashCanonicalJson(payload) };
+        expect(BuildingSourceFileSchema.safeParse(refreshed).success).toBe(false);
+        await expect(parseBuildingSourceFile(refreshed)).rejects.toMatchObject({ code: "building.sourceFileInvalid" });
+      }
+    });
+  });
+
+
+  describe("R2.P9 pinned roof source edits", () => {
+    async function p9Accepted(version: "v1" | "v2" | "v3") {
+      const stylePack = clone(source.stylePack);
+      stylePack.massing.floorHeightM.typical.min = 4.25;
+      stylePack.massing.floorHeightM.typical.max = 4.25;
+      const controls = { ...clone(source.controlsView), roofType: "flat" as const };
+      const intent = clone(source.intent);
+      intent.requested.roofType = "flat";
+      intent.requested.wallMaterial = "brick-red";
+      const pinned = await createBuildingSourceSnapshot({
+        documentId: "p9-codec-roof", revision: 7, controls, intent, stylePack
+      });
+      if (version === "v1") return pinned.sourceSnapshot;
+      if (version === "v2") return deriveBuildingSourceFloorEdit({
+        sourceSnapshot: pinned.sourceSnapshot,
+        floorCount: controls.floorCount === 5 ? 6 : 5
+      });
+      const subset = clone(pinned.sourceSnapshot);
+      subset.schemaVersion = "0.3.0";
+      subset.document.authored = { bayCount: subset.controlsView.bayCount };
+      await refreshSource(subset);
+      return (await resolveBuildingSourceSnapshot(subset)).sourceSnapshot;
+    }
+
+    it.each(["v1", "v2", "v3"] as const)("preserves an exact %s no-op and adds only real roof authority", async (version) => {
+      const accepted = await p9Accepted(version);
+      const original = canonicalJson(accepted);
+      const saved = await createBuildingSourceFile({ sourceSnapshot: accepted, packedAtlas: fixture.packedAtlas, debugExport: fixture.debugExport });
+      const serialized = JSON.stringify(saved, null, 2);
+      const same = await deriveBuildingSourceRoofEdit({ sourceSnapshot: accepted, roofType: accepted.controlsView.roofType });
+      expect(canonicalJson(same)).toBe(original);
+      expect(same.document.authored.roofType).toBeUndefined();
+      const parsed = await parseBuildingSourceFile(JSON.parse(serialized) as unknown);
+      const again = await createBuildingSourceFile({ sourceSnapshot: same, packedAtlas: parsed.packedAtlas, debugExport: parsed.debugExport });
+      expect(JSON.stringify(again, null, 2)).toBe(serialized);
+
+      const edited = await deriveBuildingSourceRoofEdit({ sourceSnapshot: accepted, roofType: "gable" });
+      expect(edited.schemaVersion).toBe("0.3.0");
+      expect(edited.document.authored).toEqual({ ...accepted.document.authored, roofType: "gable" });
+      expect(edited.intent.requested.roofType).toBe("gable");
+      expect(edited.controlsView.roofType).toBe("gable");
+      expect(edited.document.revision).toBe(7);
+      expect(edited.document.intentRef.contentHash).toBe(await hashCanonicalJson(edited.intent));
+      expect(edited.sourceContentHash).not.toBe(accepted.sourceContentHash);
+      const masked = clone(edited);
+      masked.schemaVersion = accepted.schemaVersion;
+      masked.document.authored = clone(accepted.document.authored);
+      masked.intent.requested.roofType = accepted.intent.requested.roofType;
+      masked.controlsView.roofType = accepted.controlsView.roofType;
+      masked.document.intentRef.contentHash = accepted.document.intentRef.contentHash;
+      masked.sourceContentHash = accepted.sourceContentHash;
+      expect(canonicalJson(masked)).toBe(original);
+      expect(canonicalJson(accepted)).toBe(original);
+      const resolved = await resolveBuildingSourceSnapshot(edited);
+      expect(resolved.spec.massing.roof).toEqual({ type: "gable", pitchDegrees: 28 });
+      expect(resolved.spec.massing.floorHeightsM.slice(1)).toEqual(Array(resolved.spec.massing.floorCount - 1).fill(4.25));
+    });
+
+    it("retains declared roof authority through later floor, window and bay edits and literal Save/Open", async () => {
+      const accepted = await p9Accepted("v3");
+      const roof = await deriveBuildingSourceRoofEdit({ sourceSnapshot: accepted, roofType: "gable" });
+      const floorCount = roof.controlsView.floorCount === 5 ? 6 : 5;
+      const floor = await deriveBuildingSourceFloorEdit({ sourceSnapshot: roof, floorCount });
+      const windowFamily = floor.stylePack.componentFamilies.windows.find(value => value !== floor.controlsView.windowFamily);
+      if (!windowFamily) throw new Error("Expected another permitted window family");
+      const window = await deriveBuildingSourceWindowEdit({ sourceSnapshot: floor, windowFamily });
+      const bayCount = window.controlsView.bayCount === 6 ? 7 : 6;
+      const bay = await deriveBuildingSourceBayEdit({ sourceSnapshot: window, bayCount });
+      expect(bay.document.authored).toEqual({ ...accepted.document.authored, roofType: "gable", floorCount, windowFamily, bayCount });
+      for (const value of [roof, floor, window, bay]) {
+        expect(value.schemaVersion).toBe("0.3.0");
+        expect(value.document.authored.roofType).toBe("gable");
+        expect(value.intent.requested.roofType).toBe("gable");
+        expect(value.controlsView.roofType).toBe("gable");
+        expect(value.stylePack).toEqual(accepted.stylePack);
+        expect(value.compilation).toEqual(accepted.compilation);
+        expect(value.document.revision).toBe(7);
+        expect((await resolveBuildingSourceSnapshot(value)).spec.massing.roof.type).toBe("gable");
+      }
+      const saved = await createBuildingSourceFile({ sourceSnapshot: bay, packedAtlas: fixture.packedAtlas, debugExport: fixture.debugExport });
+      const serialized = JSON.stringify(saved, null, 2);
+      const parsed = await parseBuildingSourceFile(JSON.parse(serialized) as unknown);
+      const again = await createBuildingSourceFile({ sourceSnapshot: parsed.sourceSnapshot, packedAtlas: parsed.packedAtlas, debugExport: parsed.debugExport });
+      expect(JSON.stringify(again, null, 2)).toBe(serialized);
+      expect(parsed.file.model).toBe("building-parameter-source-v3");
+      expect(parsed.sourceSnapshot.document.authored).toEqual(bay.document.authored);
+      for (const name of names) expect(Array.from(parsed.packedAtlas.channels[name].data)).toEqual(Array.from(fixture.packedAtlas.channels[name].data));
+    });
+
+    it("preserves an unowned requested roof on no-op even when compatibility normalizes its proposal", async () => {
+      const value = clone(await p9Accepted("v3"));
+      value.intent.requested.wallMaterial = "painted-stucco";
+      value.intent.requested.roofType = "gable";
+      value.controlsView.roofType = "gable";
+      await refreshSource(value);
+      const resolved = await resolveBuildingSourceSnapshot(value);
+      const accepted = resolved.sourceSnapshot;
+      expect(resolved.spec.massing.roof.type).toBe("flat");
+      expect(resolved.spec.diagnostics).toContainEqual(expect.objectContaining({ code: "spec.incompatibleCombination" }));
+      expect(accepted.document.authored.roofType).toBeUndefined();
+      const same = await deriveBuildingSourceRoofEdit({ sourceSnapshot: accepted, roofType: "gable" });
+      expect(canonicalJson(same)).toBe(canonicalJson(accepted));
+      expect(same.document.authored).toEqual(accepted.document.authored);
+      const flat = await deriveBuildingSourceRoofEdit({ sourceSnapshot: accepted, roofType: "flat" });
+      expect(flat.document.authored).toEqual({ ...accepted.document.authored, roofType: "flat" });
+      expect(flat.intent.requested.roofType).toBe("flat");
+      expect(flat.controlsView.roofType).toBe("flat");
+      expect(flat.sourceContentHash).not.toBe(accepted.sourceContentHash);
+    });
+
+    it.each(["invalid-enum", "style-disallowed", "painted-stucco"] as const)("rejects a %s roof edit without altering its valid baseline", async (kind) => {
+      const value = clone(await p9Accepted("v1"));
+      if (kind === "style-disallowed") value.stylePack.massing.roofTypes = ["flat"];
+      if (kind === "painted-stucco") value.intent.requested.wallMaterial = "painted-stucco";
+      await refreshSource(value);
+      const accepted = (await resolveBuildingSourceSnapshot(value)).sourceSnapshot;
+      const original = canonicalJson(accepted);
+      const roofType = (kind === "invalid-enum" ? "not-a-roof" : "gable") as BuildingSourceSnapshot["controlsView"]["roofType"];
+      await expect(deriveBuildingSourceRoofEdit({ sourceSnapshot: accepted, roofType })).rejects.toMatchObject({ code: "building.documentResolutionRejected" });
+      expect(canonicalJson(accepted)).toBe(original);
+    });
+
+    it("validates the accepted source receipt before classifying a proposed roof edit", async () => {
+      const value = clone(await p9Accepted("v3"));
+      value.intent.psg.evaluatedVariables.invalidReceipt = true;
+      const original = canonicalJson(value);
+      await expect(deriveBuildingSourceRoofEdit({ sourceSnapshot: value, roofType: "gable" })).rejects.toMatchObject({ code: "building.sourceFileInvalid" });
+      expect(canonicalJson(value)).toBe(original);
+      expect(Object.isFrozen(value.intent)).toBe(false);
+    });
+
+    it("captures the proposed roof and accepted subset before the first await", async () => {
+      const accepted = await p9Accepted("v3");
+      const input = { sourceSnapshot: clone(accepted), roofType: "gable" as "flat" | "gable" };
+      const pending = deriveBuildingSourceRoofEdit(input);
+      input.roofType = "flat";
+      input.sourceSnapshot.document.documentId = "late-document";
+      input.sourceSnapshot.document.authored.roofType = "flat";
+      input.sourceSnapshot.intent.psg.evaluatedVariables.late = true;
+      input.sourceSnapshot.stylePack.id = "late-style";
+      const edited = await pending;
+      expect(edited.document.documentId).toBe(accepted.document.documentId);
+      expect(edited.document.authored).toEqual({ ...accepted.document.authored, roofType: "gable" });
+      expect(edited.controlsView.roofType).toBe("gable");
+      expect(edited.intent.requested.roofType).toBe("gable");
+      expect(edited.stylePack).toEqual(accepted.stylePack);
+      expect(edited.intent.psg.evaluatedVariables).toEqual(accepted.intent.psg.evaluatedVariables);
+      expect(Object.isFrozen(input.sourceSnapshot.intent)).toBe(false);
+    });
+  });
+
+  describe("R3.P5 portable single-window width source", () => {
+    let versions: BuildingSourceSnapshot[];
+    let directive: BuildingWindowWidthOverride;
+    beforeAll(async () => {
+      const floor = await deriveBuildingSourceFloorEdit({ sourceSnapshot: source, floorCount: 5 });
+      const bay = await deriveBuildingSourceBayEdit({ sourceSnapshot: floor, bayCount: 6 });
+      versions = [source, floor, bay];
+      const split = await buildAssemblyHallSourceWindowSplit({ sourceSnapshot: bay, catalog: fixture.catalog });
+      const opening = split.openings.find(value => value.kind === "window" && value.facade === "front" && value.floorIndex === 1);
+      if (!opening) throw new Error("Expected an actual base window slot");
+      directive = { schemaVersion: "0.1.0", address: { schemaVersion: "0.1.0", facade: opening.facade,
+        floorIndex: opening.floorIndex, bayIndex: opening.bayIndex }, widthM: Math.min(0.6, opening.sizeM[0] / 2) };
+    });
+
+    it("retains all three old literal formats and requires a paired v4 list even when it is empty", async () => {
+      for (const accepted of versions) {
+        const old = await createBuildingSourceFile({ sourceSnapshot: accepted, packedAtlas: fixture.packedAtlas, debugExport: fixture.debugExport });
+        const literal = JSON.stringify(old, null, 2), parsed = await parseBuildingSourceFile(JSON.parse(literal) as unknown);
+        expect(JSON.stringify(await createBuildingSourceFile(parsed), null, 2)).toBe(literal);
+        expect(parsed.sourceSnapshot.schemaVersion).toBe(accepted.schemaVersion);
+        expect("windowWidthOverrides" in parsed.sourceSnapshot).toBe(false);
+        expect(canonicalJson(await deriveBuildingSourceWindowWidthEdit({ sourceSnapshot: accepted, windowWidthOverrides: [] }))).toBe(canonicalJson(accepted));
+      }
+      const populated = await deriveBuildingSourceWindowWidthEdit({ sourceSnapshot: versions[2], windowWidthOverrides: [directive] });
+      const empty = await deriveBuildingSourceWindowWidthEdit({ sourceSnapshot: populated, windowWidthOverrides: [] });
+      expect(empty.schemaVersion).toBe("0.4.0");
+      if (empty.schemaVersion !== "0.4.0") throw new Error("Expected width source v4");
+      expect(empty.windowWidthOverrides).toEqual([]);
+      expect(empty.document).toEqual(versions[2].document);
+      const saved = await createBuildingSourceFile({ sourceSnapshot: empty, packedAtlas: fixture.packedAtlas, debugExport: fixture.debugExport });
+      expect(saved.model).toBe("building-window-width-source-v4");
+      expect(saved.schemaVersion).toBe("0.4.0");
+      for (const altered of [
+        { ...clone(saved), schemaVersion: "0.3.0", model: "building-parameter-source-v3" },
+        { ...clone(saved), source: clone(versions[2]) },
+        { ...clone(saved), source: Object.fromEntries(Object.entries(empty).filter(([key]) => key !== "windowWidthOverrides")) }
+      ]) expect(BuildingSourceFileSchema.safeParse(altered).success).toBe(false);
+      expect((await deriveBuildingSourceWindowWidthEdit({ sourceSnapshot: empty, windowWidthOverrides: [] })).schemaVersion).toBe("0.4.0");
+    });
+
+    it("rejects malformed whole lists without invoking accessors or mutating its accepted baseline", async () => {
+      let reads = 0;
+      const accessor = Object.defineProperty([], "0", { enumerable: true, get() { reads += 1; return directive; } });
+      const symbol = [directive]; Object.defineProperty(symbol, Symbol("extra"), { value: true });
+      class Nonplain extends Array<BuildingWindowWidthOverride> {}
+      const before = canonicalJson(versions[2]);
+      for (const value of [undefined, null, {}, new Array(1), [directive, directive], accessor, symbol,
+        Object.assign([directive], { extra: undefined }), new Nonplain(directive),
+        [{ ...directive, widthM: Number.POSITIVE_INFINITY }], [{ ...directive, extra: undefined }]]) {
+        await expect(deriveBuildingSourceWindowWidthEdit({ sourceSnapshot: versions[2], windowWidthOverrides: value }))
+          .rejects.toMatchObject({ name: "BuildingWindowWidthOverrideError", code: "building.windowWidth.invalidDirective" });
+      }
+      expect(reads).toBe(0); expect(canonicalJson(versions[2])).toBe(before);
+    });
+
+    it("binds the one owned directive into source content while preserving original document, controls and dependencies", async () => {
+      const accepted = versions[2], before = canonicalJson(accepted);
+      const narrowed = await deriveBuildingSourceWindowWidthEdit({ sourceSnapshot: accepted, windowWidthOverrides: [directive] });
+      expect(narrowed.schemaVersion).toBe("0.4.0");
+      if (narrowed.schemaVersion !== "0.4.0") throw new Error("Expected width source v4");
+      expect(narrowed.windowWidthOverrides).toEqual([directive]);
+      expect(narrowed.windowWidthOverrides[0]).not.toBe(directive);
+      expect(narrowed.document).toEqual(accepted.document);
+      expect(narrowed.intent).toEqual(accepted.intent); expect(narrowed.stylePack).toEqual(accepted.stylePack);
+      expect(narrowed.controlsView).toEqual(accepted.controlsView); expect(narrowed.compilation).toEqual(accepted.compilation);
+      expect(narrowed.sourceContentHash).not.toBe(accepted.sourceContentHash);
+      const same = await deriveBuildingSourceWindowWidthEdit({ sourceSnapshot: narrowed, windowWidthOverrides: [clone(directive)] });
+      expect(canonicalJson(same)).toBe(canonicalJson(narrowed));
+      const replacement = await deriveBuildingSourceWindowWidthEdit({ sourceSnapshot: narrowed, windowWidthOverrides: [{ ...directive, widthM: directive.widthM + 0.1 }] });
+      expect(replacement.sourceContentHash).not.toBe(narrowed.sourceContentHash);
+      expect(replacement.document.revision).toBe(accepted.document.revision);
+      const empty = await deriveBuildingSourceWindowWidthEdit({ sourceSnapshot: replacement, windowWidthOverrides: [] });
+      expect(empty.schemaVersion).toBe("0.4.0"); expect(empty.document).toEqual(accepted.document);
+      expect(canonicalJson(await deriveBuildingSourceWindowWidthEdit({ sourceSnapshot: empty, windowWidthOverrides: [] }))).toBe(canonicalJson(empty));
+      expect(canonicalJson(accepted)).toBe(before);
+    });
+
+    it("owns the directive, declared subset and unknown pinned dependencies before its first await", async () => {
+      const input = { sourceSnapshot: clone(versions[2]), windowWidthOverrides: [clone(directive)] };
+      const expected = await deriveBuildingSourceWindowWidthEdit(clone(input));
+      const pending = deriveBuildingSourceWindowWidthEdit(input);
+      input.windowWidthOverrides[0].widthM = 999; input.windowWidthOverrides[0].address.floorIndex = 999;
+      input.windowWidthOverrides.push(clone(directive));
+      input.sourceSnapshot.document.documentId = "late-document";
+      input.sourceSnapshot.document.authored.bayCount = 99;
+      input.sourceSnapshot.intent.psg.evaluatedVariables.late = { changed: true };
+      input.sourceSnapshot.stylePack.id = "late-style";
+      expect(canonicalJson(await pending)).toBe(canonicalJson(expected));
+      expect(Object.isFrozen(input.sourceSnapshot)).toBe(false);
+      expect(Object.isFrozen(input.windowWidthOverrides)).toBe(false);
+    });
+
+    it("retains v4 and the exact directive through subsequent supported global source derivations", async () => {
+      const narrowed = await deriveBuildingSourceWindowWidthEdit({ sourceSnapshot: versions[2], windowWidthOverrides: [directive] });
+      const windowFamily = narrowed.stylePack.componentFamilies.windows.find(value => value !== narrowed.controlsView.windowFamily);
+      if (!windowFamily) throw new Error("Expected another allowed window family");
+      const window = await deriveBuildingSourceWindowEdit({ sourceSnapshot: narrowed, windowFamily });
+      const floor = await deriveBuildingSourceFloorEdit({ sourceSnapshot: window, floorCount: 6 });
+      const bay = await deriveBuildingSourceBayEdit({ sourceSnapshot: floor, bayCount: 7 });
+      const roof = await deriveBuildingSourceRoofEdit({ sourceSnapshot: bay, roofType: "gable" });
+      for (const value of [window, floor, bay, roof]) {
+        expect(value.schemaVersion).toBe("0.4.0");
+        if (value.schemaVersion !== "0.4.0") throw new Error("A global edit dropped width source authority");
+        expect(value.windowWidthOverrides).toEqual([directive]);
+        expect(value.document.revision).toBe(narrowed.document.revision);
+        expect(value.stylePack).toEqual(narrowed.stylePack); expect(value.compilation).toEqual(narrowed.compilation);
+      }
+      expect(roof.document.authored).toEqual({ ...versions[2].document.authored, windowFamily, floorCount: 6, bayCount: 7, roofType: "gable" });
+    });
+
+    it("round-trips v4 materials literally and checks width content independently of the outer file receipt", async () => {
+      const narrowed = await deriveBuildingSourceWindowWidthEdit({ sourceSnapshot: versions[2], windowWidthOverrides: [directive] });
+      const saved = await createBuildingSourceFile({ sourceSnapshot: narrowed, packedAtlas: fixture.packedAtlas, debugExport: fixture.debugExport });
+      const literal = JSON.stringify(saved, null, 2), parsed = await parseBuildingSourceFile(JSON.parse(literal) as unknown);
+      expect(JSON.stringify(await createBuildingSourceFile(parsed), null, 2)).toBe(literal);
+      expect(canonicalJson(parsed.debugExport)).toBe(canonicalJson(fixture.debugExport));
+      expect(canonicalJson(parsed.packedAtlas.manifest)).toBe(canonicalJson(fixture.packedAtlas.manifest));
+      for (const name of names) {
+        expect(Array.from(parsed.packedAtlas.channels[name].data)).toEqual(Array.from(fixture.packedAtlas.channels[name].data));
+        expect(parsed.packedAtlas.channels[name].widthPx).toBe(fixture.packedAtlas.channels[name].widthPx);
+        expect(parsed.packedAtlas.channels[name].heightPx).toBe(fixture.packedAtlas.channels[name].heightPx);
+      }
+      const altered = clone(saved);
+      if (altered.source.schemaVersion !== "0.4.0") throw new Error("Expected v4 file source");
+      altered.source.windowWidthOverrides[0].widthM += 0.1;
+      await refreshFile(altered);
+      await expect(parseBuildingSourceFile(altered)).rejects.toMatchObject({ code: "building.sourceFileInvalid" });
+      await refreshSource(altered.source); await refreshFile(altered);
+      expect((await parseBuildingSourceFile(altered)).sourceSnapshot).toEqual(altered.source);
+    });
+  });
+
+});
+
+
+describe("R3.P15 complete width batch portable source", () => {
+  let fixture: AssemblyHallFixture, base: BuildingSourceSnapshot, widths: BuildingWindowWidthOverride[], bases: number[];
+  let derive: typeof import("../state/buildingSourceFile").deriveBuildingSourceWindowWidthBatchEdit;
+  const owned: AssemblyHallFixture[] = [];
+  beforeAll(async () => {
+    derive = (await import("../state/buildingSourceFile")).deriveBuildingSourceWindowWidthBatchEdit;
+    const generated = await createAssemblyHallFixture({ sourceIdentity: { documentId: "r3-p15-codec", revision: 7 },
+      promptControls: { ...defaultBuildingPromptControls, seeds: { family: "fam", building: "building-seed-variant-07", material: "mat", trim: "trim" } } });
+    owned.push(generated);
+    if (!generated.sourceSnapshot) throw new Error("Expected real captured source");
+    const style = clone(generated.sourceSnapshot.stylePack);
+    style.massing.floorHeightM.typical.min = 4.25; style.massing.floorHeightM.typical.max = 4.25;
+    const controls = { ...generated.sourceSnapshot.controlsView, bayCount: 6 };
+    const intent = { ...clone(generated.sourceSnapshot.intent), requested: { ...generated.sourceSnapshot.intent.requested, bayCount: 6 } };
+    const initial = await createBuildingSourceSnapshot({ documentId: "r3-p15-codec", revision: 7, controls, intent, stylePack: style });
+    const floor = await deriveBuildingSourceFloorEdit({ sourceSnapshot: initial.sourceSnapshot, floorCount: 5 });
+    base = await deriveBuildingSourceBayEdit({ sourceSnapshot: floor, bayCount: 7 });
+    fixture = await createAssemblyHallFixture({ sourceSnapshot: base, promptControls: base.controlsView,
+      reusableArtifacts: { packedAtlas: generated.packedAtlas, debugExport: generated.debugExport } });
+    owned.push(fixture);
+    const split = await buildAssemblyHallSourceWindowSplit({ sourceSnapshot: base, catalog: fixture.catalog });
+    const windows = split.openings.filter(opening => opening.kind === "window" && opening.facade === "front" && opening.floorIndex === 1).slice(0, 2);
+    expect(windows).toHaveLength(2);
+    bases = windows.map(opening => opening.sizeM[0]);
+    widths = windows.map(opening => ({ schemaVersion: "0.1.0", address: { schemaVersion: "0.1.0", facade: opening.facade,
+      floorIndex: opening.floorIndex, bayIndex: opening.bayIndex }, widthM: Math.max(0.23, Math.min(0.6, opening.sizeM[0] / 2)) }));
+  }, 30_000);
+  afterAll(() => { for (const value of owned.reverse()) value.familyRuntime.dispose(); });
+  const batch = (directives: BuildingWindowWidthOverride[] = []) => ({ schemaVersion: "0.1.0" as const, directives });
+  function list(source: BuildingSourceSnapshot) {
+    if (source.schemaVersion !== "0.5.0") throw new Error("Expected explicit v5 source");
+    return source.windowWidthBatch.directives;
+  }
+
+  it("canonicalizes the complete set before hashing without no-op upgrades or dropping imported equal-base and empty v5 authority", async () => {
+    const before = canonicalJson(base), supplied = batch(clone(widths).reverse()), caller = canonicalJson(supplied);
+    const source = await derive({ sourceSnapshot: base, windowWidthBatch: supplied });
+    expect(source.schemaVersion).toBe("0.5.0"); expect(list(source)).toEqual(widths);
+    expect(canonicalJson(supplied)).toBe(caller); expect(canonicalJson(base)).toBe(before);
+    expect(source.document).toEqual(base.document); expect(source.controlsView).toEqual(base.controlsView);
+    expect(source.intent).toEqual(base.intent); expect(source.stylePack).toEqual(base.stylePack);
+    expect(source.compilation).toEqual(base.compilation);
+    expect("windowWidthOverrides" in source).toBe(false);
+    expect(canonicalJson(await derive({ sourceSnapshot: base, windowWidthBatch: batch() }))).toBe(before);
+    expect(canonicalJson(await derive({ sourceSnapshot: source, windowWidthBatch: batch(clone(widths).reverse()) }))).toBe(canonicalJson(source));
+    const v4 = await deriveBuildingSourceWindowWidthEdit({ sourceSnapshot: base, windowWidthOverrides: [widths[0]] });
+    expect((await derive({ sourceSnapshot: v4, windowWidthBatch: batch([clone(widths[0])]) })).schemaVersion).toBe("0.4.0");
+    const emptyV4 = await deriveBuildingSourceWindowWidthEdit({ sourceSnapshot: v4, windowWidthOverrides: [] });
+    expect((await derive({ sourceSnapshot: emptyV4, windowWidthBatch: batch() })).schemaVersion).toBe("0.4.0");
+    const explicit = await derive({ sourceSnapshot: source, windowWidthBatch: batch([{ ...widths[0], widthM: bases[0] }, widths[1]]) });
+    expect(list(explicit)).toEqual([{ ...widths[0], widthM: bases[0] }, widths[1]]);
+    expect(list((await resolveBuildingSourceSnapshot(explicit)).sourceSnapshot)).toEqual(list(explicit));
+    const empty = await derive({ sourceSnapshot: source, windowWidthBatch: batch() });
+    expect(empty.schemaVersion).toBe("0.5.0"); expect(list(empty)).toEqual([]);
+    const emptyFile = await createBuildingSourceFile({ sourceSnapshot: empty, packedAtlas: fixture.packedAtlas, debugExport: fixture.debugExport });
+    const importedEmpty = (await parseBuildingSourceFile(emptyFile)).sourceSnapshot;
+    expect(importedEmpty.schemaVersion).toBe("0.5.0"); expect(list(importedEmpty)).toEqual([]);
+    expect(canonicalJson(await derive({ sourceSnapshot: empty, windowWidthBatch: batch() }))).toBe(canonicalJson(empty));
+    await expect(deriveBuildingSourceWindowWidthEdit({ sourceSnapshot: source, windowWidthOverrides: [] }))
+      .rejects.toMatchObject({ name: "BuildingWindowWidthOverrideError", code: "building.windowWidth.invalidDirective" });
+  });
+
+  it("rejects unsafe full envelopes, duplicate members and malformed directives before invoking caller getters", async () => {
+    let reads = 0;
+    const accessor = Object.defineProperty([], "0", { enumerable: true, get() { reads++; return widths[0]; } });
+    const envelope = Object.defineProperty({ schemaVersion: "0.1.0" }, "directives",
+      { enumerable: true, get() { reads++; return widths; } });
+    const symbol = batch(clone(widths)); Object.defineProperty(symbol, Symbol("extra"), { value: true });
+    const before = canonicalJson(base);
+    for (const value of [undefined, null, [], {}, batch(new Array<BuildingWindowWidthOverride>(1)), batch(accessor), envelope, symbol,
+      { ...batch(), extra: undefined }, batch([widths[0], clone(widths[0])]), batch([{ ...widths[0], widthM: Number.NaN }]),
+      { schemaVersion: "0.2.0", directives: widths }, Object.assign(Object.create({ inherited: true }), batch())]) {
+      await expect(derive({ sourceSnapshot: base, windowWidthBatch: value })).rejects.toMatchObject({
+        name: "BuildingWindowWidthOverrideError", code: "building.windowWidth.invalidDirective"
+      });
+      expect(canonicalJson(base)).toBe(before);
+    }
+    expect(reads).toBe(0);
+  });
+
+  it("owns the complete source and both batch members synchronously while leaving every caller object unfrozen", async () => {
+    const input = { sourceSnapshot: clone(base), windowWidthBatch: batch(clone(widths)) };
+    const expected = await derive(clone(input)), pending = derive(input);
+    input.windowWidthBatch.directives[1].widthM = 999;
+    input.windowWidthBatch.directives[1].address.floorIndex = 999;
+    input.windowWidthBatch.directives.reverse(); input.windowWidthBatch.directives.push(clone(widths[0]));
+    input.sourceSnapshot.document.documentId = "late-document";
+    input.sourceSnapshot.document.authored.bayCount = 99;
+    input.sourceSnapshot.intent.psg.evaluatedVariables.late = { changed: true };
+    input.sourceSnapshot.stylePack.id = "late-style";
+    expect(canonicalJson(await pending)).toBe(canonicalJson(expected));
+    expect(Object.isFrozen(input.sourceSnapshot)).toBe(false);
+    expect(Object.isFrozen(input.sourceSnapshot.intent.psg.evaluatedVariables)).toBe(false);
+    expect(Object.isFrozen(input.windowWidthBatch.directives)).toBe(false);
+    expect(Object.isFrozen(input.windowWidthBatch.directives[0].address)).toBe(false);
+  });
+
+  it("rejects signed normalization, member-two tamper, competing authority and cross-version pairings independently of the outer receipt", async () => {
+    const source = await derive({ sourceSnapshot: base, windowWidthBatch: batch(widths) });
+    const saved = await createBuildingSourceFile({ sourceSnapshot: source, packedAtlas: fixture.packedAtlas, debugExport: fixture.debugExport });
+    expect(saved.schemaVersion).toBe("0.5.0"); expect(saved.model).toBe("building-window-width-batch-source-v5");
+    const reordered = clone(saved);
+    if (reordered.source.schemaVersion !== "0.5.0") throw new Error("Expected v5");
+    reordered.source.windowWidthBatch.directives.reverse();
+    await refreshSource(reordered.source); await refreshFile(reordered);
+    await expect(parseBuildingSourceFile(reordered)).rejects.toMatchObject({ code: "building.sourceFileInvalid" });
+    const second = clone(saved);
+    if (second.source.schemaVersion !== "0.5.0") throw new Error("Expected v5");
+    second.source.windowWidthBatch.directives[1].widthM += 0.01; await refreshFile(second);
+    await expect(parseBuildingSourceFile(second)).rejects.toMatchObject({ code: "building.sourceFileInvalid" });
+    const competing = { ...clone(source), windowWidthOverrides: [] };
+    const missing = { ...clone(source) }; Reflect.deleteProperty(missing, "windowWidthBatch");
+    expect(BuildingSourceSnapshotSchema.safeParse(competing).success).toBe(false);
+    expect(BuildingSourceSnapshotSchema.safeParse(missing).success).toBe(false);
+    const v4 = await deriveBuildingSourceWindowWidthEdit({ sourceSnapshot: base, windowWidthOverrides: [widths[0]] });
+    for (const altered of [
+      { ...clone(saved), schemaVersion: "0.4.0", model: "building-window-width-source-v4" },
+      { ...clone(saved), model: "building-parameter-source-v3" },
+      { ...clone(saved), source: v4 }, { ...clone(saved), source: base },
+      { ...clone(saved), extra: undefined }, { ...clone(saved), source: competing }
+    ]) {
+      expect(BuildingSourceFileSchema.safeParse(altered).success).toBe(false);
+      await expect(parseBuildingSourceFile(altered)).rejects.toMatchObject({ code: "building.sourceFileInvalid" });
+    }
+  });
+
+  it("retains the complete set through global derives and literal material roundtrip with revision-sensitive file receipts", async () => {
+    const source = await derive({ sourceSnapshot: base, windowWidthBatch: batch(widths) });
+    const windowFamily = source.stylePack.componentFamilies.windows.find(value => value !== source.controlsView.windowFamily);
+    if (!windowFamily) throw new Error("Expected a second pinned window family");
+    const window = await deriveBuildingSourceWindowEdit({ sourceSnapshot: source, windowFamily });
+    const floor = await deriveBuildingSourceFloorEdit({ sourceSnapshot: window, floorCount: 6 });
+    const bay = await deriveBuildingSourceBayEdit({ sourceSnapshot: floor, bayCount: 6 });
+    const roof = await deriveBuildingSourceRoofEdit({ sourceSnapshot: bay, roofType: "gable" });
+    for (const next of [window, floor, bay, roof]) {
+      expect(list(next)).toEqual(widths); expect(next.document.revision).toBe(source.document.revision);
+      expect(next.stylePack).toEqual(source.stylePack); expect(next.compilation).toEqual(source.compilation);
+    }
+    const saved = await createBuildingSourceFile({ sourceSnapshot: source, packedAtlas: fixture.packedAtlas, debugExport: fixture.debugExport });
+    const literal = JSON.stringify(saved, null, 2), parsed = await parseBuildingSourceFile(JSON.parse(literal) as unknown);
+    expect(JSON.stringify(await createBuildingSourceFile(parsed), null, 2)).toBe(literal);
+    expect(parsed.file.materials).toEqual(saved.materials); expect(parsed.debugExport).toEqual(fixture.debugExport);
+    expect(parsed.packedAtlas.manifest).toEqual(fixture.packedAtlas.manifest);
+    expect(parsed.packedAtlas.slotProvenance).toEqual(fixture.packedAtlas.slotProvenance);
+    expect(parsed.packedAtlas.contentHash).toBe(fixture.packedAtlas.contentHash);
+    for (const name of names) {
+      const actual = parsed.packedAtlas.channels[name], expected = fixture.packedAtlas.channels[name];
+      expect({ widthPx: actual.widthPx, heightPx: actual.heightPx, channels: actual.channels })
+        .toEqual({ widthPx: expected.widthPx, heightPx: expected.heightPx, channels: expected.channels });
+      expect(Array.from(actual.data)).toEqual(Array.from(expected.data));
+    }
+    const revised = withBuildingSourceRevision(source, source.document.revision + 1);
+    expect(revised.sourceContentHash).toBe(source.sourceContentHash);
+    const later = await createBuildingSourceFile({ sourceSnapshot: revised, packedAtlas: fixture.packedAtlas, debugExport: fixture.debugExport });
+    expect(later.contentHash).not.toBe(saved.contentHash); expect(later.materials).toEqual(saved.materials);
+  });
+});

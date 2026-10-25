@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "0.1.0",
+  "url": "http://127.0.0.1:5190/#document=c7-window-preview",
+  "httpStatus": 200,
+  "keyboardSelect": true,
+  "focusOutlinePx": 3,
+  "draftBeforeApply": true,
+  "actualPublication": true,
+  "applicationErrors": [],
+  "incidentalFaviconErrors": [
+    {
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "url": "http://127.0.0.1:5190/favicon.ico"
+    }
+  ]
+}

@@ -54,7 +54,7 @@ function scopeBounds(scope: FacadeBayScope): Bounds3 {
 
 /** Connected values, not the old fixed BuildingFamilySpec orchestration, own geometry. */
 export async function evaluateBayConstruction(
-  input: unknown, materials: BayConstructionMaterials = DEFAULT_BAY_MATERIALS, options: { metricTimberUvs?: boolean } = {}
+  input: unknown, materials: BayConstructionMaterials = DEFAULT_BAY_MATERIALS, options: { metricTimberUvs?: boolean; windowLayout?: 0 | 1 | 2 } = {}
 ): Promise<BayConstructionResult> {
   // Parsing and the owned clone happen synchronously before hashing yields.
   const graph = structuredClone(BayConstructionGraphSchema.parse(input));
@@ -127,7 +127,7 @@ export async function evaluateBayConstruction(
         if (frameWidthM * 4 >= Math.min(opening.widthM, opening.heightM) || recessM + 0.08 >= scope.sizeM[2]) {
           throw new Error(`Node ${node.id}: frame or recess does not fit the opening and wall depth.`);
         }
-        const { frame, glass } = buildBayWindowGeometry(opening.widthM, opening.heightM, frameWidthM, recessM, opening.centerYM, options.metricTimberUvs);
+        const { frame, glass } = buildBayWindowGeometry(opening.widthM, opening.heightM, frameWidthM, recessM, opening.centerYM, options.metricTimberUvs, options.windowLayout ?? 0);
         const sill = extrudeProfileSolidAlongX({
           profile: { id: "construction.sill", label: "Sloped stone sill", points: [
             { u: 0, d: 0.015 }, { u: 0.025, d: sillProjectionM * 0.8 },
