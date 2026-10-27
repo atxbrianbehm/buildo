@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "0.1.0",
+  "packet": "C8.P1",
+  "baseCommit": "fc0635ad09cba2640532bdbd183ac31f6f5da39d",
+  "verifiedAtUtc": "2026-10-25T06:50:36.663846+00:00",
+  "status": "Compiler/worker geometry complete; P2 product integration required.",
+  "checks": {
+    "typecheck": 0,
+    "lint": 0,
+    "focused": 0
+  },
+  "focusedTests": 62,
+  "focusedFiles": 5,
+  "addedTests": 15,
+  "baselineSourceFiles": 335,
+  "changedExistingSourceFiles": [
+    "src/features/building-family/compiler/bayConstructionClient.ts",
+    "src/features/building-family/compiler/bayConstructionWorkerProtocol.ts",
+    "src/features/building-family/compiler/bayWindowGeometry.ts",
+    "src/features/building-family/compiler/evaluateConstruction.ts",
+    "src/features/building-family/compiler/evaluateFacadeConstruction.ts",
+    "src/features/building-family/contracts/bayConstructionGraph.ts",
+    "src/features/building-family/contracts/constructionStorefront.ts",
+    "src/features/building-family/core/constructionSurfaceAuthoring.ts",
+    "src/features/building-family/tests/ConstructionNodePanel.test.tsx",
+    "src/features/building-family/tests/bayConstructionWorker.test.ts",
+    "src/features/building-family/ui/BayConstructionWorkbench.tsx",
+    "src/features/building-family/ui/ConstructionNodePanel.tsx"
+  ],
+  "unchangedExistingSourceFiles": 323,
+  "newSourceFiles": [
+    "src/features/building-family/core/constructionStorefrontGraph.ts",
+    "src/features/building-family/compiler/constructionStorefrontGeometry.ts",
+    "src/features/building-family/tests/constructionStorefrontGeometry.test.ts"
+  ],
+  "sourcePins": [
+    {
+      "file": "src/features/building-family/compiler/bayConstructionClient.ts",
+      "sha256": "b7c108b1f7e6312e068ba3f2fc6ba3618eae1f95614db38a89824c0e66d14e22",
+      "snapshot": "source/src/features/building-family/compiler/bayConstructionClient.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/compiler/bayConstructionWorkerProtocol.ts",
+      "sha256": "fe14cf65cc5425b528cca92df80393c2b2db14646a4e52ba5593dfdc69df3b6e",
+      "snapshot": "source/src/features/building-family/compiler/bayConstructionWorkerProtocol.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/compiler/bayWindowGeometry.ts",
+      "sha256": "23ba98ba901c06aafda5104aab38fbbe2002c2ee7fe43ea1e1959122f5af9aa9",
+      "snapshot": "source/src/features/building-family/compiler/bayWindowGeometry.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/compiler/evaluateConstruction.ts",
+      "sha256": "16e208a2458c5ee8a0d9f0936b37b2bebfbe52e4b94c1557f1d130b860c83acf",
+      "snapshot": "source/src/features/building-family/compiler/evaluateConstruction.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/compiler/evaluateFacadeConstruction.ts",
+      "sha256": "a62259f53897237def6a0afc84db7c930cd6ae1b7df92ae43859fa9ce79118c6",
+      "snapshot": "source/src/features/building-family/compiler/evaluateFacadeConstruction.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/contracts/bayConstructionGraph.ts",
+      "sha256": "da70d55e25e3cca18f3b19a6c64e9d41bc85ce391d9658248bab60553413769f",
+      "snapshot": "source/src/features/building-family/contracts/bayConstructionGraph.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/contracts/constructionStorefront.ts",
+      "sha256": "fd9278a4a25f06734ceccc9724cc65b4f7f0048ca6b2c99ce1a0b007fac0db5b",
+      "snapshot": "source/src/features/building-family/contracts/constructionStorefront.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/core/constructionSurfaceAuthoring.ts",
+      "sha256": "16d1c4a06a924e860cd8f7c5559b8aa9faf3dbe85d0c51305c214ee3841bebf3",
+      "snapshot": "source/src/features/building-family/core/constructionSurfaceAuthoring.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/ConstructionNodePanel.test.tsx",
+      "sha256": "2a2d3c2c352627dafdfbbb398bea46622c352d9412fcc3f86a5c0269aa8e9caf",
+      "snapshot": "source/src/features/building-family/tests/ConstructionNodePanel.test.tsx.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/bayConstructionWorker.test.ts",
+      "sha256": "94a31cb27224bd360956413839177ed71a6a8be08ed9fab520b67a4a98c85a2d",
+      "snapshot": "source/src/features/building-family/tests/bayConstructionWorker.test.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/ui/BayConstructionWorkbench.tsx",
+      "sha256": "fa4c1867ff3ced583910b3677807462517443568a7890df27720b751ec7b6909",
+      "snapshot": "source/src/features/building-family/ui/BayConstructionWorkbench.tsx.txt"
+    },
+    {
+      "file": "src/features/building-family/ui/ConstructionNodePanel.tsx",
+      "sha256": "201fe373ee9a5329f3411ef67619055263ac9bc24624c66921ed827bcf5e1491",
+      "snapshot": "source/src/features/building-family/ui/ConstructionNodePanel.tsx.txt"
+    },
+    {
+      "file": "src/features/building-family/core/constructionStorefrontGraph.ts",
+      "sha256": "8dfd7b386ae202ef9cfb4fd725e7a6a2ef1ed3794b579329f5f1e731cb76d196",
+      "snapshot": "source/src/features/building-family/core/constructionStorefrontGraph.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/compiler/constructionStorefrontGeometry.ts",
+      "sha256": "88b57849a9130618af8f6a5b64c0da3fff04177e19b2e78d737f3c56708a850b",
+      "snapshot": "source/src/features/building-family/compiler/constructionStorefrontGeometry.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionStorefrontGeometry.test.ts",
+      "sha256": "6cf5795b59e036d5ff8a498d8310ecd667af5c352e79f97b9bb004b51a7a33e8",
+      "snapshot": "source/src/features/building-family/tests/constructionStorefrontGeometry.test.ts.txt"
+    }
+  ],
+  "graphVersion": "0.6.0",
+  "workerVersion": "0.6.0",
+  "projectCodecChanged": false,
+  "productIntegrated": false,
+  "rendered": false,
+  "rendererAndMaterialSourceUnchanged": true,
+  "compiledProbe": "compiled-cases.json",
+  "actualFrameInstanceGroups": [
+    3,
+    44
+  ],
+  "legacyResultHash": "10b9860522a4ac9818f38e9d081fc05bade653ea87447822335be008a98108f9",
+  "newCommitsBeforeCloseout": false,
+  "githubPush": false,
+  "negativeEvidence": [
+    "Initial typecheck found fixture label and test predicate narrowing omissions; corrected without changing legacy assertions.",
+    "Two initial new assertions compared explicit graph0.6 migration to un-migrated graph0.4 prototype IDs. C7 already inserts layout0 and changes cache IDs; final tests compare disabled0.6 exactly to explicit C7 graph0.5 and retain the full graph0.4 golden hash separately.",
+    "Preliminary focused run02 included a nonexistent client-test filter and actually executed54 cases/four files. Final run03 uses the real bayConstructionWorker suite and explicitly exercises client protocol0.6;62 cases/five files pass.",
+    "Client0.6 selection and advanced-node0.6 preservation were explicitly wired and are covered directly."
+  ]
+}

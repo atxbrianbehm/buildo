@@ -2,10 +2,26 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { vi } from "vitest";
 import { ConstructionNodePanel } from "../ui/ConstructionNodePanel";
 import { createBayConstructionGraph, repeatBayAsFacade, type BayConstructionNode } from "../contracts/bayConstructionGraph";
+import { createBuildingConstructionGraph, BayConstructionGraphSchema } from "../contracts/bayConstructionGraph";
+import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
 const names: Record<BayConstructionNode["type"], string> = {
-  Footprint: "Footprint", Storeys: "Storeys", PlaceDoor: "Entrance layout", AssembleDoor: "Door assembly", BuildingRoof: "Complete roof", FacadeScope: "Facade scope", SplitFloors: "Split floors", SplitBays: "Split bays", PlaceOpening: "Opening layout", SelectScopes: "Select scopes",
+  PlaceStorefront: "Ground frontage", Footprint: "Footprint", Storeys: "Storeys", PlaceDoor: "Entrance layout", AssembleDoor: "Door assembly", BuildingRoof: "Complete roof", FacadeScope: "Facade scope", SplitFloors: "Split floors", SplitBays: "Split bays", PlaceOpening: "Opening layout", SelectScopes: "Select scopes",
   EmitWall: "Wall", AssembleWindow: "Window assembly", ProfileTrim: "Profile trim", RoofCap: "Roof cap", Output: "Output", JoinGeometry: "Join geometry", SetSurface: "Surface finish"
 };
+it("offers storefront operators only after explicit migration and keeps version 0.6 when adding a window", () => {
+  const onChange = vi.fn(), onSelect = vi.fn(), legacy = createBuildingConstructionGraph();
+  const view = render(<ConstructionNodePanel graph={legacy} selected="selection" names={names} disabled={false} onChange={onChange} onSelect={onSelect} />);
+  expect(screen.queryByRole("option", { name: "Ground frontage" })).not.toBeInTheDocument();
+  const graph = withConstructionStorefront(legacy, 1);
+  view.rerender(<ConstructionNodePanel graph={graph} selected="selection" names={names} disabled={false} onChange={onChange} onSelect={onSelect} />);
+  expect(screen.getByRole("option", { name: "Ground frontage" })).toBeInTheDocument();
+  fireEvent.change(screen.getByRole("combobox", { name: "Operator to add" }), { target: { value: "AssembleWindow" } });
+  fireEvent.click(screen.getByRole("button", { name: "Add node" }));
+  const next = BayConstructionGraphSchema.parse(onChange.mock.calls[0][0]);
+  expect(next.schemaVersion).toBe("0.6.0");
+  expect(next.nodes.find(node => node.id === "AssembleWindow_1" && node.type === "AssembleWindow")).toMatchObject({ parameters: { layout: 0 } });
+  expect(graph.nodes).toHaveLength(15);
+});
 it("connects real compatible ports and diagnoses an incompatible connection without altering source", () => {
   const graph = repeatBayAsFacade(createBayConstructionGraph()), onChange = vi.fn();
   render(<ConstructionNodePanel graph={graph} selected="facade" names={names} disabled={false} onChange={onChange} onSelect={() => {}} />);

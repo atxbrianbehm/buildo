@@ -34,7 +34,7 @@ interface Props {
   onInitialFailure?: () => void;
 }
 const names: Record<BayConstructionNode["type"], string> = {
-  Footprint: "Footprint", Storeys: "Storeys", PlaceDoor: "Entrance layout", AssembleDoor: "Door assembly", BuildingRoof: "Complete roof", FacadeScope: "Facade scope", PlaceOpening: "Opening layout", EmitWall: "Wall", AssembleWindow: "Window assembly", Output: "Output",
+  Footprint: "Footprint", Storeys: "Storeys", PlaceStorefront: "Ground frontage", PlaceDoor: "Entrance layout", AssembleDoor: "Door assembly", BuildingRoof: "Complete roof", FacadeScope: "Facade scope", PlaceOpening: "Opening layout", EmitWall: "Wall", AssembleWindow: "Window assembly", Output: "Output",
   SplitFloors: "Split floors", SplitBays: "Split bays", SelectScopes: "Select scopes", ProfileTrim: "Profile trim", RoofCap: "Roof cap", JoinGeometry: "Join geometry", SetSurface: "Surface finish"
 };
 const labels: Record<string, string> = {

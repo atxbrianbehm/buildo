@@ -1,0 +1,1557 @@
+{
+  "schemaVersion": "0.1.0",
+  "cases": {
+    "legacy": {
+      "graph": {
+        "schemaVersion": "0.4.0",
+        "kind": "bay-construction",
+        "documentId": "authored-building",
+        "nodes": [
+          {
+            "id": "footprint",
+            "type": "Footprint",
+            "parameters": {
+              "widthM": 11.2,
+              "depthM": 8.4,
+              "wallDepthM": 0.36
+            }
+          },
+          {
+            "id": "facade",
+            "type": "Storeys",
+            "input": {
+              "nodeId": "footprint",
+              "socket": "footprint"
+            },
+            "parameters": {
+              "count": 3,
+              "groundHeightM": 4,
+              "upperHeightM": 3.7
+            }
+          },
+          {
+            "id": "bays",
+            "type": "SplitBays",
+            "input": {
+              "nodeId": "facade",
+              "socket": "scope"
+            },
+            "parameters": {
+              "count": 4
+            }
+          },
+          {
+            "id": "opening",
+            "type": "PlaceOpening",
+            "input": {
+              "nodeId": "bays",
+              "socket": "scope"
+            },
+            "parameters": {
+              "widthM": 1.22,
+              "heightM": 2.12,
+              "sillM": 0.78
+            }
+          },
+          {
+            "id": "entrance",
+            "type": "PlaceDoor",
+            "input": {
+              "nodeId": "opening",
+              "socket": "scope"
+            },
+            "parameters": {
+              "bayIndex": 1,
+              "widthM": 1.22,
+              "heightM": 2.9
+            }
+          },
+          {
+            "id": "wall",
+            "type": "EmitWall",
+            "input": {
+              "nodeId": "entrance",
+              "socket": "scope"
+            }
+          },
+          {
+            "id": "selection",
+            "type": "SelectScopes",
+            "input": {
+              "nodeId": "entrance",
+              "socket": "scope"
+            },
+            "parameters": {
+              "floorIndex": -1,
+              "bayIndex": -1
+            }
+          },
+          {
+            "id": "window",
+            "type": "AssembleWindow",
+            "input": {
+              "nodeId": "selection",
+              "socket": "scope"
+            },
+            "parameters": {
+              "recessM": 0.14,
+              "frameWidthM": 0.055,
+              "sillProjectionM": 0.12
+            }
+          },
+          {
+            "id": "door",
+            "type": "AssembleDoor",
+            "input": {
+              "nodeId": "entrance",
+              "socket": "scope"
+            },
+            "parameters": {
+              "recessM": 0.14,
+              "frameWidthM": 0.075,
+              "leafHeightM": 2.3,
+              "thresholdProjectionM": 0.15
+            }
+          },
+          {
+            "id": "bands",
+            "type": "ProfileTrim",
+            "input": {
+              "nodeId": "facade",
+              "socket": "scope"
+            },
+            "parameters": {
+              "heightM": 0.12,
+              "projectionM": 0.07
+            }
+          },
+          {
+            "id": "roof",
+            "type": "BuildingRoof",
+            "input": {
+              "nodeId": "facade",
+              "socket": "scope"
+            },
+            "parameters": {
+              "parapetHeightM": 0.55,
+              "copingProjectionM": 0.06,
+              "corniceHeightM": 0.3,
+              "corniceProjectionM": 0.24
+            }
+          },
+          {
+            "id": "join",
+            "type": "JoinGeometry",
+            "inputs": [
+              {
+                "nodeId": "wall",
+                "socket": "geometry"
+              },
+              {
+                "nodeId": "window",
+                "socket": "geometry"
+              },
+              {
+                "nodeId": "door",
+                "socket": "geometry"
+              },
+              {
+                "nodeId": "bands",
+                "socket": "geometry"
+              },
+              {
+                "nodeId": "roof",
+                "socket": "geometry"
+              }
+            ]
+          },
+          {
+            "id": "surface",
+            "type": "SetSurface",
+            "input": {
+              "nodeId": "join",
+              "socket": "geometry"
+            },
+            "composition": {
+              "schemaVersion": "0.1.0",
+              "documentId": "authored-building",
+              "revision": 0,
+              "sources": [],
+              "layers": []
+            }
+          },
+          {
+            "id": "output",
+            "type": "Output",
+            "inputs": [
+              {
+                "nodeId": "surface",
+                "socket": "geometry"
+              }
+            ]
+          }
+        ],
+        "outputNodeId": "output"
+      },
+      "resultHash": "10b9860522a4ac9818f38e9d081fc05bade653ea87447822335be008a98108f9",
+      "geometryHash": "6050c2966c226a6249cef48f7366c7be7aa2dc3a3b7022df9f09fe4acc84df93",
+      "metrics": {
+        "vertexCount": 6390,
+        "triangleCount": 17412,
+        "instanceCount": 141
+      },
+      "instanceGroups": [
+        {
+          "id": "construction.window.construction.prototype.frame.e250839262bfa0a60932",
+          "slot": "frame.primary",
+          "count": 47
+        },
+        {
+          "id": "construction.window.construction.prototype.glass.e250839262bfa0a60932",
+          "slot": "glass.primary",
+          "count": 47
+        },
+        {
+          "id": "construction.window.construction.prototype.trim.e250839262bfa0a60932",
+          "slot": "trim.horizontal.primary",
+          "count": 47
+        }
+      ],
+      "semanticPaths": [
+        "building/authored-building/node/wall/facade/wall",
+        "building/authored-building/node/wall/facade/right/wall",
+        "building/authored-building/node/wall/facade/rear/wall",
+        "building/authored-building/node/wall/facade/left/wall",
+        "building/authored-building/node/window/facade/floor/0/bay/0/frame",
+        "building/authored-building/node/window/facade/floor/0/bay/0/glass",
+        "building/authored-building/node/window/facade/floor/0/bay/0/trim",
+        "building/authored-building/node/window/facade/floor/0/bay/2/frame",
+        "building/authored-building/node/window/facade/floor/0/bay/2/glass",
+        "building/authored-building/node/window/facade/floor/0/bay/2/trim",
+        "building/authored-building/node/window/facade/floor/0/bay/3/frame",
+        "building/authored-building/node/window/facade/floor/0/bay/3/glass",
+        "building/authored-building/node/window/facade/floor/0/bay/3/trim",
+        "building/authored-building/node/window/facade/floor/1/bay/0/frame",
+        "building/authored-building/node/window/facade/floor/1/bay/0/glass",
+        "building/authored-building/node/window/facade/floor/1/bay/0/trim",
+        "building/authored-building/node/window/facade/floor/1/bay/1/frame",
+        "building/authored-building/node/window/facade/floor/1/bay/1/glass",
+        "building/authored-building/node/window/facade/floor/1/bay/1/trim",
+        "building/authored-building/node/window/facade/floor/1/bay/2/frame",
+        "building/authored-building/node/window/facade/floor/1/bay/2/glass",
+        "building/authored-building/node/window/facade/floor/1/bay/2/trim",
+        "building/authored-building/node/window/facade/floor/1/bay/3/frame",
+        "building/authored-building/node/window/facade/floor/1/bay/3/glass",
+        "building/authored-building/node/window/facade/floor/1/bay/3/trim",
+        "building/authored-building/node/window/facade/floor/2/bay/0/frame",
+        "building/authored-building/node/window/facade/floor/2/bay/0/glass",
+        "building/authored-building/node/window/facade/floor/2/bay/0/trim",
+        "building/authored-building/node/window/facade/floor/2/bay/1/frame",
+        "building/authored-building/node/window/facade/floor/2/bay/1/glass",
+        "building/authored-building/node/window/facade/floor/2/bay/1/trim",
+        "building/authored-building/node/window/facade/floor/2/bay/2/frame",
+        "building/authored-building/node/window/facade/floor/2/bay/2/glass",
+        "building/authored-building/node/window/facade/floor/2/bay/2/trim",
+        "building/authored-building/node/window/facade/floor/2/bay/3/frame",
+        "building/authored-building/node/window/facade/floor/2/bay/3/glass",
+        "building/authored-building/node/window/facade/floor/2/bay/3/trim",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/frame",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/glass",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/trim",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/frame",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/glass",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/trim",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/frame",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/glass",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/trim",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/frame",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/glass",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/trim",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/frame",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/glass",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/trim",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/frame",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/glass",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/trim",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/frame",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/glass",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/trim",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/frame",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/glass",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/trim",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/frame",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/glass",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/trim",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/frame",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/glass",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/trim",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/frame",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/glass",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/trim",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/frame",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/glass",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/trim",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/frame",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/glass",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/trim",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/frame",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/glass",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/trim",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/frame",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/glass",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/trim",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/frame",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/glass",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/trim",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/frame",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/glass",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/trim",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/frame",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/glass",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/trim",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/frame",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/glass",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/trim",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/frame",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/glass",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/trim",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/frame",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/glass",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/trim",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/frame",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/glass",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/trim",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/frame",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/glass",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/trim",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/frame",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/glass",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/trim",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/frame",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/glass",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/trim",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/frame",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/glass",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/trim",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/frame",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/glass",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/trim",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/frame",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/glass",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/trim",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/frame",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/glass",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/trim",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/frame",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/glass",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/trim",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/frame",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/glass",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/trim",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/frame",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/glass",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/trim",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/frame",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/glass",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/trim",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/frame",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/glass",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/trim",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/frame",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/glass",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/trim",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/frame",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/glass",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/trim",
+        "building/authored-building/node/door/facade/floor/0/bay/1/frame",
+        "building/authored-building/node/door/facade/floor/0/bay/1/leaf",
+        "building/authored-building/node/door/facade/floor/0/bay/1/hardware",
+        "building/authored-building/node/door/facade/floor/0/bay/1/glass",
+        "building/authored-building/node/door/facade/floor/0/bay/1/trim",
+        "building/authored-building/node/bands/building/band.4",
+        "building/authored-building/node/bands/building/band.7.7",
+        "building/authored-building/node/roof/building/roof",
+        "building/authored-building/node/roof/building/parapet",
+        "building/authored-building/node/roof/building/cornice"
+      ]
+    },
+    "c7": {
+      "graph": {
+        "schemaVersion": "0.5.0",
+        "kind": "bay-construction",
+        "documentId": "authored-building",
+        "nodes": [
+          {
+            "id": "footprint",
+            "type": "Footprint",
+            "parameters": {
+              "widthM": 11.2,
+              "depthM": 8.4,
+              "wallDepthM": 0.36
+            }
+          },
+          {
+            "id": "facade",
+            "type": "Storeys",
+            "input": {
+              "nodeId": "footprint",
+              "socket": "footprint"
+            },
+            "parameters": {
+              "count": 3,
+              "groundHeightM": 4,
+              "upperHeightM": 3.7
+            }
+          },
+          {
+            "id": "bays",
+            "type": "SplitBays",
+            "input": {
+              "nodeId": "facade",
+              "socket": "scope"
+            },
+            "parameters": {
+              "count": 4
+            }
+          },
+          {
+            "id": "opening",
+            "type": "PlaceOpening",
+            "input": {
+              "nodeId": "bays",
+              "socket": "scope"
+            },
+            "parameters": {
+              "widthM": 1.22,
+              "heightM": 2.12,
+              "sillM": 0.78
+            }
+          },
+          {
+            "id": "entrance",
+            "type": "PlaceDoor",
+            "input": {
+              "nodeId": "opening",
+              "socket": "scope"
+            },
+            "parameters": {
+              "bayIndex": 1,
+              "widthM": 1.22,
+              "heightM": 2.9
+            }
+          },
+          {
+            "id": "wall",
+            "type": "EmitWall",
+            "input": {
+              "nodeId": "entrance",
+              "socket": "scope"
+            }
+          },
+          {
+            "id": "selection",
+            "type": "SelectScopes",
+            "input": {
+              "nodeId": "entrance",
+              "socket": "scope"
+            },
+            "parameters": {
+              "floorIndex": -1,
+              "bayIndex": -1
+            }
+          },
+          {
+            "id": "window",
+            "type": "AssembleWindow",
+            "input": {
+              "nodeId": "selection",
+              "socket": "scope"
+            },
+            "parameters": {
+              "recessM": 0.14,
+              "frameWidthM": 0.055,
+              "sillProjectionM": 0.12,
+              "layout": 0
+            }
+          },
+          {
+            "id": "door",
+            "type": "AssembleDoor",
+            "input": {
+              "nodeId": "entrance",
+              "socket": "scope"
+            },
+            "parameters": {
+              "recessM": 0.14,
+              "frameWidthM": 0.075,
+              "leafHeightM": 2.3,
+              "thresholdProjectionM": 0.15
+            }
+          },
+          {
+            "id": "bands",
+            "type": "ProfileTrim",
+            "input": {
+              "nodeId": "facade",
+              "socket": "scope"
+            },
+            "parameters": {
+              "heightM": 0.12,
+              "projectionM": 0.07
+            }
+          },
+          {
+            "id": "roof",
+            "type": "BuildingRoof",
+            "input": {
+              "nodeId": "facade",
+              "socket": "scope"
+            },
+            "parameters": {
+              "parapetHeightM": 0.55,
+              "copingProjectionM": 0.06,
+              "corniceHeightM": 0.3,
+              "corniceProjectionM": 0.24
+            }
+          },
+          {
+            "id": "join",
+            "type": "JoinGeometry",
+            "inputs": [
+              {
+                "nodeId": "wall",
+                "socket": "geometry"
+              },
+              {
+                "nodeId": "window",
+                "socket": "geometry"
+              },
+              {
+                "nodeId": "door",
+                "socket": "geometry"
+              },
+              {
+                "nodeId": "bands",
+                "socket": "geometry"
+              },
+              {
+                "nodeId": "roof",
+                "socket": "geometry"
+              }
+            ]
+          },
+          {
+            "id": "surface",
+            "type": "SetSurface",
+            "input": {
+              "nodeId": "join",
+              "socket": "geometry"
+            },
+            "composition": {
+              "schemaVersion": "0.1.0",
+              "documentId": "authored-building",
+              "revision": 0,
+              "sources": [],
+              "layers": []
+            }
+          },
+          {
+            "id": "output",
+            "type": "Output",
+            "inputs": [
+              {
+                "nodeId": "surface",
+                "socket": "geometry"
+              }
+            ]
+          }
+        ],
+        "outputNodeId": "output"
+      },
+      "resultHash": "6968be68bb9004912a694fc0b028f2361b8c56d657916c56b3d2f9467bdd6532",
+      "geometryHash": "419f11e70f3e644c9b29bf1b28ca8022561f69e90e55a4e48ec8a8e990649079",
+      "metrics": {
+        "vertexCount": 6390,
+        "triangleCount": 17412,
+        "instanceCount": 141
+      },
+      "instanceGroups": [
+        {
+          "id": "construction.window.construction.prototype.frame.35fd3e5832ec8ec5b323",
+          "slot": "frame.primary",
+          "count": 47
+        },
+        {
+          "id": "construction.window.construction.prototype.glass.35fd3e5832ec8ec5b323",
+          "slot": "glass.primary",
+          "count": 47
+        },
+        {
+          "id": "construction.window.construction.prototype.trim.35fd3e5832ec8ec5b323",
+          "slot": "trim.horizontal.primary",
+          "count": 47
+        }
+      ],
+      "semanticPaths": [
+        "building/authored-building/node/wall/facade/wall",
+        "building/authored-building/node/wall/facade/right/wall",
+        "building/authored-building/node/wall/facade/rear/wall",
+        "building/authored-building/node/wall/facade/left/wall",
+        "building/authored-building/node/window/facade/floor/0/bay/0/frame",
+        "building/authored-building/node/window/facade/floor/0/bay/0/glass",
+        "building/authored-building/node/window/facade/floor/0/bay/0/trim",
+        "building/authored-building/node/window/facade/floor/0/bay/2/frame",
+        "building/authored-building/node/window/facade/floor/0/bay/2/glass",
+        "building/authored-building/node/window/facade/floor/0/bay/2/trim",
+        "building/authored-building/node/window/facade/floor/0/bay/3/frame",
+        "building/authored-building/node/window/facade/floor/0/bay/3/glass",
+        "building/authored-building/node/window/facade/floor/0/bay/3/trim",
+        "building/authored-building/node/window/facade/floor/1/bay/0/frame",
+        "building/authored-building/node/window/facade/floor/1/bay/0/glass",
+        "building/authored-building/node/window/facade/floor/1/bay/0/trim",
+        "building/authored-building/node/window/facade/floor/1/bay/1/frame",
+        "building/authored-building/node/window/facade/floor/1/bay/1/glass",
+        "building/authored-building/node/window/facade/floor/1/bay/1/trim",
+        "building/authored-building/node/window/facade/floor/1/bay/2/frame",
+        "building/authored-building/node/window/facade/floor/1/bay/2/glass",
+        "building/authored-building/node/window/facade/floor/1/bay/2/trim",
+        "building/authored-building/node/window/facade/floor/1/bay/3/frame",
+        "building/authored-building/node/window/facade/floor/1/bay/3/glass",
+        "building/authored-building/node/window/facade/floor/1/bay/3/trim",
+        "building/authored-building/node/window/facade/floor/2/bay/0/frame",
+        "building/authored-building/node/window/facade/floor/2/bay/0/glass",
+        "building/authored-building/node/window/facade/floor/2/bay/0/trim",
+        "building/authored-building/node/window/facade/floor/2/bay/1/frame",
+        "building/authored-building/node/window/facade/floor/2/bay/1/glass",
+        "building/authored-building/node/window/facade/floor/2/bay/1/trim",
+        "building/authored-building/node/window/facade/floor/2/bay/2/frame",
+        "building/authored-building/node/window/facade/floor/2/bay/2/glass",
+        "building/authored-building/node/window/facade/floor/2/bay/2/trim",
+        "building/authored-building/node/window/facade/floor/2/bay/3/frame",
+        "building/authored-building/node/window/facade/floor/2/bay/3/glass",
+        "building/authored-building/node/window/facade/floor/2/bay/3/trim",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/frame",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/glass",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/trim",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/frame",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/glass",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/trim",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/frame",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/glass",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/trim",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/frame",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/glass",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/trim",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/frame",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/glass",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/trim",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/frame",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/glass",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/trim",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/frame",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/glass",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/trim",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/frame",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/glass",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/trim",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/frame",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/glass",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/trim",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/frame",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/glass",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/trim",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/frame",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/glass",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/trim",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/frame",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/glass",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/trim",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/frame",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/glass",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/trim",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/frame",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/glass",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/trim",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/frame",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/glass",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/trim",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/frame",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/glass",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/trim",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/frame",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/glass",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/trim",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/frame",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/glass",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/trim",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/frame",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/glass",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/trim",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/frame",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/glass",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/trim",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/frame",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/glass",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/trim",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/frame",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/glass",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/trim",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/frame",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/glass",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/trim",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/frame",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/glass",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/trim",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/frame",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/glass",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/trim",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/frame",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/glass",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/trim",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/frame",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/glass",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/trim",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/frame",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/glass",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/trim",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/frame",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/glass",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/trim",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/frame",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/glass",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/trim",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/frame",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/glass",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/trim",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/frame",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/glass",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/trim",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/frame",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/glass",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/trim",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/frame",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/glass",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/trim",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/frame",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/glass",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/trim",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/frame",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/glass",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/trim",
+        "building/authored-building/node/door/facade/floor/0/bay/1/frame",
+        "building/authored-building/node/door/facade/floor/0/bay/1/leaf",
+        "building/authored-building/node/door/facade/floor/0/bay/1/hardware",
+        "building/authored-building/node/door/facade/floor/0/bay/1/glass",
+        "building/authored-building/node/door/facade/floor/0/bay/1/trim",
+        "building/authored-building/node/bands/building/band.4",
+        "building/authored-building/node/bands/building/band.7.7",
+        "building/authored-building/node/roof/building/roof",
+        "building/authored-building/node/roof/building/parapet",
+        "building/authored-building/node/roof/building/cornice"
+      ]
+    },
+    "off": {
+      "graph": {
+        "schemaVersion": "0.6.0",
+        "kind": "bay-construction",
+        "documentId": "authored-building",
+        "nodes": [
+          {
+            "id": "footprint",
+            "type": "Footprint",
+            "parameters": {
+              "widthM": 11.2,
+              "depthM": 8.4,
+              "wallDepthM": 0.36
+            }
+          },
+          {
+            "id": "facade",
+            "type": "Storeys",
+            "input": {
+              "nodeId": "footprint",
+              "socket": "footprint"
+            },
+            "parameters": {
+              "count": 3,
+              "groundHeightM": 4,
+              "upperHeightM": 3.7
+            }
+          },
+          {
+            "id": "bays",
+            "type": "SplitBays",
+            "input": {
+              "nodeId": "facade",
+              "socket": "scope"
+            },
+            "parameters": {
+              "count": 4
+            }
+          },
+          {
+            "id": "opening",
+            "type": "PlaceOpening",
+            "input": {
+              "nodeId": "bays",
+              "socket": "scope"
+            },
+            "parameters": {
+              "widthM": 1.22,
+              "heightM": 2.12,
+              "sillM": 0.78
+            }
+          },
+          {
+            "id": "entrance",
+            "type": "PlaceDoor",
+            "input": {
+              "nodeId": "opening",
+              "socket": "scope"
+            },
+            "parameters": {
+              "bayIndex": 1,
+              "widthM": 1.22,
+              "heightM": 2.9
+            }
+          },
+          {
+            "id": "wall",
+            "type": "EmitWall",
+            "input": {
+              "nodeId": "frontage",
+              "socket": "scope"
+            }
+          },
+          {
+            "id": "selection",
+            "type": "SelectScopes",
+            "input": {
+              "nodeId": "frontage",
+              "socket": "scope"
+            },
+            "parameters": {
+              "floorIndex": -1,
+              "bayIndex": -1
+            }
+          },
+          {
+            "id": "window",
+            "type": "AssembleWindow",
+            "input": {
+              "nodeId": "selection",
+              "socket": "scope"
+            },
+            "parameters": {
+              "recessM": 0.14,
+              "frameWidthM": 0.055,
+              "sillProjectionM": 0.12,
+              "layout": 0
+            }
+          },
+          {
+            "id": "door",
+            "type": "AssembleDoor",
+            "input": {
+              "nodeId": "frontage",
+              "socket": "scope"
+            },
+            "parameters": {
+              "recessM": 0.14,
+              "frameWidthM": 0.075,
+              "leafHeightM": 2.3,
+              "thresholdProjectionM": 0.15
+            }
+          },
+          {
+            "id": "bands",
+            "type": "ProfileTrim",
+            "input": {
+              "nodeId": "facade",
+              "socket": "scope"
+            },
+            "parameters": {
+              "heightM": 0.12,
+              "projectionM": 0.07
+            }
+          },
+          {
+            "id": "roof",
+            "type": "BuildingRoof",
+            "input": {
+              "nodeId": "facade",
+              "socket": "scope"
+            },
+            "parameters": {
+              "parapetHeightM": 0.55,
+              "copingProjectionM": 0.06,
+              "corniceHeightM": 0.3,
+              "corniceProjectionM": 0.24
+            }
+          },
+          {
+            "id": "join",
+            "type": "JoinGeometry",
+            "inputs": [
+              {
+                "nodeId": "wall",
+                "socket": "geometry"
+              },
+              {
+                "nodeId": "window",
+                "socket": "geometry"
+              },
+              {
+                "nodeId": "door",
+                "socket": "geometry"
+              },
+              {
+                "nodeId": "bands",
+                "socket": "geometry"
+              },
+              {
+                "nodeId": "roof",
+                "socket": "geometry"
+              }
+            ]
+          },
+          {
+            "id": "surface",
+            "type": "SetSurface",
+            "input": {
+              "nodeId": "join",
+              "socket": "geometry"
+            },
+            "composition": {
+              "schemaVersion": "0.1.0",
+              "documentId": "authored-building",
+              "revision": 0,
+              "sources": [],
+              "layers": []
+            }
+          },
+          {
+            "id": "output",
+            "type": "Output",
+            "inputs": [
+              {
+                "nodeId": "surface",
+                "socket": "geometry"
+              }
+            ]
+          },
+          {
+            "id": "frontage",
+            "type": "PlaceStorefront",
+            "input": {
+              "nodeId": "entrance",
+              "socket": "scope"
+            },
+            "parameters": {
+              "pierWidthM": 0.16,
+              "bulkheadHeightM": 0.55,
+              "headHeightM": 0.45,
+              "transomBaseM": 2.35,
+              "frameWidthM": 0.075,
+              "recessM": 0.14,
+              "mode": 0
+            }
+          }
+        ],
+        "outputNodeId": "output"
+      },
+      "resultHash": "014c6691b723cf688804e90ace12ef7e1648d543eaa9c5e0e43cff64a4e9af54",
+      "geometryHash": "419f11e70f3e644c9b29bf1b28ca8022561f69e90e55a4e48ec8a8e990649079",
+      "metrics": {
+        "vertexCount": 6390,
+        "triangleCount": 17412,
+        "instanceCount": 141
+      },
+      "instanceGroups": [
+        {
+          "id": "construction.window.construction.prototype.frame.35fd3e5832ec8ec5b323",
+          "slot": "frame.primary",
+          "count": 47
+        },
+        {
+          "id": "construction.window.construction.prototype.glass.35fd3e5832ec8ec5b323",
+          "slot": "glass.primary",
+          "count": 47
+        },
+        {
+          "id": "construction.window.construction.prototype.trim.35fd3e5832ec8ec5b323",
+          "slot": "trim.horizontal.primary",
+          "count": 47
+        }
+      ],
+      "semanticPaths": [
+        "building/authored-building/node/wall/facade/wall",
+        "building/authored-building/node/wall/facade/right/wall",
+        "building/authored-building/node/wall/facade/rear/wall",
+        "building/authored-building/node/wall/facade/left/wall",
+        "building/authored-building/node/window/facade/floor/0/bay/0/frame",
+        "building/authored-building/node/window/facade/floor/0/bay/0/glass",
+        "building/authored-building/node/window/facade/floor/0/bay/0/trim",
+        "building/authored-building/node/window/facade/floor/0/bay/2/frame",
+        "building/authored-building/node/window/facade/floor/0/bay/2/glass",
+        "building/authored-building/node/window/facade/floor/0/bay/2/trim",
+        "building/authored-building/node/window/facade/floor/0/bay/3/frame",
+        "building/authored-building/node/window/facade/floor/0/bay/3/glass",
+        "building/authored-building/node/window/facade/floor/0/bay/3/trim",
+        "building/authored-building/node/window/facade/floor/1/bay/0/frame",
+        "building/authored-building/node/window/facade/floor/1/bay/0/glass",
+        "building/authored-building/node/window/facade/floor/1/bay/0/trim",
+        "building/authored-building/node/window/facade/floor/1/bay/1/frame",
+        "building/authored-building/node/window/facade/floor/1/bay/1/glass",
+        "building/authored-building/node/window/facade/floor/1/bay/1/trim",
+        "building/authored-building/node/window/facade/floor/1/bay/2/frame",
+        "building/authored-building/node/window/facade/floor/1/bay/2/glass",
+        "building/authored-building/node/window/facade/floor/1/bay/2/trim",
+        "building/authored-building/node/window/facade/floor/1/bay/3/frame",
+        "building/authored-building/node/window/facade/floor/1/bay/3/glass",
+        "building/authored-building/node/window/facade/floor/1/bay/3/trim",
+        "building/authored-building/node/window/facade/floor/2/bay/0/frame",
+        "building/authored-building/node/window/facade/floor/2/bay/0/glass",
+        "building/authored-building/node/window/facade/floor/2/bay/0/trim",
+        "building/authored-building/node/window/facade/floor/2/bay/1/frame",
+        "building/authored-building/node/window/facade/floor/2/bay/1/glass",
+        "building/authored-building/node/window/facade/floor/2/bay/1/trim",
+        "building/authored-building/node/window/facade/floor/2/bay/2/frame",
+        "building/authored-building/node/window/facade/floor/2/bay/2/glass",
+        "building/authored-building/node/window/facade/floor/2/bay/2/trim",
+        "building/authored-building/node/window/facade/floor/2/bay/3/frame",
+        "building/authored-building/node/window/facade/floor/2/bay/3/glass",
+        "building/authored-building/node/window/facade/floor/2/bay/3/trim",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/frame",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/glass",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/trim",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/frame",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/glass",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/trim",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/frame",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/glass",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/trim",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/frame",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/glass",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/trim",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/frame",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/glass",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/trim",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/frame",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/glass",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/trim",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/frame",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/glass",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/trim",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/frame",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/glass",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/trim",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/frame",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/glass",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/trim",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/frame",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/glass",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/trim",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/frame",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/glass",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/trim",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/frame",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/glass",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/trim",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/frame",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/glass",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/trim",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/frame",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/glass",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/trim",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/frame",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/glass",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/trim",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/frame",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/glass",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/trim",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/frame",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/glass",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/trim",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/frame",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/glass",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/trim",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/frame",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/glass",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/trim",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/frame",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/glass",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/trim",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/frame",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/glass",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/trim",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/frame",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/glass",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/trim",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/frame",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/glass",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/trim",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/frame",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/glass",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/trim",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/frame",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/glass",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/trim",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/frame",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/glass",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/trim",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/frame",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/glass",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/trim",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/frame",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/glass",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/trim",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/frame",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/glass",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/trim",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/frame",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/glass",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/trim",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/frame",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/glass",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/trim",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/frame",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/glass",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/trim",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/frame",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/glass",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/trim",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/frame",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/glass",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/trim",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/frame",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/glass",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/trim",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/frame",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/glass",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/trim",
+        "building/authored-building/node/door/facade/floor/0/bay/1/frame",
+        "building/authored-building/node/door/facade/floor/0/bay/1/leaf",
+        "building/authored-building/node/door/facade/floor/0/bay/1/hardware",
+        "building/authored-building/node/door/facade/floor/0/bay/1/glass",
+        "building/authored-building/node/door/facade/floor/0/bay/1/trim",
+        "building/authored-building/node/bands/building/band.4",
+        "building/authored-building/node/bands/building/band.7.7",
+        "building/authored-building/node/roof/building/roof",
+        "building/authored-building/node/roof/building/parapet",
+        "building/authored-building/node/roof/building/cornice"
+      ]
+    },
+    "storefront": {
+      "graph": {
+        "schemaVersion": "0.6.0",
+        "kind": "bay-construction",
+        "documentId": "authored-building",
+        "nodes": [
+          {
+            "id": "footprint",
+            "type": "Footprint",
+            "parameters": {
+              "widthM": 11.2,
+              "depthM": 8.4,
+              "wallDepthM": 0.36
+            }
+          },
+          {
+            "id": "facade",
+            "type": "Storeys",
+            "input": {
+              "nodeId": "footprint",
+              "socket": "footprint"
+            },
+            "parameters": {
+              "count": 3,
+              "groundHeightM": 4,
+              "upperHeightM": 3.7
+            }
+          },
+          {
+            "id": "bays",
+            "type": "SplitBays",
+            "input": {
+              "nodeId": "facade",
+              "socket": "scope"
+            },
+            "parameters": {
+              "count": 4
+            }
+          },
+          {
+            "id": "opening",
+            "type": "PlaceOpening",
+            "input": {
+              "nodeId": "bays",
+              "socket": "scope"
+            },
+            "parameters": {
+              "widthM": 1.22,
+              "heightM": 2.12,
+              "sillM": 0.78
+            }
+          },
+          {
+            "id": "entrance",
+            "type": "PlaceDoor",
+            "input": {
+              "nodeId": "opening",
+              "socket": "scope"
+            },
+            "parameters": {
+              "bayIndex": 1,
+              "widthM": 1.22,
+              "heightM": 2.9
+            }
+          },
+          {
+            "id": "wall",
+            "type": "EmitWall",
+            "input": {
+              "nodeId": "frontage",
+              "socket": "scope"
+            }
+          },
+          {
+            "id": "selection",
+            "type": "SelectScopes",
+            "input": {
+              "nodeId": "frontage",
+              "socket": "scope"
+            },
+            "parameters": {
+              "floorIndex": -1,
+              "bayIndex": -1
+            }
+          },
+          {
+            "id": "window",
+            "type": "AssembleWindow",
+            "input": {
+              "nodeId": "selection",
+              "socket": "scope"
+            },
+            "parameters": {
+              "recessM": 0.14,
+              "frameWidthM": 0.055,
+              "sillProjectionM": 0.12,
+              "layout": 0
+            }
+          },
+          {
+            "id": "door",
+            "type": "AssembleDoor",
+            "input": {
+              "nodeId": "frontage",
+              "socket": "scope"
+            },
+            "parameters": {
+              "recessM": 0.14,
+              "frameWidthM": 0.075,
+              "leafHeightM": 2.3,
+              "thresholdProjectionM": 0.15
+            }
+          },
+          {
+            "id": "bands",
+            "type": "ProfileTrim",
+            "input": {
+              "nodeId": "facade",
+              "socket": "scope"
+            },
+            "parameters": {
+              "heightM": 0.12,
+              "projectionM": 0.07
+            }
+          },
+          {
+            "id": "roof",
+            "type": "BuildingRoof",
+            "input": {
+              "nodeId": "facade",
+              "socket": "scope"
+            },
+            "parameters": {
+              "parapetHeightM": 0.55,
+              "copingProjectionM": 0.06,
+              "corniceHeightM": 0.3,
+              "corniceProjectionM": 0.24
+            }
+          },
+          {
+            "id": "join",
+            "type": "JoinGeometry",
+            "inputs": [
+              {
+                "nodeId": "wall",
+                "socket": "geometry"
+              },
+              {
+                "nodeId": "window",
+                "socket": "geometry"
+              },
+              {
+                "nodeId": "door",
+                "socket": "geometry"
+              },
+              {
+                "nodeId": "bands",
+                "socket": "geometry"
+              },
+              {
+                "nodeId": "roof",
+                "socket": "geometry"
+              }
+            ]
+          },
+          {
+            "id": "surface",
+            "type": "SetSurface",
+            "input": {
+              "nodeId": "join",
+              "socket": "geometry"
+            },
+            "composition": {
+              "schemaVersion": "0.1.0",
+              "documentId": "authored-building",
+              "revision": 0,
+              "sources": [],
+              "layers": []
+            }
+          },
+          {
+            "id": "output",
+            "type": "Output",
+            "inputs": [
+              {
+                "nodeId": "surface",
+                "socket": "geometry"
+              }
+            ]
+          },
+          {
+            "id": "frontage",
+            "type": "PlaceStorefront",
+            "input": {
+              "nodeId": "entrance",
+              "socket": "scope"
+            },
+            "parameters": {
+              "pierWidthM": 0.16,
+              "bulkheadHeightM": 0.55,
+              "headHeightM": 0.45,
+              "transomBaseM": 2.35,
+              "frameWidthM": 0.075,
+              "recessM": 0.14,
+              "mode": 1
+            }
+          }
+        ],
+        "outputNodeId": "output"
+      },
+      "resultHash": "ee4b33d651e30fd0fea7fa33df1e8d4653ef3fa764dda7e9ef1643c0cd17717c",
+      "geometryHash": "685230ffc00c0ca9fecaf7996bd952131b222a9c5e0e1bb634a376fda33d4066",
+      "metrics": {
+        "vertexCount": 6966,
+        "triangleCount": 17048,
+        "instanceCount": 141
+      },
+      "instanceGroups": [
+        {
+          "id": "construction.window.construction.prototype.frame.f19acb0aed567e91acc2",
+          "slot": "frame.primary",
+          "count": 3
+        },
+        {
+          "id": "construction.window.construction.prototype.glass.f19acb0aed567e91acc2",
+          "slot": "glass.primary",
+          "count": 3
+        },
+        {
+          "id": "construction.window.construction.prototype.trim.f19acb0aed567e91acc2",
+          "slot": "trim.horizontal.primary",
+          "count": 3
+        },
+        {
+          "id": "construction.window.construction.prototype.frame.35fd3e5832ec8ec5b323",
+          "slot": "frame.primary",
+          "count": 44
+        },
+        {
+          "id": "construction.window.construction.prototype.glass.35fd3e5832ec8ec5b323",
+          "slot": "glass.primary",
+          "count": 44
+        },
+        {
+          "id": "construction.window.construction.prototype.trim.35fd3e5832ec8ec5b323",
+          "slot": "trim.horizontal.primary",
+          "count": 44
+        }
+      ],
+      "semanticPaths": [
+        "building/authored-building/node/wall/facade/wall",
+        "building/authored-building/node/wall/facade/right/wall",
+        "building/authored-building/node/wall/facade/rear/wall",
+        "building/authored-building/node/wall/facade/left/wall",
+        "building/authored-building/node/window/facade/floor/0/bay/0/frame",
+        "building/authored-building/node/window/facade/floor/0/bay/0/glass",
+        "building/authored-building/node/window/facade/floor/0/bay/0/trim",
+        "building/authored-building/node/window/facade/floor/0/bay/2/frame",
+        "building/authored-building/node/window/facade/floor/0/bay/2/glass",
+        "building/authored-building/node/window/facade/floor/0/bay/2/trim",
+        "building/authored-building/node/window/facade/floor/0/bay/3/frame",
+        "building/authored-building/node/window/facade/floor/0/bay/3/glass",
+        "building/authored-building/node/window/facade/floor/0/bay/3/trim",
+        "building/authored-building/node/window/facade/floor/1/bay/0/frame",
+        "building/authored-building/node/window/facade/floor/1/bay/0/glass",
+        "building/authored-building/node/window/facade/floor/1/bay/0/trim",
+        "building/authored-building/node/window/facade/floor/1/bay/1/frame",
+        "building/authored-building/node/window/facade/floor/1/bay/1/glass",
+        "building/authored-building/node/window/facade/floor/1/bay/1/trim",
+        "building/authored-building/node/window/facade/floor/1/bay/2/frame",
+        "building/authored-building/node/window/facade/floor/1/bay/2/glass",
+        "building/authored-building/node/window/facade/floor/1/bay/2/trim",
+        "building/authored-building/node/window/facade/floor/1/bay/3/frame",
+        "building/authored-building/node/window/facade/floor/1/bay/3/glass",
+        "building/authored-building/node/window/facade/floor/1/bay/3/trim",
+        "building/authored-building/node/window/facade/floor/2/bay/0/frame",
+        "building/authored-building/node/window/facade/floor/2/bay/0/glass",
+        "building/authored-building/node/window/facade/floor/2/bay/0/trim",
+        "building/authored-building/node/window/facade/floor/2/bay/1/frame",
+        "building/authored-building/node/window/facade/floor/2/bay/1/glass",
+        "building/authored-building/node/window/facade/floor/2/bay/1/trim",
+        "building/authored-building/node/window/facade/floor/2/bay/2/frame",
+        "building/authored-building/node/window/facade/floor/2/bay/2/glass",
+        "building/authored-building/node/window/facade/floor/2/bay/2/trim",
+        "building/authored-building/node/window/facade/floor/2/bay/3/frame",
+        "building/authored-building/node/window/facade/floor/2/bay/3/glass",
+        "building/authored-building/node/window/facade/floor/2/bay/3/trim",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/frame",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/glass",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/trim",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/frame",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/glass",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/trim",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/frame",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/glass",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/trim",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/frame",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/glass",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/trim",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/frame",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/glass",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/trim",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/frame",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/glass",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/trim",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/frame",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/glass",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/trim",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/frame",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/glass",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/trim",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/frame",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/glass",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/trim",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/frame",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/glass",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/trim",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/frame",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/glass",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/trim",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/frame",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/glass",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/trim",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/frame",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/glass",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/trim",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/frame",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/glass",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/trim",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/frame",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/glass",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/trim",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/frame",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/glass",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/trim",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/frame",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/glass",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/trim",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/frame",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/glass",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/trim",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/frame",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/glass",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/trim",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/frame",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/glass",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/trim",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/frame",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/glass",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/trim",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/frame",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/glass",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/trim",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/frame",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/glass",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/trim",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/frame",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/glass",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/trim",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/frame",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/glass",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/trim",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/frame",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/glass",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/trim",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/frame",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/glass",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/trim",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/frame",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/glass",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/trim",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/frame",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/glass",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/trim",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/frame",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/glass",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/trim",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/frame",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/glass",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/trim",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/frame",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/glass",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/trim",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/frame",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/glass",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/trim",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/frame",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/glass",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/trim",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/frame",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/glass",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/trim",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/frame",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/glass",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/trim",
+        "building/authored-building/node/door/facade/floor/0/bay/1/frame",
+        "building/authored-building/node/door/facade/floor/0/bay/1/leaf",
+        "building/authored-building/node/door/facade/floor/0/bay/1/hardware",
+        "building/authored-building/node/door/facade/floor/0/bay/1/glass",
+        "building/authored-building/node/door/facade/floor/0/bay/1/trim",
+        "building/authored-building/node/bands/building/band.4",
+        "building/authored-building/node/bands/building/band.7.7",
+        "building/authored-building/node/roof/building/roof",
+        "building/authored-building/node/roof/building/parapet",
+        "building/authored-building/node/roof/building/cornice"
+      ]
+    }
+  },
+  "offMatchesC7": true,
+  "legacyExact": true,
+  "rendered": false,
+  "productIntegrated": false
+}

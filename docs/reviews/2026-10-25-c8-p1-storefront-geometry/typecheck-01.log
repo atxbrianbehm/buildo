@@ -1,0 +1,7 @@
+
+> buildo@0.0.0 typecheck
+> tsc -b --noEmit
+
+src/features/building-family/tests/ConstructionNodePanel.test.tsx(5,7): error TS2741: Property 'PlaceStorefront' is missing in type '{ Footprint: string; Storeys: string; PlaceDoor: string; AssembleDoor: string; BuildingRoof: string; FacadeScope: string; SplitFloors: string; SplitBays: string; PlaceOpening: string; SelectScopes: string; ... 6 more ...; SetSurface: string; }' but required in type 'Record<"SplitFloors" | "SplitBays" | "PlaceOpening" | "Output" | "Footprint" | "Storeys" | "PlaceDoor" | "AssembleDoor" | "PlaceStorefront" | "BuildingRoof" | "FacadeScope" | "EmitWall" | ... 5 more ... | "SetSurface", string>'.
+src/features/building-family/tests/constructionStorefrontGeometry.test.ts(30,124): error TS2339: Property 'input' does not exist on type '{ id: string; type: "Footprint"; parameters: { widthM: number; depthM: number; wallDepthM: number; }; } | { id: string; type: "Storeys"; input: { nodeId: string; socket: "footprint"; }; parameters: { count: number; groundHeightM: number; upperHeightM: number; }; } | ... 15 more ... | { ...; }'.
+  Property 'input' does not exist on type '{ id: string; type: "Footprint"; parameters: { widthM: number; depthM: number; wallDepthM: number; }; }'.

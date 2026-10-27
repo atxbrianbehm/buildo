@@ -2,6 +2,9 @@ import { BayConstructionClient, type BayConstructionWorkerEndpoint } from "../co
 import { BayConstructionWorkerRequestSchema } from "../compiler/bayConstructionWorkerProtocol";
 import { evaluateBayConstruction } from "../compiler/evaluateBayConstruction";
 import { createBayConstructionGraph } from "../contracts/bayConstructionGraph";
+import { createBuildingConstructionGraph } from "../contracts/bayConstructionGraph";
+import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
+import { evaluateConstruction } from "../compiler/evaluateConstruction";
 
 class Endpoint implements BayConstructionWorkerEndpoint {
   messages: unknown[] = [];
@@ -20,6 +23,17 @@ class Endpoint implements BayConstructionWorkerEndpoint {
   }
 }
 describe("owned construction worker client", () => {
+  it("sends a storefront graph with protocol 0.6 and accepts its actual compiled reply", async () => {
+    const endpoint = new Endpoint(), client = new BayConstructionClient(endpoint);
+    const graph = withConstructionStorefront(createBuildingConstructionGraph(), 1), pending = client.evaluate(graph);
+    const request = BayConstructionWorkerRequestSchema.parse(endpoint.messages[0]);
+    expect(request.schemaVersion).toBe("0.6.0"); expect(request.graph).toEqual(graph);
+    const result = await evaluateConstruction(request.graph);
+    endpoint.emit({ schemaVersion: "0.6.0", type: "bay-result", requestId: request.requestId, result });
+    expect(await pending).toEqual(result);
+    client.dispose(); expect(endpoint.terminated).toBe(1);
+    expect(endpoint.listeners.message.size + endpoint.listeners.error.size).toBe(0);
+  });
   it("matches out-of-order replies to owned graph instructions", async () => {
     const endpoint = new Endpoint(), client = new BayConstructionClient(endpoint), graph = createBayConstructionGraph();
     const first = client.evaluate(graph);

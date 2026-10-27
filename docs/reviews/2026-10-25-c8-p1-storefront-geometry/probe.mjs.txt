@@ -1,0 +1,21 @@
+import { createServer } from "vite";
+import { writeFileSync } from "node:fs";
+const server = await createServer({configFile:false,cacheDir:"test-results/c8-p1-storefront-geometry-2026-10-25/vite-cache",optimizeDeps:{noDiscovery:true,include:[]},server:{middlewareMode:true,watch:null},appType:"custom"});
+try {
+ const {createBuildingConstructionGraph}=await server.ssrLoadModule("/src/features/building-family/contracts/bayConstructionGraph.ts");
+ const {withConstructionStorefront}=await server.ssrLoadModule("/src/features/building-family/core/constructionStorefrontGraph.ts");
+ const {withConstructionWindowLayout}=await server.ssrLoadModule("/src/features/building-family/core/constructionWindowVocabulary.ts");
+ const {evaluateConstruction}=await server.ssrLoadModule("/src/features/building-family/compiler/evaluateConstruction.ts");
+ const {hashCanonicalJson}=await server.ssrLoadModule("/src/features/building-family/core/contentHash.ts");
+ const graphs={legacy:createBuildingConstructionGraph(),c7:withConstructionWindowLayout(createBuildingConstructionGraph(),"window",0),off:withConstructionStorefront(createBuildingConstructionGraph(),0),storefront:withConstructionStorefront(createBuildingConstructionGraph(),1)};
+ const cases={};
+ for(const [name,graph] of Object.entries(graphs)) {
+  const result=await evaluateConstruction(graph);
+  const geometry={meshBatches:result.ir.meshBatches,instanceBatches:result.ir.instanceBatches,prototypes:result.prototypes,semanticIndex:result.ir.semanticIndex};
+  cases[name]={graph,resultHash:await hashCanonicalJson(result),geometryHash:await hashCanonicalJson(geometry),metrics:result.ir.metrics,instanceGroups:result.ir.instanceBatches.map(b=>({id:b.batchId,slot:b.materialSlotId,count:b.count})),semanticPaths:result.ir.semanticIndex.map(e=>e.semanticPath)};
+ }
+ if(cases.off.geometryHash!==cases.c7.geometryHash) throw new Error("Off geometry differs from C7.");
+ if(cases.legacy.resultHash!=="10b9860522a4ac9818f38e9d081fc05bade653ea87447822335be008a98108f9") throw new Error("Legacy result changed.");
+ writeFileSync(new URL("./compiled-cases.json",import.meta.url),JSON.stringify({schemaVersion:"0.1.0",cases,offMatchesC7:true,legacyExact:true,rendered:false,productIntegrated:false},null,2)+"\n");
+ console.log("STOREFRONT_P1_PROBE",JSON.stringify({caseCount:4,offMatchesC7:true,legacyExact:true,storefrontMetrics:cases.storefront.metrics,frameGroups:cases.storefront.instanceGroups.filter(b=>b.slot==="frame.primary").map(b=>b.count)}));
+} finally {await server.close();}
