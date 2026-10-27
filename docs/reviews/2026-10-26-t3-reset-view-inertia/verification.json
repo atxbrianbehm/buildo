@@ -1,0 +1,136 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "reset-view-inertia-verification",
+  "parentCommit": "4ee05879b318016b1bfd33c367c0f116ea1bd159",
+  "sourcePinCount": 347,
+  "changedSourcePaths": [
+    "src/features/building-family/tests/AssemblyHall.test.tsx",
+    "src/features/building-family/ui/AssemblyHall.tsx"
+  ],
+  "unchangedPins": 345,
+  "nativeProductionPinsStillExact": true,
+  "testOnlyChangeAfterCapture": "Removed unsupported Testing Library exact option; runtime button query and production source unchanged.",
+  "sourceGeometryMaterialsAndBindingsExactToT2": true,
+  "negativeDefaultCameraAndPixelsExactToFinalDefault": true,
+  "negativeResetCameraAndPixelsDiffer": true,
+  "finalCameraLightsAndPixelsExact": true,
+  "portableSourceSha256": "eb7466b09ab10f3e4040aeeb5acb85e959cd7dc75efa73f4f2da5140b0661cd1",
+  "portableSourceArchive": "../2026-10-26-t2-regular-trim-recovery/textured-project.zip",
+  "portableAliases": [
+    {
+      "backend": "webgl",
+      "file": "saved-v8.json",
+      "sha256": "eb7466b09ab10f3e4040aeeb5acb85e959cd7dc75efa73f4f2da5140b0661cd1",
+      "literalEqualToT2Source": true
+    },
+    {
+      "backend": "webgl",
+      "file": "reopened-v8.json",
+      "sha256": "eb7466b09ab10f3e4040aeeb5acb85e959cd7dc75efa73f4f2da5140b0661cd1",
+      "literalEqualToT2Source": true
+    },
+    {
+      "backend": "webgl",
+      "file": "cold-v8.json",
+      "sha256": "eb7466b09ab10f3e4040aeeb5acb85e959cd7dc75efa73f4f2da5140b0661cd1",
+      "literalEqualToT2Source": true
+    },
+    {
+      "backend": "webgpu",
+      "file": "saved-v8.json",
+      "sha256": "eb7466b09ab10f3e4040aeeb5acb85e959cd7dc75efa73f4f2da5140b0661cd1",
+      "literalEqualToT2Source": true
+    },
+    {
+      "backend": "webgpu",
+      "file": "reopened-v8.json",
+      "sha256": "eb7466b09ab10f3e4040aeeb5acb85e959cd7dc75efa73f4f2da5140b0661cd1",
+      "literalEqualToT2Source": true
+    },
+    {
+      "backend": "webgpu",
+      "file": "cold-v8.json",
+      "sha256": "eb7466b09ab10f3e4040aeeb5acb85e959cd7dc75efa73f4f2da5140b0661cd1",
+      "literalEqualToT2Source": true
+    }
+  ],
+  "native": {
+    "webgl": {
+      "states": 6,
+      "captures": 7,
+      "errors": [],
+      "coldProviderCalls": 0,
+      "coldMaterialGenerationCalls": 0
+    },
+    "webgpu": {
+      "states": 6,
+      "captures": 7,
+      "errors": [],
+      "coldProviderCalls": 0,
+      "coldMaterialGenerationCalls": 0
+    },
+    "negative-control-webgl": {
+      "states": 2,
+      "captures": 3,
+      "errors": [],
+      "coldProviderCalls": null,
+      "coldMaterialGenerationCalls": null
+    }
+  },
+  "requiredChecks": [
+    {
+      "name": "typecheck",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-27T04:51:51.4587246Z",
+      "endedAtUtc": "2026-10-27T04:52:03.6820739Z",
+      "sourcePinsStable": true,
+      "log": "test-results/t3-reset-view-inertia-2026-10-26/typecheck-final.log"
+    },
+    {
+      "name": "lint",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-27T04:52:03.7789108Z",
+      "endedAtUtc": "2026-10-27T04:52:22.9005615Z",
+      "sourcePinsStable": true,
+      "log": "test-results/t3-reset-view-inertia-2026-10-26/lint-final.log"
+    },
+    {
+      "name": "test",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-27T04:52:22.9639009Z",
+      "endedAtUtc": "2026-10-27T04:59:01.5590406Z",
+      "sourcePinsStable": true,
+      "log": "test-results/t3-reset-view-inertia-2026-10-26/test-final.log"
+    },
+    {
+      "name": "build",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-27T04:59:01.6033155Z",
+      "endedAtUtc": "2026-10-27T04:59:14.7565599Z",
+      "sourcePinsStable": true,
+      "log": "test-results/t3-reset-view-inertia-2026-10-26/build-final.log"
+    },
+    {
+      "name": "test:e2e",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-27T04:59:14.7980705Z",
+      "endedAtUtc": "2026-10-27T05:01:45.8897417Z",
+      "sourcePinsStable": true,
+      "log": "test-results/t3-reset-view-inertia-2026-10-26/test-e2e-final.log"
+    }
+  ],
+  "tests": {
+    "passed": 1867,
+    "files": 129
+  },
+  "standardE2E": [
+    "R3_P1_WORKSPACE_E2E_RESULT",
+    "R3_P6_WINDOW_WIDTH_E2E_RESULT",
+    "R3_P11_SOURCE_CHECKPOINT_RECOVERY_E2E_RESULT",
+    "R3_P12_WINDOW_WIDTH_HISTORY_E2E_RESULT",
+    "R3_P15_WIDTH_BATCH_SOURCE_E2E_RESULT",
+    "R3_P16_WINDOW_FLOOR_WIDTH_E2E_RESULT",
+    "R3_P18_WINDOW_BAY_WIDTH_E2E_RESULT",
+    "R4_P4_SURFACE_SOURCE_APP_E2E_RESULT"
+  ]
+}

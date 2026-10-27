@@ -1,0 +1,13 @@
+
+> buildo@0.0.0 test
+> vitest run src/features/building-family/tests/AssemblyHall.test.tsx -t restores a stable default camera
+
+
+ RUN  v4.1.9 C:/Users/behmb/Documents/Cascade Projects/buildo
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 44 skipped (45)
+   Start at  23:46:50
+   Duration  3.97s (transform 715ms, setup 98ms, import 1.03s, tests 2.01s, environment 685ms)
+

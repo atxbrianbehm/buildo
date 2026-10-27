@@ -111,6 +111,27 @@ describe("R3.P1 current window selection", () => {
   }, 20000);
   afterAll(() => { fixture.familyRuntime.dispose(); replacement.familyRuntime.dispose(); different.familyRuntime.dispose(); });
 
+  it("restores a stable default camera after an actual damped orbit and Reset view", async () => {
+    const renderer = p1SelectionRenderer();
+    Object.defineProperties(renderer.canvas, { clientWidth: { value: 920 }, clientHeight: { value: 520 } });
+    const view = render(<AssemblyHall fixture={fixture} rendererFactory={async () => renderer.activation} />);
+    try {
+      await waitFor(() => expect(renderer.captured.camera).toBeDefined());
+      const camera = renderer.captured.camera!, home = camera.position.clone();
+      p1Pointer(renderer.canvas, "pointerdown", 300, 260);
+      p1Pointer(renderer.canvas, "pointermove", 480, 300);
+      p1Pointer(renderer.canvas, "pointerup", 480, 300);
+      expect(camera.position.distanceTo(home)).toBeGreaterThan(0.1);
+      fireEvent.click(screen.getByRole("button", { name: "Reset view" }));
+      await act(async () => {
+        for (let i = 0; i < 3; i++) await new Promise<number>(resolve => requestAnimationFrame(resolve));
+      });
+      expect(camera.position.distanceTo(home)).toBeLessThan(1e-10);
+      fireEvent.click(screen.getByRole("button", { name: "Reset view" }));
+      expect(camera.position.distanceTo(home)).toBeLessThan(1e-10);
+    } finally { view.unmount(); }
+  });
+
   it("synchronizes a real visible instance hit and keyboard selection with precise owned bounds", async () => {
     const renderer = p1SelectionRenderer();
     const source = JSON.stringify(fixture.sourceSnapshot);

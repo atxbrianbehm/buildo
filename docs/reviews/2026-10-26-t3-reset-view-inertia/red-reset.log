@@ -1,0 +1,30 @@
+
+> buildo@0.0.0 test
+> vitest run src/features/building-family/tests/AssemblyHall.test.tsx -t restores a stable default camera
+
+
+ RUN  v4.1.9 C:/Users/behmb/Documents/Cascade Projects/buildo
+
+ ❯ src/features/building-family/tests/AssemblyHall.test.tsx (45 tests | 1 failed | 44 skipped) 2162ms
+     × restores a stable default camera after an actual damped orbit and Reset view 341ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/building-family/tests/AssemblyHall.test.tsx > R3.P1 current window selection > restores a stable default camera after an actual damped orbit and Reset view
+AssertionError: expected 26.880830700208577 to be less than 1e-10
+ ❯ src/features/building-family/tests/AssemblyHall.test.tsx:129:48
+    127|         for (let i = 0; i < 3; i++) await new Promise<number>(resolve …
+    128|       });
+    129|       expect(camera.position.distanceTo(home)).toBeLessThan(1e-10);
+       |                                                ^
+    130|       fireEvent.click(screen.getByRole("button", { name: "Reset view",…
+    131|       expect(camera.position.distanceTo(home)).toBeLessThan(1e-10);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 44 skipped (45)
+   Start at  23:46:31
+   Duration  4.26s (transform 746ms, setup 106ms, import 1.08s, tests 2.16s, environment 743ms)
+

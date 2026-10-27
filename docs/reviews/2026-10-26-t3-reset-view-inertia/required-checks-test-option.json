@@ -1,0 +1,8 @@
+{
+  "name": "typecheck",
+  "exitCode": 2,
+  "startedAtUtc": "2026-10-27T04:49:07.1356040Z",
+  "endedAtUtc": "2026-10-27T04:49:20.0626158Z",
+  "sourcePinsStable": true,
+  "log": "test-results/t3-reset-view-inertia-2026-10-26/typecheck-final.log"
+}
