@@ -1,3 +1,4 @@
+import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { withConstructionWindowLayout } from "../core/constructionWindowVocabulary";
 import { describe, expect, it } from "vitest";
 import { createBuildingConstructionGraph } from "../contracts/bayConstructionGraph";
@@ -199,4 +200,29 @@ it("retains authored casement vocabulary over the literal pinned recipe and rele
   const d=await resolveWorkbenchGeneration(c.graph,next,{...c.controls,preserveAuthored:false,lockOpenings:false},true);
   expect(d.graph.nodes.find(n=>n.type==="AssembleWindow")!.parameters.layout).toBe(0);
   const rejected=structuredClone(edited);rejected.nodes.find(n=>n.type==="JoinGeometry")!.inputs.pop();await expect(resolveWorkbenchGeneration(rejected,a.lineage,defaultConstructionGenerationControls,true)).rejects.toThrow("authored connections");
+});
+
+it("retains authored storefront and entrance choices, locks them, then releases to the literal recipe", async () => {
+  const a = await initial(), edited = withConstructionWindowLayout(withConstructionStorefront(a.graph, 1), "window", 2);
+  edited.nodes.find(node => node.type === "PlaceStorefront")!.parameters.pierWidthM = 0.24;
+  Object.assign(edited.nodes.find(node => node.type === "PlaceDoor")!.parameters, { bayIndex: 2, widthM: 1.4 });
+  const before = structuredClone(edited);
+  const b = await resolveWorkbenchGeneration(edited, a.lineage, defaultConstructionGenerationControls, true);
+  expect(b.graph.schemaVersion).toBe("0.6.0"); expect(b.resolution.graph.schemaVersion).toBe("0.4.0");
+  expect(b.graph.nodes.find(node => node.type === "PlaceStorefront")!.parameters).toEqual(edited.nodes.find(node => node.type === "PlaceStorefront")!.parameters);
+  expect(b.graph.nodes.find(node => node.type === "PlaceDoor")!.parameters.widthM).toBe(1.4);
+  expect(b.source.intent.locks.some(lock => lock.semanticPath.includes("/frontage/"))).toBe(false);
+  expect(edited).toEqual(before); await evaluateConstruction(b.graph);
+  const lineage = { ...a.lineage, source: b.source, resolution: b.resolution, materialPlan: await planConstructionReferenceMaterials(a.template, b.source) };
+  const c = await resolveWorkbenchGeneration(b.graph, lineage, { ...b.controls, preserveAuthored: false, lockOpenings: true }, true);
+  expect(c.graph.nodes.find(node => node.type === "PlaceStorefront")!.parameters.mode).toBe(1);
+  expect(c.graph.nodes.find(node => node.type === "PlaceDoor")!.parameters).toMatchObject({ bayIndex: 2, widthM: 1.4 });
+  expect(c.graph.nodes.find(node => node.type === "AssembleWindow")!.parameters.layout).toBe(2);
+  const next = { ...lineage, source: c.source, resolution: c.resolution, materialPlan: await planConstructionReferenceMaterials(a.template, c.source) };
+  const d = await resolveWorkbenchGeneration(c.graph, next, { ...c.controls, preserveAuthored: false, lockOpenings: false }, true);
+  expect(d.graph.nodes.find(node => node.type === "PlaceStorefront")!.parameters.mode).toBe(0);
+  expect(d.graph.nodes.find(node => node.type === "PlaceDoor")!.parameters).toEqual(d.resolution.graph.nodes.find(node => node.type === "PlaceDoor")!.parameters);
+  expect(d.graph.nodes.find(node => node.type === "AssembleWindow")!.parameters.layout).toBe(0);
+  const custom = structuredClone(edited); custom.nodes.find(node => node.type === "PlaceStorefront")!.input.nodeId = "bays";
+  await expect(resolveWorkbenchGeneration(custom, a.lineage, defaultConstructionGenerationControls)).rejects.toThrow("authored connections");
 });

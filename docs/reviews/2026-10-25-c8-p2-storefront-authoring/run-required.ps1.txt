@@ -1,0 +1,13 @@
+$ErrorActionPreference = 'Continue'
+$packetPath = 'test-results/c8-p2-storefront-authoring-2026-10-25'
+$results = @()
+foreach ($stage in @('typecheck','lint','test','build','test:e2e')) {
+  $stageName = $stage.Replace(':','-')
+  $started = [DateTime]::UtcNow.ToString('o')
+  & npm.cmd run $stage *> "$packetPath/$stageName-final-01.log"
+  $code = $LASTEXITCODE
+  $results += [ordered]@{name=$stage;exitCode=$code;startedAtUtc=$started;endedAtUtc=[DateTime]::UtcNow.ToString('o');log="$stageName-final-01.log"}
+  $results | ConvertTo-Json -Depth 8 | Set-Content "$packetPath/required-checks-final-01.json"
+  Write-Output "$stage exit=$code"
+  if ($code -ne 0) { exit $code }
+}

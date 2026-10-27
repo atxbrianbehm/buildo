@@ -1,0 +1,156 @@
+import { DEFAULT_STOREFRONT_PARAMETERS } from "../core/constructionStorefrontGraph";
+import { useEffect, useRef, useState } from "react";
+import { BayConstructionNodeSchema, constructionOutputSocket, type BayConstructionGraph, type BayConstructionNode } from "../contracts/bayConstructionGraph";
+import { emptyConstructionComposition } from "../core/constructionSurfaceAuthoring";
+
+interface Props {
+  graph: BayConstructionGraph; selected: string; disabled: boolean;
+  names: Record<BayConstructionNode["type"], string>;
+  onSelect: (id: string) => void; onChange: (graph: BayConstructionGraph) => void;
+}
+type Point = { x: number; y: number };
+const initialPositions: Record<string, Point> = {
+  facade: { x: 24, y: 26 }, floors: { x: 24, y: 174 }, bays: { x: 24, y: 322 },
+  opening: { x: 270, y: 322 }, selection: { x: 270, y: 470 }, wall: { x: 516, y: 322 },
+  window: { x: 516, y: 470 }, bands: { x: 270, y: 174 }, roof: { x: 270, y: 26 }, output: { x: 762, y: 322 }
+};
+function defaultPoint(id: string, index: number): Point {
+  return initialPositions[id] ?? { x: 24 + index % 4 * 246, y: 640 + Math.floor(index / 4) * 148 };
+}
+const buildingPositions: Record<string,Point> = {
+  footprint:{x:24,y:26},facade:{x:24,y:174},bays:{x:24,y:322},opening:{x:270,y:322},entrance:{x:516,y:322},
+  selection:{x:516,y:470},wall:{x:762,y:174},window:{x:762,y:470},door:{x:762,y:618},bands:{x:270,y:174},roof:{x:270,y:26},
+  join:{x:1008,y:322},surface:{x:1254,y:322},output:{x:1500,y:322}
+};
+function initialPoint(version: BayConstructionGraph["schemaVersion"], id: string, index: number): Point {
+  if (["0.4.0", "0.5.0", "0.6.0"].includes(version)) return buildingPositions[id] ?? defaultPoint(id,index);
+  return version === "0.3.0" && id === "output" ? {x:1254,y:322} : id === "join" ? {x:762,y:322} : id === "surface" ? {x:1008,y:322} : defaultPoint(id,index);
+}
+const defaults: Record<BayConstructionNode["type"], Record<string, number>> = {
+  PlaceStorefront: { ...DEFAULT_STOREFRONT_PARAMETERS },
+  Footprint: { widthM: 11.2, depthM: 8.4, wallDepthM: .36 }, Storeys: { count: 3, groundHeightM: 4, upperHeightM: 3.7 }, PlaceDoor: { bayIndex: 1, widthM: 1.22, heightM: 2.9 }, AssembleDoor: { recessM: .14, frameWidthM: .075, leafHeightM: 2.3, thresholdProjectionM: .15 }, BuildingRoof: { parapetHeightM: .55, copingProjectionM: .06, corniceHeightM: .3, corniceProjectionM: .24 },
+  FacadeScope: { widthM: 2.8, heightM: 3.8, wallDepthM: 0.36 }, SplitFloors: { count: 3 }, SplitBays: { count: 4 },
+  PlaceOpening: { widthM: 1.22, heightM: 2.12, sillM: 0.78 }, AssembleWindow: { recessM: 0.14, frameWidthM: 0.055, sillProjectionM: 0.12 },
+  SelectScopes: { floorIndex: -1, bayIndex: -1 }, ProfileTrim: { heightM: 0.12, projectionM: 0.07 }, RoofCap: { depthM: 0.8, heightM: 0.16, projectionM: 0.12 },
+  EmitWall: {}, Output: {}, JoinGeometry: {}, SetSurface: {}
+};
+
+/** A bounded real graph editor: ports and inspector mutate the same source nodes. */
+export function ConstructionNodePanel({ graph, selected, disabled, names, onSelect, onChange }: Props) {
+  const [positions, setPositions] = useState<Record<string, Point>>({});
+  const [zoom, setZoom] = useState(0.85), [connection, setConnection] = useState<string | null>(null);
+  const [addType, setAddType] = useState<BayConstructionNode["type"]>("SplitFloors"), [error, setError] = useState<string | null>(null);
+  const viewport = useRef<HTMLDivElement>(null);
+  const drag = useRef<{ id: string; pointerX: number; pointerY: number; start: Point } | null>(null);
+  const pointFor = (node: BayConstructionNode, index: number) => positions[node.id] ?? initialPoint(graph.schemaVersion,node.id,index);
+  const points = new Map(graph.nodes.map((node, index) => [node.id, pointFor(node, index)]));
+  const displayName = (node: BayConstructionNode) => {
+    const same = graph.nodes.filter(value => value.type === node.type);
+    return names[node.type] + (same.length > 1 ? ` ${same.findIndex(value => value.id === node.id) + 1}` : "");
+  };
+  const width = Math.max(1000, ...[...points.values()].map(p => p.x + 220));
+  const height = Math.max(610, ...[...points.values()].map(p => p.y + 130));
+  useEffect(() => {
+    const container = viewport.current, node = graph.nodes.find(value => value.id === selected);
+    if (!container || !node) return;
+    const p = positions[selected] ?? initialPoint(graph.schemaVersion,node.id,graph.nodes.indexOf(node));
+    if (p.x * zoom < container.scrollLeft) container.scrollLeft = p.x * zoom;
+    else if ((p.x + 210) * zoom > container.scrollLeft + container.clientWidth) container.scrollLeft = (p.x + 210) * zoom - container.clientWidth;
+    if (p.y * zoom < container.scrollTop) container.scrollTop = p.y * zoom;
+    else if ((p.y + 110) * zoom > container.scrollTop + container.clientHeight) container.scrollTop = (p.y + 110) * zoom - container.clientHeight;
+  }, [selected, zoom, graph.nodes, graph.schemaVersion, positions]);
+  function replace(node: BayConstructionNode) {
+    onChange({ ...graph, schemaVersion: ["0.3.0", "0.4.0", "0.5.0", "0.6.0"].includes(graph.schemaVersion) ? graph.schemaVersion : "0.2.0", nodes: graph.nodes.map(value => value.id === node.id ? node : value) });
+  }
+  function connect(target: BayConstructionNode) {
+    const source = graph.nodes.find(node => node.id === connection);
+    if (!source) { setError("Choose an output port first, then a compatible input port."); return; }
+    const socket = constructionOutputSocket(source.type);
+    if (source.id === target.id || socket !== ("inputs" in target ? "geometry" : "input" in target ? target.input.socket : undefined)) {
+      setError("Connect matching scope or geometry ports."); return;
+    }
+    if ("inputs" in target) {
+      if (!target.inputs.some(input => input.nodeId === source.id)) replace({ ...target, inputs: [...target.inputs, { nodeId: source.id, socket: "geometry" }] });
+    } else if ("input" in target) replace(BayConstructionNodeSchema.parse({ ...target, input: { nodeId: source.id, socket } }));
+    setConnection(null); setError(null);
+  }
+  function add() {
+    let suffix = 1;
+    while (graph.nodes.some(node => node.id === `${addType}_${suffix}`)) suffix++;
+    const id = `${addType}_${suffix}`;
+    const upstream = graph.nodes.find(node => node.id === selected && constructionOutputSocket(node.type) === "scope") ?? graph.nodes.find(node => constructionOutputSocket(node.type) === "scope");
+    const geometry = graph.nodes.find(node => constructionOutputSocket(node.type) === "geometry");
+    const footprint = graph.nodes.find(node=>node.id === selected && node.type === "Footprint") ?? graph.nodes.find(node=>node.type === "Footprint");
+    const raw = addType === "Output" || addType === "JoinGeometry" ? { id, type: addType, inputs: geometry ? [{ nodeId: geometry.id, socket: "geometry" }] : [] }
+      : addType === "SetSurface" ? { id, type: addType, input: { nodeId: geometry?.id ?? "missing", socket: "geometry" }, composition: emptyConstructionComposition(graph.documentId) }
+      : addType === "Storeys" ? { id, type: addType, input: { nodeId: footprint?.id ?? "missing", socket: "footprint" }, parameters: defaults.Storeys }
+      : { id, type: addType, ...(["FacadeScope", "Footprint"].includes(addType) ? {} : { input: { nodeId: upstream?.id ?? "missing", socket: "scope" } }),
+        ...(Object.keys(defaults[addType]).length ? { parameters: defaults[addType] } : {}) };
+    const result = BayConstructionNodeSchema.safeParse(raw);
+    if (!result.success || (addType === "SetSurface" ? !geometry || graph.nodes.some(node => node.type === "SetSurface") : !upstream && !["FacadeScope", "Footprint", "Storeys", "Output", "JoinGeometry"].includes(addType))) { setError("Add a compatible source first; use one final surface finish node."); return; }
+    const added = ["0.5.0", "0.6.0"].includes(graph.schemaVersion) && result.data.type === "AssembleWindow" ? { ...result.data, parameters: { ...result.data.parameters, layout: 0 as const } } : result.data;
+    onChange({ ...graph, schemaVersion: graph.schemaVersion === "0.6.0" ? "0.6.0" : graph.schemaVersion === "0.5.0" ? "0.5.0" : graph.schemaVersion === "0.4.0" || ["Footprint", "Storeys", "PlaceDoor", "AssembleDoor", "BuildingRoof"].includes(addType) ? "0.4.0" : graph.schemaVersion === "0.3.0" || ["SetSurface", "JoinGeometry"].includes(addType) ? "0.3.0" : "0.2.0", nodes: [...graph.nodes, added] }); onSelect(id); setError(null);
+  }
+  const node = graph.nodes.find(value => value.id === selected);
+  const connectingNode = graph.nodes.find(value => value.id === connection);
+  return <section className="construction-graph" aria-label="Construction nodes">
+    <div className="construction-graph__heading"><h3>Construction nodes</h3>
+      <span>{graph.nodes.length} nodes</span></div>
+    <div className="construction-graph__toolbar">
+      <button type="button" disabled={zoom <= 0.15} onClick={() => setZoom(value => Math.max(0.15, value - 0.1))}>Zoom out</button>
+      <button type="button" disabled={zoom >= 1.3} onClick={() => setZoom(value => Math.min(1.3, value + 0.1))}>Zoom in</button>
+      <button type="button" onClick={() => { setZoom(Math.max(0.15, Math.min(1, (viewport.current?.clientWidth ?? 600) / width, (viewport.current?.clientHeight ?? 350) / height))); if (viewport.current) { viewport.current.scrollLeft = 0; viewport.current.scrollTop = 0; } }}>Fit nodes</button>
+    </div>
+    <p className="construction-graph__hint">Choose an output port, then an input. Drag node titles to arrange; Alt + arrow keys also move them.</p>
+    {connectingNode ? <div className="construction-graph__connection" role="status">Connecting from {displayName(connectingNode)}.
+      <button type="button" onClick={() => setConnection(null)}>Cancel connection</button></div> : null}
+    {error ? <p role="alert">{error}</p> : null}
+    <div className="construction-graph__viewport" ref={viewport} aria-label="Node canvas" tabIndex={0}>
+      <div style={{ width: width * zoom, height: height * zoom }}>
+        <div className="construction-graph__canvas" style={{ width, height, transform: `scale(${zoom})` }}>
+          <svg width={width} height={height} aria-label="Construction connections" className="construction-graph__wires">
+            {graph.nodes.flatMap(target => ("inputs" in target ? target.inputs : "input" in target ? [target.input] : []).map(input => {
+              const from = points.get(input.nodeId), to = points.get(target.id); if (!from || !to) return null;
+              const x1 = from.x + 190, y1 = from.y + 58, x2 = to.x, y2 = to.y + 58;
+              return <path key={`${input.nodeId}-${target.id}`} d={`M ${x1} ${y1} C ${x1 + 75} ${y1}, ${x2 - 75} ${y2}, ${x2} ${y2}`}
+                className={target.id === selected || input.nodeId === selected ? "is-selected" : undefined}><title>{input.nodeId} → {target.id}: {input.socket}</title></path>;
+            }))}
+          </svg>
+          {graph.nodes.map((value, index) => {
+            const p = pointFor(value, index), bypassed = "bypassed" in value && value.bypassed;
+            const socket = constructionOutputSocket(value.type);
+            return <div key={value.id} className={`construction-node${value.id === selected ? " is-selected" : ""}${bypassed ? " is-bypassed" : ""}`}
+              style={{ left: p.x, top: p.y }} data-node-id={value.id}>
+              <button type="button" className="construction-node__title" aria-label={`Select ${displayName(value)}`} aria-pressed={value.id === selected}
+                onClick={() => onSelect(value.id)}
+                onPointerDown={event => { if (disabled || event.button !== 0) return; onSelect(value.id); event.currentTarget.setPointerCapture?.(event.pointerId); drag.current = { id: value.id, pointerX: event.clientX, pointerY: event.clientY, start: p }; }}
+                onPointerMove={event => { const d = drag.current; if (!d || d.id !== value.id) return;
+                  setPositions(all => ({ ...all, [value.id]: { x: Math.max(10, d.start.x + (event.clientX - d.pointerX) / zoom), y: Math.max(10, d.start.y + (event.clientY - d.pointerY) / zoom) } })); }}
+                onPointerUp={() => { drag.current = null; }} onPointerCancel={() => { drag.current = null; }}
+                onKeyDown={event => { if (!event.altKey || disabled || !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
+                  event.preventDefault(); setPositions(all => ({ ...all, [value.id]: { x: Math.max(10, p.x + (event.key === "ArrowRight" ? 16 : event.key === "ArrowLeft" ? -16 : 0)), y: Math.max(10, p.y + (event.key === "ArrowDown" ? 16 : event.key === "ArrowUp" ? -16 : 0)) } })); }}>
+                {displayName(value)}</button>
+              <div className="construction-node__ports">
+                {"input" in value || "inputs" in value ? <button type="button" className="construction-node__port construction-node__port--input" disabled={disabled}
+                  aria-label={`Connect input of ${displayName(value)}`} onClick={() => connect(value)} /> : null}
+                <span>{bypassed ? "Bypassed" : value.type === "Output" ? value.id === graph.outputNodeId ? "Construction output" : "Geometry join" : socket === "scope" ? "Scope" : socket === "footprint" ? "Footprint" : "Geometry"}</span>
+                {socket ? <button type="button" className={`construction-node__port construction-node__port--output${connection === value.id ? " is-connecting" : ""}`} disabled={disabled}
+                  aria-label={`Connect from ${displayName(value)}`} onClick={() => { setConnection(value.id); setError(null); }} /> : null}
+              </div>
+              {"parameters" in value && "count" in value.parameters ? <span className="construction-node__summary">{value.parameters.count} {(value.type === "SplitFloors" || value.type === "Storeys") ? "floors" : "bays"}</span> : null}
+              {value.type === "SetSurface" ? <span className="construction-node__summary">{value.composition.layers.length} finish layers</span> : null}
+            </div>;
+          })}
+        </div>
+      </div>
+    </div>
+    <div className="construction-graph__toolbar">
+      <select aria-label="Operator to add" value={addType} disabled={disabled} onChange={event => setAddType(event.currentTarget.value as BayConstructionNode["type"])}>
+        {Object.entries(names).filter(([type]) => type !== "PlaceStorefront" || graph.schemaVersion === "0.6.0").map(([type, label]) => <option key={type} value={type}>{label}</option>)}
+      </select><button type="button" disabled={disabled || graph.nodes.length >= 128} onClick={add}>Add node</button>
+      <button type="button" disabled={disabled || !node || graph.nodes.length <= 2} onClick={() => {
+        onChange({ ...graph, nodes: graph.nodes.filter(value => value.id !== selected) }); onSelect(graph.nodes.find(value => value.id !== selected)!.id); setConnection(null);
+      }}>Delete selected</button>
+    </div>
+  </section>;
+}

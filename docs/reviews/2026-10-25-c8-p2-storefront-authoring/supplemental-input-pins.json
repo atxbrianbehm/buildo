@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "0.1.0",
+  "basis": "Two app-imported JSON inputs outside src/scripts/server; exact content matches pre-C8.P2 parent commit, allowing only Git CRLF normalization. Supplemental to native/required-check338 code/config pins.",
+  "pins": [
+    {
+      "file": "docs/ref/catalog.json",
+      "sha256": "74220a743d55682109cd12ea04460b48a05bcfc3c5a7733f6e06dcd62a19cfed",
+      "parentBlobSha256": "74220a743d55682109cd12ea04460b48a05bcfc3c5a7733f6e06dcd62a19cfed",
+      "parentContentEqual": true,
+      "snapshot": "supplemental-source/docs/ref/catalog.json.txt"
+    },
+    {
+      "file": "docs/research/utdg-late19c-v0.1.json",
+      "sha256": "ca0d4b81562b594f91cb2a914d08dfbd3b92dd5c75d2bbfb8e1c087cb516e0a9",
+      "parentBlobSha256": "ca0d4b81562b594f91cb2a914d08dfbd3b92dd5c75d2bbfb8e1c087cb516e0a9",
+      "parentContentEqual": true,
+      "snapshot": "supplemental-source/docs/research/utdg-late19c-v0.1.json.txt"
+    }
+  ],
+  "webgpuSavedReferenceBriefExact": true
+}

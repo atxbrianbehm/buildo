@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "0.1.0",
+  "basis": "Full saved native PNGs, not screenshot crops.",
+  "shape": [
+    849,
+    925,
+    4
+  ],
+  "changedPixels": 1,
+  "maxChannelDelta": 1,
+  "changedChannels": 1,
+  "bbox": [
+    242,
+    479,
+    243,
+    480
+  ],
+  "states": [
+    "final-storefront-source",
+    "opened-v7"
+  ],
+  "exactFields": {
+    "hash": true,
+    "compiler": true,
+    "semantics": true,
+    "bindings": true,
+    "channels": true,
+    "prototypeHash": true,
+    "bounds": true,
+    "drawCamera": true,
+    "drawLights": true
+  }
+}

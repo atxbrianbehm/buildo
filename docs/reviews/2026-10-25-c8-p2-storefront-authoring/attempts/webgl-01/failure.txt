@@ -1,0 +1,8 @@
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ '2a2556e93af565200fb07861349e300622fc4810728d30e5664120a4cb5e301c'
+- 'ee303463f0f52d299e99c377b91f4071dd4e2c2e3ff42279465f6cf754b70418'
+
+    at file:///C:/Users/behmb/Documents/Cascade%20Projects/buildo/test-results/c8-p2-storefront-authoring-2026-10-25/capture-storefront-03.mjs:186:308
+[]

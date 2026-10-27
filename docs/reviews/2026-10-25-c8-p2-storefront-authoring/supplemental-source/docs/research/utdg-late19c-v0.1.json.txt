@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "0.1.0",
+  "id": "utdg.late19c.modular-apartment-commercial.v0.1",
+  "briefPath": "docs/research/utdg-late19c-brief.md",
+  "status": "research-draft",
+  "historicalTags": [
+    "period:late-19c",
+    "region:north-atlantic-urban",
+    "family:modular-apartment-commercial"
+  ],
+  "nodes": [
+    {
+      "id": "masonry.brick.running",
+      "role": "masonry.brick.running",
+      "channels": ["baseColor", "normal", "orm", "height"],
+      "metersPerTile": 0.96,
+      "historicalTags": ["period:late-19c", "material:brick", "bond:running"],
+      "generationHints": {
+        "proceduralSource": "running-bond-brick",
+        "remotePromptFragment": "late 19c urban running-bond brick, weathered mortar, soft clay color",
+        "weathering": "light-soot-street"
+      }
+    },
+    {
+      "id": "stone.trim.cast",
+      "role": "stone.trim.cast",
+      "channels": ["baseColor", "normal", "orm", "height"],
+      "metersPerTile": 0.64,
+      "historicalTags": ["period:late-19c", "material:cast-stone"],
+      "generationHints": {
+        "proceduralSource": "cast-stone-trim",
+        "remotePromptFragment": "cast stone belt course and lintel, fine sand texture",
+        "weathering": "light-edge-wear"
+      }
+    },
+    {
+      "id": "wood.frame.painted",
+      "role": "wood.frame.painted",
+      "channels": ["baseColor", "normal", "orm"],
+      "metersPerTile": 0.32,
+      "historicalTags": ["period:late-19c", "material:painted-wood"],
+      "generationHints": {
+        "proceduralSource": "painted-wood-frame",
+        "remotePromptFragment": "painted wood window sash and frame, subtle brush texture",
+        "weathering": "mild-peel-edges"
+      }
+    },
+    {
+      "id": "glass.clear",
+      "role": "glass.clear",
+      "channels": ["baseColor", "orm", "opacity"],
+      "metersPerTile": 1.0,
+      "historicalTags": ["period:late-19c", "material:glass"],
+      "generationHints": {
+        "proceduralSource": "clear-glass",
+        "remotePromptFragment": "clear storefront and window glass, slight dust",
+        "weathering": "light-dust"
+      }
+    },
+    {
+      "id": "metal.hardware.painted",
+      "role": "metal.hardware.painted",
+      "channels": ["baseColor", "normal", "orm"],
+      "metersPerTile": 0.16,
+      "historicalTags": ["period:late-19c", "material:painted-metal"],
+      "generationHints": {
+        "proceduralSource": "painted-metal-hardware",
+        "remotePromptFragment": "painted metal door hardware and thin rails",
+        "weathering": "edge-scuff"
+      }
+    },
+    {
+      "id": "roof.parapet.brick",
+      "role": "roof.parapet.brick",
+      "channels": ["baseColor", "normal", "orm", "height"],
+      "metersPerTile": 0.96,
+      "historicalTags": ["period:late-19c", "material:brick", "element:parapet"],
+      "generationHints": {
+        "proceduralSource": "running-bond-brick",
+        "remotePromptFragment": "parapet brick slightly darker than body wall",
+        "weathering": "rain-streak"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "masonry.brick.running",
+      "to": "stone.trim.cast",
+      "relation": "trims"
+    },
+    {
+      "from": "masonry.brick.running",
+      "to": "wood.frame.painted",
+      "relation": "pairs-with"
+    },
+    {
+      "from": "wood.frame.painted",
+      "to": "glass.clear",
+      "relation": "pairs-with"
+    },
+    {
+      "from": "stone.trim.cast",
+      "to": "metal.hardware.painted",
+      "relation": "overlays"
+    },
+    {
+      "from": "masonry.brick.running",
+      "to": "roof.parapet.brick",
+      "relation": "weathers-to"
+    }
+  ]
+}

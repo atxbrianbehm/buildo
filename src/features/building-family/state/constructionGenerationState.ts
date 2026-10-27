@@ -1,3 +1,4 @@
+import { retainConstructionStorefront, withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { retainConstructionWindowVocabulary } from "../core/constructionWindowVocabulary";
 import { DEFAULT_CONSTRUCTION_RECIPE_ID } from "../core/constructionRecipeCatalog";
 import { AtlasManifestSchema, type AtlasManifest } from "../contracts/atlasManifest";
@@ -47,6 +48,7 @@ const controlsSchema = z.object({ recipeId: z.string().min(1).max(512).optional(
   lockFootprint: z.boolean(), lockStoreys: z.boolean(), lockOpenings: z.boolean(), preserveAuthored: z.boolean() }).strict();
 
 function assertTopology(current: BayConstructionGraph, generated: BayConstructionGraph) {
+  if (current.schemaVersion === "0.6.0") generated = withConstructionStorefront(generated, 0);
   const topology = (graph: BayConstructionGraph) => ({ ...graph, schemaVersion: graph.schemaVersion === "0.5.0" ? "0.4.0" : graph.schemaVersion, nodes: graph.nodes.map(node => {
     if (node.type === "SetSurface") return { ...node, composition: null };
     return "parameters" in node ? { ...node, parameters: null } : node;
@@ -90,9 +92,10 @@ export async function resolveWorkbenchGeneration(currentInput: unknown, previous
   // Only locks created by this UI are refreshed. Unknown imported locks stay explicit.
   input.intent.locks = input.intent.locks.filter(lock => lock.reason !== "Workbench control lock" && (controls.preserveAuthored || lock.reason !== "Authored numeric edit"));
   for (const node of current.nodes) if ("parameters" in node) {
+    if (node.type === "PlaceStorefront") continue;
     const original = template.graph.nodes.find(item => item.id === node.id)!;
     if (!("parameters" in original)) throw new Error("Generation parameter topology changed.");
-    const groupLocked = node.type === "Footprint" && controls.lockFootprint || node.type === "Storeys" && controls.lockStoreys || ["PlaceOpening", "AssembleWindow"].includes(node.type) && controls.lockOpenings;
+    const groupLocked = node.type === "Footprint" && controls.lockFootprint || node.type === "Storeys" && controls.lockStoreys || (["PlaceOpening", "AssembleWindow"].includes(node.type) || current.schemaVersion === "0.6.0" && ["PlaceDoor", "AssembleDoor"].includes(node.type)) && controls.lockOpenings;
     for (const [field, value] of Object.entries(node.parameters)) {
       if (node.type === "AssembleWindow" && field === "layout") continue;
       const path = "construction/" + node.id + "/" + field;
@@ -128,7 +131,8 @@ export async function resolveWorkbenchGeneration(currentInput: unknown, previous
   input.intent.psg.evaluatedVariables = { ...input.intent.psg.evaluatedVariables,
     "$constructionPsgDocument": document, "$constructionPsgTrace": JSON.parse(canonicalJson(evaluation.trace)) };
   const source = await captureConstructionGenerationSource(input), resolution = await resolveConstructionGeneration(source);
-  const graph = retainConstructionWindowVocabulary(current, structuredClone(resolution.graph), controls.preserveAuthored || controls.lockOpenings);
+  const preserve = controls.preserveAuthored || controls.lockOpenings;
+  const graph = retainConstructionStorefront(current, retainConstructionWindowVocabulary(current, structuredClone(resolution.graph), preserve), preserve);
   for (const node of graph.nodes) if (node.type === "SetSurface") {
     const authored = current.nodes.find(item => item.id === node.id);
     if (authored?.type === "SetSurface") node.composition = structuredClone(authored.composition);

@@ -1,0 +1,32 @@
+import { chromium } from "@playwright/test";
+import { createServer } from "vite";
+import assert from "node:assert/strict";
+import { writeFileSync } from "node:fs";
+const out="test-results/c8-p2-storefront-authoring-2026-10-25";
+const server=await createServer({cacheDir:out+"/ui-qa-cache",server:{host:"127.0.0.1",port:0}});
+let browser;
+try {
+ await server.listen();browser=await chromium.launch({channel:"chromium"});const page=await browser.newPage({viewport:{width:1493,height:1054},deviceScaleFactor:1});const errors=[];
+ page.on("pageerror",e=>errors.push(e.message));await page.route("**/favicon.ico",r=>r.fulfill({status:204}));await page.addInitScript(()=>Object.defineProperty(navigator,"gpu",{value:undefined,configurable:true}));
+ await page.goto(server.resolvedUrls.local[0]+"#document=c8-storefront-vocabulary-review",{waitUntil:"domcontentloaded",timeout:120000});
+ const ready=()=>page.waitForFunction(()=>document.querySelector('.construction-workspace [aria-label="Construction inspector"]')?.getAttribute('aria-busy')==='false',undefined,{timeout:120000});
+ await ready();await page.getByLabel("Open construction file").setInputFiles(out+"/native-03-webgpu/finished-v7.json");await ready();await page.locator('.construction-grouped__section > summary').filter({hasText:/^Ground floor$/}).click();
+ await page.getByLabel("Ground frontage",{exact:true}).waitFor();assert.equal(await page.getByLabel("Ground frontage",{exact:true}).inputValue(),"1");
+ const metrics=[];
+ for(const [name,width,height] of [["desktop",1493,1054],["tablet",900,1100],["compact",430,1000]]) {
+  await page.setViewportSize({width,height});await ready();await page.evaluate(()=>document.fonts.ready);await page.getByLabel("Construction inspector",{exact:true}).evaluate(e=>{e.scrollTop=0;});
+  const mode=page.getByLabel("Ground frontage",{exact:true});await mode.focus();await mode.press("ArrowDown");
+  const state=await page.evaluate(()=>{
+   const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
+   const controls=[...document.querySelectorAll('.construction-grouped select,.construction-grouped input')].filter(e=>e.getClientRects().length).map(e=>{
+    const s=getComputedStyle(e),r=e.getBoundingClientRect(),text=e.tagName==='SELECT'?e.selectedOptions[0].textContent:e.value;ctx.font=s.font;
+    const available=r.width-parseFloat(s.paddingLeft)-parseFloat(s.paddingRight)-(e.tagName==='SELECT'?24:0);
+    return {name:e.getAttribute('aria-label'),text,width:r.width,height:r.height,font:s.fontFamily,fontSize:s.fontSize,lineHeight:s.lineHeight,color:s.color,background:s.backgroundColor,outlineWidth:s.outlineWidth,textWidth:ctx.measureText(text).width,availableTextWidth:available,textFits:ctx.measureText(text).width<=available+1};
+   });
+   return {width:innerWidth,scrollWidth:document.documentElement.scrollWidth,controls,selectedLabel:document.querySelector('[aria-label="Ground frontage"]').selectedOptions[0].textContent};
+  });
+  assert(state.scrollWidth<=width+1);assert.equal(state.selectedLabel,'Storefront');assert(state.controls.every(c=>c.height>=44&&c.textFits));assert.equal(state.controls.find(c=>c.name==='Ground frontage').outlineWidth,'3px');
+  await page.screenshot({path:out+'/ui-'+name+'.png',fullPage:true});metrics.push({name,...state});
+ }
+ assert.deepEqual(errors,[]);writeFileSync(out+'/ui-qa.json',JSON.stringify({schemaVersion:'0.1.0',productionInstrumentation:false,backend:'webgl',metrics,errors},null,2)+'\n');console.log('C8_UI_QA',JSON.stringify({sizes:metrics.length,errors}));
+} finally {await browser?.close();await server.close();}

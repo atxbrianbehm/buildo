@@ -1,0 +1,288 @@
+{
+  "schemaVersion": "0.1.0",
+  "catalogKind": "dynamic-building-family-period-reference",
+  "id": "period-ref-v0.1",
+  "label": "Late-19c / early commercial period references",
+  "purpose": "Manual visual comparison targets for kit-mode clay and textured Assembly Hall output. Not used for structure generation.",
+  "compareProtocol": {
+    "presentation": "clay",
+    "camera": "3/4 front elevation, building fills ~70% frame",
+    "lighting": "Shift-drag key light for raking pass; default orbit for silhouette",
+    "route": "#room=periodRef"
+  },
+  "rubric": [
+    {
+      "id": "silhouette",
+      "label": "Silhouette / massing",
+      "prompt": "Parapet or cornice crown, corner mass, and overall box proportion read without textures."
+    },
+    {
+      "id": "facadeRhythm",
+      "label": "Facade rhythm",
+      "prompt": "Ground / body / crown bands differ; bays are not a flat uniform stamp."
+    },
+    {
+      "id": "openingDepth",
+      "label": "Opening depth",
+      "prompt": "Windows/doors read as recessed; frame and glass plane separate in raking light."
+    },
+    {
+      "id": "trimLayering",
+      "label": "Trim layering",
+      "prompt": "Cornice/belt/lintel have stacked profiles or clear multi-layer shadow, not a single flat ribbon."
+    },
+    {
+      "id": "storefrontBase",
+      "label": "Storefront / base",
+      "prompt": "When the reference has a commercial base, ground floor is taller or differently framed than upper floors."
+    },
+    {
+      "id": "sideRear",
+      "label": "Side / rear hierarchy",
+      "prompt": "Secondary elevation is simpler than the street front (fewer bays of equal importance)."
+    },
+    {
+      "id": "materialScale",
+      "label": "Material scale (textured mode)",
+      "prompt": "Brick/stone courses and trim scale feel building-sized at default camera, not wallpaper."
+    }
+  ],
+  "entries": [
+    {
+      "id": "ref-marx-grocery-buffalo",
+      "file": "Former_John_Marx_Grocery_Store,_Buffalo,_New_York_-_20200821.jpg",
+      "collection": "user",
+      "title": "Former John Marx Grocery Store, Buffalo, NY",
+      "priority": "primary",
+      "tags": ["brick-commercial", "three-story", "cornice", "corner", "lintels", "side-elevation"],
+      "lookFor": [
+        "Deep bracketed cornice as a crown band",
+        "Regular 3-bay upper rhythm with stone lintels/sills",
+        "Ground floor as a distinct base (altered storefront / bulkhead)",
+        "Side elevation with openings but simpler hierarchy"
+      ],
+      "rightsNote": "User-supplied reference; verify rights before redistribution."
+    },
+    {
+      "id": "ref-brooklyn-vanderbilt-nara",
+      "file": "AN_EXAMPLE_OF_BROOKLYN_ARCHITECTURE_ON_VANDERBILT_AVENUE_IN_NEW_YORK_CITY._BROOKLYN_REMAINS_ONE_OF_AMERICA'S_BEST..._-_NARA_-_555902.jpg",
+      "collection": "user",
+      "title": "Brooklyn architecture on Vanderbilt Avenue (NARA)",
+      "priority": "primary",
+      "tags": ["mixed-use", "storefront-base", "bay-window", "painted-brick", "three-story"],
+      "lookFor": [
+        "Red painted commercial base vs lighter upper body",
+        "Arched storefront openings",
+        "Upper windows with brick arches and decorative panels",
+        "Corner bay / oriel reading as a vertical accent"
+      ],
+      "rightsNote": "Filename indicates NARA source; confirm public-domain status for the specific scan."
+    },
+    {
+      "id": "ref-boykin-school-facade",
+      "file": "+.jpg",
+      "collection": "user",
+      "title": "Brick rowhouse / school facade with stoop (sepia)",
+      "priority": "primary",
+      "tags": ["brick-apartment", "stoop", "fire-escape", "lintels", "cornice"],
+      "lookFor": [
+        "Strong vertical pier and window grid",
+        "Ground entry with pedimented bays vs upper plain openings",
+        "Cornice as thin but continuous crown",
+        "Side wall returns with fewer openings"
+      ],
+      "rightsNote": "User-supplied reference; verify rights before redistribution."
+    },
+    {
+      "id": "ref-holdout-116th",
+      "file": "holdout116thst.jpg",
+      "collection": "user",
+      "title": "Holdout on W 116th Street between larger apartments",
+      "priority": "primary",
+      "tags": ["holdout", "mansard", "street-wall", "scale-contrast", "ornate-entry"],
+      "lookFor": [
+        "Small parcel still reads as complete building (base/body/crown)",
+        "Neighboring taller facades share street-wall language",
+        "Mansard / dormer crown vs flat parapets nearby",
+        "Ornate ground entry vs simpler upper windows"
+      ],
+      "rightsNote": "User-supplied contemporary photo; verify rights before redistribution."
+    },
+    {
+      "id": "ref-ferrybank-brooklyn-bridge",
+      "file": "View_of_Brooklyn_Tower_emerging_behind_19th_century_commercial_buildings_on_the_corner_of_Front_Street_and_Camden_Plaza._Jet_Lowe,_photographer,_1982._-_Brooklyn_Bridge,_Spanning_HA.jpg",
+      "collection": "user",
+      "title": "19c commercial corner under Brooklyn Bridge (HAER, Jet Lowe 1982)",
+      "priority": "primary",
+      "tags": ["cast-iron-ish", "arched-openings", "corner-commercial", "two-story-plus", "haer"],
+      "lookFor": [
+        "Tall arched ground openings with multi-pane division",
+        "Upper arcade of arched windows",
+        "Corner entry mass vs neighboring simpler facade",
+        "Cornice / parapet silhouette against sky"
+      ],
+      "rightsNote": "HAER / U.S. government work is typically public domain; keep attribution to Jet Lowe / HAER."
+    },
+    {
+      "id": "ref-cast-iron-corner",
+      "file": "images.jpg",
+      "collection": "user",
+      "title": "Ornate multi-story commercial corner (historic photo)",
+      "priority": "secondary",
+      "tags": ["ornate", "corner", "storefront-awnings", "multi-story", "cast-iron"],
+      "lookFor": [
+        "Heavy ornamented crown and intermediate cornices",
+        "Bay stacking with recessed upper windows",
+        "Continuous ground-floor shop awnings / sign band",
+        "Corner chamfer or rounded corner mass"
+      ],
+      "rightsNote": "User-supplied reference; verify rights before redistribution."
+    },
+    {
+      "id": "ref-panorama-5ave-14-16",
+      "file": "default.jpg",
+      "collection": "user",
+      "title": "Street panorama near 5th Ave / 14th–16th (period postcard)",
+      "priority": "secondary",
+      "tags": ["street-wall", "block-rhythm", "storefronts", "panorama"],
+      "lookFor": [
+        "Varied bay widths along a continuous street wall",
+        "Shared cornice heights with individual crown details",
+        "Ground floor retail continuous; upper floors residential/office"
+      ],
+      "rightsNote": "User-supplied period postcard scan; verify rights before redistribution."
+    },
+    {
+      "id": "ref-panorama-27th",
+      "file": "default (1).jpg",
+      "collection": "user",
+      "title": "Street panorama West 27th Street (period postcard)",
+      "priority": "secondary",
+      "tags": ["street-wall", "fire-escapes", "storefronts", "panorama"],
+      "lookFor": [
+        "Repetitive window grids broken by corner buildings",
+        "Fire escapes as secondary layer (do not model as primary structure)",
+        "Shop canopies vs plain upper walls"
+      ],
+      "rightsNote": "User-supplied period postcard scan; verify rights before redistribution."
+    },
+    {
+      "id": "ref-panorama-45th",
+      "file": "default (2).jpg",
+      "collection": "user",
+      "title": "Street panorama East 45th Street (period postcard)",
+      "priority": "secondary",
+      "tags": ["street-wall", "corner-bay", "storefronts", "panorama"],
+      "lookFor": [
+        "Corner building with stacked bays / oriels",
+        "Ground glass storefronts vs punched upper openings",
+        "Church or special facade interrupting commercial rhythm"
+      ],
+      "rightsNote": "User-supplied period postcard scan; verify rights before redistribution."
+    },
+    {
+      "id": "ref-arcade-railway-litho",
+      "file": "Proposed_arcade_railway-Under_Broadway,_view_near_Wall_Street_-_Ferd._Mayer_&_Sons,_lith.,_N.Y._;_Melville_C._Smith,_projector,_N.Y._LCCN93506795.jpg",
+      "collection": "user",
+      "title": "Proposed Arcade Railway under Broadway (lithograph)",
+      "priority": "context",
+      "tags": ["lithograph", "street-section", "context-only"],
+      "lookFor": [
+        "Context only: street scale and multi-story commercial fronts",
+        "Not a primary single-building facade QA target"
+      ],
+      "rightsNote": "LOC lithograph; confirm no-known-restrictions for the specific item."
+    },
+    {
+      "id": "habs-jefferson-city-brick",
+      "file": "01-habs-jefferson-city-brick-commercial-facade.jpg",
+      "collection": "habs",
+      "title": "Brick commercial facade, Jefferson City, MO (HABS)",
+      "priority": "primary",
+      "tags": ["habs", "brick-commercial", "full-facade"],
+      "lookFor": [
+        "Full-width facade composition",
+        "Opening grid and cornice relationship"
+      ],
+      "rightsNote": "Public domain (U.S. government work / HABS). See docs/research/period-reference/images/SOURCES.json."
+    },
+    {
+      "id": "habs-columbus-apartment-front",
+      "file": "02-habs-columbus-oh-brick-commercial-apartment-front.jpg",
+      "collection": "habs",
+      "title": "Brick commercial & apartment front, Columbus, OH (HABS)",
+      "priority": "primary",
+      "tags": ["habs", "apartment", "bay-front", "arched-windows"],
+      "lookFor": [
+        "Projected bay front massing",
+        "Arched upper openings and ground base split",
+        "Cornice continuity across bays"
+      ],
+      "rightsNote": "Public domain (U.S. government work / HABS)."
+    },
+    {
+      "id": "habs-columbus-cornice",
+      "file": "03-habs-columbus-oh-cornice-detail.jpg",
+      "collection": "habs",
+      "title": "Cornice detail, Columbus, OH (HABS)",
+      "priority": "detail",
+      "tags": ["habs", "cornice", "detail"],
+      "lookFor": [
+        "Multi-layer cornice profiles and brackets",
+        "Shadow depth under crown"
+      ],
+      "rightsNote": "Public domain (U.S. government work / HABS)."
+    },
+    {
+      "id": "habs-columbus-window-hood",
+      "file": "04-habs-columbus-oh-window-hood-detail.jpg",
+      "collection": "habs",
+      "title": "Window hoodmold detail, Columbus, OH (HABS)",
+      "priority": "detail",
+      "tags": ["habs", "window-hood", "detail"],
+      "lookFor": [
+        "Hood / lintel projection over openings",
+        "Trim reading separate from wall plane"
+      ],
+      "rightsNote": "Public domain (U.S. government work / HABS)."
+    },
+    {
+      "id": "habs-shasta-three-facades",
+      "file": "05-habs-shasta-main-street-three-brick-facades.jpg",
+      "collection": "habs",
+      "title": "Three brick facades, Main Street, Shasta, CA (HABS)",
+      "priority": "secondary",
+      "tags": ["habs", "row", "false-front", "brick-commercial"],
+      "lookFor": [
+        "Neighboring facades with distinct bay counts",
+        "Shared street wall with varied cornice heights"
+      ],
+      "rightsNote": "Public domain (U.S. government work / HABS)."
+    },
+    {
+      "id": "habs-baltimore-row",
+      "file": "06-habs-baltimore-east-baltimore-st-commercial-row.jpg",
+      "collection": "habs",
+      "title": "East Baltimore Street commercial row (HABS)",
+      "priority": "secondary",
+      "tags": ["habs", "row", "commercial"],
+      "lookFor": [
+        "Repeated lot widths with shared cornice line",
+        "Ground-floor retail openings"
+      ],
+      "rightsNote": "Public domain (U.S. government work / HABS)."
+    },
+    {
+      "id": "loc-flatiron-nyc",
+      "file": "07-detroit-publishing-flatiron-nyc.jpg",
+      "collection": "habs",
+      "title": "Flatiron Building, New York (Detroit Publishing)",
+      "priority": "context",
+      "tags": ["landmark", "context-only", "high-rise"],
+      "lookFor": [
+        "Context only — scale and street presence; not the apartment kit target"
+      ],
+      "rightsNote": "Public domain / no known restrictions (Detroit Publishing Co. period photograph)."
+    }
+  ]
+}

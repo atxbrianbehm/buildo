@@ -1,0 +1,137 @@
+[
+  {
+    "filename": "buildo-c8-storefront-whole.png",
+    "path": "native-04-webgpu/display-frontage.png",
+    "file_upload_id": "404b77d6-cd4f-819e-9951-00b20aa61c3a",
+    "httpStatus": 200,
+    "response": {
+      "file_upload_id": "404b77d6-cd4f-819e-9951-00b20aa61c3a",
+      "filename": "buildo-c8-storefront-whole.png",
+      "content_type": "image/png",
+      "content_length": 393256,
+      "status": "uploaded",
+      "markdown_source": "file-upload://404b77d6-cd4f-819e-9951-00b20aa61c3a",
+      "suggested_markdown": "<image source=\"file-upload://404b77d6-cd4f-819e-9951-00b20aa61c3a\" />"
+    }
+  },
+  {
+    "filename": "buildo-c8-ground-floor-controls.png",
+    "path": "native-04-webgpu/frontage-inspector.png",
+    "file_upload_id": "404b77d6-cd4f-8156-a950-00b2032ffb45",
+    "httpStatus": 200,
+    "response": {
+      "file_upload_id": "404b77d6-cd4f-8156-a950-00b2032ffb45",
+      "filename": "buildo-c8-ground-floor-controls.png",
+      "content_type": "image/png",
+      "content_length": 455078,
+      "status": "uploaded",
+      "markdown_source": "file-upload://404b77d6-cd4f-8156-a950-00b2032ffb45",
+      "suggested_markdown": "<image source=\"file-upload://404b77d6-cd4f-8156-a950-00b2032ffb45\" />"
+    }
+  },
+  {
+    "filename": "buildo-c8-display-close.png",
+    "path": "native-04-webgpu/display-close.png",
+    "file_upload_id": "404b77d6-cd4f-8110-a985-00b2944413ad",
+    "httpStatus": 200,
+    "response": {
+      "file_upload_id": "404b77d6-cd4f-8110-a985-00b2944413ad",
+      "filename": "buildo-c8-display-close.png",
+      "content_type": "image/png",
+      "content_length": 301535,
+      "status": "uploaded",
+      "markdown_source": "file-upload://404b77d6-cd4f-8110-a985-00b2944413ad",
+      "suggested_markdown": "<image source=\"file-upload://404b77d6-cd4f-8110-a985-00b2944413ad\" />"
+    }
+  },
+  {
+    "filename": "buildo-c8-display-clay-close.png",
+    "path": "native-04-webgpu/display-clay-close.png",
+    "file_upload_id": "404b77d6-cd4f-81d2-84e8-00b29a42ace3",
+    "httpStatus": 200,
+    "response": {
+      "file_upload_id": "404b77d6-cd4f-81d2-84e8-00b29a42ace3",
+      "filename": "buildo-c8-display-clay-close.png",
+      "content_type": "image/png",
+      "content_length": 72572,
+      "status": "uploaded",
+      "markdown_source": "file-upload://404b77d6-cd4f-81d2-84e8-00b29a42ace3",
+      "suggested_markdown": "<image source=\"file-upload://404b77d6-cd4f-81d2-84e8-00b29a42ace3\" />"
+    }
+  },
+  {
+    "filename": "buildo-c8-glazed-entrance-close.png",
+    "path": "native-04-webgpu/glazed-entrance-close.png",
+    "file_upload_id": "404b77d6-cd4f-8151-b41d-00b2884f2bd6",
+    "httpStatus": 200,
+    "response": {
+      "file_upload_id": "404b77d6-cd4f-8151-b41d-00b2884f2bd6",
+      "filename": "buildo-c8-glazed-entrance-close.png",
+      "content_type": "image/png",
+      "content_length": 426252,
+      "status": "uploaded",
+      "markdown_source": "file-upload://404b77d6-cd4f-8151-b41d-00b2884f2bd6",
+      "suggested_markdown": "<image source=\"file-upload://404b77d6-cd4f-8151-b41d-00b2884f2bd6\" />"
+    }
+  },
+  {
+    "filename": "buildo-c8-glazed-entrance-clay-close.png",
+    "path": "native-04-webgpu/glazed-entrance-clay-close.png",
+    "file_upload_id": "404b77d6-cd4f-81f1-bbbb-00b238e020f0",
+    "httpStatus": 200,
+    "response": {
+      "file_upload_id": "404b77d6-cd4f-81f1-bbbb-00b238e020f0",
+      "filename": "buildo-c8-glazed-entrance-clay-close.png",
+      "content_type": "image/png",
+      "content_length": 157011,
+      "status": "uploaded",
+      "markdown_source": "file-upload://404b77d6-cd4f-81f1-bbbb-00b238e020f0",
+      "suggested_markdown": "<image source=\"file-upload://404b77d6-cd4f-81f1-bbbb-00b238e020f0\" />"
+    }
+  },
+  {
+    "filename": "buildo-c8-casements-storefront-building.png",
+    "path": "native-04-webgpu/final-building.png",
+    "file_upload_id": "404b77d6-cd4f-81ca-adf4-00b2c42f3e36",
+    "httpStatus": 200,
+    "response": {
+      "file_upload_id": "404b77d6-cd4f-81ca-adf4-00b2c42f3e36",
+      "filename": "buildo-c8-casements-storefront-building.png",
+      "content_type": "image/png",
+      "content_length": 440673,
+      "status": "uploaded",
+      "markdown_source": "file-upload://404b77d6-cd4f-81ca-adf4-00b2c42f3e36",
+      "suggested_markdown": "<image source=\"file-upload://404b77d6-cd4f-81ca-adf4-00b2c42f3e36\" />"
+    }
+  },
+  {
+    "filename": "buildo-c8-phone-controls.png",
+    "path": "native-04-webgpu/compact.png",
+    "file_upload_id": "404b77d6-cd4f-819d-8b47-00b28abfaaca",
+    "httpStatus": 200,
+    "response": {
+      "file_upload_id": "404b77d6-cd4f-819d-8b47-00b28abfaaca",
+      "filename": "buildo-c8-phone-controls.png",
+      "content_type": "image/png",
+      "content_length": 196586,
+      "status": "uploaded",
+      "markdown_source": "file-upload://404b77d6-cd4f-819d-8b47-00b28abfaaca",
+      "suggested_markdown": "<image source=\"file-upload://404b77d6-cd4f-819d-8b47-00b28abfaaca\" />"
+    }
+  },
+  {
+    "filename": "buildo-c8-webgl-cold-recovery.png",
+    "path": "diagnostic-03-webgl/cold-recovered.png",
+    "file_upload_id": "404b77d6-cd4f-81a3-9ef0-00b282bb0f46",
+    "httpStatus": 200,
+    "response": {
+      "file_upload_id": "404b77d6-cd4f-81a3-9ef0-00b282bb0f46",
+      "filename": "buildo-c8-webgl-cold-recovery.png",
+      "content_type": "image/png",
+      "content_length": 442369,
+      "status": "uploaded",
+      "markdown_source": "file-upload://404b77d6-cd4f-81a3-9ef0-00b282bb0f46",
+      "suggested_markdown": "<image source=\"file-upload://404b77d6-cd4f-81a3-9ef0-00b282bb0f46\" />"
+    }
+  }
+]
