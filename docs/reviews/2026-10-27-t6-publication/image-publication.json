@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "0.1.0",
+  "commit": "3c803ee43e44db761e5589618dba5c279c89a76d",
+  "images": [
+    {
+      "file": "webgpu/bracket-baseline.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/3c803ee43e44db761e5589618dba5c279c89a76d/docs/reviews/2026-10-27-t6-shadow-bias-sweep/webgpu/bracket-baseline.png",
+      "sha256": "59232690dd232210e4b83ddaed088314e587c27dfb99bd7ae6417a5691ee01e8",
+      "httpStatus": 200,
+      "literalLocalBytesExact": true
+    },
+    {
+      "file": "webgpu/bracket-bias-0.001.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/3c803ee43e44db761e5589618dba5c279c89a76d/docs/reviews/2026-10-27-t6-shadow-bias-sweep/webgpu/bracket-bias-0.001.png",
+      "sha256": "9ba7fc7b29856fcf07b1c3eedfe35f46bbcb851167a13b5684ee0b732be18fa7",
+      "httpStatus": 200,
+      "literalLocalBytesExact": true
+    }
+  ]
+}

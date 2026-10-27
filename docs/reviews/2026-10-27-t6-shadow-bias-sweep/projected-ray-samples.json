@@ -1,0 +1,4735 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "shadow-bias-ray-projection-samples",
+  "method": "Project front backing ray samples outside bracket widths, rejecting samples occluded from the camera by a cornice triangle. A light ray must intersect geometry. Sample nearest native pixel; pixel ownership is not independently GPU-proven. Mean RGB deltas are sRGB values, not radiometry.",
+  "backends": {
+    "webgl": {
+      "cameraVisibleProjectedSamples": 123,
+      "byCandidate": {
+        "bias-0.00015": {
+          "brighterBy10": 10,
+          "meanRgbDelta": 3.5068
+        },
+        "bias-0.0005": {
+          "brighterBy10": 25,
+          "meanRgbDelta": 14.7046
+        },
+        "bias-0.001": {
+          "brighterBy10": 52,
+          "meanRgbDelta": 34.6558
+        },
+        "normal-0.003": {
+          "brighterBy10": 0,
+          "meanRgbDelta": -0.6938
+        },
+        "normal-0.01": {
+          "brighterBy10": 2,
+          "meanRgbDelta": -0.206
+        }
+      },
+      "samples": [
+        {
+          "point": [
+            1.125,
+            10.512,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            416
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.512,
+            -6.52161
+          ],
+          "screenPixel": [
+            837,
+            417
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.512,
+            -6.52161
+          ],
+          "screenPixel": [
+            712,
+            417
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.025,
+            10.512,
+            -6.52161
+          ],
+          "screenPixel": [
+            642,
+            418
+          ],
+          "firstLightHit": "unit",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.512,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            419
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.7,
+            10.512,
+            -6.52161
+          ],
+          "screenPixel": [
+            383,
+            420
+          ],
+          "firstLightHit": "unit",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.512,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            420
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.512,
+            -6.52161
+          ],
+          "screenPixel": [
+            157,
+            421
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.51975,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            413
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.51975,
+            -6.52161
+          ],
+          "screenPixel": [
+            837,
+            414
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.51975,
+            -6.52161
+          ],
+          "screenPixel": [
+            712,
+            414
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.025,
+            10.51975,
+            -6.52161
+          ],
+          "screenPixel": [
+            642,
+            415
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.51975,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            415
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.7,
+            10.51975,
+            -6.52161
+          ],
+          "screenPixel": [
+            383,
+            416
+          ],
+          "firstLightHit": "unit",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.51975,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            416
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.51975,
+            -6.52161
+          ],
+          "screenPixel": [
+            157,
+            417
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.5275,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            411
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.5275,
+            -6.52161
+          ],
+          "screenPixel": [
+            837,
+            411
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.5275,
+            -6.52161
+          ],
+          "screenPixel": [
+            712,
+            411
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.025,
+            10.5275,
+            -6.52161
+          ],
+          "screenPixel": [
+            642,
+            411
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.5275,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            412
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.7,
+            10.5275,
+            -6.52161
+          ],
+          "screenPixel": [
+            383,
+            412
+          ],
+          "firstLightHit": "unit",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.5275,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            412
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.5275,
+            -6.52161
+          ],
+          "screenPixel": [
+            157,
+            412
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.53525,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            408
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.53525,
+            -6.52161
+          ],
+          "screenPixel": [
+            837,
+            408
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.53525,
+            -6.52161
+          ],
+          "screenPixel": [
+            712,
+            408
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.025,
+            10.53525,
+            -6.52161
+          ],
+          "screenPixel": [
+            642,
+            408
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.53525,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            408
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.7,
+            10.53525,
+            -6.52161
+          ],
+          "screenPixel": [
+            383,
+            408
+          ],
+          "firstLightHit": "unit",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.53525,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            408
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.53525,
+            -6.52161
+          ],
+          "screenPixel": [
+            157,
+            408
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.543,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            405
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.543,
+            -6.52161
+          ],
+          "screenPixel": [
+            837,
+            405
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.543,
+            -6.52161
+          ],
+          "screenPixel": [
+            712,
+            405
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.025,
+            10.543,
+            -6.52161
+          ],
+          "screenPixel": [
+            642,
+            404
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.543,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            404
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.7,
+            10.543,
+            -6.52161
+          ],
+          "screenPixel": [
+            383,
+            404
+          ],
+          "firstLightHit": "unit",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.543,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            404
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.543,
+            -6.52161
+          ],
+          "screenPixel": [
+            157,
+            404
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.55075,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            402
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.55075,
+            -6.52161
+          ],
+          "screenPixel": [
+            837,
+            402
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.55075,
+            -6.52161
+          ],
+          "screenPixel": [
+            712,
+            401
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.025,
+            10.55075,
+            -6.52161
+          ],
+          "screenPixel": [
+            642,
+            401
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.55075,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            400
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.7,
+            10.55075,
+            -6.52161
+          ],
+          "screenPixel": [
+            383,
+            400
+          ],
+          "firstLightHit": "unit",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.55075,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            400
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.55075,
+            -6.52161
+          ],
+          "screenPixel": [
+            157,
+            399
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.5585,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            399
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.5585,
+            -6.52161
+          ],
+          "screenPixel": [
+            837,
+            399
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.5585,
+            -6.52161
+          ],
+          "screenPixel": [
+            712,
+            398
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.025,
+            10.5585,
+            -6.52161
+          ],
+          "screenPixel": [
+            642,
+            398
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.5585,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            397
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.7,
+            10.5585,
+            -6.52161
+          ],
+          "screenPixel": [
+            383,
+            396
+          ],
+          "firstLightHit": "unit",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.5585,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            396
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.5585,
+            -6.52161
+          ],
+          "screenPixel": [
+            157,
+            395
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.56625,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            396
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.56625,
+            -6.52161
+          ],
+          "screenPixel": [
+            837,
+            396
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.56625,
+            -6.52161
+          ],
+          "screenPixel": [
+            712,
+            395
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.025,
+            10.56625,
+            -6.52161
+          ],
+          "screenPixel": [
+            642,
+            394
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.56625,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            393
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.7,
+            10.56625,
+            -6.52161
+          ],
+          "screenPixel": [
+            383,
+            392
+          ],
+          "firstLightHit": "unit",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.56625,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            391
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.56625,
+            -6.52161
+          ],
+          "screenPixel": [
+            157,
+            390
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.574,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            394
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.574,
+            -6.52161
+          ],
+          "screenPixel": [
+            837,
+            393
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.574,
+            -6.52161
+          ],
+          "screenPixel": [
+            713,
+            392
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.025,
+            10.574,
+            -6.52161
+          ],
+          "screenPixel": [
+            642,
+            391
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.574,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            389
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.574,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            387
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.574,
+            -6.52161
+          ],
+          "screenPixel": [
+            157,
+            386
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.58175,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            391
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 14.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.58175,
+            -6.52161
+          ],
+          "screenPixel": [
+            837,
+            390
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 41.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.58175,
+            -6.52161
+          ],
+          "screenPixel": [
+            713,
+            389
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 27.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.025,
+            10.58175,
+            -6.52161
+          ],
+          "screenPixel": [
+            642,
+            388
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 35.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.58175,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            386
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 27.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.58175,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            383
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 25.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.58175,
+            -6.52161
+          ],
+          "screenPixel": [
+            157,
+            382
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 29.333,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.5895,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            388
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 94.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.5895,
+            -6.52161
+          ],
+          "screenPixel": [
+            837,
+            387
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 94.333,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.5895,
+            -6.52161
+          ],
+          "screenPixel": [
+            713,
+            385
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 93.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.025,
+            10.5895,
+            -6.52161
+          ],
+          "screenPixel": [
+            642,
+            384
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 96.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.5895,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            382
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 93.333,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.5895,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            379
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 94.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.5895,
+            -6.52161
+          ],
+          "screenPixel": [
+            157,
+            377
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 95.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.59725,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            385
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 93.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.59725,
+            -6.52161
+          ],
+          "screenPixel": [
+            837,
+            384
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 93.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.59725,
+            -6.52161
+          ],
+          "screenPixel": [
+            713,
+            382
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 93.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.025,
+            10.59725,
+            -6.52161
+          ],
+          "screenPixel": [
+            642,
+            381
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 95.333,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.59725,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            378
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 94.333,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.59725,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            375
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 94.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.59725,
+            -6.52161
+          ],
+          "screenPixel": [
+            157,
+            373
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 95.333,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.605,
+            -6.52161
+          ],
+          "screenPixel": [
+            892,
+            382
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 95.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.605,
+            -6.52161
+          ],
+          "screenPixel": [
+            837,
+            381
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 94.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.605,
+            -6.52161
+          ],
+          "screenPixel": [
+            713,
+            379
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 93.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.025,
+            10.605,
+            -6.52161
+          ],
+          "screenPixel": [
+            642,
+            378
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 95.333,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.605,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            374
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 14.333,
+            "bias-0.001": 94.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.605,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            371
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 94.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.605,
+            -6.52161
+          ],
+          "screenPixel": [
+            157,
+            368
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 9.333,
+            "bias-0.001": 94.333,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.61275,
+            -6.52161
+          ],
+          "screenPixel": [
+            892,
+            379
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 59.0,
+            "bias-0.001": 95.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.61275,
+            -6.52161
+          ],
+          "screenPixel": [
+            837,
+            378
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 39.667,
+            "bias-0.001": 94.333,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.61275,
+            -6.52161
+          ],
+          "screenPixel": [
+            713,
+            376
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 46.0,
+            "bias-0.001": 94.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.61275,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            371
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 46.667,
+            "bias-0.001": 93.333,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.61275,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            367
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 29.0,
+            "bias-0.001": 93.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.61275,
+            -6.52161
+          ],
+          "screenPixel": [
+            157,
+            364
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 47.333,
+            "bias-0.001": 94.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.6205,
+            -6.52161
+          ],
+          "screenPixel": [
+            892,
+            377
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 95.667,
+            "bias-0.001": 95.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.6205,
+            -6.52161
+          ],
+          "screenPixel": [
+            837,
+            375
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 94.333,
+            "bias-0.001": 94.333,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.6205,
+            -6.52161
+          ],
+          "screenPixel": [
+            713,
+            372
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 94.0,
+            "bias-0.001": 94.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.6205,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            367
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 93.333,
+            "bias-0.001": 93.333,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.6205,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            362
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 93.667,
+            "bias-0.001": 93.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.6205,
+            -6.52161
+          ],
+          "screenPixel": [
+            157,
+            360
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 94.0,
+            "bias-0.001": 94.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.62825,
+            -6.52161
+          ],
+          "screenPixel": [
+            892,
+            374
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 12.667,
+            "bias-0.0005": 94.333,
+            "bias-0.001": 94.333,
+            "normal-0.003": -0.667,
+            "normal-0.01": -0.667
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.62825,
+            -6.52161
+          ],
+          "screenPixel": [
+            837,
+            372
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 18.0,
+            "bias-0.0005": 91.0,
+            "bias-0.001": 91.0,
+            "normal-0.003": -2.667,
+            "normal-0.01": -3.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.62825,
+            -6.52161
+          ],
+          "screenPixel": [
+            713,
+            369
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 27.333,
+            "bias-0.0005": 93.667,
+            "bias-0.001": 93.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.62825,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            363
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 19.333,
+            "bias-0.0005": 88.0,
+            "bias-0.001": 88.0,
+            "normal-0.003": -4.333,
+            "normal-0.01": -5.333
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.62825,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            358
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 6.333,
+            "bias-0.0005": 80.333,
+            "bias-0.001": 80.333,
+            "normal-0.003": -7.0,
+            "normal-0.01": -14.333
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.62825,
+            -6.52161
+          ],
+          "screenPixel": [
+            157,
+            355
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 9.0,
+            "bias-0.0005": 75.0,
+            "bias-0.001": 75.0,
+            "normal-0.003": -9.0,
+            "normal-0.01": -19.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.636,
+            -6.52161
+          ],
+          "screenPixel": [
+            892,
+            371
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 58.0,
+            "bias-0.0005": 84.333,
+            "bias-0.001": 84.333,
+            "normal-0.003": -4.667,
+            "normal-0.01": 16.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.636,
+            -6.52161
+          ],
+          "screenPixel": [
+            837,
+            369
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 76.667,
+            "bias-0.0005": 78.667,
+            "bias-0.001": 78.667,
+            "normal-0.003": -8.0,
+            "normal-0.01": 14.333
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.636,
+            -6.52161
+          ],
+          "screenPixel": [
+            713,
+            366
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 45.0,
+            "bias-0.0005": 72.0,
+            "bias-0.001": 72.0,
+            "normal-0.003": -10.0,
+            "normal-0.01": 9.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.636,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            360
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 35.667,
+            "bias-0.0005": 70.667,
+            "bias-0.001": 70.667,
+            "normal-0.003": -10.333,
+            "normal-0.01": -3.667
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.636,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            354
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 65.0,
+            "bias-0.0005": 65.0,
+            "bias-0.001": 65.0,
+            "normal-0.003": -16.0,
+            "normal-0.01": -10.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.636,
+            -6.52161
+          ],
+          "screenPixel": [
+            157,
+            351
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 58.333,
+            "bias-0.0005": 59.333,
+            "bias-0.001": 59.333,
+            "normal-0.003": -12.667,
+            "normal-0.01": -8.667
+          }
+        }
+      ]
+    },
+    "webgpu": {
+      "cameraVisibleProjectedSamples": 123,
+      "byCandidate": {
+        "bias-0.00015": {
+          "brighterBy10": 12,
+          "meanRgbDelta": 3.2005
+        },
+        "bias-0.0005": {
+          "brighterBy10": 26,
+          "meanRgbDelta": 13.8645
+        },
+        "bias-0.001": {
+          "brighterBy10": 52,
+          "meanRgbDelta": 33.9973
+        },
+        "normal-0.003": {
+          "brighterBy10": 1,
+          "meanRgbDelta": -0.4255
+        },
+        "normal-0.01": {
+          "brighterBy10": 0,
+          "meanRgbDelta": -0.71
+        }
+      },
+      "samples": [
+        {
+          "point": [
+            1.125,
+            10.512,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            417
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.512,
+            -6.52161
+          ],
+          "screenPixel": [
+            836,
+            417
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.512,
+            -6.52161
+          ],
+          "screenPixel": [
+            712,
+            418
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.025,
+            10.512,
+            -6.52161
+          ],
+          "screenPixel": [
+            641,
+            419
+          ],
+          "firstLightHit": "unit",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.512,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            420
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.7,
+            10.512,
+            -6.52161
+          ],
+          "screenPixel": [
+            382,
+            420
+          ],
+          "firstLightHit": "unit",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.512,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            421
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.512,
+            -6.52161
+          ],
+          "screenPixel": [
+            157,
+            422
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.51975,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            414
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.51975,
+            -6.52161
+          ],
+          "screenPixel": [
+            836,
+            414
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.51975,
+            -6.52161
+          ],
+          "screenPixel": [
+            712,
+            415
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.025,
+            10.51975,
+            -6.52161
+          ],
+          "screenPixel": [
+            641,
+            415
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.51975,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            416
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.7,
+            10.51975,
+            -6.52161
+          ],
+          "screenPixel": [
+            382,
+            417
+          ],
+          "firstLightHit": "unit",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.51975,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            417
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.51975,
+            -6.52161
+          ],
+          "screenPixel": [
+            157,
+            418
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.5275,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            411
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.5275,
+            -6.52161
+          ],
+          "screenPixel": [
+            836,
+            411
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.5275,
+            -6.52161
+          ],
+          "screenPixel": [
+            712,
+            412
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.025,
+            10.5275,
+            -6.52161
+          ],
+          "screenPixel": [
+            641,
+            412
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.5275,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            412
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.7,
+            10.5275,
+            -6.52161
+          ],
+          "screenPixel": [
+            382,
+            413
+          ],
+          "firstLightHit": "unit",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.5275,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            413
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.5275,
+            -6.52161
+          ],
+          "screenPixel": [
+            157,
+            413
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.53525,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            408
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.53525,
+            -6.52161
+          ],
+          "screenPixel": [
+            836,
+            408
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.53525,
+            -6.52161
+          ],
+          "screenPixel": [
+            712,
+            408
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.025,
+            10.53525,
+            -6.52161
+          ],
+          "screenPixel": [
+            641,
+            408
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.53525,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            409
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.7,
+            10.53525,
+            -6.52161
+          ],
+          "screenPixel": [
+            382,
+            409
+          ],
+          "firstLightHit": "unit",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.53525,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            409
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.53525,
+            -6.52161
+          ],
+          "screenPixel": [
+            157,
+            409
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.543,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            405
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.543,
+            -6.52161
+          ],
+          "screenPixel": [
+            836,
+            405
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.543,
+            -6.52161
+          ],
+          "screenPixel": [
+            712,
+            405
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.025,
+            10.543,
+            -6.52161
+          ],
+          "screenPixel": [
+            641,
+            405
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.543,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            405
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.7,
+            10.543,
+            -6.52161
+          ],
+          "screenPixel": [
+            382,
+            405
+          ],
+          "firstLightHit": "unit",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.543,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            405
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.543,
+            -6.52161
+          ],
+          "screenPixel": [
+            157,
+            405
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.55075,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            403
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.55075,
+            -6.52161
+          ],
+          "screenPixel": [
+            836,
+            402
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.55075,
+            -6.52161
+          ],
+          "screenPixel": [
+            712,
+            402
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.025,
+            10.55075,
+            -6.52161
+          ],
+          "screenPixel": [
+            641,
+            402
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.55075,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            401
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.7,
+            10.55075,
+            -6.52161
+          ],
+          "screenPixel": [
+            382,
+            401
+          ],
+          "firstLightHit": "unit",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.55075,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            401
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.55075,
+            -6.52161
+          ],
+          "screenPixel": [
+            157,
+            400
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.5585,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            400
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.5585,
+            -6.52161
+          ],
+          "screenPixel": [
+            836,
+            399
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.5585,
+            -6.52161
+          ],
+          "screenPixel": [
+            712,
+            399
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.025,
+            10.5585,
+            -6.52161
+          ],
+          "screenPixel": [
+            641,
+            398
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.5585,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            397
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.7,
+            10.5585,
+            -6.52161
+          ],
+          "screenPixel": [
+            382,
+            397
+          ],
+          "firstLightHit": "unit",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.5585,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            396
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.5585,
+            -6.52161
+          ],
+          "screenPixel": [
+            157,
+            396
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.56625,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            397
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.56625,
+            -6.52161
+          ],
+          "screenPixel": [
+            836,
+            397
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.56625,
+            -6.52161
+          ],
+          "screenPixel": [
+            712,
+            396
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.025,
+            10.56625,
+            -6.52161
+          ],
+          "screenPixel": [
+            641,
+            395
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.56625,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            394
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.7,
+            10.56625,
+            -6.52161
+          ],
+          "screenPixel": [
+            382,
+            393
+          ],
+          "firstLightHit": "unit",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.56625,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            392
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.56625,
+            -6.52161
+          ],
+          "screenPixel": [
+            157,
+            391
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.574,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            394
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.574,
+            -6.52161
+          ],
+          "screenPixel": [
+            836,
+            394
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.574,
+            -6.52161
+          ],
+          "screenPixel": [
+            712,
+            392
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.025,
+            10.574,
+            -6.52161
+          ],
+          "screenPixel": [
+            641,
+            392
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.574,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            390
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.574,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            388
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.574,
+            -6.52161
+          ],
+          "screenPixel": [
+            156,
+            387
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 0.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.58175,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            391
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 44.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.58175,
+            -6.52161
+          ],
+          "screenPixel": [
+            837,
+            391
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 44.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.58175,
+            -6.52161
+          ],
+          "screenPixel": [
+            712,
+            389
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 43.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.025,
+            10.58175,
+            -6.52161
+          ],
+          "screenPixel": [
+            641,
+            388
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 44.333,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.58175,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            386
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 49.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.58175,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            384
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 45.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.58175,
+            -6.52161
+          ],
+          "screenPixel": [
+            156,
+            383
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 41.333,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.5895,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            388
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 92.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.5895,
+            -6.52161
+          ],
+          "screenPixel": [
+            837,
+            388
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 69.333,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.5895,
+            -6.52161
+          ],
+          "screenPixel": [
+            712,
+            386
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 90.333,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.025,
+            10.5895,
+            -6.52161
+          ],
+          "screenPixel": [
+            641,
+            385
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 89.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.5895,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            383
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 91.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.5895,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            380
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 90.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.5895,
+            -6.52161
+          ],
+          "screenPixel": [
+            156,
+            378
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 91.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.59725,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            386
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 94.333,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.59725,
+            -6.52161
+          ],
+          "screenPixel": [
+            837,
+            385
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 94.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.59725,
+            -6.52161
+          ],
+          "screenPixel": [
+            712,
+            383
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 95.333,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.025,
+            10.59725,
+            -6.52161
+          ],
+          "screenPixel": [
+            641,
+            382
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 94.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.59725,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            379
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 94.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.59725,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            376
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 94.333,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.59725,
+            -6.52161
+          ],
+          "screenPixel": [
+            156,
+            374
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 94.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.605,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            383
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 94.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.605,
+            -6.52161
+          ],
+          "screenPixel": [
+            837,
+            382
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 94.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.605,
+            -6.52161
+          ],
+          "screenPixel": [
+            712,
+            380
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 95.333,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.025,
+            10.605,
+            -6.52161
+          ],
+          "screenPixel": [
+            641,
+            378
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 18.667,
+            "bias-0.001": 94.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.605,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            375
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 94.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.605,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            372
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 0.0,
+            "bias-0.001": 94.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.605,
+            -6.52161
+          ],
+          "screenPixel": [
+            156,
+            369
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 22.0,
+            "bias-0.001": 94.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.61275,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            380
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 47.333,
+            "bias-0.001": 95.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.61275,
+            -6.52161
+          ],
+          "screenPixel": [
+            837,
+            379
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 53.333,
+            "bias-0.001": 95.333,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.61275,
+            -6.52161
+          ],
+          "screenPixel": [
+            712,
+            376
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 51.0,
+            "bias-0.001": 94.333,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.61275,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            372
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 49.0,
+            "bias-0.001": 93.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.61275,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            367
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 54.667,
+            "bias-0.001": 94.333,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.61275,
+            -6.52161
+          ],
+          "screenPixel": [
+            156,
+            365
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 50.333,
+            "bias-0.001": 94.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.6205,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            377
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 93.333,
+            "bias-0.001": 94.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.6205,
+            -6.52161
+          ],
+          "screenPixel": [
+            837,
+            376
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 94.0,
+            "bias-0.001": 94.0,
+            "normal-0.003": -1.0,
+            "normal-0.01": -1.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.6205,
+            -6.52161
+          ],
+          "screenPixel": [
+            712,
+            373
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 93.0,
+            "bias-0.001": 94.0,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.6205,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            368
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 93.0,
+            "bias-0.001": 93.0,
+            "normal-0.003": -0.667,
+            "normal-0.01": -0.667
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.6205,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            363
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 92.0,
+            "bias-0.001": 92.0,
+            "normal-0.003": -2.0,
+            "normal-0.01": -2.0
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.6205,
+            -6.52161
+          ],
+          "screenPixel": [
+            156,
+            361
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 0.0,
+            "bias-0.0005": 93.0,
+            "bias-0.001": 94.667,
+            "normal-0.003": 0.0,
+            "normal-0.01": 0.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.62825,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            374
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 26.333,
+            "bias-0.0005": 85.0,
+            "bias-0.001": 85.0,
+            "normal-0.003": -4.0,
+            "normal-0.01": -9.667
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.62825,
+            -6.52161
+          ],
+          "screenPixel": [
+            837,
+            373
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 33.0,
+            "bias-0.0005": 88.0,
+            "bias-0.001": 88.0,
+            "normal-0.003": -3.667,
+            "normal-0.01": -7.333
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.62825,
+            -6.52161
+          ],
+          "screenPixel": [
+            712,
+            370
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 20.667,
+            "bias-0.0005": 82.333,
+            "bias-0.001": 82.333,
+            "normal-0.003": -4.333,
+            "normal-0.01": -11.333
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.62825,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            364
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 25.0,
+            "bias-0.0005": 78.667,
+            "bias-0.001": 78.667,
+            "normal-0.003": -4.333,
+            "normal-0.01": -14.333
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.62825,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            359
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 21.0,
+            "bias-0.0005": 76.0,
+            "bias-0.001": 76.0,
+            "normal-0.003": -5.333,
+            "normal-0.01": -16.667
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.62825,
+            -6.52161
+          ],
+          "screenPixel": [
+            156,
+            356
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 17.667,
+            "bias-0.0005": 75.0,
+            "bias-0.001": 75.0,
+            "normal-0.003": -5.333,
+            "normal-0.01": -18.0
+          }
+        },
+        {
+          "point": [
+            1.125,
+            10.636,
+            -6.52161
+          ],
+          "screenPixel": [
+            891,
+            371
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 48.333,
+            "bias-0.0005": 55.667,
+            "bias-0.001": 55.667,
+            "normal-0.003": 20.0,
+            "normal-0.01": 2.0
+          }
+        },
+        {
+          "point": [
+            1.35,
+            10.636,
+            -6.52161
+          ],
+          "screenPixel": [
+            837,
+            370
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 27.333,
+            "bias-0.0005": 56.0,
+            "bias-0.001": 56.0,
+            "normal-0.003": -8.667,
+            "normal-0.01": 5.0
+          }
+        },
+        {
+          "point": [
+            1.8,
+            10.636,
+            -6.52161
+          ],
+          "screenPixel": [
+            712,
+            367
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 48.667,
+            "bias-0.0005": 59.333,
+            "bias-0.001": 59.333,
+            "normal-0.003": -9.333,
+            "normal-0.01": -1.0
+          }
+        },
+        {
+          "point": [
+            2.475,
+            10.636,
+            -6.52161
+          ],
+          "screenPixel": [
+            478,
+            360
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 42.667,
+            "bias-0.0005": 47.0,
+            "bias-0.001": 47.0,
+            "normal-0.003": -7.667,
+            "normal-0.01": -1.333
+          }
+        },
+        {
+          "point": [
+            2.925,
+            10.636,
+            -6.52161
+          ],
+          "screenPixel": [
+            276,
+            355
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 42.0,
+            "bias-0.0005": 48.667,
+            "bias-0.001": 48.667,
+            "normal-0.003": -7.667,
+            "normal-0.01": -4.333
+          }
+        },
+        {
+          "point": [
+            3.15,
+            10.636,
+            -6.52161
+          ],
+          "screenPixel": [
+            156,
+            352
+          ],
+          "firstLightHit": "backing",
+          "meanRgbDelta": {
+            "bias-0.00015": 41.0,
+            "bias-0.0005": 49.0,
+            "bias-0.001": 49.0,
+            "normal-0.003": -8.333,
+            "normal-0.01": -6.667
+          }
+        }
+      ]
+    }
+  }
+}

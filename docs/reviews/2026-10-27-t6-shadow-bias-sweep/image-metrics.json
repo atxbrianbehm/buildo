@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "shadow-bias-image-metrics",
+  "roi": [
+    60,
+    355,
+    850,
+    430
+  ],
+  "method": "Per-channel RGB sRGB image differences versus exact baseline; positive delta indicates brighter pixels, not radiometric energy.",
+  "backends": {
+    "webgl": {
+      "default": {
+        "bias": -3e-05,
+        "normalBias": 0.001
+      },
+      "exactCameraAllCaptures": true,
+      "exactNativeRestorations": 5,
+      "cases": {
+        "bias-0.00015": {
+          "imageChangedPixels": 14956,
+          "roiChangedPixels": 3925,
+          "roiMeanSignedRgbDelta": 1.9472,
+          "roiPixelsBrighterBy10": 3013,
+          "roiPixelsDarkerBy10": 0
+        },
+        "bias-0.0005": {
+          "imageChangedPixels": 34555,
+          "roiChangedPixels": 11570,
+          "roiMeanSignedRgbDelta": 12.0843,
+          "roiPixelsBrighterBy10": 10177,
+          "roiPixelsDarkerBy10": 0
+        },
+        "bias-0.001": {
+          "imageChangedPixels": 65054,
+          "roiChangedPixels": 20371,
+          "roiMeanSignedRgbDelta": 26.2576,
+          "roiPixelsBrighterBy10": 19704,
+          "roiPixelsDarkerBy10": 0
+        },
+        "normal-0.003": {
+          "imageChangedPixels": 49288,
+          "roiChangedPixels": 3516,
+          "roiMeanSignedRgbDelta": -0.2358,
+          "roiPixelsBrighterBy10": 181,
+          "roiPixelsDarkerBy10": 504
+        },
+        "normal-0.01": {
+          "imageChangedPixels": 61312,
+          "roiChangedPixels": 4981,
+          "roiMeanSignedRgbDelta": -0.4248,
+          "roiPixelsBrighterBy10": 349,
+          "roiPixelsDarkerBy10": 1269
+        }
+      }
+    },
+    "webgpu": {
+      "default": {
+        "bias": -3e-05,
+        "normalBias": 0.001
+      },
+      "exactCameraAllCaptures": true,
+      "exactNativeRestorations": 5,
+      "cases": {
+        "bias-0.00015": {
+          "imageChangedPixels": 18627,
+          "roiChangedPixels": 4922,
+          "roiMeanSignedRgbDelta": 1.934,
+          "roiPixelsBrighterBy10": 4048,
+          "roiPixelsDarkerBy10": 0
+        },
+        "bias-0.0005": {
+          "imageChangedPixels": 38347,
+          "roiChangedPixels": 12538,
+          "roiMeanSignedRgbDelta": 12.0327,
+          "roiPixelsBrighterBy10": 11390,
+          "roiPixelsDarkerBy10": 0
+        },
+        "bias-0.001": {
+          "imageChangedPixels": 72959,
+          "roiChangedPixels": 21201,
+          "roiMeanSignedRgbDelta": 26.2774,
+          "roiPixelsBrighterBy10": 20749,
+          "roiPixelsDarkerBy10": 0
+        },
+        "normal-0.003": {
+          "imageChangedPixels": 68902,
+          "roiChangedPixels": 6215,
+          "roiMeanSignedRgbDelta": -0.3736,
+          "roiPixelsBrighterBy10": 220,
+          "roiPixelsDarkerBy10": 34
+        },
+        "normal-0.01": {
+          "imageChangedPixels": 81618,
+          "roiChangedPixels": 8079,
+          "roiMeanSignedRgbDelta": -0.7726,
+          "roiPixelsBrighterBy10": 158,
+          "roiPixelsDarkerBy10": 2470
+        }
+      }
+    }
+  }
+}
