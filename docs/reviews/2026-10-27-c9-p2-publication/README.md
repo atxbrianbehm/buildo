@@ -1,0 +1,9 @@
+# C9.P2 publication
+
+[PR14](https://github.com/atxbrianbehm/buildo/pull/14) is open, non-draft and mergeable, stacked on PR13. Implementation head and remote branch were verified equal at `d94e90be56028e3c70bd81a545ca7361e1e887e6`. No merge or auto-merge occurred. The sealed implementation inventory remains181 entries plus its inventory; publication receipts are separate.
+
+The [existing phone gallery](https://app.notion.com/p/3fdb77d6cd4f812a9f88f1316beb9c25) now contains144 actual review images:112 prior native Notion references plus32 external images. All132 prior images remain. Twelve added immutable GitHub PNG URLs were fetched anonymously and verified HTTP200, PNG signature and exact local SHA256 before insertion. Readback confirms every old image reference and every new URL. [URL proof](image-publication.json), [readback](phone-readback.json), [inserted content](notion-insert.md).
+
+The gallery presents actual cornice/texture/clay/sill/compact-control views and states the limitations: whole-building change is modest within the original envelope; directional texture character and dark shadow fringe remain visible. No final lighting-quality acceptance is claimed. The same pending human question is presented in chat: accept the three-treatment baseline or strengthen cornice geometry first. It is a visual gate, not PR merge authorization. Artist sessions remain zero and historical architecture coverage stays unknown. The page parent remains unverified; this update does not assert reparenting under Buildo or change access permissions.
+
+All five C9.P2 checks pass:1,921 tests/131 files and eight E2E workflows. Both native backends verify15 workflow states/21 captures plus four close states/12 captures, exact source/history/room/cold recovery and zero cold material/provider calls. Original moulded pixels remain exact. Provider credentials and upload credentials are absent from this publication payload.
