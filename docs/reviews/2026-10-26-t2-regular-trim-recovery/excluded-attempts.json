@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "0.1.0",
+  "attempts": [
+    {
+      "run": "before-textured-webgl",
+      "status": "rejected",
+      "reason": "Diagnostic supplied IR role trim instead of validated surface role horizontalTrim; schema rejected before publication."
+    },
+    {
+      "run": "before-textured-02-webgl and before-textured-webgpu",
+      "status": "failed strict pixel continuation",
+      "reason": "New end-view orbit exercise left residual damping through Reset view. Baseline capture-only runs preserve geometry/UV/texture discriminators without claiming pixel continuation."
+    },
+    {
+      "run": "final-webgl and final-webgpu",
+      "status": "failed strict pixel continuation",
+      "reason": "Camera matrices differ after orbit/reset while geometry, material channels, bindings and lights match exactly. Partial draws/captures retain proof."
+    },
+    {
+      "run": "repair-first-check",
+      "status": "expected old golden failure",
+      "reason": "Three inherited whole-building compiler goldens intentionally changed; new topology tests pass."
+    },
+    {
+      "run": "first full suite",
+      "status": "3 inherited expectations failed",
+      "reason": "Old facade trim arrays and recipe-derived instance IDs changed. Updated tests retain exact exterior profiles, every other window buffer, archived mesh bytes and instance transforms."
+    },
+    {
+      "run": "preservation-regressions",
+      "status": "one test implementation correction",
+      "reason": "Instance batches have recipeId rather than a role field; final role match uses validated recipeId prefix and requires exactly one match."
+    }
+  ],
+  "finalHarness": "Drains diagnostic OrbitControls damping before the real Reset view click. Exact camera/light and pixel assertions remain; no tolerance. Production camera-reset behavior is not changed in T2."
+}

@@ -1,0 +1,397 @@
+import { resolveConstructionStorefront } from "../core/constructionStorefront";
+import { resolveConstructionOpeningWidth } from "../core/constructionOpeningEdit";
+import type { ConstructionStorefrontPlan } from "../contracts/constructionStorefront";
+import { buildConstructionStorefrontGeometry } from "./constructionStorefrontGeometry";
+import { BayConstructionGraphSchema, type BayConstructionGraph, type BayConstructionNode } from "../contracts/bayConstructionGraph";
+import { RuntimeBuildingIRSchema, type MeshBatchIR, type RuntimeBuildingIR } from "../contracts/runtimeBuildingIR";
+import { hashCanonicalJson } from "../core/contentHash";
+import { buildBoxPrimitive, combinePrimitiveGeometry, emptyBounds, expandBounds, type Bounds3, type PrimitiveGeometry } from "./primitiveGeometry";
+import { expandBayWallPrimitives, MIN_FACADE_PIER_WIDTH_M, type FacadeBayScope } from "./facadeWallSubdivision";
+import { extrudeProfileSolidAlongX } from "./profileSweepGeometry";
+import { evaluateBayConstruction, DEFAULT_BAY_MATERIALS, type BayConstructionMaterials, type BayConstructionResult, type BayConstructionTrace } from "./evaluateBayConstruction";
+import { buildBayDoorGeometry } from "./bayWindowGeometry";
+import { constructionFacePose, constructionFacadeSolid, constructionProfileRing, poseMatrix, posedBounds, posedPoint, type ConstructionBuilding, type ConstructionFacePose, type ConstructionFootprint } from "./buildingShellGeometry";
+import { constructionSurfaceAt } from "./constructionSurfaceProgram";
+
+type Cell = { localOpeningWidth?: boolean; storefrontPlan?: ConstructionStorefrontPlan; root: string; key: string; floorSplit: boolean; baySplit: boolean; scope: FacadeBayScope; face?: "front" | "right" | "rear" | "left"; pose?: ConstructionFacePose; building?: ConstructionBuilding };
+type Stage = "facade" | "openings" | "trim" | "roof";
+type Part = { id: string; stage: Stage; bounds: Bounds3; mesh?: MeshBatchIR; prototype?: MeshBatchIR;
+  translation?: [number, number, number]; pose?: ConstructionFacePose; wallCells?: Cell[]; cell?: Cell; role: string; nodeId: string };
+type Value = { kind: "footprint"; footprint: ConstructionFootprint } | { kind: "scope"; cells: Cell[] } | { kind: "geometry"; parts: Part[] };
+const boundsOf = (scope: FacadeBayScope): Bounds3 => ({ min: [scope.originM[0], scope.originM[1], 0],
+  max: [scope.originM[0] + scope.sizeM[0], scope.originM[1] + scope.sizeM[1], scope.sizeM[2]] });
+const keyOf = (cell: Cell) => `${cell.root}/floor/${cell.scope.floorIndex}/bay/${cell.scope.bayIndex}`;
+const layoutOf = (cell: Cell) => JSON.stringify([cell.scope.originM, cell.scope.sizeM, cell.scope.opening]);
+const union = (bounds: Bounds3[]) => bounds.reduce(expandBounds, emptyBounds());
+const shifted = (box: Bounds3, offset: [number, number, number]): Bounds3 => ({
+  min: box.min.map((v, i) => v + offset[i]) as [number, number, number], max: box.max.map((v, i) => v + offset[i]) as [number, number, number] });
+function batchBounds(batch: MeshBatchIR): Bounds3 {
+  let box = emptyBounds();
+  for (let i = 0; i < batch.positions!.length; i += 3) {
+    const point = [...batch.positions!.slice(i, i + 3)] as [number, number, number];
+    box = expandBounds(box, { min: point, max: point });
+  }
+  return box;
+}
+function front(primitive: PrimitiveGeometry): PrimitiveGeometry {
+  const indices = [...primitive.indices];
+  for (let i = 0; i < indices.length; i += 3) [indices[i + 1], indices[i + 2]] = [indices[i + 2], indices[i + 1]];
+  return { ...primitive, indices, positions: primitive.positions.map((v, i) => i % 3 === 2 ? -v : v),
+    normals: primitive.normals.map((v, i) => i % 3 === 2 ? -v : v),
+    bounds: { min: [primitive.bounds.min[0], primitive.bounds.min[1], -primitive.bounds.max[2]],
+      max: [primitive.bounds.max[0], primitive.bounds.max[1], -primitive.bounds.min[2]] } };
+}
+
+/** Scope collections feed the same wall subtractor and accepted C1 window geometry. */
+export async function evaluateFacadeConstruction(input: unknown, materials: BayConstructionMaterials = DEFAULT_BAY_MATERIALS,
+  previewNodeId?: string): Promise<BayConstructionResult> {
+  const graph = structuredClone(BayConstructionGraphSchema.parse(input));
+  if (!["0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0"].includes(graph.schemaVersion)) throw new Error("Facade construction requires graph version 0.2.0 or 0.3.0.");
+  const nodes = new Map(graph.nodes.map(node => [node.id, node]));
+  if (previewNodeId && !nodes.has(previewNodeId)) throw new Error("The preview node is missing.");
+  const values = new Map<string, Promise<Value>>(), trace: BayConstructionTrace[] = [];
+  const templates = new Map<string, Promise<{ hash: string; batches: MeshBatchIR[] }>>();
+  const editedOpenings = new Map<string, { key: string; layout: string }>();
+  function makeMesh(node: BayConstructionNode, cell: Cell, role: string, primitives: PrimitiveGeometry[], stage: Stage, slot: string): Part {
+    const geometry = combinePrimitiveGeometry(primitives.map(front));
+    if (role === "wall") for (let i = 0; i < geometry.positions.length / 3; i++) {
+      const p = i * 3, x = geometry.positions[p], y = geometry.positions[p + 1], z = geometry.positions[p + 2];
+      geometry.uvs[i * 2] = Math.abs(geometry.normals[p]) > 0.9 ? z : x;
+      if (cell.pose && Math.abs(geometry.normals[p + 2]) > .9) geometry.uvs[i * 2] += cell.pose.uvOffsetM;
+      geometry.uvs[i * 2 + 1] = Math.abs(geometry.normals[p + 1]) > 0.9 ? z : y;
+    }
+    if (cell.pose) {
+      for (let i = 0; i < geometry.positions.length; i += 3) {
+        geometry.positions.set(posedPoint([...geometry.positions.slice(i,i+3)] as [number,number,number],cell.pose),i);
+        geometry.normals.set(posedPoint([...geometry.normals.slice(i,i+3)] as [number,number,number],cell.pose,true),i);
+      }
+      geometry.bounds = posedBounds(geometry.bounds,cell.pose);
+    }
+    const id = `building/${graph.documentId}/node/${node.id}/${cell.key}/${role}`;
+    return { id, nodeId: node.id, cell, role, stage, bounds: geometry.bounds,
+      mesh: { batchId: id, role, materialSlotId: slot, positions: geometry.positions, normals: geometry.normals, uvs: geometry.uvs, indices: geometry.indices } };
+  }
+  function globalMesh(node: BayConstructionNode, role: string, primitives: PrimitiveGeometry[], stage: Stage, slot: string): Part {
+    const cell: Cell = { root: "building", key: "building", floorSplit: false, baySplit: false,
+      scope: { facade: "front", floorIndex: 0, bayIndex: 0, zone: "body", originM: [0,0,0], sizeM: [1,1,1] } };
+    return makeMesh(node,cell,role,primitives,stage,slot);
+  }
+  const samePlane = (a: Cell, b: Cell) => JSON.stringify(a.pose ? [a.pose.cosine,a.pose.sine,a.pose.x,a.pose.z] : [1,0,0,0]) === JSON.stringify(b.pose ? [b.pose.cosine,b.pose.sine,b.pose.x,b.pose.z] : [1,0,0,0]);
+  const wallCells = (parts: Part[]) => parts.filter(part => part.role === "wall").flatMap(part => part.wallCells ?? (part.cell ? [part.cell] : []));
+  const scopes = async (nodeId: string): Promise<Cell[]> => {
+    const value = await evaluate(nodeId);
+    if (value.kind !== "scope") throw new Error("Connect a scope output.");
+    return structuredClone(value.cells);
+  };
+  const evaluate = (id: string): Promise<Value> => {
+    const cached = values.get(id); if (cached) return cached;
+    const computation = compute(nodes.get(id)!); values.set(id, computation); return computation;
+  };
+  async function compute(node: BayConstructionNode): Promise<Value> {
+    let value: Value;
+    switch (node.type) {
+      case "Footprint": {
+        const footprint = { ...node.parameters };
+        if (footprint.wallDepthM * 4 >= Math.min(footprint.widthM,footprint.depthM)) throw new Error("Keep wall depth below a quarter of the footprint span.");
+        value = { kind: "footprint", footprint }; break;
+      }
+      case "Storeys": {
+        const input = await evaluate(node.input.nodeId);
+        if (input.kind !== "footprint") throw new Error("Storeys require a footprint input.");
+        const p = node.parameters, heights = Array.from({ length: p.count }, (_, floor) => floor === 0 ? p.groundHeightM : p.upperHeightM);
+        const floorTopsM = heights.map((_, index) => Math.round(heights.slice(0,index+1).reduce((sum,h)=>sum+h,0)*1e9)/1e9);
+        const building: ConstructionBuilding = { ...input.footprint, heightM: floorTopsM.at(-1)!, floorTopsM };
+        if (building.heightM > 100) throw new Error("The authored building exceeds 100 metres.");
+        const cells: Cell[] = [];
+        for (const face of ["front","right","rear","left"] as const) for (let floor = 0; floor < p.count; floor++) {
+          const span = face === "front" || face === "rear" ? building.widthM : building.depthM;
+          const cell: Cell = { root: face === "front" ? node.id : `${node.id}/${face}`, key: "", face, pose: constructionFacePose(face,building), building,
+            floorSplit: true, baySplit: false, scope: { facade: "front", floorIndex: floor, bayIndex: 0, zone: floor === 0 ? "ground" : "body",
+              originM: [-span/2,floor === 0 ? 0 : floorTopsM[floor-1],-building.wallDepthM], sizeM: [span,heights[floor],building.wallDepthM] } };
+          cell.key = keyOf(cell); cells.push(cell);
+        }
+        value = { kind: "scope", cells }; break;
+      }
+      case "PlaceDoor": {
+        const cells = await scopes(node.input.nodeId), p = node.parameters;
+        if (!node.bypassed) {
+          const targets = cells.filter(cell => cell.face === "front" && cell.scope.floorIndex === 0 && cell.scope.bayIndex === p.bayIndex);
+          if (targets.length !== 1) throw new Error("Choose one existing ground-floor front bay for the entrance.");
+          const cell = targets[0], scope = cell.scope;
+          if (p.widthM > scope.sizeM[0] - MIN_FACADE_PIER_WIDTH_M*2 || p.heightM > scope.sizeM[1]-.15) throw new Error("The entrance exceeds its masonry scope.");
+          scope.opening = { kind: "door", widthM: p.widthM, heightM: p.heightM, centerAlongM: scope.originM[0]+scope.sizeM[0]/2, centerYM: p.heightM/2 };
+        }
+        value = { kind: "scope", cells }; break;
+      }
+      case "PlaceStorefront": {
+        const cells = await scopes(node.input.nodeId), { mode, ...parameters } = node.parameters;
+        if (!node.bypassed && mode === 1) {
+          const targets = cells.filter(cell => cell.face === "front" && cell.scope.floorIndex === 0);
+          if (!targets.length || targets.some(cell => !cell.building)) throw new Error("Storefronts require front ground-floor building scopes.");
+          if (targets.filter(cell => cell.scope.opening?.kind === "door").length !== 1) throw new Error("Storefronts require one existing ground-floor entrance.");
+          for (const cell of targets) {
+            const scope = cell.scope, entrance = scope.opening?.kind === "door";
+            const plan = resolveConstructionStorefront({ schemaVersion: "0.1.0", kind: "construction-storefront-request",
+              scope: { id: cell.key, face: cell.face, floorIndex: scope.floorIndex, bayIndex: scope.bayIndex, originM: scope.originM, sizeM: scope.sizeM },
+              assembly: entrance ? "glazed-entrance" : "display", parameters: { ...parameters, entranceWidthM: entrance ? scope.opening!.widthM : 1.22 } });
+            const a = plan.aperture;
+            scope.opening = { kind: entrance ? "door" : "window", widthM: a.widthM, heightM: a.heightM, centerAlongM: a.leftM + a.widthM / 2, centerYM: a.bottomM + a.heightM / 2 };
+            cell.storefrontPlan = plan;
+          }
+        }
+        value = { kind: "scope", cells }; break;
+      }
+      case "EditOpeningWidth": {
+        const cells = await scopes(node.input.nodeId);
+        if (!node.bypassed) for (const { target, widthM } of node.overrides) {
+          const assembly = nodes.get(target.windowNodeId);
+          if (assembly?.type !== "AssembleWindow" || assembly.bypassed) throw new Error("The target window assembly is unavailable.");
+          let upstream = assembly.input.nodeId;
+          while (upstream !== node.id) {
+            const parent = nodes.get(upstream);
+            if (!parent || !("input" in parent) || parent.input.socket !== "scope") throw new Error("The target window must consume its edited opening scopes.");
+            upstream = parent.input.nodeId;
+          }
+          const matches = cells.filter(cell => cell.root === target.storeysNodeId && cell.face === target.face &&
+            cell.scope.floorIndex === target.floorIndex && cell.scope.bayIndex === target.bayIndex);
+          if (matches.length !== 1 || !matches[0].building || matches[0].storefrontPlan || matches[0].scope.opening?.kind !== "window") {
+            throw new Error("The exact selected regular-window scope is missing or ambiguous.");
+          }
+          const cell = matches[0], scope = cell.scope;
+          const plan = resolveConstructionOpeningWidth({ schemaVersion: "0.1.0", kind: "construction-opening-width-request",
+            target, widthM, frameWidthM: assembly.parameters.frameWidthM,
+            scope: { id: cell.key, face: cell.face, floorIndex: scope.floorIndex, bayIndex: scope.bayIndex,
+              originM: scope.originM, sizeM: scope.sizeM, opening: scope.opening } });
+          scope.opening = plan.opening;
+          cell.localOpeningWidth = true;
+          editedOpenings.set(`building/${graph.documentId}/node/${target.windowNodeId}/${cell.key}/frame`, { key: cell.key, layout: layoutOf(cell) });
+        }
+        value = { kind: "scope", cells }; break;
+      }
+      case "AssembleDoor": {
+        const cells = await scopes(node.input.nodeId), parts: Part[] = [];
+        if (!node.bypassed) for (const cell of cells.filter(cell => cell.scope.opening?.kind === "door")) {
+          const opening = cell.scope.opening!, p = node.parameters;
+          if (!cell.storefrontPlan && (p.leafHeightM + p.frameWidthM*2 + .15 >= opening.heightM || p.frameWidthM*4 >= opening.widthM || p.recessM+.08 >= cell.scope.sizeM[2])) throw new Error("The door leaf, transom or recess does not fit its opening.");
+          const geometry = cell.storefrontPlan ? buildConstructionStorefrontGeometry(cell.storefrontPlan, p.thresholdProjectionM) : buildBayDoorGeometry(opening.widthM,opening.heightM,p.leafHeightM,p.frameWidthM,p.recessM,p.thresholdProjectionM);
+          const shiftedGeometry = (primitives: PrimitiveGeometry[]) => primitives.map(primitive => ({ ...primitive,
+            positions: primitive.positions.map((v,i)=>i%3===0?v+opening.centerAlongM:v), bounds: shifted(primitive.bounds,[opening.centerAlongM,0,0]) }));
+          parts.push(makeMesh(node,cell,"frame",shiftedGeometry(geometry.frame),"openings",materials.frame),makeMesh(node,cell,"leaf",shiftedGeometry(geometry.leaf),"openings","door.primary"),makeMesh(node,cell,"hardware",shiftedGeometry(geometry.hardware),"openings","ornament.primary"),makeMesh(node,cell,"glass",shiftedGeometry(geometry.glass),"openings",materials.glass),makeMesh(node,cell,"trim",shiftedGeometry(geometry.trim),"trim",materials.trim));
+        }
+        value = { kind: "geometry", parts }; break;
+      }
+      case "BuildingRoof": {
+        const cells = await scopes(node.input.nodeId), building = cells[0]?.building, p = node.parameters;
+        if (!building || cells.some(cell=>JSON.stringify(cell.building)!==JSON.stringify(building))) throw new Error("Roof requires scopes from one complete storey system.");
+        const { widthM:w,depthM:d,heightM:h }=building;
+        const ring=(points:Array<{y:number;offset:number}>)=>constructionProfileRing(w,d,points);
+        const cornice = ring([{y:h-p.corniceHeightM,offset:0},{y:h-p.corniceHeightM*.8,offset:p.corniceProjectionM*.45},
+          {y:h-p.corniceHeightM*.65,offset:p.corniceProjectionM*.45},{y:h-p.corniceHeightM*.5,offset:p.corniceProjectionM*.72},
+          {y:h-p.corniceHeightM*.25,offset:p.corniceProjectionM*.72},{y:h-p.corniceHeightM*.15,offset:p.corniceProjectionM},{y:h,offset:p.corniceProjectionM},{y:h,offset:0}]);
+        const parapet = ring([{y:h,offset:-.22},{y:h,offset:0},{y:h+p.parapetHeightM,offset:0},{y:h+p.parapetHeightM,offset:-.22}]);
+        const top=h+p.parapetHeightM,c=p.copingProjectionM;
+        const coping = ring([{y:top,offset:-.22-c},{y:top,offset:c-.015},{y:top+.025,offset:c},{y:top+.075,offset:c},{y:top+.095,offset:c-.015},{y:top+.095,offset:-.22-c}]);
+        const deck=buildBoxPrimitive({center:[0,h-.1,0],size:[w-.44,.16,d-.44]});
+        for(let i=0;i<deck.positions.length/3;i++){deck.uvs[i*2]=deck.positions[i*3];deck.uvs[i*2+1]=deck.positions[i*3+2];}
+        value = { kind: "geometry", parts: node.bypassed ? [] : [globalMesh(node,"roof",[deck],"roof","roof.primary"),globalMesh(node,"parapet",[parapet],"roof",materials.wall),globalMesh(node,"cornice",[cornice,coping],"roof",materials.trim)] };break;
+      }
+      case "FacadeScope": {
+        const { widthM, heightM, wallDepthM } = node.parameters;
+        const cell: Cell = { root: node.id, key: "", floorSplit: false, baySplit: false,
+          scope: { facade: "front", floorIndex: 0, bayIndex: 0, zone: "body", originM: [-widthM / 2, 0, -wallDepthM], sizeM: [widthM, heightM, wallDepthM] } };
+        cell.key = keyOf(cell); value = { kind: "scope", cells: [cell] }; break;
+      }
+      case "SplitFloors": case "SplitBays": {
+        const input = await scopes(node.input.nodeId), floor = node.type === "SplitFloors";
+        if (node.bypassed) { value = { kind: "scope", cells: input }; break; }
+        const cells = input.flatMap(parent => {
+          if (parent.scope.opening || (floor ? parent.floorSplit : parent.baySplit)) throw new Error(`Node ${node.id}: split each axis once, before placing openings.`);
+          return Array.from({ length: node.parameters.count }, (_, index) => {
+            const cell = structuredClone(parent), axis = floor ? 1 : 0;
+            cell.scope.sizeM[axis] /= node.parameters.count;
+            cell.scope.originM[axis] += cell.scope.sizeM[axis] * index;
+            if (floor) { cell.floorSplit = true; cell.scope.floorIndex = index; }
+            else { cell.baySplit = true; cell.scope.bayIndex = index; }
+            cell.key = keyOf(cell); return cell;
+          });
+        });
+        if (cells.length > 256) throw new Error("A facade supports at most 256 scopes.");
+        value = { kind: "scope", cells }; break;
+      }
+      case "SelectScopes": {
+        const input = await scopes(node.input.nodeId), { floorIndex, bayIndex } = node.parameters;
+        const cells = node.bypassed ? input : input.filter(cell => (floorIndex < 0 || cell.scope.floorIndex === floorIndex) && (bayIndex < 0 || cell.scope.bayIndex === bayIndex));
+        if (!cells.length) throw new Error(`Node ${node.id}: no matching floor/bay scopes. Use -1 for all or choose an existing index.`);
+        value = { kind: "scope", cells }; break;
+      }
+      case "PlaceOpening": {
+        const cells = await scopes(node.input.nodeId), { widthM, heightM, sillM } = node.parameters;
+        if (!node.bypassed) for (const { scope } of cells) {
+          if (scope.opening) throw new Error(`Node ${node.id}: this scope already has an opening.`);
+          if (widthM > scope.sizeM[0] - MIN_FACADE_PIER_WIDTH_M * 2 || sillM + heightM > scope.sizeM[1] - 0.08) throw new Error(`Node ${node.id}: opening exceeds a split scope; retain 80 mm masonry at each edge.`);
+          scope.opening = { kind: "window", widthM, heightM, centerAlongM: scope.originM[0] + scope.sizeM[0] / 2, centerYM: scope.originM[1] + sillM + heightM / 2 };
+        }
+        value = { kind: "scope", cells }; break;
+      }
+      case "EmitWall": {
+        const cells = await scopes(node.input.nodeId);
+        if (["0.4.0", "0.5.0", "0.6.0", "0.7.0"].includes(graph.schemaVersion) && cells.every(cell=>cell.building)) {
+          const faces = new Map<string,Cell[]>(); for(const cell of cells) faces.set(cell.root,[...(faces.get(cell.root)??[]),cell]);
+          value = { kind: "geometry", parts: node.bypassed ? [] : [...faces.values()].map(group=>{
+            const cell={...group[0],key:group[0].root},part=makeMesh(node,cell,"wall",[constructionFacadeSolid(group.map(cell=>cell.scope))],"facade",materials.wall);
+            part.wallCells=group;return part;
+          }) };
+        } else value = { kind: "geometry", parts: node.bypassed ? [] : cells.map(cell => makeMesh(node, cell, "wall", expandBayWallPrimitives(cell.scope), "facade", materials.wall)) }; break;
+      }
+      case "AssembleWindow": {
+        const cells = await scopes(node.input.nodeId), parts: Part[] = [];
+        if (!node.bypassed) for (const cell of cells) {
+          const opening = cell.scope.opening, p = node.parameters;
+          if (opening?.kind === "door") continue;
+          if (!opening) throw new Error(`Node ${node.id}: connect scopes containing openings.`);
+          if (!cell.storefrontPlan && (p.frameWidthM * 4 >= Math.min(opening.widthM, opening.heightM) || p.recessM + 0.08 >= cell.scope.sizeM[2])) throw new Error(`Node ${node.id}: frame or recess does not fit the wall.`);
+          const sillM = Math.round((opening.centerYM - cell.scope.originM[1] - opening.heightM / 2) * 1e9) / 1e9;
+          const metricTimberUvs=Boolean(cell.building);
+          const key = JSON.stringify(cell.storefrontPlan ? [opening.widthM, opening.heightM, sillM, cell.storefrontPlan.source.parameters, "storefront-seated-sill-v2"] : cell.localOpeningWidth ? [opening.widthM,opening.heightM,sillM,p,"local-opening-solid-trim-v1"] : metricTimberUvs ? [opening.widthM, opening.heightM, sillM, p, "metric-timber-uv-closed-trim-v2"] : [opening.widthM, opening.heightM, sillM, p]);
+          if (!templates.has(key)) templates.set(key, (async () => {
+            if (cell.storefrontPlan) {
+              const geometry = buildConstructionStorefrontGeometry(cell.storefrontPlan);
+              const batches = (["frame", "glass", "trim"] as const).map(role => {
+                const combined = combinePrimitiveGeometry(geometry[role].map(front));
+                return { batchId: "storefront." + role, role, materialSlotId: materials[role], positions: combined.positions, normals: combined.normals, uvs: combined.uvs, indices: combined.indices };
+              });
+              return { hash: (await hashCanonicalJson(JSON.parse(key))).slice(0, 20), batches };
+            }
+            const template: BayConstructionGraph = { schemaVersion: "0.1.0", kind: "bay-construction", documentId: graph.documentId, outputNodeId: "output", nodes: [
+              { id: "facade", type: "FacadeScope", parameters: { widthM: cell.scope.sizeM[0], heightM: cell.scope.sizeM[1], wallDepthM: cell.scope.sizeM[2] } },
+              { id: "opening", type: "PlaceOpening", input: { nodeId: "facade", socket: "scope" }, parameters: { widthM: opening.widthM, heightM: opening.heightM, sillM } },
+              { id: "window", type: "AssembleWindow", input: { nodeId: "opening", socket: "scope" }, parameters: { recessM:p.recessM, frameWidthM:p.frameWidthM, sillProjectionM:p.sillProjectionM } },
+              { id: "output", type: "Output", inputs: [{ nodeId: "window", socket: "geometry" }] }
+            ] };
+            return { hash: (await hashCanonicalJson(JSON.parse(key))).slice(0, 20), batches: (await evaluateBayConstruction(template, materials, {metricTimberUvs,windowLayout:p.layout ?? 0,closedOpeningTrim:metricTimberUvs || cell.localOpeningWidth})).ir.meshBatches };
+          })());
+          const template = await templates.get(key)!;
+          for (const batch of template.batches) {
+            const prototype = { ...batch, batchId: `construction.prototype.${batch.role}.${template.hash}` };
+            const translation: [number, number, number] = [opening.centerAlongM, cell.scope.originM[1], 0];
+            parts.push({ id: `building/${graph.documentId}/node/${node.id}/${cell.key}/${batch.role}`, nodeId: node.id, cell, role: batch.role,
+              prototype, translation, pose: cell.pose, bounds: posedBounds(shifted(batchBounds(batch), translation),cell.pose), stage: batch.role === "trim" ? "trim" : "openings" });
+          }
+        }
+        value = { kind: "geometry", parts }; break;
+      }
+      case "ProfileTrim": case "RoofCap": {
+        const cells = await scopes(node.input.nodeId), parts: Part[] = [];
+        if (node.type === "ProfileTrim" && cells[0]?.building) {
+          const b=cells[0].building,p=node.parameters;
+          if (cells.some(cell=>JSON.stringify(cell.building)!==JSON.stringify(b))) throw new Error("Profile bands require one storey system.");
+          if (!node.bypassed) for(const top of b.floorTopsM.slice(0,-1)) parts.push(globalMesh(node,`band.${top}`,[constructionProfileRing(b.widthM,b.depthM,[
+            {y:top-p.heightM,offset:0},{y:top-p.heightM*.8,offset:p.projectionM*.65},{y:top-p.heightM*.3,offset:p.projectionM*.65},
+            {y:top-p.heightM*.2,offset:p.projectionM},{y:top,offset:p.projectionM},{y:top,offset:0}])],"trim",materials.trim));
+          value={kind:"geometry",parts};break;
+        }
+        if (!node.bypassed) for (const cell of cells) {
+          const p = node.parameters, s = cell.scope, x = s.originM[0] + s.sizeM[0] / 2, top = s.originM[1] + s.sizeM[1];
+          const primitives = node.type === "ProfileTrim" ? [extrudeProfileSolidAlongX({ profile: { id: node.id, label: "Stepped stone band", points: [
+            { u: 0, d: 0.015 }, { u: p.heightM * 0.25, d: p.projectionM * 0.65 }, { u: p.heightM * 0.7, d: p.projectionM * 0.65 },
+            { u: p.heightM * 0.8, d: p.projectionM }, { u: p.heightM, d: p.projectionM }
+          ] }, center: [x, top - p.heightM / 2, 0], runLengthM: s.sizeM[0] })]
+            : [buildBoxPrimitive({ center: [x, top + p.heightM / 2, -(node.parameters.depthM) / 2], size: [s.sizeM[0] + p.projectionM * 2, p.heightM, node.parameters.depthM + p.projectionM * 2] })];
+          parts.push(makeMesh(node, cell, node.type === "RoofCap" ? "roof" : "band", primitives, node.type === "RoofCap" ? "roof" : "trim", materials.trim));
+        }
+        value = { kind: "geometry", parts }; break;
+      }
+      case "SetSurface": {
+        const upstream = await evaluate(node.input.nodeId);
+        if (upstream.kind !== "geometry") throw new Error("Surface finish requires geometry.");
+        value = { kind: "geometry", parts: upstream.parts }; break;
+      }
+      case "JoinGeometry": case "Output": {
+        const parts: Part[] = [];
+        for (const link of node.inputs) {
+          const upstream = await evaluate(link.nodeId);
+          if (upstream.kind !== "geometry") throw new Error("Output requires geometry contributions.");
+          parts.push(...upstream.parts);
+        }
+        if (parts.length > 2048) throw new Error("Construction exceeds the 2048-part output budget.");
+        if (new Set(parts.map(part => part.id)).size !== parts.length) throw new Error("Output repeats geometry contributions.");
+        const walls = new Map<string, string>(), windows = new Set<string>();
+        const wallParts = wallCells(parts);
+        const overlaps = (a: FacadeBayScope, b: { originM: number[]; sizeM: number[] }) => [0, 1].every(axis =>
+          Math.min(a.originM[axis] + a.sizeM[axis], b.originM[axis] + b.sizeM[axis]) - Math.max(a.originM[axis], b.originM[axis]) > 1e-8);
+        for (let i = 0; i < wallParts.length; i++) for (let j = i + 1; j < wallParts.length; j++) {
+          if (samePlane(wallParts[i],wallParts[j]) && overlaps(wallParts[i].scope, wallParts[j].scope)) throw new Error("Output repeats overlapping wall scopes.");
+        }
+        for (const cell of wallParts) {
+          if (walls.has(cell.key)) throw new Error("Output repeats overlapping wall scopes.");
+          walls.set(cell.key, layoutOf(cell));
+        }
+        for (const part of parts.filter(part => part.role === "frame")) {
+          if (windows.has(part.cell!.key)) throw new Error("Output places more than one window assembly into the same opening.");
+          windows.add(part.cell!.key);
+          const opening = part.cell!.scope.opening!;
+          const aperture = { originM: [opening.centerAlongM - opening.widthM / 2, opening.centerYM - opening.heightM / 2], sizeM: [opening.widthM, opening.heightM] };
+          if (wallParts.some(wall => samePlane(wall,part.cell!) && overlaps(wall.scope, aperture) && (wall.key !== part.cell!.key || layoutOf(wall) !== layoutOf(part.cell!)))) {
+            throw new Error("Connect Wall and Window assembly to the same opening layout.");
+          }
+        }
+        value = { kind: "geometry", parts }; break;
+      }
+    }
+    const boxes = value.kind === "footprint" ? [{min:[-value.footprint.widthM/2,0,-value.footprint.depthM/2],max:[value.footprint.widthM/2,0,value.footprint.depthM/2]} as Bounds3] : value.kind === "scope" ? value.cells.map(cell => posedBounds(boundsOf(cell.scope),cell.pose)) : value.parts.map(part => part.bounds);
+    trace.push({ nodeId: node.id, type: node.type, output: value.kind, openingCount: value.kind === "scope" ? value.cells.filter(c => c.scope.opening).length : 0,
+      meshCount: value.kind === "geometry" ? value.parts.length : 0, bounds: boxes.length ? union(boxes) : { min: [0, 0, 0], max: [0, 0, 0] },
+      scopeCount: value.kind === "scope" ? value.cells.length : undefined,
+      scopeNames: value.kind === "scope" ? value.cells.map(cell => cell.key) : undefined });
+    return value;
+  }
+  const full = await evaluate(graph.outputNodeId);
+  if (full.kind !== "geometry" || !full.parts.length) throw new Error("Construction output is empty.");
+  for (const node of graph.nodes) if (node.type === "EditOpeningWidth" && !node.bypassed) for (const { target } of node.overrides) {
+    const path = `building/${graph.documentId}/node/${target.windowNodeId}/${target.storeysNodeId}/floor/${target.floorIndex}/bay/${target.bayIndex}/frame`;
+    if (!editedOpenings.has(path)) throw new Error("The selected opening edit is not connected to the final output.");
+  }
+  const fullWalls = full.parts.flatMap(part => part.wallCells ?? (part.role === "wall" && part.cell ? [part.cell] : []));
+  for (const [path, expected] of editedOpenings) {
+    if (full.parts.filter(part => part.id === path).length !== 1 ||
+        fullWalls.filter(cell => cell.key === expected.key && layoutOf(cell) === expected.layout).length !== 1) {
+      throw new Error("The selected opening edit must reach one final window and its matching wall aperture.");
+    }
+  }
+  const selected = previewNodeId ? await evaluate(previewNodeId) : full;
+  let parts: Part[];
+  if (selected.kind === "geometry") parts = selected.parts;
+  else if (selected.kind === "footprint") parts = [globalMesh(nodes.get(previewNodeId!)!,"footprint",[buildBoxPrimitive({center:[0,.01,0],size:[selected.footprint.widthM,.02,selected.footprint.depthM]})],"facade",materials.frame)];
+  else parts = selected.cells.map(cell => {
+    const s = cell.scope, x = s.originM[0] + s.sizeM[0] / 2, y = s.originM[1] + s.sizeM[1] / 2, t = 0.018;
+    return makeMesh(nodes.get(previewNodeId!)!, cell, "scope", [
+      buildBoxPrimitive({ center: [s.originM[0], y, 0.012], size: [t, s.sizeM[1], t] }),
+      buildBoxPrimitive({ center: [s.originM[0] + s.sizeM[0], y, 0.012], size: [t, s.sizeM[1], t] }),
+      buildBoxPrimitive({ center: [x, s.originM[1], 0.012], size: [s.sizeM[0], t, t] }),
+      buildBoxPrimitive({ center: [x, s.originM[1] + s.sizeM[1], 0.012], size: [s.sizeM[0], t, t] })
+    ], "facade", materials.frame);
+  });
+  if (!parts.length) throw new Error("This node produces no geometry while bypassed.");
+  const prototypes = new Map<string, MeshBatchIR>(), instanceGroups = new Map<string, Part[]>();
+  const meshBatches: MeshBatchIR[] = [], semanticIndex: RuntimeBuildingIR["semanticIndex"] = [];
+  for (const part of parts) {
+    if (part.mesh) { meshBatches.push(part.mesh); semanticIndex.push({ semanticPath: part.id, batchId: part.mesh.batchId, stage: part.stage }); }
+    else {
+      prototypes.set(part.prototype!.batchId, part.prototype!);
+      const batchId = `construction.${part.nodeId}.${part.prototype!.batchId}`;
+      const group = instanceGroups.get(batchId) ?? [];
+      semanticIndex.push({ semanticPath: part.id, batchId, stage: part.stage, elementIndex: group.length });
+      group.push(part); instanceGroups.set(batchId, group);
+    }
+  }
+  const instanceBatches = [...instanceGroups].map(([batchId, group]) => ({ batchId, recipeId: group[0].prototype!.batchId,
+    materialSlotId: group[0].prototype!.materialSlotId!, count: group.length,
+    transforms: new Float32Array(group.flatMap(part => poseMatrix(part.translation!,part.pose))) }));
+  const ir = RuntimeBuildingIRSchema.parse({ schemaVersion: "0.1.0", buildingId: graph.documentId, familyId: graph.documentId,
+    sourceGraphHash: await hashCanonicalJson(graph), bounds: union(parts.map(p => p.bounds)), meshBatches, instanceBatches, semanticIndex,
+    metrics: { vertexCount: [...meshBatches, ...prototypes.values()].reduce((sum, batch) => sum + batch.positions!.length / 3, 0),
+      triangleCount: parts.reduce((sum, part) => sum + (part.mesh ?? part.prototype)!.indices!.length / 3, 0),
+      instanceCount: instanceBatches.reduce((sum, batch) => sum + batch.count, 0) } });
+  const surfaceComposition = constructionSurfaceAt(graph, previewNodeId ?? graph.outputNodeId);
+  return { graph, ir, trace, prototypes: [...prototypes.values()], ...(previewNodeId ? { previewNodeId } : {}), ...(surfaceComposition ? { surfaceComposition } : {}) };
+}

@@ -1,0 +1,7 @@
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ 'a2b656ce582e13912e379eec02c6f5111cb8a03def0e8db4cdc1279f54204caf'
+- 'bfdc1cfc5ef7415aa87e54d829f5204eac254872e757f3a3568364f68c88724b'
+
+    at file:///C:/Users/behmb/Documents/Cascade%20Projects/buildo/test-results/t2-regular-trim-recovery-2026-10-26/verify-native.mjs:189:213

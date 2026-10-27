@@ -1,0 +1,42 @@
+[
+  {
+    "name": "typecheck",
+    "exitCode": 0,
+    "startedAtUtc": "2026-10-27T04:31:36.4420302Z",
+    "endedAtUtc": "2026-10-27T04:31:48.5483592Z",
+    "sourcePinsStable": true,
+    "log": "test-results/t2-regular-trim-recovery-2026-10-26/typecheck-final.log"
+  },
+  {
+    "name": "lint",
+    "exitCode": 0,
+    "startedAtUtc": "2026-10-27T04:31:48.6272528Z",
+    "endedAtUtc": "2026-10-27T04:32:07.6638101Z",
+    "sourcePinsStable": true,
+    "log": "test-results/t2-regular-trim-recovery-2026-10-26/lint-final.log"
+  },
+  {
+    "name": "test",
+    "exitCode": 0,
+    "startedAtUtc": "2026-10-27T04:32:07.7074486Z",
+    "endedAtUtc": "2026-10-27T04:38:51.7476856Z",
+    "sourcePinsStable": true,
+    "log": "test-results/t2-regular-trim-recovery-2026-10-26/test-final.log"
+  },
+  {
+    "name": "build",
+    "exitCode": 0,
+    "startedAtUtc": "2026-10-27T04:38:51.7937134Z",
+    "endedAtUtc": "2026-10-27T04:39:04.8977211Z",
+    "sourcePinsStable": true,
+    "log": "test-results/t2-regular-trim-recovery-2026-10-26/build-final.log"
+  },
+  {
+    "name": "test:e2e",
+    "exitCode": 0,
+    "startedAtUtc": "2026-10-27T04:39:04.9339306Z",
+    "endedAtUtc": "2026-10-27T04:41:42.2685706Z",
+    "sourcePinsStable": true,
+    "log": "test-results/t2-regular-trim-recovery-2026-10-26/test-e2e-final.log"
+  }
+]

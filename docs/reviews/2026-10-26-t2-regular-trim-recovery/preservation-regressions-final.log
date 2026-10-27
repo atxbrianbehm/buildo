@@ -1,0 +1,13 @@
+
+> buildo@0.0.0 test
+> vitest run src/features/building-family/tests/buildingConstruction.test.ts src/features/building-family/tests/constructionRecipeCatalog.test.ts src/features/building-family/tests/constructionRegularTrimGeometry.test.ts
+
+
+ RUN  v4.1.9 C:/Users/behmb/Documents/Cascade Projects/buildo
+
+
+ Test Files  3 passed (3)
+      Tests  32 passed (32)
+   Start at  23:31:31
+   Duration  4.57s (transform 766ms, setup 273ms, import 1.19s, tests 3.59s, environment 2.29s)
+

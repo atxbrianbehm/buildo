@@ -1,0 +1,34 @@
+
+> buildo@0.0.0 test
+> vitest run src/features/building-family/tests/constructionRegularTrimGeometry.test.ts
+
+
+ RUN  v4.1.9 C:/Users/behmb/Documents/Cascade Projects/buildo
+
+ ❯ src/features/building-family/tests/constructionRegularTrimGeometry.test.ts (3 tests | 3 failed) 108ms
+     × closes every sill/lintel end with physical UVs for assembly 0 51ms
+     × closes every sill/lintel end with physical UVs for assembly 1 31ms
+     × closes every sill/lintel end with physical UVs for assembly 2 24ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/building-family/tests/constructionRegularTrimGeometry.test.ts > regular whole-building opening trim > closes every sill/lintel end with physical UVs for assembly 0
+ FAIL  src/features/building-family/tests/constructionRegularTrimGeometry.test.ts > regular whole-building opening trim > closes every sill/lintel end with physical UVs for assembly 1
+ FAIL  src/features/building-family/tests/constructionRegularTrimGeometry.test.ts > regular whole-building opening trim > closes every sill/lintel end with physical UVs for assembly 2
+AssertionError: triangle 12: expected -0.0009642854117389299 to be greater than 1e-10
+ ❯ src/features/building-family/tests/constructionRegularTrimGeometry.test.ts:26:104
+     24|         const ab = v[1].map((x, j) => x - v[0][j]), ac = v[2].map((x, …
+     25|         const cross = [ab[1] * ac[2] - ab[2] * ac[1], ab[2] * ac[0] - …
+     26|         expect(cross.reduce((sum, x, j) => sum + x * normals[ids[0] * …
+       |                                                                                                        ^
+     27|         const uv = ids.map(id => [...uvs.slice(id * 2, id * 2 + 2)]);
+     28|         expect(Math.abs((uv[1][0] - uv[0][0]) * (uv[2][1] - uv[0][1]) …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  23:17:08
+   Duration  1.36s (transform 201ms, setup 105ms, import 295ms, tests 108ms, environment 701ms)
+

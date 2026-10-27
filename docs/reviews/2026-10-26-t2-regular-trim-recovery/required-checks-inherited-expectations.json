@@ -1,0 +1,26 @@
+[
+  {
+    "name": "typecheck",
+    "exitCode": 0,
+    "startedAtUtc": "2026-10-27T04:22:12.7755521Z",
+    "endedAtUtc": "2026-10-27T04:22:24.4736102Z",
+    "sourcePinsStable": true,
+    "log": "test-results/t2-regular-trim-recovery-2026-10-26/typecheck-final.log"
+  },
+  {
+    "name": "lint",
+    "exitCode": 0,
+    "startedAtUtc": "2026-10-27T04:22:24.5587929Z",
+    "endedAtUtc": "2026-10-27T04:22:43.8780806Z",
+    "sourcePinsStable": true,
+    "log": "test-results/t2-regular-trim-recovery-2026-10-26/lint-final.log"
+  },
+  {
+    "name": "test",
+    "exitCode": 1,
+    "startedAtUtc": "2026-10-27T04:22:43.9265641Z",
+    "endedAtUtc": "2026-10-27T04:29:28.7541184Z",
+    "sourcePinsStable": true,
+    "log": "test-results/t2-regular-trim-recovery-2026-10-26/test-final.log"
+  }
+]

@@ -1,0 +1,65 @@
+
+> buildo@0.0.0 test
+> vitest run src/features/building-family/tests/constructionRegularTrimGeometry.test.ts src/features/building-family/tests/constructionOpeningEditGeometry.test.ts src/features/building-family/tests/constructionWindowVocabulary.test.ts src/features/building-family/tests/constructionStorefrontGeometry.test.ts
+
+
+ RUN  v4.1.9 C:/Users/behmb/Documents/Cascade Projects/buildo
+
+ ❯ src/features/building-family/tests/constructionStorefrontGeometry.test.ts (16 tests | 1 failed) 738ms
+     × preserves exact C7 geometry with the new operator off or bypassed 307ms
+ ❯ src/features/building-family/tests/constructionWindowVocabulary.test.ts (14 tests | 1 failed) 619ms
+     × preserves the literal legacy compiler result and all pinned recipes 72ms
+ ❯ src/features/building-family/tests/constructionOpeningEditGeometry.test.ts (16 tests | 1 failed) 1446ms
+     × preserves exact old geometry with no overrides or bypassed edits and retains the legacy golden 333ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/building-family/tests/constructionOpeningEditGeometry.test.ts > selected opening scope compiler > preserves exact old geometry with no overrides or bypassed edits and retains the legacy golden
+AssertionError: expected '6d29b0a682efe0139bfe0016355bdc34ae0a9…' to be '10b9860522a4ac9818f38e9d081fc05bade65…' // Object.is equality
+
+Expected: "10b9860522a4ac9818f38e9d081fc05bade653ea87447822335be008a98108f9"
+Received: "6d29b0a682efe0139bfe0016355bdc34ae0a914c1912a9bf01359ea4d4900691"
+
+ ❯ src/features/building-family/tests/constructionOpeningEditGeometry.test.ts:74:100
+     72|       expect(result.prototypes).toEqual(before.prototypes);
+     73|     }
+     74|     expect(await hashCanonicalJson(await evaluateConstruction(createBu…
+       |                                                                                                    ^
+     75|   });
+     76|   it("changes one real aperture, frame, glazing and sill while retaini…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/features/building-family/tests/constructionStorefrontGeometry.test.ts > procedural storefront compiler > preserves exact C7 geometry with the new operator off or bypassed
+AssertionError: expected '6d29b0a682efe0139bfe0016355bdc34ae0a9…' to be '10b9860522a4ac9818f38e9d081fc05bade65…' // Object.is equality
+
+Expected: "10b9860522a4ac9818f38e9d081fc05bade653ea87447822335be008a98108f9"
+Received: "6d29b0a682efe0139bfe0016355bdc34ae0a914c1912a9bf01359ea4d4900691"
+
+ ❯ src/features/building-family/tests/constructionStorefrontGeometry.test.ts:73:100
+     71|       expect(result.ir.semanticIndex).toEqual(old.ir.semanticIndex);
+     72|     }
+     73|     expect(await hashCanonicalJson(await evaluateConstruction(createBu…
+       |                                                                                                    ^
+     74|   });
+     75|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/features/building-family/tests/constructionWindowVocabulary.test.ts > versioned procedural window vocabulary > preserves the literal legacy compiler result and all pinned recipes
+AssertionError: expected '6d29b0a682efe0139bfe0016355bdc34ae0a9…' to be '10b9860522a4ac9818f38e9d081fc05bade65…' // Object.is equality
+
+Expected: "10b9860522a4ac9818f38e9d081fc05bade653ea87447822335be008a98108f9"
+Received: "6d29b0a682efe0139bfe0016355bdc34ae0a914c1912a9bf01359ea4d4900691"
+
+ ❯ src/features/building-family/tests/constructionWindowVocabulary.test.ts:15:100
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  3 failed | 1 passed (4)
+      Tests  3 failed | 46 passed (49)
+   Start at  23:21:40
+   Duration  2.83s (transform 971ms, setup 440ms, import 1.52s, tests 2.92s, environment 3.10s)
+
