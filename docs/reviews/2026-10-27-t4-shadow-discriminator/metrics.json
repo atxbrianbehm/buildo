@@ -1,0 +1,143 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "shadow-region-metrics",
+  "method": "Mean absolute RGB channel difference against baseline; each native image 925 x 849. Coordinates are half-open image pixel bounds.",
+  "productionPinsExact": true,
+  "priorPins": 354,
+  "backends": {
+    "webgl": {
+      "bracket": {
+        "region": [
+          60,
+          355,
+          850,
+          430
+        ],
+        "cases": {
+          "lights-off": {
+            "fullImageChangedPixels": 154554,
+            "roiChangedPixels": 45055,
+            "roiMeanAbsoluteRgbDifference": 66.475
+          },
+          "cornice-cast-off": {
+            "fullImageChangedPixels": 117346,
+            "roiChangedPixels": 45055,
+            "roiMeanAbsoluteRgbDifference": 66.475
+          },
+          "cornice-receive-off": {
+            "fullImageChangedPixels": 53993,
+            "roiChangedPixels": 45055,
+            "roiMeanAbsoluteRgbDifference": 66.475
+          },
+          "wall-receive-off": {
+            "fullImageChangedPixels": 37319,
+            "roiChangedPixels": 0,
+            "roiMeanAbsoluteRgbDifference": 0.0
+          }
+        },
+        "restoreFramesExact": 4,
+        "cameraMatricesExactAtRestoration": true,
+        "castAndReceiveDeltaArraysExactInRoi": true
+      },
+      "sill": {
+        "region": [
+          200,
+          680,
+          735,
+          835
+        ],
+        "cases": {
+          "lights-off": {
+            "fullImageChangedPixels": 100509,
+            "roiChangedPixels": 12793,
+            "roiMeanAbsoluteRgbDifference": 6.7153
+          },
+          "cornice-cast-off": {
+            "fullImageChangedPixels": 4339,
+            "roiChangedPixels": 0,
+            "roiMeanAbsoluteRgbDifference": 0.0
+          },
+          "cornice-receive-off": {
+            "fullImageChangedPixels": 0,
+            "roiChangedPixels": 0,
+            "roiMeanAbsoluteRgbDifference": 0.0
+          },
+          "wall-receive-off": {
+            "fullImageChangedPixels": 20063,
+            "roiChangedPixels": 8743,
+            "roiMeanAbsoluteRgbDifference": 4.4638
+          }
+        },
+        "restoreFramesExact": 4,
+        "cameraMatricesExactAtRestoration": true
+      }
+    },
+    "webgpu": {
+      "bracket": {
+        "region": [
+          60,
+          355,
+          850,
+          430
+        ],
+        "cases": {
+          "all-receive-off": {
+            "fullImageChangedPixels": 163876,
+            "roiChangedPixels": 45033,
+            "roiMeanAbsoluteRgbDifference": 66.0285
+          },
+          "cornice-cast-off": {
+            "fullImageChangedPixels": 123567,
+            "roiChangedPixels": 45033,
+            "roiMeanAbsoluteRgbDifference": 66.0285
+          },
+          "cornice-receive-off": {
+            "fullImageChangedPixels": 54448,
+            "roiChangedPixels": 45033,
+            "roiMeanAbsoluteRgbDifference": 66.0285
+          },
+          "wall-receive-off": {
+            "fullImageChangedPixels": 41112,
+            "roiChangedPixels": 0,
+            "roiMeanAbsoluteRgbDifference": 0.0
+          }
+        },
+        "restoreFramesExact": 4,
+        "cameraMatricesExactAtRestoration": true,
+        "castAndReceiveDeltaArraysExactInRoi": true
+      },
+      "sill": {
+        "region": [
+          200,
+          680,
+          735,
+          835
+        ],
+        "cases": {
+          "all-receive-off": {
+            "fullImageChangedPixels": 109419,
+            "roiChangedPixels": 14059,
+            "roiMeanAbsoluteRgbDifference": 6.7424
+          },
+          "cornice-cast-off": {
+            "fullImageChangedPixels": 4920,
+            "roiChangedPixels": 0,
+            "roiMeanAbsoluteRgbDifference": 0.0
+          },
+          "cornice-receive-off": {
+            "fullImageChangedPixels": 0,
+            "roiChangedPixels": 0,
+            "roiMeanAbsoluteRgbDifference": 0.0
+          },
+          "wall-receive-off": {
+            "fullImageChangedPixels": 22894,
+            "roiChangedPixels": 9544,
+            "roiMeanAbsoluteRgbDifference": 4.4371
+          }
+        },
+        "restoreFramesExact": 4,
+        "cameraMatricesExactAtRestoration": true
+      }
+    }
+  }
+}

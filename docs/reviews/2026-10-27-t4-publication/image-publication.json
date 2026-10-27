@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "0.1.0",
+  "commit": "ab7a99b3ec4a1a41402020aaa5e0ea7e324e5888",
+  "images": [
+    {
+      "file": "webgpu/bracket-baseline.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/ab7a99b3ec4a1a41402020aaa5e0ea7e324e5888/docs/reviews/2026-10-27-t4-shadow-discriminator/webgpu/bracket-baseline.png",
+      "sha256": "653f2791da81aeabf6d79742f8799fac4e6a8816edaba3b479543307d2c832f0",
+      "httpStatus": 200,
+      "literalLocalBytesExact": true
+    },
+    {
+      "file": "webgpu/bracket-cornice-cast-off.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/ab7a99b3ec4a1a41402020aaa5e0ea7e324e5888/docs/reviews/2026-10-27-t4-shadow-discriminator/webgpu/bracket-cornice-cast-off.png",
+      "sha256": "624f9f2b2e7aafa286e298b412e141e72919e10d8efb7113ad7e48f031275722",
+      "httpStatus": 200,
+      "literalLocalBytesExact": true
+    },
+    {
+      "file": "webgpu/sill-baseline.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/ab7a99b3ec4a1a41402020aaa5e0ea7e324e5888/docs/reviews/2026-10-27-t4-shadow-discriminator/webgpu/sill-baseline.png",
+      "sha256": "b9d06f69e7912b67275daaa2e4901e19df51ac8c15dd7327482acbab5436ba60",
+      "httpStatus": 200,
+      "literalLocalBytesExact": true
+    },
+    {
+      "file": "webgpu/sill-wall-receive-off.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/ab7a99b3ec4a1a41402020aaa5e0ea7e324e5888/docs/reviews/2026-10-27-t4-shadow-discriminator/webgpu/sill-wall-receive-off.png",
+      "sha256": "1b13a51a9a9b0e834ba2ecc7de3606a183f0e62e2c5125265c94d8812bfbdaf3",
+      "httpStatus": 200,
+      "literalLocalBytesExact": true
+    }
+  ]
+}

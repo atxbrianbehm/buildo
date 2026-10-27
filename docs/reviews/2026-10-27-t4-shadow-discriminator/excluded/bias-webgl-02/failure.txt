@@ -1,0 +1,8 @@
+AssertionError [ERR_ASSERTION]: Restored frame differs for bias-0.00015
++ actual - expected
+
++ 'a19a8023d07efa2004c6c9525bcb4486ed2451cdec12fc858f3bde0f0ee3bc8d'
+- 'b9fe5e07f7f968066c3e37f36f9790970f6b3ed7638a84058d1bccbd99431a5b'
+
+    at sweep (file:///C:/Users/behmb/Documents/Cascade%20Projects/buildo/test-results/shadow-discriminator-2026-10-27/bias-sweep-02.mjs:220:45)
+    at async file:///C:/Users/behmb/Documents/Cascade%20Projects/buildo/test-results/shadow-discriminator-2026-10-27/bias-sweep-02.mjs:225:257
