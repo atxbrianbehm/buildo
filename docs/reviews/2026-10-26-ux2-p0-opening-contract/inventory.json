@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "review-inventory",
+  "files": [
+    {
+      "file": "focused-01.log",
+      "bytes": 1541,
+      "sha256": "6b1623edf5fd4150ba34f71c9cc8d0d7da2f0490890237b0ba6ae4dc2f791847"
+    },
+    {
+      "file": "focused-02.log",
+      "bytes": 1731,
+      "sha256": "2860f8b2ebbd872dea1a9932aafab3fe9acfc3a5a5d5d3e5ed62144807fd7919"
+    },
+    {
+      "file": "focused-final.log",
+      "bytes": 246,
+      "sha256": "c98426783f495a12f46f1ea8e85585312ea00b5084aa2a1c781640f7ce98b607"
+    },
+    {
+      "file": "lint-final.log",
+      "bytes": 37,
+      "sha256": "a21c6d2dedb756f860b052cb2d84cd603fbbe38ee53e1ad76ab9c5803f028958"
+    },
+    {
+      "file": "README.md",
+      "bytes": 2803,
+      "sha256": "7d5e5fa5e4e9264d45948371c09786b035750153e85e60ceb2aeaf58a2f3c83b"
+    },
+    {
+      "file": "source/contracts-constructionOpeningEdit.ts.txt",
+      "bytes": 2433,
+      "sha256": "441c1274d5a0e577679470c9c39f8e4596350ea61e9ef8ef7086118d9216c12a"
+    },
+    {
+      "file": "source/core-constructionOpeningEdit.ts.txt",
+      "bytes": 3795,
+      "sha256": "1ca5dc2c4b77603ca047c31d09df0534996c2ce3a29a0747607ee9d5b15258ed"
+    },
+    {
+      "file": "source/tests-constructionOpeningEdit.test.ts.txt",
+      "bytes": 7098,
+      "sha256": "97919cf64f8cb62e12f3848942e9a164c4d947518326d8f531952dd912fa090b"
+    },
+    {
+      "file": "source-pins.json",
+      "bytes": 59440,
+      "sha256": "4c62dda34c52e1c51f6a37585f0714e89a3f4c9e23c70112d393f0d6469ea8a1"
+    },
+    {
+      "file": "typecheck-final.log",
+      "bytes": 49,
+      "sha256": "1927639a5b89b1406e25b817bb2c8efb1e16fccc181e86591db136d628e7f5e6"
+    },
+    {
+      "file": "verification.json",
+      "bytes": 1365,
+      "sha256": "2dabe3972b3053970556386cf74a9f1abc3da847830694bfe246a2a6ce840837"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+ ❯ src/features/building-family/tests/constructionOpeningEdit.test.ts (26 tests | 1 failed) 26ms
+     × admits only finite versioned JSON and rejects unknown fields and unsupported targets 8ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/building-family/tests/constructionOpeningEdit.test.ts > selected upper-front opening width contract > admits only finite versioned JSON and rejects unknown fields and unsupported targets
+AssertionError: expected [Function] to throw error matching /accessor/i but got '[\n  {\n    "code": "custom",\n    "p…'
+
+- Expected:
+/accessor/i
+
++ Received:
+"[
+  {
+    \"code\": \"custom\",
+    \"path\": [
+      \"widthM\"
+    ],
+    \"message\": \"JSON objects require enumerable data properties.\"
+  }
+]"
+
+ ❯ src/features/building-family/tests/constructionOpeningEdit.test.ts:77:59
+     75|     }
+     76|     const getter = Object.defineProperty(request(), "widthM", { get() …
+     77|     expect(() => resolveConstructionOpeningWidth(getter)).toThrow(/acc…
+       |                                                           ^
+     78|     const cyclic = { ...request(), cycle: {} }; cyclic.cycle = cyclic;
+     79|     expect(() => resolveConstructionOpeningWidth(cyclic)).toThrow();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 49 passed (50)
+   Start at  20:48:39
+   Duration  17.23s (transform 225ms, setup 3.44s, import 2.14s, tests 47ms, environment 27.64s)
