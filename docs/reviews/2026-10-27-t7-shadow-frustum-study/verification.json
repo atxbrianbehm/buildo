@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "shadow-frustum-study-verification",
+  "parentCommit": "5fa21971a79f02cb0b3abdf390b9d1bab80a80fe",
+  "productSourceChanged": false,
+  "priorSourceConfigTestPinsExact": 354,
+  "gpuStrictFrustumTrials": 8,
+  "gpuStrictCoverageViews": 5,
+  "freshWebglMatchedViews": 3,
+  "freshWebglCloseViewsExcludedForCameraDrift": 2,
+  "webglLowerLightRestorationAttemptsExcluded": 2,
+  "referenceResolution": 8192,
+  "referenceIsGroundTruth": false,
+  "referenceScores": {
+    "whole-default": {
+      "exactCameraLightsGeometryAndBindings": true,
+      "consideredPixels": 15395,
+      "baselineMeanAbsoluteChannelError": 4.8541,
+      "tightMeanAbsoluteChannelError": 3.9807,
+      "tightCloserPixels": 8796,
+      "baselineCloserPixels": 5779,
+      "equalErrorPixels": 820
+    },
+    "close-default": {
+      "exactCameraLightsGeometryAndBindings": false,
+      "excludedReason": "Camera differs between independently interacted views; no pixel score."
+    },
+    "close-lower": {
+      "exactCameraLightsGeometryAndBindings": false,
+      "excludedReason": "Camera differs between independently interacted views; no pixel score."
+    },
+    "whole-lower": {
+      "exactCameraLightsGeometryAndBindings": true,
+      "consideredPixels": 10859,
+      "baselineMeanAbsoluteChannelError": 4.1816,
+      "tightMeanAbsoluteChannelError": 3.5324,
+      "tightCloserPixels": 5950,
+      "baselineCloserPixels": 4223,
+      "equalErrorPixels": 686
+    },
+    "sill-default": {
+      "exactCameraLightsGeometryAndBindings": true,
+      "consideredPixels": 24756,
+      "baselineMeanAbsoluteChannelError": 5.5625,
+      "tightMeanAbsoluteChannelError": 4.0289,
+      "tightCloserPixels": 16904,
+      "baselineCloserPixels": 6626,
+      "equalErrorPixels": 1226
+    }
+  },
+  "rendererFixClaimed": false,
+  "c9VisualReview": "pending"
+}
