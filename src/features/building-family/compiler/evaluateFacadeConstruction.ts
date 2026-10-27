@@ -1,4 +1,5 @@
 import { resolveConstructionStorefront } from "../core/constructionStorefront";
+import { resolveConstructionOpeningWidth } from "../core/constructionOpeningEdit";
 import type { ConstructionStorefrontPlan } from "../contracts/constructionStorefront";
 import { buildConstructionStorefrontGeometry } from "./constructionStorefrontGeometry";
 import { BayConstructionGraphSchema, type BayConstructionGraph, type BayConstructionNode } from "../contracts/bayConstructionGraph";
@@ -12,7 +13,7 @@ import { buildBayDoorGeometry } from "./bayWindowGeometry";
 import { constructionFacePose, constructionFacadeSolid, constructionProfileRing, poseMatrix, posedBounds, posedPoint, type ConstructionBuilding, type ConstructionFacePose, type ConstructionFootprint } from "./buildingShellGeometry";
 import { constructionSurfaceAt } from "./constructionSurfaceProgram";
 
-type Cell = { storefrontPlan?: ConstructionStorefrontPlan; root: string; key: string; floorSplit: boolean; baySplit: boolean; scope: FacadeBayScope; face?: "front" | "right" | "rear" | "left"; pose?: ConstructionFacePose; building?: ConstructionBuilding };
+type Cell = { localOpeningWidth?: boolean; storefrontPlan?: ConstructionStorefrontPlan; root: string; key: string; floorSplit: boolean; baySplit: boolean; scope: FacadeBayScope; face?: "front" | "right" | "rear" | "left"; pose?: ConstructionFacePose; building?: ConstructionBuilding };
 type Stage = "facade" | "openings" | "trim" | "roof";
 type Part = { id: string; stage: Stage; bounds: Bounds3; mesh?: MeshBatchIR; prototype?: MeshBatchIR;
   translation?: [number, number, number]; pose?: ConstructionFacePose; wallCells?: Cell[]; cell?: Cell; role: string; nodeId: string };
@@ -45,11 +46,12 @@ function front(primitive: PrimitiveGeometry): PrimitiveGeometry {
 export async function evaluateFacadeConstruction(input: unknown, materials: BayConstructionMaterials = DEFAULT_BAY_MATERIALS,
   previewNodeId?: string): Promise<BayConstructionResult> {
   const graph = structuredClone(BayConstructionGraphSchema.parse(input));
-  if (!["0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0"].includes(graph.schemaVersion)) throw new Error("Facade construction requires graph version 0.2.0 or 0.3.0.");
+  if (!["0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0"].includes(graph.schemaVersion)) throw new Error("Facade construction requires graph version 0.2.0 or 0.3.0.");
   const nodes = new Map(graph.nodes.map(node => [node.id, node]));
   if (previewNodeId && !nodes.has(previewNodeId)) throw new Error("The preview node is missing.");
   const values = new Map<string, Promise<Value>>(), trace: BayConstructionTrace[] = [];
   const templates = new Map<string, Promise<{ hash: string; batches: MeshBatchIR[] }>>();
+  const editedOpenings = new Map<string, { key: string; layout: string }>();
   function makeMesh(node: BayConstructionNode, cell: Cell, role: string, primitives: PrimitiveGeometry[], stage: Stage, slot: string): Part {
     const geometry = combinePrimitiveGeometry(primitives.map(front));
     if (role === "wall") for (let i = 0; i < geometry.positions.length / 3; i++) {
@@ -139,6 +141,33 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
         }
         value = { kind: "scope", cells }; break;
       }
+      case "EditOpeningWidth": {
+        const cells = await scopes(node.input.nodeId);
+        if (!node.bypassed) for (const { target, widthM } of node.overrides) {
+          const assembly = nodes.get(target.windowNodeId);
+          if (assembly?.type !== "AssembleWindow" || assembly.bypassed) throw new Error("The target window assembly is unavailable.");
+          let upstream = assembly.input.nodeId;
+          while (upstream !== node.id) {
+            const parent = nodes.get(upstream);
+            if (!parent || !("input" in parent) || parent.input.socket !== "scope") throw new Error("The target window must consume its edited opening scopes.");
+            upstream = parent.input.nodeId;
+          }
+          const matches = cells.filter(cell => cell.root === target.storeysNodeId && cell.face === target.face &&
+            cell.scope.floorIndex === target.floorIndex && cell.scope.bayIndex === target.bayIndex);
+          if (matches.length !== 1 || !matches[0].building || matches[0].storefrontPlan || matches[0].scope.opening?.kind !== "window") {
+            throw new Error("The exact selected regular-window scope is missing or ambiguous.");
+          }
+          const cell = matches[0], scope = cell.scope;
+          const plan = resolveConstructionOpeningWidth({ schemaVersion: "0.1.0", kind: "construction-opening-width-request",
+            target, widthM, frameWidthM: assembly.parameters.frameWidthM,
+            scope: { id: cell.key, face: cell.face, floorIndex: scope.floorIndex, bayIndex: scope.bayIndex,
+              originM: scope.originM, sizeM: scope.sizeM, opening: scope.opening } });
+          scope.opening = plan.opening;
+          cell.localOpeningWidth = true;
+          editedOpenings.set(`building/${graph.documentId}/node/${target.windowNodeId}/${cell.key}/frame`, { key: cell.key, layout: layoutOf(cell) });
+        }
+        value = { kind: "scope", cells }; break;
+      }
       case "AssembleDoor": {
         const cells = await scopes(node.input.nodeId), parts: Part[] = [];
         if (!node.bypassed) for (const cell of cells.filter(cell => cell.scope.opening?.kind === "door")) {
@@ -206,7 +235,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
       }
       case "EmitWall": {
         const cells = await scopes(node.input.nodeId);
-        if (["0.4.0", "0.5.0", "0.6.0"].includes(graph.schemaVersion) && cells.every(cell=>cell.building)) {
+        if (["0.4.0", "0.5.0", "0.6.0", "0.7.0"].includes(graph.schemaVersion) && cells.every(cell=>cell.building)) {
           const faces = new Map<string,Cell[]>(); for(const cell of cells) faces.set(cell.root,[...(faces.get(cell.root)??[]),cell]);
           value = { kind: "geometry", parts: node.bypassed ? [] : [...faces.values()].map(group=>{
             const cell={...group[0],key:group[0].root},part=makeMesh(node,cell,"wall",[constructionFacadeSolid(group.map(cell=>cell.scope))],"facade",materials.wall);
@@ -223,7 +252,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
           if (!cell.storefrontPlan && (p.frameWidthM * 4 >= Math.min(opening.widthM, opening.heightM) || p.recessM + 0.08 >= cell.scope.sizeM[2])) throw new Error(`Node ${node.id}: frame or recess does not fit the wall.`);
           const sillM = Math.round((opening.centerYM - cell.scope.originM[1] - opening.heightM / 2) * 1e9) / 1e9;
           const metricTimberUvs=Boolean(cell.building);
-          const key = JSON.stringify(cell.storefrontPlan ? [opening.widthM, opening.heightM, sillM, cell.storefrontPlan.source.parameters, "storefront-v1"] : metricTimberUvs ? [opening.widthM, opening.heightM, sillM, p, "metric-timber-uv-v1"] : [opening.widthM, opening.heightM, sillM, p]);
+          const key = JSON.stringify(cell.storefrontPlan ? [opening.widthM, opening.heightM, sillM, cell.storefrontPlan.source.parameters, "storefront-v1"] : cell.localOpeningWidth ? [opening.widthM,opening.heightM,sillM,p,"local-opening-solid-trim-v1"] : metricTimberUvs ? [opening.widthM, opening.heightM, sillM, p, "metric-timber-uv-v1"] : [opening.widthM, opening.heightM, sillM, p]);
           if (!templates.has(key)) templates.set(key, (async () => {
             if (cell.storefrontPlan) {
               const geometry = buildConstructionStorefrontGeometry(cell.storefrontPlan);
@@ -239,7 +268,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
               { id: "window", type: "AssembleWindow", input: { nodeId: "opening", socket: "scope" }, parameters: { recessM:p.recessM, frameWidthM:p.frameWidthM, sillProjectionM:p.sillProjectionM } },
               { id: "output", type: "Output", inputs: [{ nodeId: "window", socket: "geometry" }] }
             ] };
-            return { hash: (await hashCanonicalJson(JSON.parse(key))).slice(0, 20), batches: (await evaluateBayConstruction(template, materials, {metricTimberUvs,windowLayout:p.layout ?? 0})).ir.meshBatches };
+            return { hash: (await hashCanonicalJson(JSON.parse(key))).slice(0, 20), batches: (await evaluateBayConstruction(template, materials, {metricTimberUvs,windowLayout:p.layout ?? 0,closedOpeningTrim:cell.localOpeningWidth})).ir.meshBatches };
           })());
           const template = await templates.get(key)!;
           for (const batch of template.batches) {
@@ -318,6 +347,17 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
   }
   const full = await evaluate(graph.outputNodeId);
   if (full.kind !== "geometry" || !full.parts.length) throw new Error("Construction output is empty.");
+  for (const node of graph.nodes) if (node.type === "EditOpeningWidth" && !node.bypassed) for (const { target } of node.overrides) {
+    const path = `building/${graph.documentId}/node/${target.windowNodeId}/${target.storeysNodeId}/floor/${target.floorIndex}/bay/${target.bayIndex}/frame`;
+    if (!editedOpenings.has(path)) throw new Error("The selected opening edit is not connected to the final output.");
+  }
+  const fullWalls = full.parts.flatMap(part => part.wallCells ?? (part.role === "wall" && part.cell ? [part.cell] : []));
+  for (const [path, expected] of editedOpenings) {
+    if (full.parts.filter(part => part.id === path).length !== 1 ||
+        fullWalls.filter(cell => cell.key === expected.key && layoutOf(cell) === expected.layout).length !== 1) {
+      throw new Error("The selected opening edit must reach one final window and its matching wall aperture.");
+    }
+  }
   const selected = previewNodeId ? await evaluate(previewNodeId) : full;
   let parts: Part[];
   if (selected.kind === "geometry") parts = selected.parts;

@@ -10,21 +10,24 @@ const jsonValue = z.unknown().superRefine((input, context) => {
 });
 
 /** A structural address, never an instance-array index or nearest surviving window. */
-export const ConstructionOpeningTargetSchema = z.object({
+const targetShape = z.object({
   documentId: id, storeysNodeId: id, windowNodeId: id, face: z.literal("front"),
   floorIndex: z.number().int().min(1).max(11), bayIndex: z.number().int().min(0).max(19)
 }).strict();
+export const ConstructionOpeningTargetSchema = jsonValue.pipe(targetShape);
 export type ConstructionOpeningTarget = z.infer<typeof ConstructionOpeningTargetSchema>;
 
-export const ConstructionOpeningWidthOverrideSchema = z.object({
-  target: ConstructionOpeningTargetSchema, widthM: span
+const overrideShape = z.object({
+  target: targetShape, widthM: span
 }).strict();
+export const ConstructionOpeningWidthOverrideSchema = jsonValue.pipe(overrideShape);
+export type ConstructionOpeningWidthOverride = z.infer<typeof ConstructionOpeningWidthOverrideSchema>;
 
 const opening = z.object({ kind: z.literal("window"), widthM: span, heightM: span,
   centerAlongM: coordinate, centerYM: coordinate }).strict();
 const requestShape = z.object({
   schemaVersion: z.literal("0.1.0"), kind: z.literal("construction-opening-width-request"),
-  ...ConstructionOpeningWidthOverrideSchema.shape,
+  ...overrideShape.shape,
   scope: z.object({ id: z.string().min(1).max(512), face: z.literal("front"),
     floorIndex: z.number().int().min(1).max(11), bayIndex: z.number().int().min(0).max(19),
     originM: z.tuple([coordinate, coordinate, coordinate]), sizeM: z.tuple([span, span, span]), opening

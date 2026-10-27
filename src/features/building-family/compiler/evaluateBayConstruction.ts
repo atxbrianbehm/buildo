@@ -5,6 +5,7 @@ import type { BuildingSurfaceComposition } from "../contracts/surfaceComposition
 import { expandBayWallPrimitives, MIN_FACADE_PIER_WIDTH_M, type FacadeBayScope } from "./facadeWallSubdivision";
 import { buildBayWindowGeometry } from "./bayWindowGeometry";
 import { extrudeProfileSolidAlongX } from "./profileSweepGeometry";
+import { extrudeConstructionOpeningTrim } from "./constructionOpeningTrimGeometry";
 import { combinePrimitiveGeometry, emptyBounds, expandBounds,
   type Bounds3, type PrimitiveGeometry } from "./primitiveGeometry";
 
@@ -54,7 +55,7 @@ function scopeBounds(scope: FacadeBayScope): Bounds3 {
 
 /** Connected values, not the old fixed BuildingFamilySpec orchestration, own geometry. */
 export async function evaluateBayConstruction(
-  input: unknown, materials: BayConstructionMaterials = DEFAULT_BAY_MATERIALS, options: { metricTimberUvs?: boolean; windowLayout?: 0 | 1 | 2 } = {}
+  input: unknown, materials: BayConstructionMaterials = DEFAULT_BAY_MATERIALS, options: { metricTimberUvs?: boolean; windowLayout?: 0 | 1 | 2; closedOpeningTrim?: boolean } = {}
 ): Promise<BayConstructionResult> {
   // Parsing and the owned clone happen synchronously before hashing yields.
   const graph = structuredClone(BayConstructionGraphSchema.parse(input));
@@ -128,7 +129,8 @@ export async function evaluateBayConstruction(
           throw new Error(`Node ${node.id}: frame or recess does not fit the opening and wall depth.`);
         }
         const { frame, glass } = buildBayWindowGeometry(opening.widthM, opening.heightM, frameWidthM, recessM, opening.centerYM, options.metricTimberUvs, options.windowLayout ?? 0);
-        const sill = extrudeProfileSolidAlongX({
+        const extrudeTrim = options.closedOpeningTrim ? extrudeConstructionOpeningTrim : extrudeProfileSolidAlongX;
+        const sill = extrudeTrim({
           profile: { id: "construction.sill", label: "Sloped stone sill", points: [
             { u: 0, d: 0.015 }, { u: 0.025, d: sillProjectionM * 0.8 },
             { u: 0.045, d: sillProjectionM }, { u: 0.1, d: sillProjectionM },
@@ -136,7 +138,7 @@ export async function evaluateBayConstruction(
           ] }, center: [0, opening.centerYM - opening.heightM / 2 - 0.035, 0],
           runLengthM: opening.widthM + 0.2
         });
-        const lintel = extrudeProfileSolidAlongX({
+        const lintel = extrudeTrim({
           profile: { id: "construction.lintel", label: "Chamfered stone lintel", points: [
             { u: 0, d: 0.025 }, { u: 0.012, d: 0.055 }, { u: 0.17, d: 0.055 }, { u: 0.185, d: 0.025 }
           ] }, center: [0, opening.centerYM + opening.heightM / 2 + 0.09, 0],

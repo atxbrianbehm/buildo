@@ -5,6 +5,7 @@ import { createBayConstructionGraph, repeatBayAsFacade, type BayConstructionNode
 import { createBuildingConstructionGraph, BayConstructionGraphSchema } from "../contracts/bayConstructionGraph";
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
 const names: Record<BayConstructionNode["type"], string> = {
+  EditOpeningWidth: "Selected opening widths",
   PlaceStorefront: "Ground frontage", Footprint: "Footprint", Storeys: "Storeys", PlaceDoor: "Entrance layout", AssembleDoor: "Door assembly", BuildingRoof: "Complete roof", FacadeScope: "Facade scope", SplitFloors: "Split floors", SplitBays: "Split bays", PlaceOpening: "Opening layout", SelectScopes: "Select scopes",
   EmitWall: "Wall", AssembleWindow: "Window assembly", ProfileTrim: "Profile trim", RoofCap: "Roof cap", Output: "Output", JoinGeometry: "Join geometry", SetSurface: "Surface finish"
 };

@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "0.1.0",
+  "priorSourcePins": 341,
+  "literalUnchanged": 328,
+  "changedPaths": [
+    "src/features/building-family/compiler/bayConstructionClient.ts",
+    "src/features/building-family/compiler/bayConstructionWorkerProtocol.ts",
+    "src/features/building-family/compiler/evaluateBayConstruction.ts",
+    "src/features/building-family/compiler/evaluateConstruction.ts",
+    "src/features/building-family/compiler/evaluateFacadeConstruction.ts",
+    "src/features/building-family/contracts/bayConstructionGraph.ts",
+    "src/features/building-family/core/constructionSurfaceAuthoring.ts",
+    "src/features/building-family/core/constructionWindowVocabulary.ts",
+    "src/features/building-family/tests/ConstructionNodePanel.test.tsx",
+    "src/features/building-family/tests/bayConstructionWorker.test.ts",
+    "src/features/building-family/ui/BayConstructionWorkbench.tsx",
+    "src/features/building-family/ui/ConstructionNodePanel.tsx",
+    "src/features/building-family/contracts/constructionOpeningEdit.ts"
+  ],
+  "finalSourcePinsStable": 344,
+  "materialRendererStateUnchanged": true
+}

@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "selected-opening-geometry-verification",
+  "baseCommit": "32b16e39c226354040f5cce1ad8d54f428031d82",
+  "graphProtocolVersion": "0.7.0",
+  "checks": [
+    {
+      "name": "typecheck",
+      "exitCode": 0
+    },
+    {
+      "name": "lint",
+      "exitCode": 0
+    },
+    {
+      "name": "focused-tests",
+      "exitCode": 0,
+      "tests": 82,
+      "files": 6,
+      "newTests": 17
+    }
+  ],
+  "sourcePinsStable": 344,
+  "previousSourcePins": 341,
+  "previousSourcePinsUnchanged": 328,
+  "changedExistingSourcePaths": [
+    "src/features/building-family/compiler/bayConstructionClient.ts",
+    "src/features/building-family/compiler/bayConstructionWorkerProtocol.ts",
+    "src/features/building-family/compiler/evaluateBayConstruction.ts",
+    "src/features/building-family/compiler/evaluateConstruction.ts",
+    "src/features/building-family/compiler/evaluateFacadeConstruction.ts",
+    "src/features/building-family/contracts/bayConstructionGraph.ts",
+    "src/features/building-family/contracts/constructionOpeningEdit.ts",
+    "src/features/building-family/core/constructionSurfaceAuthoring.ts",
+    "src/features/building-family/core/constructionWindowVocabulary.ts",
+    "src/features/building-family/tests/ConstructionNodePanel.test.tsx",
+    "src/features/building-family/tests/bayConstructionWorker.test.ts",
+    "src/features/building-family/ui/BayConstructionWorkbench.tsx",
+    "src/features/building-family/ui/ConstructionNodePanel.tsx"
+  ],
+  "newSourcePaths": [
+    "src/features/building-family/core/constructionOpeningEditGraph.ts",
+    "src/features/building-family/compiler/constructionOpeningTrimGeometry.ts",
+    "src/features/building-family/tests/constructionOpeningEditGeometry.test.ts"
+  ],
+  "materialRendererStateUnchanged": true,
+  "productControlImplemented": false,
+  "nativeCapturePerformed": false,
+  "nextPacket": "UX2.P2"
+}

@@ -1,0 +1,151 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "review-inventory",
+  "files": [
+    {
+      "file": "compiler-probe.json",
+      "bytes": 683,
+      "sha256": "bd9c40dfec1f68bfe0cc07ac0c09fe5a7d7b16f90e02e87b4dfe9cc0f6791857"
+    },
+    {
+      "file": "compiler-probe.mjs",
+      "bytes": 3254,
+      "sha256": "b4998f8d135801ab947d08f003ed2a6642a796198a11451ad5f1e0aad9e37264"
+    },
+    {
+      "file": "focused-01.log",
+      "bytes": 1992,
+      "sha256": "691162ded32923a6101ae60b5336e9d920b00822c55412954048cfd1c7bf522c"
+    },
+    {
+      "file": "focused-final.log",
+      "bytes": 247,
+      "sha256": "1b1d7eb26c0087d79ad15c97d46174297e4dc729770e72f484e7656ece6e60ae"
+    },
+    {
+      "file": "lint-final.log",
+      "bytes": 37,
+      "sha256": "a21c6d2dedb756f860b052cb2d84cd603fbbe38ee53e1ad76ab9c5803f028958"
+    },
+    {
+      "file": "preservation.json",
+      "bytes": 1135,
+      "sha256": "cb60267099981fe3f7c7dd4af2c407a17b45639554ae7e1b22cec684667c8ca3"
+    },
+    {
+      "file": "README.md",
+      "bytes": 3696,
+      "sha256": "96e30b6cca2f2a6343db4f1e0c1fba5f42bdb4540faffcd94099360d70fe92a5"
+    },
+    {
+      "file": "source/compiler-bayConstructionClient.ts.txt",
+      "bytes": 3237,
+      "sha256": "09b6ae6b775fe81535796ef528a20ddd0f31f418d77ed7578dcbc8d439cd348c"
+    },
+    {
+      "file": "source/compiler-bayConstructionWorkerProtocol.ts.txt",
+      "bytes": 6340,
+      "sha256": "13e6d56e8adc89cfdd384adf05c1f25a7ef6b83b91b4f94d1a8bec479ab64bb3"
+    },
+    {
+      "file": "source/compiler-constructionOpeningTrimGeometry.ts.txt",
+      "bytes": 2979,
+      "sha256": "c47d835026e64c0fda13e0ce9061c6c9e63777c629dfd67177e44cede4749307"
+    },
+    {
+      "file": "source/compiler-evaluateBayConstruction.ts.txt",
+      "bytes": 11883,
+      "sha256": "186cfe3f1267d79855c0363d11334e438835d7c63f4d36399d76d5228ca6b99b"
+    },
+    {
+      "file": "source/compiler-evaluateConstruction.ts.txt",
+      "bytes": 2047,
+      "sha256": "3bd602d4188faff363f095dedf1248cc3a77f76a164128d3e4142775d0f1814c"
+    },
+    {
+      "file": "source/compiler-evaluateFacadeConstruction.ts.txt",
+      "bytes": 33801,
+      "sha256": "ea5c769570526a6ca8e700539c6696fdc5ef9b94e4abc713deb661644dc00100"
+    },
+    {
+      "file": "source/contracts-bayConstructionGraph.ts.txt",
+      "bytes": 16952,
+      "sha256": "00e5cb6bf1c73516d0c59be2d46e33838ce6de1d167e1842130c98ba389091aa"
+    },
+    {
+      "file": "source/contracts-constructionOpeningEdit.ts.txt",
+      "bytes": 2593,
+      "sha256": "7bbd1b2a80a22c748d8dc94d0f9aca7add0a889a059d744f1fefff4890d2a5cd"
+    },
+    {
+      "file": "source/core-constructionOpeningEditGraph.ts.txt",
+      "bytes": 3849,
+      "sha256": "acf741e7bc54319265ef5f582099a8211b6b64af7ffb280741adda2b8e80fe54"
+    },
+    {
+      "file": "source/core-constructionSurfaceAuthoring.ts.txt",
+      "bytes": 8313,
+      "sha256": "7eba091d1e417f4555d77502bda9c4c16fefd29b62b8cf2ee45af8bd63bf35c1"
+    },
+    {
+      "file": "source/core-constructionWindowVocabulary.ts.txt",
+      "bytes": 2437,
+      "sha256": "ea27ba0d31adf9097d70f4d8abde9c402363e21f366e652e5f7dcbaa607c391e"
+    },
+    {
+      "file": "source/tests-bayConstructionWorker.test.ts.txt",
+      "bytes": 6165,
+      "sha256": "10257cea28eeb2aec90822b3b987c127d9ca00f9c2e3451d2020212c65958660"
+    },
+    {
+      "file": "source/tests-ConstructionNodePanel.test.tsx.txt",
+      "bytes": 5716,
+      "sha256": "cfe3261d0427defa53f0454b9cc0194c1923b9100b9f6715be1186f949b45924"
+    },
+    {
+      "file": "source/tests-constructionOpeningEditGeometry.test.ts.txt",
+      "bytes": 13357,
+      "sha256": "ae3599213443224d6cdb6b858d8cbbd64aef964bc91efd65d7f693ba5982bba1"
+    },
+    {
+      "file": "source/ui-BayConstructionWorkbench.tsx.txt",
+      "bytes": 38730,
+      "sha256": "5abb2357e49c0301026979ac5bd0191a31193c276cfa673cd5adb2cfc77b8ce7"
+    },
+    {
+      "file": "source/ui-ConstructionNodePanel.tsx.txt",
+      "bytes": 15233,
+      "sha256": "8c98cb109f404bbadb59da844e4e08922b06b2df34e65cc2ba49b662e5fce1bd"
+    },
+    {
+      "file": "source-pins.json",
+      "bytes": 60550,
+      "sha256": "95d71a700b4c3227605b56acefa8b4021846b57c3e2528e61077cb85bbd1e1a7"
+    },
+    {
+      "file": "typecheck-final.log",
+      "bytes": 49,
+      "sha256": "1927639a5b89b1406e25b817bb2c8efb1e16fccc181e86591db136d628e7f5e6"
+    },
+    {
+      "file": "verification.json",
+      "bytes": 1949,
+      "sha256": "904e0f09453ad1810c5715d454c43ac23e3788ccf245eaf81f77030138aeb910"
+    },
+    {
+      "file": "winding-diagnostic-01.log",
+      "bytes": 2038,
+      "sha256": "6bcd834bfb9e083f93ebb8471bbf639caae4995920587a6b0aa457925d57df33"
+    },
+    {
+      "file": "winding-repair-01.log",
+      "bytes": 2376,
+      "sha256": "eaf0c08b137318a8e3420220d6233c872551fbd330cd102359c63a9d70b07f95"
+    },
+    {
+      "file": "winding-repair-02.log",
+      "bytes": 258,
+      "sha256": "911a0e8634ad95c7a19d19f085fc7bc00db050bca33b8538b94724c64e4e649d"
+    }
+  ]
+}
