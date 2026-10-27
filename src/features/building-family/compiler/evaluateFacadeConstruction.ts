@@ -1,6 +1,8 @@
 import { resolveConstructionStorefront } from "../core/constructionStorefront";
 import { resolveConstructionOpeningWidth } from "../core/constructionOpeningEdit";
 import type { ConstructionStorefrontPlan } from "../contracts/constructionStorefront";
+import { resolveConstructionCorniceDetail } from "../core/constructionCorniceDetail";
+import { buildConstructionCorniceGeometry } from "./constructionCorniceGeometry";
 import { buildConstructionStorefrontGeometry } from "./constructionStorefrontGeometry";
 import { BayConstructionGraphSchema, type BayConstructionGraph, type BayConstructionNode } from "../contracts/bayConstructionGraph";
 import { RuntimeBuildingIRSchema, type MeshBatchIR, type RuntimeBuildingIR } from "../contracts/runtimeBuildingIR";
@@ -46,7 +48,7 @@ function front(primitive: PrimitiveGeometry): PrimitiveGeometry {
 export async function evaluateFacadeConstruction(input: unknown, materials: BayConstructionMaterials = DEFAULT_BAY_MATERIALS,
   previewNodeId?: string): Promise<BayConstructionResult> {
   const graph = structuredClone(BayConstructionGraphSchema.parse(input));
-  if (!["0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0"].includes(graph.schemaVersion)) throw new Error("Facade construction requires graph version 0.2.0 or 0.3.0.");
+  if (!["0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0"].includes(graph.schemaVersion)) throw new Error("Facade construction requires graph version 0.2.0 or 0.3.0.");
   const nodes = new Map(graph.nodes.map(node => [node.id, node]));
   if (previewNodeId && !nodes.has(previewNodeId)) throw new Error("The preview node is missing.");
   const values = new Map<string, Promise<Value>>(), trace: BayConstructionTrace[] = [];
@@ -183,17 +185,19 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
       case "BuildingRoof": {
         const cells = await scopes(node.input.nodeId), building = cells[0]?.building, p = node.parameters;
         if (!building || cells.some(cell=>JSON.stringify(cell.building)!==JSON.stringify(building))) throw new Error("Roof requires scopes from one complete storey system.");
+        if (node.bypassed) { value = { kind:"geometry", parts:[] }; break; }
         const { widthM:w,depthM:d,heightM:h }=building;
         const ring=(points:Array<{y:number;offset:number}>)=>constructionProfileRing(w,d,points);
-        const cornice = ring([{y:h-p.corniceHeightM,offset:0},{y:h-p.corniceHeightM*.8,offset:p.corniceProjectionM*.45},
-          {y:h-p.corniceHeightM*.65,offset:p.corniceProjectionM*.45},{y:h-p.corniceHeightM*.5,offset:p.corniceProjectionM*.72},
-          {y:h-p.corniceHeightM*.25,offset:p.corniceProjectionM*.72},{y:h-p.corniceHeightM*.15,offset:p.corniceProjectionM},{y:h,offset:p.corniceProjectionM},{y:h,offset:0}]);
+        const cornicePlan = resolveConstructionCorniceDetail({ schemaVersion:"0.1.0",kind:"construction-cornice-detail-request",
+          assembly:p.corniceAssembly === 1 ? "dentil-course" : p.corniceAssembly === 2 ? "bracket-course" : "moulded",
+          building:{widthM:w,depthM:d,heightM:h},cornice:{heightM:p.corniceHeightM,projectionM:p.corniceProjectionM} });
+        const cornice = buildConstructionCorniceGeometry(cornicePlan);
         const parapet = ring([{y:h,offset:-.22},{y:h,offset:0},{y:h+p.parapetHeightM,offset:0},{y:h+p.parapetHeightM,offset:-.22}]);
         const top=h+p.parapetHeightM,c=p.copingProjectionM;
         const coping = ring([{y:top,offset:-.22-c},{y:top,offset:c-.015},{y:top+.025,offset:c},{y:top+.075,offset:c},{y:top+.095,offset:c-.015},{y:top+.095,offset:-.22-c}]);
         const deck=buildBoxPrimitive({center:[0,h-.1,0],size:[w-.44,.16,d-.44]});
         for(let i=0;i<deck.positions.length/3;i++){deck.uvs[i*2]=deck.positions[i*3];deck.uvs[i*2+1]=deck.positions[i*3+2];}
-        value = { kind: "geometry", parts: node.bypassed ? [] : [globalMesh(node,"roof",[deck],"roof","roof.primary"),globalMesh(node,"parapet",[parapet],"roof",materials.wall),globalMesh(node,"cornice",[cornice,coping],"roof",materials.trim)] };break;
+        value = { kind: "geometry", parts: [globalMesh(node,"roof",[deck],"roof","roof.primary"),globalMesh(node,"parapet",[parapet],"roof",materials.wall),globalMesh(node,"cornice",[cornice.backing,coping,...cornice.units],"roof",materials.trim)] };break;
       }
       case "FacadeScope": {
         const { widthM, heightM, wallDepthM } = node.parameters;
@@ -235,7 +239,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
       }
       case "EmitWall": {
         const cells = await scopes(node.input.nodeId);
-        if (["0.4.0", "0.5.0", "0.6.0", "0.7.0"].includes(graph.schemaVersion) && cells.every(cell=>cell.building)) {
+        if (["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0"].includes(graph.schemaVersion) && cells.every(cell=>cell.building)) {
           const faces = new Map<string,Cell[]>(); for(const cell of cells) faces.set(cell.root,[...(faces.get(cell.root)??[]),cell]);
           value = { kind: "geometry", parts: node.bypassed ? [] : [...faces.values()].map(group=>{
             const cell={...group[0],key:group[0].root},part=makeMesh(node,cell,"wall",[constructionFacadeSolid(group.map(cell=>cell.scope))],"facade",materials.wall);

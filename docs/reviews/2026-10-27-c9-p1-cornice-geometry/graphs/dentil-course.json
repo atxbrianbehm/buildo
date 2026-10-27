@@ -1,0 +1,314 @@
+{
+  "schemaVersion": "0.8.0",
+  "kind": "bay-construction",
+  "documentId": "authored-building",
+  "nodes": [
+    {
+      "id": "footprint",
+      "type": "Footprint",
+      "parameters": {
+        "widthM": 11.2,
+        "depthM": 13,
+        "wallDepthM": 0.36
+      }
+    },
+    {
+      "id": "facade",
+      "type": "Storeys",
+      "input": {
+        "nodeId": "footprint",
+        "socket": "footprint"
+      },
+      "parameters": {
+        "count": 3,
+        "groundHeightM": 3.7,
+        "upperHeightM": 3.5
+      }
+    },
+    {
+      "id": "bays",
+      "type": "SplitBays",
+      "input": {
+        "nodeId": "facade",
+        "socket": "scope"
+      },
+      "parameters": {
+        "count": 4
+      }
+    },
+    {
+      "id": "opening",
+      "type": "PlaceOpening",
+      "input": {
+        "nodeId": "bays",
+        "socket": "scope"
+      },
+      "parameters": {
+        "widthM": 1.4,
+        "heightM": 2.12,
+        "sillM": 0.78
+      }
+    },
+    {
+      "id": "entrance",
+      "type": "PlaceDoor",
+      "input": {
+        "nodeId": "opening",
+        "socket": "scope"
+      },
+      "parameters": {
+        "bayIndex": 1,
+        "widthM": 1.4,
+        "heightM": 2.9
+      }
+    },
+    {
+      "id": "wall",
+      "type": "EmitWall",
+      "input": {
+        "nodeId": "openingEdits",
+        "socket": "scope"
+      }
+    },
+    {
+      "id": "selection",
+      "type": "SelectScopes",
+      "input": {
+        "nodeId": "openingEdits",
+        "socket": "scope"
+      },
+      "parameters": {
+        "floorIndex": -1,
+        "bayIndex": -1
+      }
+    },
+    {
+      "id": "window",
+      "type": "AssembleWindow",
+      "input": {
+        "nodeId": "selection",
+        "socket": "scope"
+      },
+      "parameters": {
+        "recessM": 0.14,
+        "frameWidthM": 0.055,
+        "sillProjectionM": 0.12,
+        "layout": 2
+      }
+    },
+    {
+      "id": "door",
+      "type": "AssembleDoor",
+      "input": {
+        "nodeId": "openingEdits",
+        "socket": "scope"
+      },
+      "parameters": {
+        "recessM": 0.14,
+        "frameWidthM": 0.075,
+        "leafHeightM": 2.3,
+        "thresholdProjectionM": 0.15
+      }
+    },
+    {
+      "id": "bands",
+      "type": "ProfileTrim",
+      "input": {
+        "nodeId": "facade",
+        "socket": "scope"
+      },
+      "parameters": {
+        "heightM": 0.09,
+        "projectionM": 0.055
+      }
+    },
+    {
+      "id": "roof",
+      "type": "BuildingRoof",
+      "input": {
+        "nodeId": "facade",
+        "socket": "scope"
+      },
+      "parameters": {
+        "parapetHeightM": 0.55,
+        "copingProjectionM": 0.06,
+        "corniceHeightM": 0.24,
+        "corniceProjectionM": 0.18,
+        "corniceAssembly": 1
+      }
+    },
+    {
+      "id": "join",
+      "type": "JoinGeometry",
+      "inputs": [
+        {
+          "nodeId": "wall",
+          "socket": "geometry"
+        },
+        {
+          "nodeId": "window",
+          "socket": "geometry"
+        },
+        {
+          "nodeId": "door",
+          "socket": "geometry"
+        },
+        {
+          "nodeId": "bands",
+          "socket": "geometry"
+        },
+        {
+          "nodeId": "roof",
+          "socket": "geometry"
+        }
+      ]
+    },
+    {
+      "id": "surface",
+      "type": "SetSurface",
+      "input": {
+        "nodeId": "join",
+        "socket": "geometry"
+      },
+      "composition": {
+        "schemaVersion": "0.1.0",
+        "documentId": "authored-building",
+        "revision": 4,
+        "sources": [
+          {
+            "id": "source.frame.primary",
+            "atlasContentHash": "411e7f6f28e1908e43898ae7e5ff0092c348768a9d2efc40d804e1751fb8d75f",
+            "slotId": "frame.primary"
+          },
+          {
+            "id": "t2.stone",
+            "atlasContentHash": "411e7f6f28e1908e43898ae7e5ff0092c348768a9d2efc40d804e1751fb8d75f",
+            "slotId": "trim.horizontal.primary"
+          }
+        ],
+        "layers": [
+          {
+            "id": "finish",
+            "target": {
+              "kind": "element",
+              "relativePath": "node/window/facade/floor/0/bay/0/frame",
+              "expectedRole": "frame"
+            },
+            "sourceId": "source.frame.primary",
+            "mask": {
+              "kind": "constant",
+              "value": 1
+            },
+            "blend": "replace",
+            "opacity": 0.3,
+            "physicalSizeM": {
+              "width": 0.32,
+              "height": 0.32
+            },
+            "channels": [
+              "baseColor",
+              "normal",
+              "orm"
+            ]
+          },
+          {
+            "id": "finish_1",
+            "target": {
+              "kind": "element",
+              "relativePath": "node/window/facade/floor/2/bay/1/frame",
+              "expectedRole": "frame"
+            },
+            "sourceId": "source.frame.primary",
+            "mask": {
+              "kind": "constant",
+              "value": 1
+            },
+            "blend": "replace",
+            "opacity": 0.3,
+            "physicalSizeM": {
+              "width": 0.32,
+              "height": 0.32
+            },
+            "channels": [
+              "baseColor",
+              "normal",
+              "orm"
+            ]
+          },
+          {
+            "id": "t2.stone.trim",
+            "target": {
+              "kind": "role",
+              "role": "horizontalTrim"
+            },
+            "sourceId": "t2.stone",
+            "mask": {
+              "kind": "constant",
+              "value": 1
+            },
+            "blend": "replace",
+            "opacity": 1,
+            "physicalSizeM": {
+              "width": 0.64,
+              "height": 0.64
+            },
+            "channels": [
+              "baseColor",
+              "normal",
+              "orm"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "output",
+      "type": "Output",
+      "inputs": [
+        {
+          "nodeId": "surface",
+          "socket": "geometry"
+        }
+      ]
+    },
+    {
+      "id": "frontage",
+      "type": "PlaceStorefront",
+      "input": {
+        "nodeId": "entrance",
+        "socket": "scope"
+      },
+      "parameters": {
+        "pierWidthM": 0.16,
+        "bulkheadHeightM": 0.55,
+        "headHeightM": 0.45,
+        "transomBaseM": 2.35,
+        "frameWidthM": 0.075,
+        "recessM": 0.14,
+        "mode": 1
+      }
+    },
+    {
+      "id": "openingEdits",
+      "type": "EditOpeningWidth",
+      "input": {
+        "nodeId": "frontage",
+        "socket": "scope"
+      },
+      "overrides": [
+        {
+          "target": {
+            "documentId": "authored-building",
+            "storeysNodeId": "facade",
+            "windowNodeId": "window",
+            "face": "front",
+            "floorIndex": 2,
+            "bayIndex": 1
+          },
+          "widthM": 1.8
+        }
+      ]
+    }
+  ],
+  "outputNodeId": "output"
+}

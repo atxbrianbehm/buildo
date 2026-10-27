@@ -6,6 +6,7 @@ import { createBuildingConstructionGraph } from "../contracts/bayConstructionGra
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { withConstructionOpeningWidth } from "../core/constructionOpeningEditGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
+import { withConstructionCorniceLayout } from "../core/constructionCorniceVocabulary";
 
 class Endpoint implements BayConstructionWorkerEndpoint {
   messages: unknown[] = [];
@@ -24,6 +25,17 @@ class Endpoint implements BayConstructionWorkerEndpoint {
   }
 }
 describe("owned construction worker client", () => {
+  it("sends cornice protocol0.8 and accepts the actual closed detail geometry", async () => {
+    const endpoint = new Endpoint(), client = new BayConstructionClient(endpoint);
+    const graph = withConstructionCorniceLayout(createBuildingConstructionGraph(), 2);
+    const pending = client.evaluate(graph), request = BayConstructionWorkerRequestSchema.parse(endpoint.messages[0]);
+    expect(request.schemaVersion).toBe("0.8.0");
+    const result = await evaluateConstruction(request.graph);
+    endpoint.emit({schemaVersion:"0.8.0",type:"bay-result",requestId:request.requestId,result});
+    expect(await pending).toEqual(result);
+    client.dispose(); expect(endpoint.terminated).toBe(1);
+    expect(endpoint.listeners.message.size + endpoint.listeners.error.size).toBe(0);
+  });
   it("sends a targeted opening with protocol 0.7 and accepts its actual geometry", async () => {
     const endpoint = new Endpoint(), client = new BayConstructionClient(endpoint);
     const base = withConstructionStorefront(createBuildingConstructionGraph(), 1);
