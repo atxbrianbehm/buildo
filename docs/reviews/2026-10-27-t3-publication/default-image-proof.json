@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "0.1.0",
+  "images": [
+    {
+      "backend": "webgl",
+      "t2": "../2026-10-26-t2-regular-trim-recovery/webgl/whole-textured.png",
+      "t3": "../2026-10-26-t3-reset-view-inertia/webgl/default-building.png",
+      "literalEqual": true,
+      "sha256": "b0acbd40d9fb20c1f66c1937230ad91adf5892a49b657fd5beb4d7ba6f4e5b42"
+    },
+    {
+      "backend": "webgpu",
+      "t2": "../2026-10-26-t2-regular-trim-recovery/webgpu/whole-textured.png",
+      "t3": "../2026-10-26-t3-reset-view-inertia/webgpu/default-building.png",
+      "literalEqual": true,
+      "sha256": "f6201fa375018d43fa419566113067921f0c45d48d7468de2c09307f3fc8a2c3"
+    }
+  ]
+}
