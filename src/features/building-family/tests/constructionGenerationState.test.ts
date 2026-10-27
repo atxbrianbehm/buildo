@@ -1,3 +1,4 @@
+import { withConstructionWindowLayout } from "../core/constructionWindowVocabulary";
 import { describe, expect, it } from "vitest";
 import { createBuildingConstructionGraph } from "../contracts/bayConstructionGraph";
 import { defaultConstructionGenerationControls, resolveWorkbenchGeneration, rebindGenerationSurfaceSources, readConstructionGenerationLineage, type ConstructionGenerationLineage } from "../state/constructionGenerationState";
@@ -184,4 +185,18 @@ describe("construction recipe transitions", () => {
     const pending = resolveWorkbenchGeneration(a.graph, a.lineage, controls); controls.recipeId = "unknown";
     expect((await pending).source.recipe.id).toBe("deep-reveal-masonry"); expect(a).toEqual(before);
   });
+});
+
+it("retains authored casement vocabulary over the literal pinned recipe and releases it explicitly",async()=>{
+  const a=await initial(),edited=withConstructionWindowLayout(a.graph,"window",2);
+  const before=structuredClone(edited),b=await resolveWorkbenchGeneration(edited,a.lineage,defaultConstructionGenerationControls,true);
+  expect(b.graph.schemaVersion).toBe("0.5.0");expect(b.graph.nodes.find(n=>n.type==="AssembleWindow")!.parameters.layout).toBe(2);expect(b.resolution.graph.schemaVersion).toBe("0.4.0");
+  expect(b.source.intent.locks.some(lock=>lock.semanticPath.endsWith("/layout"))).toBe(false);expect(edited).toEqual(before);
+  const lineage={...a.lineage,source:b.source,resolution:b.resolution,materialPlan:await planConstructionReferenceMaterials(a.template,b.source)};
+  const c=await resolveWorkbenchGeneration(b.graph,lineage,{...b.controls,preserveAuthored:false,lockOpenings:true},true);
+  expect(c.graph.nodes.find(n=>n.type==="AssembleWindow")!.parameters.layout).toBe(2);
+  const next={...lineage,source:c.source,resolution:c.resolution,materialPlan:await planConstructionReferenceMaterials(a.template,c.source)};
+  const d=await resolveWorkbenchGeneration(c.graph,next,{...c.controls,preserveAuthored:false,lockOpenings:false},true);
+  expect(d.graph.nodes.find(n=>n.type==="AssembleWindow")!.parameters.layout).toBe(0);
+  const rejected=structuredClone(edited);rejected.nodes.find(n=>n.type==="JoinGeometry")!.inputs.pop();await expect(resolveWorkbenchGeneration(rejected,a.lineage,defaultConstructionGenerationControls,true)).rejects.toThrow("authored connections");
 });

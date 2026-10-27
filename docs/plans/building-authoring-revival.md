@@ -1295,9 +1295,17 @@ The private [phone gallery](https://app.notion.com/p/3fdb77d6cd4f812a9f88f1316be
 
 Preview maintenance, 2026-10-22: the expired local review preview was recovered at `http://127.0.0.1:5190/#document=masonry-study-ux1` and freshly checked in installed Chromium for actual rendering, focus/keyboard/hover and tablet/compact layout. All65 reviewed source pins and all175 original evidence files remain exact. No new implementation packet or human acceptance is claimed. [Recovery receipt and fresh screenshot](../reviews/2026-10-22-ux1-preview-recovery/README.md).
 
+### Executed C7: real window assembly vocabulary
+
+Twin and six-light casements now join the original double-hung sash through one named Openings control. Real rails, mullions, bars and individual panes feed shared instanced prototypes. Old files remain literal; choosing an assembly explicitly upgrades graph/worker0.5 and portable project0.6. The unchanged pinned recipe remains the generation base, while the current graph owns the authored choice. Keep edited dimensions and assemblies or Lock openings retains it on reroll; clearing both restores the recipe default.
+
+All five checks pass (1,770 tests/123 files and eight standard browser workflows). Both native backends verify18 actual states, with14 WebGPU/15 WebGL captures. Legacy compiler/recipe hashes and original native default pixels remain exact. Material channels, local finishes, history, invalid-edit retention, source reopening and cold recovery pass; cold provider/material-generation calls are zero. A tiny first WebGL reopen variance is preserved; a diagnostic rerun retains strict camera/light/pixel checks and passes without production changes. No assertion was weakened. [Evidence and limits](../reviews/2026-10-25-c7-window-vocabulary/README.md).
+
+The phone gallery has eight new actual C7 images,103 total with all95 earlier identities retained. The local preview is restored. New assemblies are authored procedural choices, not UTDG historical data; architecture coverage remains unknown. No C7 commit/push, paid provider, release or installation was performed. The earlier public GitHub snapshot remains pending separate disclosure confirmation.
+
 ## Ready Queue
 
-**Current human gate: review the implemented grouped-inspector workflow (UX1.P1).** Option1 was explicitly selected and the bounded prototype is engineering complete. UX0/UX1.P0 remain archived as audit/concept evidence; C6 visual review remains pending separately. C4/C5 are accepted. Continue sequentially after an actual review decision; do not treat automated goal continuation or passing checks as acceptance of the authoring workflow.
+**Current result: C7 window assembly vocabulary is engineering complete.** The October25 directive was executed as one bounded milestone. [Actual geometry, checks and phone images](../reviews/2026-10-25-c7-window-vocabulary/README.md). Earlier broad review judgments remain pending without blocking the explicitly authorized C7 work. The next proposed vocabulary area is ground-floor storefront/entrance grammar; local structural targeting stays separate.
 
 | Packet | Bounded result | Required verification |
 |---|---|---|
@@ -1306,6 +1314,16 @@ Preview maintenance, 2026-10-22: the expired local review preview was recovered 
 | **C5.P2 — complete** | Consume pinned UTDG material roles and physical scale through the existing procedural planner/atlas lane. Keep geometry separate and demo coverage visible. | Exact selected channels/scale, roles and source hashes; structural/material invalidation; unchanged legacy output; focused tests/typecheck/lint. |
 | **C5.P3 — complete** | Wire generation, bounded reroll and locks into the live construction workbench. Extend versioned source/history/checkpoint continuity so generated and subsequently edited graphs retain their real lineage and pinned dependencies offline. | Actual App generate/edit/lock/reroll/Undo/Redo/Save/Open/cold recovery; stale/failed retention and resource disposal. All five required repository checks and native WebGPU/WebGL captures. |
 | **C5 review gate — accepted** | Present the dynamic-generation/UTDG workflow and supported generated buildings for human acceptance before family/block expansion. | Reviewed rendered views plus user decision. No live UTDG architectural coverage claim until an actual data slice is verified. |
+
+### C7 — real window assembly vocabulary
+
+The current double-hung sash remains the legacy default. Add twin casement and six-light casement assemblies from procedural rails and separate panes, with no preassembled meshes or image-derived structure. Expose one named Window assembly choice in the existing grouped Openings inspector. Shared scope remains explicit; selecting a frame still scopes finishes only.
+
+Graph0.5 and project0.6 explicitly admit the new assembly parameter. Existing graph/project files and all three pinned recipe definitions remain literal until the artist chooses a new assembly. The current authored graph owns the assembly exception over its unchanged generation base; Keep authored changes and Lock openings retain it across rerolls. Clearing both returns the recipe's double-hung default. This does not invent UTDG architectural evidence: reference-material lineage and unknown architecture coverage remain unchanged.
+
+| Packet | Bounded result | Required verification |
+|---|---|---|
+| **C7 — complete** | Twin and six-light casement geometry, named controls and versioned continuation on the existing building. | All five checks, 1,770 tests/123 files; 18 native states on each backend; legacy compiler/recipes/native pixels unchanged; strict final v6/cold recovery, materials, finishes, locks and advanced access;103 phone-gallery images total. |
 
 ### UX1 — choose and test an artist-facing authoring workflow
 
@@ -1365,4 +1383,4 @@ The old MVP/integration and July G/V documents remain historical implementation 
 
 Defer additional proof rooms, district optimization, new style families, credentialed image-provider expansion and arbitrary geometry tooling until the accepted single-building workflow exists. The node view is bounded to executable building operators. Publication, remote-provider spending and release claims are outside this planning task.
 
-**Next action:** review the implemented option1 grouped inspector in the local preview or private phone gallery. After that decision, define only the next bounded authoring packet; scoped structural editing needs a real contract and task, not a visual-only control. Retain the pending C6 visual gate and the artist test protocol. C4/C5 are accepted; R4.P5 remains deferred.
+**Next vocabulary candidate:** ground-floor storefront/entrance grammar as a separate bounded milestone, with a real aperture/layout contract and rendered success case. C7 window assemblies are complete and reviewable in the local preview and phone gallery. Preserve the original pinned recipes, UTDG coverage labels, material identity and pending broader artist/family/block judgments. UX2 local structural targeting remains separate.

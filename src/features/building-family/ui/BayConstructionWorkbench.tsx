@@ -1,3 +1,4 @@
+import { CONSTRUCTION_WINDOW_LAYOUTS, upgradeConstructionWindowVocabulary } from "../core/constructionWindowVocabulary";
 import { ConstructionBuildingControls } from "./ConstructionBuildingControls";
 import { groupedWindowCount } from "./constructionBuildingBindings";
 import { ConstructionReferenceSnapshotSchema, type ConstructionReferenceSnapshot } from "../contracts/constructionGeneration";
@@ -37,6 +38,7 @@ const names: Record<BayConstructionNode["type"], string> = {
   SplitFloors: "Split floors", SplitBays: "Split bays", SelectScopes: "Select scopes", ProfileTrim: "Profile trim", RoofCap: "Roof cap", JoinGeometry: "Join geometry", SetSurface: "Surface finish"
 };
 const labels: Record<string, string> = {
+  layout: "Window assembly",
   groundHeightM: "Ground storey height (m)", upperHeightM: "Upper storey height (m)", leafHeightM: "Door leaf height (m)", thresholdProjectionM: "Threshold projection (m)", parapetHeightM: "Parapet height (m)", copingProjectionM: "Coping projection (m)", corniceHeightM: "Cornice height (m)", corniceProjectionM: "Cornice projection (m)",
   widthM: "Width (m)", heightM: "Height (m)", wallDepthM: "Wall depth (m)", sillM: "Sill height (m)",
   recessM: "Recess (m)", frameWidthM: "Frame width (m)", sillProjectionM: "Sill projection (m)",
@@ -343,8 +345,11 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
               </select>
             </label>
             {"parameters" in node ? Object.keys(node.parameters).map(key => <label key={key}>
-              <span>{labelFor(key)}</span><input type="number" step={["count", "floorIndex", "bayIndex"].includes(key) ? "1" : "0.01"} aria-label={labelFor(key)} value={fields[node.id]?.[key] ?? ""}
-                onChange={event => { const text = event.currentTarget.value; setFields(all => ({ ...all, [node.id]: { ...all[node.id], [key]: text } })); setDirty(true); }} />
+              <span>{labelFor(key)}</span>{key === "layout" ? <select aria-label={labelFor(key)} value={fields[node.id]?.[key] ?? "0"}
+                onChange={event => { const text=event.currentTarget.value;setFields(all=>({...all,[node.id]:{...all[node.id],[key]:text}}));setDirty(true); }}>
+                {CONSTRUCTION_WINDOW_LAYOUTS.map(option=><option key={option.value} value={option.value}>{option.label}</option>)}
+              </select> : <input type="number" step={["count", "floorIndex", "bayIndex"].includes(key) ? "1" : "0.01"} aria-label={labelFor(key)} value={fields[node.id]?.[key] ?? ""}
+                onChange={event => { const text = event.currentTarget.value; setFields(all => ({ ...all, [node.id]: { ...all[node.id], [key]: text } })); setDirty(true); }} />}
             </label>) : null}
             {"input" in node ? <label className="control-panel__field-wide"><span>{node.input.socket === "scope" ? "Scope input" : node.input.socket === "footprint" ? "Footprint input" : "Geometry input"}</span>
               <select aria-label={node.input.socket === "scope" ? "Scope input" : node.input.socket === "footprint" ? "Footprint input" : "Geometry input"} value={node.input.nodeId}
@@ -354,7 +359,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
               </select>
             </label> : null}
             {"input" in node && node.type !== "Storeys" ? <label className="control-panel__field-wide construction-contribution"><input type="checkbox" aria-label="Bypass selected node" checked={Boolean(node.bypassed)}
-              onChange={event => { setDraft(graph => ({ ...graph, schemaVersion: ["0.3.0", "0.4.0"].includes(graph.schemaVersion) ? graph.schemaVersion : "0.2.0" })); replace({ ...node, bypassed: event.currentTarget.checked }); }} /><span>Bypass this node</span></label> : null}
+              onChange={event => { setDraft(graph => ({ ...graph, schemaVersion: ["0.3.0", "0.4.0", "0.5.0"].includes(graph.schemaVersion) ? graph.schemaVersion : "0.2.0" })); replace({ ...node, bypassed: event.currentTarget.checked }); }} /><span>Bypass this node</span></label> : null}
             {"inputs" in node ? draft.nodes.filter(value => value.id !== node.id && constructionOutputSocket(value.type) === "geometry").map(value =>
               <label className="control-panel__field-wide construction-contribution" key={value.id}>
                 <input type="checkbox" aria-label={`Include ${displayName(value)}`} checked={node.inputs.some(link => link.nodeId === value.id)}
@@ -397,7 +402,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       </div>
       {buildingMode && !advancedOpen && accepted ? <ConstructionBuildingControls graph={draft} fields={fields} windowCount={groupedWindowCount(accepted.construction.graph,accepted.ir)}
         disabled={disabled || !viewerReady || Boolean(previewNode)} dirty={dirty}
-        onFieldChange={(id,key,text) => {setFields(all => ({...all,[id]:{...all[id],[key]:text}}));setSelected(id);setDirty(true);}}
+        onFieldChange={(id,key,text) => {if (key === "layout") setDraft(graph => upgradeConstructionWindowVocabulary(graph));setFields(all => ({...all,[id]:{...all[id],[key]:text}}));setSelected(id);setDirty(true);}}
         onApply={() => void apply()} onRevert={revertDraft} onAdvanced={() => setAdvancedOpen(true)} /> : null}
       {!buildingMode ? <>
       <div className="control-panel__actions">

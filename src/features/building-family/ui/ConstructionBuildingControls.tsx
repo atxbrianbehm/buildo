@@ -1,3 +1,4 @@
+import { CONSTRUCTION_WINDOW_LAYOUTS } from "../core/constructionWindowVocabulary";
 import { useId, useState } from "react";
 import type { BayConstructionGraph } from "../contracts/bayConstructionGraph";
 import { supportsGroupedConstruction } from "./constructionBuildingBindings";
@@ -37,6 +38,14 @@ export function ConstructionBuildingControls({ graph, fields, windowCount, disab
         <summary onClick={event => {event.preventDefault();setActive(value => value === group.id ? null : group.id);}}>{group.label}</summary>
         {active === group.id ? <div className="construction-grouped__body">
           <p className="construction-grouped__scope">{group.id === "openings" ? pendingLayout ? "Shared window controls. Apply pending layout changes to update the affected count." : `Applies to all ${windowCount} generated windows.` : "Applies to the whole building."}</p>
+          {group.id === "openings" ? <label className="construction-grouped__field construction-grouped__assembly">
+            <span><strong>Window assembly</strong><small id={prefix+"assembly"}>Frame and glazing construction for every generated window.</small></span>
+            <select aria-label="Window assembly" aria-describedby={prefix+"assembly"} value={fields.window?.layout ?? "0"}
+              disabled={Boolean(graph.nodes.find(node => node.id === "window" && "bypassed" in node && node.bypassed))}
+              onChange={event => onFieldChange("window","layout",event.currentTarget.value)}>
+              {CONSTRUCTION_WINDOW_LAYOUTS.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
+            </select>
+          </label> : null}
           {group.fields.map(field)}
           {group.id === "openings" ? <details className="construction-grouped__proportions"><summary>Opening proportions</summary>{proportions.map(field)}</details> : null}
           {dirty ? <p className="construction-grouped__draft">Apply commits all pending building changes. Undo restores the previous building.</p> : null}

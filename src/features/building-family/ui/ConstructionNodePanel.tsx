@@ -22,7 +22,7 @@ const buildingPositions: Record<string,Point> = {
   join:{x:1008,y:322},surface:{x:1254,y:322},output:{x:1500,y:322}
 };
 function initialPoint(version: BayConstructionGraph["schemaVersion"], id: string, index: number): Point {
-  if (version === "0.4.0") return buildingPositions[id] ?? defaultPoint(id,index);
+  if (["0.4.0", "0.5.0"].includes(version)) return buildingPositions[id] ?? defaultPoint(id,index);
   return version === "0.3.0" && id === "output" ? {x:1254,y:322} : id === "join" ? {x:762,y:322} : id === "surface" ? {x:1008,y:322} : defaultPoint(id,index);
 }
 const defaults: Record<BayConstructionNode["type"], Record<string, number>> = {
@@ -58,7 +58,7 @@ export function ConstructionNodePanel({ graph, selected, disabled, names, onSele
     else if ((p.y + 110) * zoom > container.scrollTop + container.clientHeight) container.scrollTop = (p.y + 110) * zoom - container.clientHeight;
   }, [selected, zoom, graph.nodes, graph.schemaVersion, positions]);
   function replace(node: BayConstructionNode) {
-    onChange({ ...graph, schemaVersion: ["0.3.0", "0.4.0"].includes(graph.schemaVersion) ? graph.schemaVersion : "0.2.0", nodes: graph.nodes.map(value => value.id === node.id ? node : value) });
+    onChange({ ...graph, schemaVersion: ["0.3.0", "0.4.0", "0.5.0"].includes(graph.schemaVersion) ? graph.schemaVersion : "0.2.0", nodes: graph.nodes.map(value => value.id === node.id ? node : value) });
   }
   function connect(target: BayConstructionNode) {
     const source = graph.nodes.find(node => node.id === connection);
@@ -86,7 +86,8 @@ export function ConstructionNodePanel({ graph, selected, disabled, names, onSele
         ...(Object.keys(defaults[addType]).length ? { parameters: defaults[addType] } : {}) };
     const result = BayConstructionNodeSchema.safeParse(raw);
     if (!result.success || (addType === "SetSurface" ? !geometry || graph.nodes.some(node => node.type === "SetSurface") : !upstream && !["FacadeScope", "Footprint", "Storeys", "Output", "JoinGeometry"].includes(addType))) { setError("Add a compatible source first; use one final surface finish node."); return; }
-    onChange({ ...graph, schemaVersion: graph.schemaVersion === "0.4.0" || ["Footprint", "Storeys", "PlaceDoor", "AssembleDoor", "BuildingRoof"].includes(addType) ? "0.4.0" : graph.schemaVersion === "0.3.0" || ["SetSurface", "JoinGeometry"].includes(addType) ? "0.3.0" : "0.2.0", nodes: [...graph.nodes, result.data] }); onSelect(id); setError(null);
+    const added = graph.schemaVersion === "0.5.0" && result.data.type === "AssembleWindow" ? { ...result.data, parameters: { ...result.data.parameters, layout: 0 as const } } : result.data;
+    onChange({ ...graph, schemaVersion: graph.schemaVersion === "0.5.0" ? "0.5.0" : graph.schemaVersion === "0.4.0" || ["Footprint", "Storeys", "PlaceDoor", "AssembleDoor", "BuildingRoof"].includes(addType) ? "0.4.0" : graph.schemaVersion === "0.3.0" || ["SetSurface", "JoinGeometry"].includes(addType) ? "0.3.0" : "0.2.0", nodes: [...graph.nodes, added] }); onSelect(id); setError(null);
   }
   const node = graph.nodes.find(value => value.id === selected);
   const connectingNode = graph.nodes.find(value => value.id === connection);

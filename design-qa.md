@@ -1,49 +1,42 @@
-# UX1.P1 grouped inspector design QA
+# C7 window vocabulary UI verification
 
 final result: passed
 
-## Visual truth and normalization
+## Visual truth and state
 
-Source: `docs/reviews/2026-10-18-authoring-concepts/grouped-inspector.png`, option 1 selected by the user in `docs/reviews/2026-10-18-authoring-choice/decision.json`. Source pixels 1493 x 1054; generated desktop illustration, without a declared CSS density. Its 1493 x 1054 image is compared directly at native resolution.
+The existing grouped-inspector implementation is the UI baseline: `docs/reviews/2026-10-18-ux1-p1/webgpu/grouped-desktop.png`. The October25 user directive authorizes a bounded vocabulary extension; no new image-generated design or replacement app shell was requested. The expected addition is one named Window assembly choice in Openings, attached to actual procedural geometry.
 
-Implementation: `docs/reviews/2026-10-18-ux1-p1/webgpu/grouped-desktop.png`, actual 1493 x 1059 full-page capture in a 1493 x 1054 CSS viewport at deviceScaleFactor 1. The full-view comparison crops only the final five page pixels to align the viewport; it does not stretch or rescale either input. State: Openings expanded, shared recess 0.25 m, 47 actual generated windows, advanced graph collapsed.
+Current implementation: `docs/reviews/2026-10-25-c7-window-vocabulary/webgpu/twin-inspector.png`. Both baseline and current full-page images are1493 x1059 pixels, captured in a1493 x1054 CSS viewport at deviceScaleFactor1. No density rescaling is used in `inspector-comparison.png`, which puts them in the same comparison input. Their recess values/assembly states differ deliberately; this comparison judges the new control and retained hierarchy, not identical scene content. The original legacy native default image also matches byte for byte on both backends.
 
-Full-view comparison: `docs/reviews/2026-10-18-ux1-p1/design-comparison-final.png` places source and implementation in the same input. Focused inspector comparison: `docs/reviews/2026-10-18-ux1-p1/design-inspector-comparison-02.png` shows the earlier post-fix capture on the same production source; final native captures confirm the corrected styling. Both combined inputs were inspected. Additional final views: WebGPU/WebGL desktop, 900 x 1100 tablet and 430 x 1000 compact captures in that packet. Compact/tablet are responsive web layouts, not phone-bezel simulations.
+`window-vocabulary-comparison.png` places actual double-hung, twin and six-light canvas captures together at their original scale. All use the same initial footprint/apertures/library; the six-light case retains one local frame finish. Focused six-light textured/clay and twin views were inspected, along with the combined inspector image, compact layout and WebGL cold view. These are real renderer captures; no raster building is used in the application.
 
-## Findings and comparison history
+## Findings and required surfaces
 
-Initial runtime pass: `layout-01/desktop.png` and `layout-01/compact.png` under the packet. [P2] Native gray primary buttons lost the concept's action hierarchy. [P2] An extra desktop toolbar row and verbose status spacing displaced the intended main view. The single batched correction gave Save/Apply forest-green treatment, aligned desktop project actions with the header, compacted status messages, kept the unavailable-local-geometry notice beside Openings, and placed Advanced before supplementary tools. No production changes followed the final required-check run.
+No actionable P0/P1/P2 UI findings remain for this bounded addition. There was no UI redesign/fix loop after the first inspected native views.
 
-Post-fix comparison: `design-comparison-final.png`, focused comparison, both native desktop views, `focus-desktop.png` and `hover-desktop.png`. No actionable P0/P1/P2 fidelity findings remain for this bounded prototype.
+- Fonts/typography: the existing Inter/system/Segoe UI stack, field hierarchy and helper-text treatment are retained. The new select inherits the UI font and presents named assemblies rather than numeric codes. Desktop and compact labels wrap legibly without clipping; focus has a visible three-pixel outline.
+- Spacing/layout: the existing viewport/inspector grid is retained. A deliberate extra row accommodates the assembly selector; the primary Apply action and actual affected-window count remain legible. Lower inspector sections continue through its normal vertical scroll. Desktop full-page1493 x1059, compact430 x2004 and tablet900 x1996 exports preserve the natural web layout; CSS viewports were1493 x1054,430 x1000 and900 x1100. No horizontal overflow is observed. The select is at least44px high and has enough width for Six-light casement.
+- Colors/tokens: same forest-green action, pale surface, dark foreground and subdued border palette as the existing grouped controls. The select uses #fbfcf9/#18201c with #bcc7bd border; focus #526f46. No new decorative palette, asset or icon system was introduced.
+- Image quality/asset fidelity: chamfered rails, mullions, glazing bars and individual panes come from the existing pure geometry compiler. They remain shared instanced prototypes. Textured and clay close-ups show real depth/subdivision. Comparison PNGs are QA compositions of original captures, not substitute product imagery. Full native/browser originals and source pins are retained.
+- Copy/content: Double-hung sash, Twin casement and Six-light casement are named choices. The scope remains all actual generated windows; local geometry is explicitly unavailable. Keep edited dimensions and assemblies now describes the expanded retention behavior, and the generation copy explains opening locks and material replacement. The generator's pinned recipe remains the base; the current graph owns the new authored assembly exception.
 
-[P3] The ordinary standalone development preview requests an absent `/favicon.ico`, producing one resource 404. Exact URL is recorded in `interaction-qa.json`; no application errors were observed. The native observer workflows use their established explicit favicon 204 route and record zero browser errors. The missing favicon is inherited and does not affect construction or controls; adding a real product icon can be a later shell task. Earlier QA attempts and their diagnostics are retained.
+[P3] The plain local preview still requests an absent favicon and records its inherited404 separately. The native workflows use their existing favicon204 route; their completed runs have zero browser errors. This is not a construction failure.
 
-## Required fidelity surfaces
+## Functional and accessibility evidence
 
-- Fonts and typography: retain the existing Inter/system/Segoe UI sans stack. The generated illustration has no recoverable font metadata; its compact sans hierarchy is preserved with a strong inspector heading, 650-weight group/field labels and separate readable helper text. Inputs use tabular numerals. Final full and focused views show no clipped labels or accidental wrapping. The small recovery messages are secondary; focused input has a visible three-pixel outline.
-- Spacing and layout: roughly two-thirds live viewport and one-third inspector, thin dividers, pale open-group row, architectural field labels opposite aligned numeric controls. Header actions share the desktop title row. Compact/tablet stack the viewport above the inspector and allow vertical scrolling; persistent controls do not overflow horizontally. Extra View controls and recovery states are justified existing functionality. Source and implementation total page heights differ by five pixels, not a density error.
-- Colors and tokens: source's warm pale surface, forest-green primary actions, dark text, subdued borders and gray unavailable notice are retained. Actual primary color is #263c31; input foreground #18201c/background #fbfcf9, field border #bcc7bd, open group #e8ece5. Hover changes the primary to #365440. Existing warm error text remains visible near the scope controls. Disabled history actions are visibly muted.
-- Image quality and asset fidelity: the building is the actual existing Three.js/compiler output, as required by this product task. A generated raster building would conceal functional geometry. No illustrative asset, CSS/SVG building approximation, preassembled mesh or replacement renderer was introduced. Model/camera/light and current materials produce the same restrained architectural direction while preserving actual procedural causality. Native and browser PNGs are retained without delivery resampling. No new icon package or decorative glyph was added; existing disclosure affordances remain native controls.
-- Copy and content: preserve Shape, Storeys, Openings, Roof & trim, shared affected-window scope and unavailable local geometry. The concept's Preview action becomes Apply because this executes the existing atomic publication/history operation. Units appear in accessible labels, not decorative suffix boxes. Redo/Open and explicit status/errors remain for safe continuation. Actual counts update after applied structure or generation changes; the compact final source has 79 windows. Advanced graph, Surface finishes and Generate & vary preserve the actual feature boundary.
+`preview-check.json`: live preview HTTP200, keyboard ArrowDown chooses Twin casement, focus remains visible, the change stays a draft until Apply, and Apply publishes real construction. `select-keyboard-focus.png` and `preview-twin.png` show those states. No application page/console errors; the favicon request is classified separately. No assistive-technology session or recruited artist study is claimed.
 
-## Interaction and accessibility evidence
+All five repository checks pass:1,770 tests/123 files, typecheck, lint, build and eight standard browser workflows. The focused run passes54 tests. Native WebGPU/WebGL each cover18 actual states;14 and15 capture events respectively. Tests/proofs cover old compiler/recipe/native replay, schema/worker/project admission, feasible outward/metre-UV geometry, true shared scope, local finish retention, invalid-edit last-good behavior, undo/redo, generation retention/release, portable project0.6 and cold recovery.
 
-`interaction-qa.json`: focused number input and visible outline, captured hover, keyboard Enter opens Shape, no horizontal overflow at 900/430 CSS px, no application errors. No assistive-technology session, text-zoom audit or recruited artist study is claimed.
+The first WebGL attempt had identical source/geometry/materials but a different reopened PNG hash. An unobscured screenshot crop differed at one pixel by one red level; it is not a full-frame native-delta claim. A diagnostic rerun records the actual camera/lights and opened image and passes all original strict native reopen/cold assertions without production changes. Cause of the first variance remains unproven; the unsuccessful attempt is retained. This qualification does not affect the UI pass or legacy compiler/recipe identities.
 
-`webgpu/receipt.json` and `webgl/receipt.json`: each 16 actual draw states and 14 capture events; graph absent by default; shared recess/depth/storeys/cornice edits; actual scope 47 to 63; local finish changes preserve full geometry; history, legacy C5 file opening, exact portable source, locked reroll, custom-topology fallback, room return and exact cold native pixels. Material channels remain exact on structural changes; cold recovery makes zero provider/material-generation calls. Invalid edits retain the accepted scene; retired owners dispose. Seven added tests cover bindings, scope, bypass/custom boundaries and integrated publication/history/failure handling. All five required checks pass, including 1753 tests/122 files and eight standard browser workflows.
+## Checklist and limits
 
-## Intentional constraints and open review
+- [x] Named assembly control on the existing source/publication path.
+- [x] Inspect same-input baseline/current UI comparison and focused real geometry.
+- [x] Keyboard, focus, explicit draft/apply and responsive layout.
+- [x] Both rendering backends and strict final portable/cold replay.
+- [x] Existing material ownership, recipes, semantics and advanced editing retained.
+- [x] Add eight actual review images to the private phone gallery; preserve its95 earlier images.
 
-Grouped fields bind only the registered construction topology. Custom branches have an explicit advanced-editor route. Selecting a frame enables local finishes; geometry remains shared. Local structural editing is explicitly unavailable. Default architecture coverage remains unknown and no live UTDG architectural-data claim is made. The three recipe and future family/block gates remain separate.
-
-The selected direction is implemented; human workflow acceptance and the proposed artist task sessions are still pending. QA passing is not artist usability acceptance or C6 visual acceptance.
-
-## Implementation checklist
-
-- [x] Bind selected concept to existing source and publication path.
-- [x] Correct primary-action hierarchy and desktop density in one bounded batch.
-- [x] Inspect full-view and focused same-input comparisons.
-- [x] Exercise keyboard, focus/hover, failure, responsive and both rendering backends.
-- [x] Preserve materials, advanced access and portable recovery; disclose missing scope support.
-- [x] Record required checks and private phone-gallery evidence.
-- [ ] Human review of the implemented workflow, followed by the separately defined artist sessions.
+These are closed, fixed-pose shared assemblies. Opening animation, local structural targeting, storefront/door/roof expansion, artist acceptance and authoritative UTDG architecture coverage are not established by this packet.

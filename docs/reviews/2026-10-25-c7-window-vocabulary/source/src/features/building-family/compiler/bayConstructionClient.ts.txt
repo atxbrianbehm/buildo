@@ -1,0 +1,61 @@
+import { BayConstructionGraphSchema } from "../contracts/bayConstructionGraph";
+import type { BayConstructionResult } from "./evaluateBayConstruction";
+import { BayConstructionWorkerReplySchema } from "./bayConstructionWorkerProtocol";
+
+export interface BayConstructionWorkerEndpoint {
+  postMessage(message: unknown): void;
+  addEventListener(type: "message" | "error", listener: (event: MessageEvent | ErrorEvent) => void): void;
+  removeEventListener(type: "message" | "error", listener: (event: MessageEvent | ErrorEvent) => void): void;
+  terminate(): void;
+}
+
+/** One owned worker per editor. Superseded replies cannot resolve a newer request. */
+export class BayConstructionClient {
+  private sequence = 0;
+  private disposed = false;
+  private pending = new Map<number, { resolve: (value: BayConstructionResult) => void; reject: (error: Error) => void }>();
+  constructor(private worker: BayConstructionWorkerEndpoint) {
+    worker.addEventListener("message", this.receive);
+    worker.addEventListener("error", this.fail);
+  }
+  evaluate(input: unknown, previewNodeId?: string): Promise<BayConstructionResult> {
+    if (this.disposed) return Promise.reject(new Error("Construction compiler is closed."));
+    const graph = BayConstructionGraphSchema.parse(input);
+    const requestId = ++this.sequence;
+    return new Promise((resolve, reject) => {
+      this.pending.set(requestId, { resolve, reject });
+      try { this.worker.postMessage({ schemaVersion: graph.schemaVersion === "0.5.0" ? "0.5.0" : graph.schemaVersion === "0.4.0" ? "0.4.0" : graph.schemaVersion === "0.3.0" ? "0.3.0" : graph.schemaVersion === "0.2.0" || previewNodeId ? "0.2.0" : "0.1.0", type: "evaluate-bay", requestId, graph,
+        ...(previewNodeId ? { previewNodeId } : {}) }); }
+      catch (error) { this.pending.delete(requestId); reject(error instanceof Error ? error : new Error("Cannot start construction evaluation.")); }
+    });
+  }
+  private receive = (event: MessageEvent | ErrorEvent): void => {
+    if (!("data" in event)) return;
+    const reply = BayConstructionWorkerReplySchema.safeParse(event.data);
+    if (!reply.success) { this.fail(); return; }
+    const pending = this.pending.get(reply.data.requestId);
+    if (!pending) return;
+    this.pending.delete(reply.data.requestId);
+    if (reply.data.type === "bay-error") pending.reject(new Error(reply.data.message));
+    else pending.resolve(reply.data.result);
+  };
+  private fail = (): void => {
+    if (!this.disposed) {
+      this.disposed = true;
+      this.worker.removeEventListener("message", this.receive);
+      this.worker.removeEventListener("error", this.fail);
+      this.worker.terminate();
+    }
+    for (const pending of this.pending.values()) pending.reject(new Error("Construction worker failed; the last valid bay is retained."));
+    this.pending.clear();
+  };
+  dispose(): void {
+    if (this.disposed) return;
+    this.disposed = true;
+    this.worker.removeEventListener("message", this.receive);
+    this.worker.removeEventListener("error", this.fail);
+    this.worker.terminate();
+    this.fail();
+  }
+}
+

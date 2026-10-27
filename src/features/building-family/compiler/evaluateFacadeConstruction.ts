@@ -42,7 +42,7 @@ function front(primitive: PrimitiveGeometry): PrimitiveGeometry {
 export async function evaluateFacadeConstruction(input: unknown, materials: BayConstructionMaterials = DEFAULT_BAY_MATERIALS,
   previewNodeId?: string): Promise<BayConstructionResult> {
   const graph = structuredClone(BayConstructionGraphSchema.parse(input));
-  if (!["0.2.0", "0.3.0", "0.4.0"].includes(graph.schemaVersion)) throw new Error("Facade construction requires graph version 0.2.0 or 0.3.0.");
+  if (!["0.2.0", "0.3.0", "0.4.0", "0.5.0"].includes(graph.schemaVersion)) throw new Error("Facade construction requires graph version 0.2.0 or 0.3.0.");
   const nodes = new Map(graph.nodes.map(node => [node.id, node]));
   if (previewNodeId && !nodes.has(previewNodeId)) throw new Error("The preview node is missing.");
   const values = new Map<string, Promise<Value>>(), trace: BayConstructionTrace[] = [];
@@ -185,7 +185,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
       }
       case "EmitWall": {
         const cells = await scopes(node.input.nodeId);
-        if (graph.schemaVersion === "0.4.0" && cells.every(cell=>cell.building)) {
+        if (["0.4.0", "0.5.0"].includes(graph.schemaVersion) && cells.every(cell=>cell.building)) {
           const faces = new Map<string,Cell[]>(); for(const cell of cells) faces.set(cell.root,[...(faces.get(cell.root)??[]),cell]);
           value = { kind: "geometry", parts: node.bypassed ? [] : [...faces.values()].map(group=>{
             const cell={...group[0],key:group[0].root},part=makeMesh(node,cell,"wall",[constructionFacadeSolid(group.map(cell=>cell.scope))],"facade",materials.wall);
@@ -207,10 +207,10 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
             const template: BayConstructionGraph = { schemaVersion: "0.1.0", kind: "bay-construction", documentId: graph.documentId, outputNodeId: "output", nodes: [
               { id: "facade", type: "FacadeScope", parameters: { widthM: cell.scope.sizeM[0], heightM: cell.scope.sizeM[1], wallDepthM: cell.scope.sizeM[2] } },
               { id: "opening", type: "PlaceOpening", input: { nodeId: "facade", socket: "scope" }, parameters: { widthM: opening.widthM, heightM: opening.heightM, sillM } },
-              { id: "window", type: "AssembleWindow", input: { nodeId: "opening", socket: "scope" }, parameters: p },
+              { id: "window", type: "AssembleWindow", input: { nodeId: "opening", socket: "scope" }, parameters: { recessM:p.recessM, frameWidthM:p.frameWidthM, sillProjectionM:p.sillProjectionM } },
               { id: "output", type: "Output", inputs: [{ nodeId: "window", socket: "geometry" }] }
             ] };
-            return { hash: (await hashCanonicalJson(JSON.parse(key))).slice(0, 20), batches: (await evaluateBayConstruction(template, materials, {metricTimberUvs})).ir.meshBatches };
+            return { hash: (await hashCanonicalJson(JSON.parse(key))).slice(0, 20), batches: (await evaluateBayConstruction(template, materials, {metricTimberUvs,windowLayout:p.layout ?? 0})).ir.meshBatches };
           })());
           const template = await templates.get(key)!;
           for (const batch of template.batches) {

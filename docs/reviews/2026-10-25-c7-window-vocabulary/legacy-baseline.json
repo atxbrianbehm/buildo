@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "0.1.0",
+  "legacyResultHash": "10b9860522a4ac9818f38e9d081fc05bade653ea87447822335be008a98108f9",
+  "legacyGraphHash": "d4cd4de220a5e73f26be69a71ed93f310e7714b1a748d379c71d9de482c6ad0f",
+  "recipes": [
+    {
+      "id": "restrained-masonry-rectangular",
+      "version": "1",
+      "contentHash": "49ea533925dba5b5b0a59612bc8449685dc84437f990e2388f80acd946766add"
+    },
+    {
+      "id": "deep-reveal-masonry",
+      "version": "1",
+      "contentHash": "36a9abd965c3325b5aee39f38c8d6ddb8fccbc884b55005ecf6b00a8fbfcf3c3"
+    },
+    {
+      "id": "projecting-cornice-masonry",
+      "version": "1",
+      "contentHash": "c3f453f7f39c52cdae80e08d7b48635a1f2de1980fd45f4db5bda4841714dee3"
+    }
+  ]
+}

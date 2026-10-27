@@ -1,0 +1,23 @@
+
+ RUN  v4.1.9 C:/Users/behmb/Documents/Cascade Projects/buildo
+
+ ❯ src/features/building-family/tests/ConstructionBuildingControls.test.tsx (0 test)
+ ❯ src/features/building-family/tests/constructionWindowVocabulary.test.ts (0 test)
+ ❯ src/features/building-family/tests/bayConstructionWorkbench.test.tsx (0 test)
+ ❯ src/features/building-family/tests/constructionGenerationState.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/building-family/tests/bayConstructionWorkbench.test.tsx [ src/features/building-family/tests/bayConstructionWorkbench.test.tsx ]
+ FAIL  src/features/building-family/tests/ConstructionBuildingControls.test.tsx [ src/features/building-family/tests/ConstructionBuildingControls.test.tsx ]
+ FAIL  src/features/building-family/tests/constructionGenerationState.test.ts [ src/features/building-family/tests/constructionGenerationState.test.ts ]
+ FAIL  src/features/building-family/tests/constructionWindowVocabulary.test.ts [ src/features/building-family/tests/constructionWindowVocabulary.test.ts ]
+Error: EPERM: operation not permitted, rename 'C:\Users\behmb\AppData\Local\Packages\sandbox.{d419514b-d362-4777-adab-d91b2c41f157}\AC\Temp\ItpyynajewVusgPCX_7F3\client\.tmp-1792906881575-ux8bljyxn6l' -> 'C:\Users\behmb\AppData\Local\Packages\sandbox.{d419514b-d362-4777-adab-d91b2c41f157}\AC\Temp\ItpyynajewVusgPCX_7F3\client\18c96de472db5e9e8cf7d27f51774fd25a1071c1'
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+
+ Test Files  4 failed (4)
+      Tests  no tests
+   Start at  00:41:05
+   Duration  15.98s (transform 0ms, setup 0ms, import 0ms, tests 0ms, environment 61.25s)
+

@@ -1,0 +1,106 @@
+[
+  {
+    "name": "comparison",
+    "filename": "buildo-c7-comparison.png",
+    "response": {
+      "file_upload_id": "404b77d6-cd4f-8199-8859-00b2ab3e6010",
+      "filename": "buildo-c7-comparison.png",
+      "content_type": "image/png",
+      "content_length": 520888,
+      "status": "uploaded",
+      "markdown_source": "file-upload://404b77d6-cd4f-8199-8859-00b2ab3e6010",
+      "suggested_markdown": "<image source=\"file-upload://404b77d6-cd4f-8199-8859-00b2ab3e6010\" />"
+    }
+  },
+  {
+    "name": "twin-inspector",
+    "filename": "buildo-c7-twin-inspector.png",
+    "response": {
+      "file_upload_id": "404b77d6-cd4f-8159-835c-00b26fdfcf5b",
+      "filename": "buildo-c7-twin-inspector.png",
+      "content_type": "image/png",
+      "content_length": 484246,
+      "status": "uploaded",
+      "markdown_source": "file-upload://404b77d6-cd4f-8159-835c-00b26fdfcf5b",
+      "suggested_markdown": "<image source=\"file-upload://404b77d6-cd4f-8159-835c-00b26fdfcf5b\" />"
+    }
+  },
+  {
+    "name": "twin-close",
+    "filename": "buildo-c7-twin-close.png",
+    "response": {
+      "file_upload_id": "404b77d6-cd4f-8131-a16e-00b20aa345f1",
+      "filename": "buildo-c7-twin-close.png",
+      "content_type": "image/png",
+      "content_length": 438301,
+      "status": "uploaded",
+      "markdown_source": "file-upload://404b77d6-cd4f-8131-a16e-00b20aa345f1",
+      "suggested_markdown": "<image source=\"file-upload://404b77d6-cd4f-8131-a16e-00b20aa345f1\" />"
+    }
+  },
+  {
+    "name": "six-light-inspector",
+    "filename": "buildo-c7-six-light-inspector.png",
+    "response": {
+      "file_upload_id": "404b77d6-cd4f-81ca-8814-00b2acc83618",
+      "filename": "buildo-c7-six-light-inspector.png",
+      "content_type": "image/png",
+      "content_length": 488959,
+      "status": "uploaded",
+      "markdown_source": "file-upload://404b77d6-cd4f-81ca-8814-00b2acc83618",
+      "suggested_markdown": "<image source=\"file-upload://404b77d6-cd4f-81ca-8814-00b2acc83618\" />"
+    }
+  },
+  {
+    "name": "six-light-close",
+    "filename": "buildo-c7-six-light-close.png",
+    "response": {
+      "file_upload_id": "404b77d6-cd4f-81c3-9a26-00b244eba713",
+      "filename": "buildo-c7-six-light-close.png",
+      "content_type": "image/png",
+      "content_length": 462727,
+      "status": "uploaded",
+      "markdown_source": "file-upload://404b77d6-cd4f-81c3-9a26-00b244eba713",
+      "suggested_markdown": "<image source=\"file-upload://404b77d6-cd4f-81c3-9a26-00b244eba713\" />"
+    }
+  },
+  {
+    "name": "six-light-clay-close",
+    "filename": "buildo-c7-six-light-clay-close.png",
+    "response": {
+      "file_upload_id": "404b77d6-cd4f-81c2-811c-00b2aa39ad82",
+      "filename": "buildo-c7-six-light-clay-close.png",
+      "content_type": "image/png",
+      "content_length": 90112,
+      "status": "uploaded",
+      "markdown_source": "file-upload://404b77d6-cd4f-81c2-811c-00b2aa39ad82",
+      "suggested_markdown": "<image source=\"file-upload://404b77d6-cd4f-81c2-811c-00b2aa39ad82\" />"
+    }
+  },
+  {
+    "name": "compact",
+    "filename": "buildo-c7-compact.png",
+    "response": {
+      "file_upload_id": "404b77d6-cd4f-811f-b812-00b2ca278507",
+      "filename": "buildo-c7-compact.png",
+      "content_type": "image/png",
+      "content_length": 202144,
+      "status": "uploaded",
+      "markdown_source": "file-upload://404b77d6-cd4f-811f-b812-00b2ca278507",
+      "suggested_markdown": "<image source=\"file-upload://404b77d6-cd4f-811f-b812-00b2ca278507\" />"
+    }
+  },
+  {
+    "name": "webgl-recovered",
+    "filename": "buildo-c7-webgl-recovered.png",
+    "response": {
+      "file_upload_id": "404b77d6-cd4f-81eb-91b6-00b2dd515ed2",
+      "filename": "buildo-c7-webgl-recovered.png",
+      "content_type": "image/png",
+      "content_length": 468430,
+      "status": "uploaded",
+      "markdown_source": "file-upload://404b77d6-cd4f-81eb-91b6-00b2dd515ed2",
+      "suggested_markdown": "<image source=\"file-upload://404b77d6-cd4f-81eb-91b6-00b2dd515ed2\" />"
+    }
+  }
+]

@@ -1,0 +1,25 @@
+import { BayConstructionGraphSchema } from "../contracts/bayConstructionGraph";
+import { evaluateBayConstruction, DEFAULT_BAY_MATERIALS, type BayConstructionMaterials } from "./evaluateBayConstruction";
+import { evaluateFacadeConstruction } from "./evaluateFacadeConstruction";
+import { hashCanonicalJson } from "../core/contentHash";
+import { constructionSurfaceAt, constructionSurfaceTrace, legacySurfaceProjection } from "./constructionSurfaceProgram";
+
+export async function evaluateConstruction(input: unknown, previewNodeId?: string, materials: BayConstructionMaterials = DEFAULT_BAY_MATERIALS) {
+  const graph = BayConstructionGraphSchema.parse(input);
+  if (graph.schemaVersion === "0.1.0" && !previewNodeId) return evaluateBayConstruction(graph, materials);
+  if (["0.3.0", "0.4.0", "0.5.0"].includes(graph.schemaVersion)) {
+    const fullProjection = legacySurfaceProjection(graph), selectedProjection = previewNodeId ? legacySurfaceProjection(graph, previewNodeId) : fullProjection;
+    if (fullProjection && selectedProjection) {
+      const full = await evaluateBayConstruction(fullProjection, materials), selected = previewNodeId ? await evaluateBayConstruction(selectedProjection, materials) : full;
+      selected.ir.sourceGraphHash = await hashCanonicalJson(graph);
+      const surfaceComposition = constructionSurfaceAt(graph, previewNodeId ?? graph.outputNodeId);
+      return { ...selected, graph, trace: constructionSurfaceTrace(graph, full.trace, selected.trace, previewNodeId),
+        ...(previewNodeId ? { previewNodeId } : {}), ...(surfaceComposition ? { surfaceComposition } : {}) };
+    }
+  }
+  const result = await evaluateFacadeConstruction(graph.schemaVersion === "0.1.0" ? { ...graph, schemaVersion: "0.2.0" } : graph, materials, previewNodeId);
+  result.graph = graph;
+  // A transient legacy-node preview never upgrades its saved source or provenance.
+  if (graph.schemaVersion === "0.1.0") result.ir.sourceGraphHash = await hashCanonicalJson(graph);
+  return result;
+}

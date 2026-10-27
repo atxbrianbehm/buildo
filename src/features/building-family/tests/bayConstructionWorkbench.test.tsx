@@ -551,4 +551,20 @@ it("generates, edits, locks and rerolls through the actual workbench with saved 
     for(const record of rendererState.records)expect(record.dispose).toHaveBeenCalledTimes(1);
   },60000);
 
+  it("publishes casement vocabulary through real history and version-six portable source with the same materials",async()=>{
+    const view=mount({graph:createBuildingConstructionGraph(),materials});
+    try {
+      await ready();fireEvent.change(screen.getByRole("combobox",{name:"Window assembly"}),{target:{value:"1"}});
+      expect(view.onSessionChange).toHaveBeenCalledTimes(1);expect(screen.getByRole("button",{name:"Apply construction"})).toHaveTextContent("47 windows");
+      fireEvent.click(screen.getByRole("button",{name:"Apply construction"}));await waitFor(()=>expect(view.onSessionChange).toHaveBeenCalledTimes(2),{timeout:15000});await ready();
+      const edited=view.onSessionChange.mock.calls.at(-1)![0];expect(edited.graph.schemaVersion).toBe("0.5.0");expect(edited.materials).toBe(materials);expect(edited.graph.nodes.find(n=>n.type==="AssembleWindow")!.parameters.layout).toBe(1);
+      const file=await createBayConstructionProject(edited.graph,edited.materials.file);expect(file.schemaVersion).toBe("0.6.0");expect((await readBayConstructionProject(JSON.parse(JSON.stringify(file)))).project).toEqual(file);
+      await expect(readBayConstructionProject({...file,schemaVersion:"0.5.0"})).rejects.toThrow("versions must agree");
+      fireEvent.click(screen.getByRole("button",{name:"Undo construction"}));await waitFor(()=>expect(view.onSessionChange).toHaveBeenCalledTimes(3),{timeout:15000});await ready();expect(screen.getByRole("combobox",{name:"Window assembly"})).toHaveValue("0");expect(view.onSessionChange.mock.calls.at(-1)![0].graph.schemaVersion).toBe("0.4.0");
+      fireEvent.click(screen.getByRole("button",{name:"Redo construction"}));await waitFor(()=>expect(view.onSessionChange).toHaveBeenCalledTimes(4),{timeout:15000});await ready();expect(screen.getByRole("combobox",{name:"Window assembly"})).toHaveValue("1");
+      expect(generate).toHaveBeenCalledTimes(sourceCalls);
+    } finally {view.unmount();}
+    for(const record of rendererState.records)expect(record.dispose).toHaveBeenCalledTimes(1);
+  },60000);
+
 });
