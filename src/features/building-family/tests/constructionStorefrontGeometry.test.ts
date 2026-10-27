@@ -8,12 +8,34 @@ import { evaluateConstruction } from "../compiler/evaluateConstruction";
 import { BayConstructionWorkerReplySchema, BayConstructionWorkerRequestSchema } from "../compiler/bayConstructionWorkerProtocol";
 import { hashCanonicalJson } from "../core/contentHash";
 import { setConstructionSurface } from "../core/constructionSurfaceAuthoring";
+import { constructionFacadeSolid } from "../compiler/buildingShellGeometry";
 
 const create = () => withConstructionStorefront(createBuildingConstructionGraph(), 1);
 const frontageOf = (graph: ReturnType<typeof create>) => graph.nodes.find(node => node.type === "PlaceStorefront")!;
 const scopeId = (result: Awaited<ReturnType<typeof evaluateConstruction>>) => result.ir.semanticIndex.map(entry => entry.semanticPath);
 
 describe("procedural storefront compiler", () => {
+  it.each([0.35, 0.65, 1.1])("seats a display sill above the real masonry reveal at %sm without changing metre UV scale", bulkheadHeightM => {
+    const plan = resolveConstructionStorefront({ schemaVersion: "0.1.0", kind: "construction-storefront-request", assembly: "display",
+      scope: { id: "front/0/0", face: "front", floorIndex: 0, bayIndex: 0, originM: [-1.4, 2, -0.36], sizeM: [2.8, 4, 0.36] },
+      parameters: { pierWidthM: 0.16, bulkheadHeightM, headHeightM: 0.45, transomBaseM: 2.35, frameWidthM: 0.075, recessM: 0.14, entranceWidthM: 1.22 } });
+    const a = plan.aperture, sill = buildConstructionStorefrontGeometry(plan).trim[0];
+    const wall = constructionFacadeSolid([{ facade: "front", floorIndex: 0, bayIndex: 0, zone: "ground",
+      originM: [-1.4, 2, -0.36], sizeM: [2.8, 4, 0.36], opening: {
+        centerAlongM: a.leftM + a.widthM / 2, centerYM: a.bottomM + a.heightM / 2, widthM: a.widthM, heightM: a.heightM } }]);
+    const reveal = wall.positions.filter((_, i) => i % 3 === 1 && wall.normals[i] > 0.99);
+    expect(reveal.some(y => Math.abs(y - a.bottomM) < 1e-8)).toBe(true);
+    expect(sill.bounds.min[1] + 2).toBeCloseTo(a.bottomM, 9);
+    for (let i = 0; i < sill.positions.length; i += 3) if (sill.normals[i + 1] > 0.99) {
+      expect(sill.positions[i + 1] + 2 - a.bottomM).toBeCloseTo(0.03, 9);
+      expect(sill.uvs[i / 3 * 2]).toBeCloseTo(sill.positions[i] - sill.bounds.min[0], 9);
+      expect(sill.uvs[i / 3 * 2 + 1]).toBeCloseTo(sill.positions[i + 2] - sill.bounds.min[2], 9);
+    }
+    // Translation changes physical placement, never the source tile or UV scale.
+    expect(sill.bounds.max[1] - sill.bounds.min[1]).toBeCloseTo(0.03, 9);
+    expect(sill.bounds.max[2]).toBeCloseTo(0.15, 9);
+  });
+
   it("migrates explicitly, owns source and preserves the C7 window choice", () => {
     const old = withConstructionWindowLayout(createBuildingConstructionGraph(), "window", 2), before = structuredClone(old);
     const graph = withConstructionStorefront(old, 1);

@@ -35,4 +35,4 @@ Structural edits preserve material artifacts, local finish layers, semantic addr
 
 The UTDG architecture adapter, historical evidence, additional opening families, artist sessions and family/block performance remain separate. Passing this task does not establish them.
 
-[Published PRs and phone-gallery receipt](../reviews/2026-10-26-ux2-publication/README.md): three packet PRs;120 image blocks, with all112 prior references retained. Human review of the new task remains pending.
+[Published PRs and phone-gallery receipt](../reviews/2026-10-26-ux2-publication/README.md): three packet PRs;120 image blocks, with all112 prior references retained. The user accepted the selected-window task on October26 and requested checking texture interactions and repairing reported sill artifacts; T1 handles that bounded quality recovery. Artist testing remains unperformed.

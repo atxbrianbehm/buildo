@@ -56,7 +56,9 @@ export function buildConstructionStorefrontGeometry(input: ConstructionStorefron
     hardware.push(box([pullX, 1.1, -p.recessM + 0.025], [0.022, 0.2, 0.024]),
       ...[1.025, 1.175].map(y => box([pullX, y, -p.recessM + 0.003], [0.025, 0.025, 0.045])));
   }
-  const trim = [box([0, plan.source.assembly === "display" ? bottom - 0.015 : 0.015, -p.recessM / 2 + thresholdProjectionM / 2],
+  // Seat the display cap on the bulkhead instead of burying its thickness in it.
+  // A top at `bottom` coincides with the exposed masonry reveal and z-fights.
+  const trim = [box([0, plan.source.assembly === "display" ? bottom + 0.015 : 0.015, -p.recessM / 2 + thresholdProjectionM / 2],
     [a.widthM + 0.08, 0.03, p.recessM + thresholdProjectionM])];
   // The header bounds must remain entirely inside the authored aperture.
   if (top <= bottom || !frame.length) throw new Error("Storefront frame is empty.");
