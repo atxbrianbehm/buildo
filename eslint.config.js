@@ -5,7 +5,15 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist", "coverage", "playwright-report", "test-results"] },
+  { ignores: [
+    "dist", "coverage", "playwright-report", "test-results",
+    // Preserved diagnostic snapshots are evidence, not maintained application scripts.
+    "docs/reviews/2026-10-27-c9-p2-cornice-authoring/**/*.mjs",
+    "docs/reviews/2026-10-27-t4-shadow-discriminator/**/*.mjs",
+    "docs/reviews/2026-10-27-t5-cornice-shadow-parts/**/*.mjs",
+    "docs/reviews/2026-10-27-t6-shadow-bias-sweep/**/*.mjs",
+    "docs/reviews/2026-10-27-t7-shadow-frustum-study/**/*.mjs"
+  ] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
