@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "cornice-geometric-ray-diagnostic",
+  "method": "Two-sided ray-triangle intersections from front backing points outside all front bracket widths. First intersection by compiler primitive range; geometric occlusion is not proof of raster shadow ownership.",
+  "lightDirection": [
+    0.45714439920786054,
+    0.7064958896848753,
+    -0.5402615627001988
+  ],
+  "sampleRegion": {
+    "xM": [
+      -4.5,
+      4.5
+    ],
+    "yM": [
+      10.511999999999999,
+      10.636
+    ],
+    "zM": -6.52161,
+    "grid": [
+      41,
+      17
+    ]
+  },
+  "candidateRays": 697,
+  "excludedBehindUnits": 170,
+  "testedRays": 527,
+  "firstHitCounts": {
+    "backing": 486,
+    "coping": 0,
+    "unit": 41,
+    "clear": 0
+  },
+  "firstBackingHitProfileEdges": {
+    "3": 486
+  },
+  "hitDistanceM": {
+    "min": 0.0056622315588261704,
+    "max": 0.18117634538517752
+  },
+  "triangles": 6664,
+  "ranges": {
+    "backing": [
+      0,
+      64
+    ],
+    "coping": [
+      64,
+      112
+    ],
+    "units": [
+      112,
+      6664
+    ]
+  }
+}

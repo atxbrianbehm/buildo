@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "0.1.0",
+  "commit": "7fd1746467891816a578f40960bbb129339acc19",
+  "images": [
+    {
+      "file": "light-webgpu/close-default.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/7fd1746467891816a578f40960bbb129339acc19/docs/reviews/2026-10-27-t5-cornice-shadow-parts/light-webgpu/close-default.png",
+      "sha256": "cb5b5ac1e78b617fc7cda54790add54ce9f98690ea2bd437749d5bb9f52e679e",
+      "httpStatus": 200,
+      "literalLocalBytesExact": true
+    },
+    {
+      "file": "light-webgpu/close-lower-light.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/7fd1746467891816a578f40960bbb129339acc19/docs/reviews/2026-10-27-t5-cornice-shadow-parts/light-webgpu/close-lower-light.png",
+      "sha256": "62a5d4804815a4cb5a1e901a3cba632a692ec842abd73ff534f8e46cd28786c1",
+      "httpStatus": 200,
+      "literalLocalBytesExact": true
+    }
+  ]
+}

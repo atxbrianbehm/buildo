@@ -1,0 +1,219 @@
+import { chromium } from "@playwright/test";
+import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { createServer } from "vite";
+const out = process.argv[2], api = process.argv[3];
+assert(out && ["webgpu", "webgl"].includes(api)); await mkdir(out, { recursive: false });
+const hash = bytes => createHash("sha256").update(bytes).digest("hex");
+const files = JSON.parse(await readFile("test-results/c9-p2-cornice-authoring-2026-10-27/source-pins.json","utf8")).files.map(pin=>pin.file);
+const pins = () => Promise.all(files.map(async file => ({file,sha256:hash(await readFile(file))}))); const before = await pins();
+const observer = `
+  const c2NativeRender = renderer.render.bind(renderer);
+  renderer.render = (scene, camera) => {
+    c2NativeRender(scene, camera);
+    if (!camera.isPerspectiveCamera) return; globalThis.__c9Renderer=renderer; globalThis.__c3Scene = scene; globalThis.__c3Camera = camera; renderer.domElement.__c2Bitmap = renderer.domElement.toDataURL("image/png");
+    let sourceGraphHash; const meshes = [], lights = [];
+    scene.traverse(object => {
+      if (object.name.startsWith('building-runtime.')) sourceGraphHash = object.userData.sourceGraphHash;
+      if (object.isLight) lights.push({ type: object.type, intensity: object.intensity, position: object.position.toArray() });
+      if (!object.isMesh || object.userData.rendererBoundary !== 'building-family') return;
+      meshes.push({ batchId: object.userData.batchId, instances: object.isInstancedMesh ? object.count : 0,
+        castShadow: object.castShadow, receiveShadow: object.receiveShadow, positions: Array.from(object.geometry.getAttribute('position').array), normals: Array.from(object.geometry.getAttribute('normal').array),
+        indices: Array.from(object.geometry.index.array), matrices: object.isInstancedMesh ? Array.from(object.instanceMatrix.array) : [] });
+    });
+    if (sourceGraphHash) renderer.domElement.__c2Draw = { sourceGraphHash, meshes, lights, frame:(renderer.domElement.__c2Frame=(renderer.domElement.__c2Frame??0)+1),
+      camera: { fov: camera.fov, aspect: camera.aspect, projection: camera.projectionMatrix.toArray(), inverse: camera.matrixWorldInverse.toArray() } };
+  };
+`;
+const server = await createServer({ cacheDir:out+"/.vite", plugins: [{ name: "c2-passive-native-draw-observer", enforce: "pre", transform(code, id) {
+  if(process.argv[4]==='legacy' && id.replaceAll("\\", "/").endsWith('/ui/AssemblyHall.tsx')) {const stripped=code.replace(/\s*\/\/ Consume pending orbit\/pan motion before restoring the default pose\.[\s\S]*?orbitControls.enableDamping = damping;\r?\n        }\r?\n/, '\n');assert.notEqual(stripped,code,'Legacy reset control must remove only the actual repair');code=stripped;}
+  if (id.replaceAll("\\", "/").endsWith("/materials/constructionReferenceMaterials.ts")) return { code: code.replace("  const { sourceSizePx", "  globalThis.__c5MaterialGenerations = (globalThis.__c5MaterialGenerations ?? 0) + 1; const { sourceSizePx"), map: null };
+  if (id.replaceAll("\\", "/").endsWith("/materials/providers/proceduralMaterialProvider.ts")) return { code: code + '\nconst c3Generate = ProceduralMaterialProvider.prototype.generate; ProceduralMaterialProvider.prototype.generate = function(request, signal) { (globalThis.__c3AllProviderCalls ??= []).push({sourceId:request.sourceId,role:request.role,widthPx:request.widthPx,heightPx:request.heightPx}); return c3Generate.call(this, request, signal); };', map: null };
+  if (id.replaceAll("\\", "/").endsWith("/ui/AssemblyHall.tsx")) return { code: code.replace("const controls = new OrbitControls(camera, renderer.domElement);", "const controls = new OrbitControls(camera, renderer.domElement); (globalThis.__c4Controls ??= new WeakMap()).set(renderer.domElement,controls);").replace("resolveConstructionFrameFromIntersections(viewerFixture.buildingRuntime, hits)", "((globalThis.__c3HitRoles ??= []).push(hits[0]?.object.userData.role), resolveConstructionFrameFromIntersections(viewerFixture.buildingRuntime, hits))"), map: null };
+  if (id.replaceAll("\\", "/").endsWith("/ui/bayConstructionFixture.ts")) return { code: code.replace("  if (!base.sourceSnapshot)", "  globalThis.__c4MaterialStart = (globalThis.__c3AllProviderCalls ?? []).length; if (!base.sourceSnapshot)").replace("  return { packedAtlas, debugExport, file };", "  globalThis.__c4InitSources = globalThis.__c3AllProviderCalls.slice(globalThis.__c4MaterialStart); return { packedAtlas, debugExport, file };").replace("    return fixture;", "    (globalThis.__c3Fixtures ??= []).push(fixture); return fixture;"), map: null };
+  if (id.replaceAll("\\", "/").endsWith("/renderer-three/assemblyRendererFactory.ts")) return { code: code.replace("  configurable.outputColorSpace = SRGBColorSpace;", observer + "\n  configurable.outputColorSpace = SRGBColorSpace;"), map: null };
+} }], server: { host: "127.0.0.1", port: 0 } });
+let browser, page; const errors = [], captures = [], draws = [], picks = [];
+try {
+  await server.listen(); browser = await chromium.launch({ channel: "chromium", args: api === "webgpu" ? ["--enable-unsafe-webgpu"] : [] });
+  const captureContext = await browser.newContext({ viewport: { width: 1493, height: 1054 }, deviceScaleFactor: 1 }); page = await captureContext.newPage();
+  await page.context().route("**/favicon.ico", route => route.fulfill({ status: 204 }));
+  await page.context().addInitScript(disable => {
+    if (disable) Object.defineProperty(navigator, "gpu", { value: undefined, configurable: true });
+    window.__c2Results = []; const NativeWorker = Worker;
+    window.Worker = class extends NativeWorker { constructor(...args) { super(...args); this.addEventListener("message", event => { if (event.data.type === "bay-result") window.__c2Results.push(event.data.result); }); } };
+  }, api === "webgl");
+  page.on("pageerror", error => errors.push(error.message)); page.on("console", message => { if (message.type() === "error") errors.push(message.text()); });
+  await page.goto(server.resolvedUrls.local[0]+"#document=c9-cornice-treatment-review",{waitUntil:'domcontentloaded',timeout:120000});
+  let workspace=page.locator('.construction-workspace'),canvas=workspace.locator('canvas:visible').first();
+  await workspace.waitFor({timeout:120000});
+  async function ready(){await page.waitForFunction(()=>{const root=document.querySelector('.construction-workspace');return root?.dataset.constructionHash&&root.querySelector('[aria-label="Construction inspector"]')?.getAttribute('aria-busy')==='false';},undefined,{timeout:120000});await page.waitForTimeout(200);assert.equal(await canvas.getAttribute('data-renderer-backend'),api);}
+  await ready(); const initialRequests=await page.evaluate(()=>globalThis.__c4InitSources);for(const role of ["frame","roof","door","horizontalTrim"])assert(initialRequests.some(request=>request.role===role&&request.widthPx===256&&request.heightPx===256));const initialCalls=initialRequests.length,allInitialCalls=await page.evaluate(()=>globalThis.__c3AllProviderCalls.length);assert.equal(initialCalls,12);
+  async function resetView() { await page.getByRole("button", {name: "Reset view", exact: true}).click(); await ready(); }
+  async function snapshot(label) {
+    await canvas.click({position:{x:5,y:5}}); await ready();
+    const state = await page.evaluate(async () => {
+      const root = document.querySelector('.construction-workspace'), hash = root.dataset.constructionHash;
+      const fixture = globalThis.__c3Fixtures.findLast(fixture => fixture.ir.sourceGraphHash === hash && !fixture.familyRuntime.disposed);
+      if (!fixture || !globalThis.__c3Scene.getObjectById(fixture.buildingRuntime.root.id)) throw new Error('Prepared source is not the actual rendered scene.');
+      const hashOf = async value => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(JSON.stringify(value))))].map(v=>v.toString(16).padStart(2,'0')).join('');
+      const encode = (_key,value) => ArrayBuffer.isView(value) ? {type:value.constructor.name,bytes:[...new Uint8Array(value.buffer,value.byteOffset,value.byteLength)]} : value;
+      const {sourceGraphHash,...ir} = fixture.ir;
+      const compiler = await hashOf(JSON.stringify({ir,prototypes:fixture.construction.prototypes},encode));
+      const wallAdapter=await import('/src/features/building-family/renderer-three/wallAtlasGeometry.ts');
+      const equal=(a,b)=>a.length===b.length&&a.every((v,i)=>Object.is(v,b[i]));
+      const semantics = {}, bindings = {};
+      const submitted=new Set();
+      for(const [path,lookup] of fixture.buildingRuntime.semanticLookup){
+        const object=lookup.object;
+        const instance=fixture.ir.instanceBatches.find(batch=>batch.batchId===lookup.batchId);
+        const source=instance?fixture.construction.prototypes.find(batch=>batch.batchId===instance.recipeId):fixture.ir.meshBatches.find(batch=>batch.batchId===lookup.batchId);
+        if(instance){const matrix=object.matrixWorld.clone();object.getMatrixAt(lookup.instanceIndex??lookup.elementIndex,matrix);if(!equal(matrix.elements,[...instance.transforms.slice(lookup.elementIndex*16,(lookup.elementIndex+1)*16)]))throw new Error('Native instance transform differs from compiler: '+path);}
+        if(submitted.has(object.uuid))continue;submitted.add(object.uuid);
+        let expected;
+        const slot=object.material.userData.atlasSlot;
+        if(!instance&&slot?.role==='wall'){
+          const geometry=new object.geometry.constructor();
+          for(const [name,array,size] of [['position',source.positions,3],['normal',source.normals,3],['uv',source.uvs,2]])geometry.setAttribute(name,new (object.geometry.getAttribute(name).constructor)(new Float32Array(array),size));
+          geometry.setIndex(new (object.geometry.index.constructor)(new Uint32Array(source.indices),1));
+          expected=wallAdapter.createWallAtlasGeometry(geometry,slot,{uvSpace:'meters'});geometry.dispose();
+        }
+        try{for(const [name,array] of [['position',source.positions],['normal',source.normals]])if(!equal([...object.geometry.getAttribute(name).array],expected?[...expected.getAttribute(name).array]:[...array]))throw new Error('Submitted '+name+' differs from expected: '+path);
+          if(!equal([...object.geometry.index.array],expected?[...expected.index.array]:[...source.indices]))throw new Error('Submitted indices differ from expected: '+path);
+        }finally{expected?.dispose();}
+      }
+      for (const [path, lookup] of fixture.buildingRuntime.semanticLookup) {
+        const object = lookup.object, matrix = object.matrixWorld.clone(); object.updateWorldMatrix(true,false);
+        matrix.copy(object.matrixWorld);
+        if (object.isInstancedMesh) { const local=matrix.clone(); object.getMatrixAt(lookup.instanceIndex ?? lookup.elementIndex,local); matrix.multiply(local); }
+        semantics[path] = await hashOf({positions:[...object.geometry.getAttribute('position').array],normals:[...object.geometry.getAttribute('normal').array],indices:[...object.geometry.index.array],uvs:[...object.geometry.getAttribute("uv").array],matrix:matrix.toArray()});
+        const material=object.material, channels={};
+        for (const [name,texture] of Object.entries({baseColor:material.map,normal:material.normalMap,orm:material.roughnessMap,opacity:material.alphaMap})) channels[name]=texture?.image?.data ? await hashOf([...texture.image.data]) : null;
+        bindings[path]=await hashOf({color:material.color.toArray(),roughness:material.roughness,metalness:material.metalness,opacity:material.opacity,channels});
+      }
+      const channels={}; for(const [name,channel] of Object.entries(fixture.packedAtlas.channels)) channels[name]=await hashOf([...channel.data]);
+      return {hash,compiler,semantics,bindings,channels,drawCamera:root.querySelector('canvas').__c2Draw.camera,drawLights:root.querySelector('canvas').__c2Draw.lights,layerCount:fixture.construction.surfaceComposition?.layers.length ?? 0,layers:fixture.construction.surfaceComposition?.layers ?? [],
+        materialCount:fixture.buildingRuntime.surfaceRuntime?.metrics.materialCount ?? 0,exactSubmittedGeometryAndTransforms:true,prototypeHash:await hashOf(JSON.stringify(fixture.construction.prototypes.map(({role,materialSlotId,positions,normals,indices})=>({role,materialSlotId,positions,normals,indices})),encode)),bounds:fixture.ir.bounds,backend:root.querySelector('canvas').dataset.rendererBackend};
+    });
+    assert.equal(state.backend,api); draws.push({label,...state});console.log(JSON.stringify({api,state:label})); return state;
+  }
+  async function sameGeometry(a,b) { assert.equal(a.compiler,b.compiler); assert.deepEqual(a.semantics,b.semantics); assert.deepEqual(a.channels,b.channels); }
+  async function pickGlass(kind="window") {
+    const point=await page.evaluate(kind=>{
+      const root=document.querySelector('.construction-workspace'), fixture=globalThis.__c3Fixtures.findLast(f=>f.ir.sourceGraphHash===root.dataset.constructionHash&&!f.familyRuntime.disposed);
+      const entries=[...fixture.buildingRuntime.semanticLookup.values()].filter(e=>e.semanticPath.endsWith('/glass')),glass=kind==='door'?entries.find(e=>e.semanticPath.includes('/node/door/')):kind==='storefront'?entries.find(e=>e.semanticPath.endsWith('/node/window/facade/floor/0/bay/0/glass')):entries.find(e=>e.semanticPath.endsWith('/facade/floor/2/bay/1/glass'));if(!glass)throw new Error('Missing requested glass '+kind);
+      const object=glass.object, positions=object.geometry.getAttribute('position'), center=object.position.clone().set(0,0,0), low=[Infinity,Infinity,Infinity], high=[-Infinity,-Infinity,-Infinity];
+      for(let i=0;i<positions.count;i++) for(let c=0;c<3;c++) {const v=positions.array[i*3+c];low[c]=Math.min(low[c],v);high[c]=Math.max(high[c],v);}
+      center.set(low[0]+(high[0]-low[0])*.3,low[1]+(high[1]-low[1])*.83,(low[2]+high[2])/2); object.updateWorldMatrix(true,false);
+      if(object.isInstancedMesh) {const matrix=object.matrixWorld.clone();object.getMatrixAt(glass.instanceIndex ?? glass.elementIndex,matrix);center.applyMatrix4(matrix);}
+      center.applyMatrix4(object.matrixWorld).project(globalThis.__c3Camera);
+      const rect=root.querySelector('canvas').getBoundingClientRect();return {x:rect.left+(center.x+1)*rect.width/2,y:rect.top+(1-center.y)*rect.height/2,path:glass.semanticPath.replace(/\/glass$/,'/frame')};
+    },kind);
+    await page.mouse.click(point.x,point.y); await page.locator('.construction-finishes p').filter({hasText:/^Selected:/}).waitFor(); assert.equal(await page.evaluate(()=>globalThis.__c3HitRoles.at(-1)),'glass'); picks.push({path:point.path,nearestRole:'glass'}); return point.path;
+  }
+  async function strength(label,value) { const range=page.getByLabel(label,{exact:true}); await range.focus();await range.press('Home');for(let i=0;i<value;i++)await range.press('ArrowRight'); }
+  async function saved() { await page.waitForFunction(()=>document.querySelector('[data-construction-recovery]')?.dataset.constructionRecovery.match(/^(saved|recovered)$/),undefined,{timeout:120000}); }
+  async function history(direction) { const old=await workspace.getAttribute('data-construction-hash'); await page.getByRole('button',{name:direction+' construction',exact:true}).click();await page.waitForFunction(before=>document.querySelector('.construction-workspace')?.dataset.constructionHash!==before,old,{timeout:120000});await ready(); }
+  async function nativeFrame() { return canvas.evaluate(element => ({bitmap:element.__c2Bitmap,camera:element.__c2Draw.camera,lights:element.__c2Draw.lights,sourceGraphHash:element.__c2Draw.sourceGraphHash,frame:element.__c2Draw.frame})); }
+  async function nativePixels() { const {bitmap}=await nativeFrame(); assert(bitmap?.startsWith("data:image/png;base64,")); return Buffer.from(bitmap.split(",")[1], "base64"); }
+  async function capture(name, target = canvas) {  await ready(); const bytes = await target.screenshot({ path: out + "/" + name + ".png", ...(target === page ? { fullPage: !name.includes("close-workspace") } : {}) }); const atom = target === canvas ? await nativeFrame() : undefined; const native = atom ? Buffer.from(atom.bitmap.split(",")[1],"base64") : undefined; if(atom)assert.equal(atom.sourceGraphHash,await workspace.getAttribute("data-construction-hash")); if (native) await writeFile(out + "/native-" + name + ".png", native); captures.push({ name, camera:await page.evaluate(()=>({position:globalThis.__c3Camera.position.toArray(),projection:globalThis.__c3Camera.projectionMatrix.toArray(),inverse:globalThis.__c3Camera.matrixWorldInverse.toArray()})), sha256: hash(bytes), ...(native ? { nativePixelHash: hash(native), nativeFrame: {camera:atom.camera,lights:atom.lights,sourceGraphHash:atom.sourceGraphHash,frame:atom.frame} } : {}) }); return hash(native ?? bytes); }
+  async function apply() { const previous = await workspace.getAttribute("data-construction-hash"); await page.getByRole("button", { name: "Apply construction", exact: true }).click(); await page.waitForFunction(before => document.querySelector(".construction-workspace")?.dataset.constructionHash !== before, previous, { timeout: 120000 }); await ready(); }
+  async function saveAs(name) {
+    const pending = page.waitForEvent("download", { timeout: 120000 });
+    await page.getByRole("button", { name: "Save construction", exact: true }).click();
+    await (await pending).saveAs(out + "/" + name);
+    return JSON.parse(await readFile(out + "/" + name, "utf8"));
+  }
+  async function select(name) { await page.getByRole("button", { name: "Select " + name, exact: true }).click(); }
+  async function presentation(value) { const select = page.locator('select:has(option[value="clay"])'); if (!(await select.isVisible())) await page.locator("summary").filter({ hasText: /^View controls$/ }).click(); await select.selectOption(value); await page.waitForTimeout(250); await page.locator("summary").filter({ hasText: /^View controls$/ }).click(); }
+
+
+
+
+  async function view(theta,phi) {
+    await resetView();const motion=await canvas.evaluate((element,{theta,phi})=>{
+      const controls=globalThis.__c4Controls.get(element),offset=controls.object.position.clone().sub(controls.target),r=offset.length(),currentTheta=Math.atan2(offset.x,offset.z),currentPhi=Math.acos(offset.y/r);
+      let angle=currentTheta-theta;while(angle>Math.PI)angle-=2*Math.PI;while(angle<-Math.PI)angle+=2*Math.PI;
+      const rect=element.getBoundingClientRect();return{x:rect.left+rect.width/2,y:rect.top+rect.height/2,dx:angle*rect.height/(2*Math.PI*controls.rotateSpeed),dy:(currentPhi-phi)*rect.height/(2*Math.PI*controls.rotateSpeed)};
+    },{theta,phi});await page.mouse.move(motion.x,motion.y);await page.mouse.down();await page.mouse.move(motion.x+motion.dx,motion.y+motion.dy,{steps:24});await page.mouse.up();await page.waitForTimeout(850);
+  }
+  async function allCalls(){return page.evaluate(()=>globalThis.__c3AllProviderCalls?.length??0);}
+  async function openSource(file){const old=await workspace.getAttribute('data-construction-hash');await page.getByLabel('Open construction file').setInputFiles(file);await ready();await saved();return old;}
+  const generationRoot=()=>page.getByRole('region',{name:'Building generation',exact:true});
+  const sourceHash=()=>generationRoot().getAttribute('data-generation-source');
+  const consumerCalls=()=>page.evaluate(()=>globalThis.__c5MaterialGenerations??0);
+  async function generate(reroll=false){const previous=await sourceHash();await page.getByRole('button',{name:reroll?'Reroll unlocked':'Generate building',exact:true}).click();await page.waitForFunction(old=>document.querySelector('[aria-label="Building generation"]')?.dataset.generationSource!==old&&Boolean(document.querySelector('[aria-label="Building generation"]')?.dataset.generationSource),previous,{timeout:120000});await ready();}
+
+
+  async function summary(name){await page.locator('summary').filter({hasText:new RegExp('^'+name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'$')}).click();}
+  async function group(name){const item=page.locator('.construction-grouped__section').filter({has:page.locator('summary',{hasText:new RegExp('^'+name+'$')})});if(!(await item.getAttribute('open')!==null))await item.locator(':scope > summary').click();}
+  async function advanced(open=true){const item=page.locator('.construction-advanced');if((await item.getAttribute('open')!==null)!==open)await item.locator(':scope > summary').click();if(open)await page.getByLabel('Construction step',{exact:true}).waitFor();else await page.getByRole('button',{name:'Apply construction',exact:true}).waitFor();}
+  async function generatePanel(){const item=page.locator('.construction-generate');if(await item.getAttribute('open')===null)await item.locator(':scope > summary').click();}
+
+
+  const layout=()=>page.getByRole('combobox',{name:'Window assembly',exact:true});
+  async function inspectorTop(){await page.getByLabel('Construction inspector',{exact:true}).evaluate(e=>{e.scrollTop=0;});}
+  const picker=()=>page.getByRole('combobox',{name:'Window to edit',exact:true});
+  const width=()=>page.getByLabel('Selected width (m)',{exact:true});
+  const overrides=source=>source.graph.nodes.find(n=>n.type==='EditOpeningWidth')?.overrides??[];
+  async function choose(path){await picker().selectOption(path);await width().waitFor();}
+  async function applyWidth(value){const old=await workspace.getAttribute('data-construction-hash');await width().fill(String(value));assert(await page.getByRole('button',{name:'Save construction',exact:true}).isDisabled());assert(await page.getByRole('button',{name:'Apply construction',exact:true}).isDisabled());await page.getByRole('button',{name:'Apply window width',exact:true}).click();await page.waitForFunction(hash=>document.querySelector('.construction-workspace')?.dataset.constructionHash!==hash,old,{timeout:120000});await ready();}
+  function unaffected(a,b,path){for(const [key,value] of Object.entries(a.semantics))if(!key.startsWith(path.replace(/frame$/,''))&&!key.endsWith('/facade/wall'))assert.equal(b.semantics[key],value,key);}
+
+  const original=JSON.parse(await readFile('test-results/t2-regular-trim-recovery-2026-10-26/final-02-webgl/final-textured-v8.json','utf8'));
+  const roof=p=>p.graph.nodes.find(n=>n.type==='BuildingRoof').parameters;
+  const opening=p=>p.graph.nodes.find(n=>n.type==='AssembleWindow').parameters;
+  const frontage=p=>p.graph.nodes.find(n=>n.type==='PlaceStorefront').parameters;
+  const treatment=()=>page.getByRole('combobox',{name:'Cornice treatment',exact:true});
+  function protectedParts(a,b){
+    for(const [path,value] of Object.entries(a.semantics))if(!path.endsWith('/cornice'))assert.equal(b.semantics[path],value,path);
+    assert.deepEqual(a.channels,b.channels);assert.deepEqual(a.bindings,b.bindings);assert.deepEqual(a.bounds,b.bounds);assert.equal(a.prototypeHash,b.prototypeHash);
+  }
+  function authoredKept(p,mode){assert.equal(p.schemaVersion,'0.9.0');assert.equal(p.graph.schemaVersion,'0.8.0');assert.equal(roof(p).corniceAssembly,mode);assert.deepEqual(opening(p),opening(original));assert.deepEqual(frontage(p),frontage(original));assert.deepEqual(overrides(p),overrides(original));assert.deepEqual(p.graph.nodes.find(n=>n.type==='SetSurface'),original.graph.nodes.find(n=>n.type==='SetSurface'));assert.deepEqual(p.materialSource,original.materialSource);}
+  async function changeTreatment(mode){await group('Roof & trim');await treatment().selectOption(String(mode));await apply();}
+  async function closeRoof(){
+    await view(2.58,1.65);
+    const point=await page.evaluate(()=>{
+      const root=document.querySelector('.construction-workspace'),f=globalThis.__c3Fixtures.findLast(f=>f.ir.sourceGraphHash===root.dataset.constructionHash&&!f.familyRuntime.disposed);
+      const p=f.construction.graph.nodes.find(n=>n.type==='Footprint').parameters,s=f.construction.graph.nodes.find(n=>n.type==='Storeys').parameters;
+      const v=globalThis.__c3Camera.position.clone().set(p.widthM*.23,s.groundHeightM+(s.count-1)*s.upperHeightM-.16,-p.depthM/2-.12).project(globalThis.__c3Camera),r=root.querySelector('canvas').getBoundingClientRect();
+      return {x:r.left+r.width/2,y:r.top+r.height/2,dx:-v.x*r.width/2,dy:v.y*r.height/2};
+    });
+    await page.mouse.move(point.x,point.y);await page.mouse.down({button:'right'});await page.mouse.move(point.x+point.dx,point.y+point.dy,{steps:24});await page.mouse.up({button:'right'});await page.waitForTimeout(1200);
+    const r=await canvas.boundingBox();await page.mouse.move(r.x+r.width/2,r.y+r.height/2);await page.mouse.wheel(0,-2400);await page.waitForTimeout(1400);
+    // Reproject after zoom: a near facade point is not on the original orbit plane.
+    // Centre it using actual right-drag gestures; never mutate camera or controls.
+    for(let pass=0;pass<5;pass++){
+      const delta=await page.evaluate(()=>{
+        const root=document.querySelector('.construction-workspace'),f=globalThis.__c3Fixtures.findLast(f=>f.ir.sourceGraphHash===root.dataset.constructionHash&&!f.familyRuntime.disposed),p=f.construction.graph.nodes.find(n=>n.type==='Footprint').parameters,s=f.construction.graph.nodes.find(n=>n.type==='Storeys').parameters;
+        const v=globalThis.__c3Camera.position.clone().set(p.widthM*.23,s.groundHeightM+(s.count-1)*s.upperHeightM-.2,-p.depthM/2-.12).project(globalThis.__c3Camera),r=root.querySelector('canvas').getBoundingClientRect();
+        const world=globalThis.__c3Camera.position.clone().set(p.widthM*.23,s.groundHeightM+(s.count-1)*s.upperHeightM-.2,-p.depthM/2-.12);
+        const depth=-world.applyMatrix4(globalThis.__c3Camera.matrixWorldInverse).z,controls=globalThis.__c4Controls.get(root.querySelector('canvas')),distance=controls.object.position.distanceTo(controls.target),ratio=depth/distance;
+        if(ratio<=0)throw new Error('Cornice point is behind the camera.');
+        const limit=r.height*.35,clamp=n=>Math.max(-limit,Math.min(limit,n));return{x:r.left+r.width/2,y:r.top+r.height/2,dx:clamp(-v.x*r.width/2*ratio),dy:clamp(v.y*r.height/2*ratio)};
+      });
+      await page.mouse.move(delta.x,delta.y);await page.mouse.down({button:'right'});await page.mouse.move(delta.x+delta.dx,delta.y+delta.dy,{steps:12});await page.mouse.up({button:'right'});await page.waitForTimeout(800);
+    }
+  }
+  const diagnostics=[];
+  async function mapControls(prefix){
+    await page.evaluate(()=>{globalThis.__c9Objects=[];globalThis.__c3Scene.traverse(o=>{if(o.isMesh)globalThis.__c9Objects.push({o,material:o.material});});});
+    for(const mode of ['no-normal','no-textures']){
+      const proof=await page.evaluate(mode=>{
+        const clones=new Map();for(const s of globalThis.__c9Objects){const adapt=m=>{if(!clones.has(m)){const copy=m.clone();for(const k of ['map','normalMap','roughnessMap','metalnessMap'])if(mode==='no-textures'||k==='normalMap')copy[k]=null;clones.set(m,copy);}return clones.get(m);};s.o.material=Array.isArray(s.material)?s.material.map(adapt):adapt(s.material);}
+        globalThis.__c9Renderer.render(globalThis.__c3Scene,globalThis.__c3Camera);globalThis.__c9Clones=[...clones.values()];
+        return {mode,maps:[...clones.values()].filter(m=>m.map).length,normalMaps:[...clones.values()].filter(m=>m.normalMap).length};
+      },mode);assert.equal(proof.normalMaps,0);if(mode==='no-textures')assert.equal(proof.maps,0);
+      await page.waitForTimeout(300);await capture(prefix+'-'+mode);diagnostics.push({prefix,...proof});
+      await page.evaluate(()=>{for(const s of globalThis.__c9Objects)s.o.material=s.material;for(const m of globalThis.__c9Clones)m.dispose();});
+    }
+  }
+  await openSource('test-results/t2-regular-trim-recovery-2026-10-26/final-02-webgl/final-textured-v8.json');const calls=await allCalls(),materialCalls=await consumerCalls();await changeTreatment(2);await resetView();const home=await snapshot('home'),homePixels=await capture('whole-default');
+  await closeRoof();await page.waitForTimeout(5000);const closeState=await snapshot('close-default'),originalPixels=await capture('close-default');
+  const r=await canvas.boundingBox();await page.keyboard.down('Shift');await page.mouse.move(r.x+r.width/2,r.y+r.height/2);await page.mouse.down();await page.mouse.move(r.x+r.width/2,r.y+r.height/2+45,{steps:20});await page.mouse.up();await page.keyboard.up('Shift');await page.waitForTimeout(1200);
+  const relit=await snapshot('close-lower-light'),relitPixels=await capture('close-lower-light');await sameGeometry(closeState,relit);assert.deepEqual(closeState.bindings,relit.bindings);assert.equal(closeState.drawCamera.fov,relit.drawCamera.fov);assert.equal(closeState.drawCamera.aspect,relit.drawCamera.aspect);assert.deepEqual(closeState.drawCamera.projection,relit.drawCamera.projection);const cameraInverseMaxAbsDelta=Math.max(...closeState.drawCamera.inverse.map((v,i)=>Math.abs(v-relit.drawCamera.inverse[i])));assert(cameraInverseMaxAbsDelta<.001,'Camera framing moved by more than the measured comparison tolerance');assert.notDeepEqual(closeState.drawLights,relit.drawLights);assert.notEqual(originalPixels,relitPixels);
+  await resetView();const restored=await snapshot('home-restored');await sameGeometry(home,restored);assert.deepEqual(home.bindings,restored.bindings);assert.deepEqual(home.drawLights,restored.drawLights);assert.deepEqual(home.drawCamera,restored.drawCamera);assert.equal(await capture('whole-restored'),homePixels);
+  assert.equal(await allCalls(),calls);assert.equal(await consumerCalls(),materialCalls);assert.deepEqual(errors,[]);assert.deepEqual(await pins(),before);
+  await writeFile(out+'/receipt.json',JSON.stringify({schemaVersion:'0.1.0',kind:'cornice-artist-light-gesture',backend:api,actualShiftDrag:true,shadowMapsRemainEnabled:true,sourceAndMaterialsExactDuringRelight:true,cameraInverseMaxAbsDelta,cameraComparisonTolerance:.001,defaultLightCameraAndPixelsRestored:true,draws,captures,errors},null,2));console.log(JSON.stringify({api,states:draws.length,captures:captures.length,errors}));
+}catch(error){await writeFile(out+'/failure.txt',String(error.stack??error));await writeFile(out+'/partial-captures.json',JSON.stringify(captures,null,2));await page?.screenshot({path:out+'/failure.png',fullPage:true}).catch(()=>{});throw error;}finally{await browser?.close();await server.close();}

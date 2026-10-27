@@ -1,0 +1,17 @@
+Port 5173 is in use, trying another one...
+1:42:43 AM [vite] (client) [optimizer] scanning dependencies...
+1:42:45 AM [vite] (client) [optimizer] bundling dependencies...
+{"api":"webgpu","state":"bracket-source"}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.evaluate: Error: Empty shadow-only proxy
+    at eval (eval at evaluate (:303:30), <anonymous>:4:117)
+    at UtilityScript.evaluate (<anonymous>:305:16)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)
+    at C:\Users\behmb\Documents\Cascade Projects\buildo\test-results\t5-cornice-shadow-parts-2026-10-27\probe.mjs:235:27 {
+  log: []
+}
+
+Node.js v24.14.1
