@@ -1167,6 +1167,14 @@ export function AssemblyHall({
         if (!camera || !preparedScene || !orbitControls) {
           return;
         }
+        // Consume pending orbit/pan motion before restoring the default pose.
+        const damping = orbitControls.enableDamping;
+        try {
+          orbitControls.enableDamping = false;
+          orbitControls.update();
+        } finally {
+          orbitControls.enableDamping = damping;
+        }
         orbitControls.minDistance=Math.max(1,preparedScene.maxDimension*.35);
         camera.position.copy(preparedScene.defaultCameraPosition);
         orbitControls.target.copy(preparedScene.orbitTarget);
