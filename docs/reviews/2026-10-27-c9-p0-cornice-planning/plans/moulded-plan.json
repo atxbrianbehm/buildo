@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "construction-cornice-detail-plan",
+  "source": {
+    "schemaVersion": "0.1.0",
+    "kind": "construction-cornice-detail-request",
+    "assembly": "moulded",
+    "building": {
+      "widthM": 11.2,
+      "depthM": 13,
+      "heightM": 10.7
+    },
+    "cornice": {
+      "heightM": 0.24,
+      "projectionM": 0.18
+    }
+  },
+  "unitBudget": 512,
+  "envelopeProfile": [
+    {
+      "yM": 10.459999999999999,
+      "depthM": 0
+    },
+    {
+      "yM": 10.508,
+      "depthM": 0.081
+    },
+    {
+      "yM": 10.543999999999999,
+      "depthM": 0.081
+    },
+    {
+      "yM": 10.58,
+      "depthM": 0.1296
+    },
+    {
+      "yM": 10.639999999999999,
+      "depthM": 0.1296
+    },
+    {
+      "yM": 10.664,
+      "depthM": 0.18
+    },
+    {
+      "yM": 10.7,
+      "depthM": 0.18
+    },
+    {
+      "yM": 10.7,
+      "depthM": 0
+    }
+  ],
+  "backingProfile": [
+    {
+      "yM": 10.459999999999999,
+      "depthM": 0
+    },
+    {
+      "yM": 10.508,
+      "depthM": 0.081
+    },
+    {
+      "yM": 10.543999999999999,
+      "depthM": 0.081
+    },
+    {
+      "yM": 10.58,
+      "depthM": 0.1296
+    },
+    {
+      "yM": 10.639999999999999,
+      "depthM": 0.1296
+    },
+    {
+      "yM": 10.664,
+      "depthM": 0.18
+    },
+    {
+      "yM": 10.7,
+      "depthM": 0.18
+    },
+    {
+      "yM": 10.7,
+      "depthM": 0
+    }
+  ],
+  "recipe": {
+    "kind": "none"
+  },
+  "faces": [
+    {
+      "face": "front",
+      "spanM": 11.2,
+      "count": 0,
+      "pitchM": 0,
+      "endInsetM": 0,
+      "occupiedM": 0,
+      "marginM": 5.6,
+      "firstCenterM": 0
+    },
+    {
+      "face": "right",
+      "spanM": 13,
+      "count": 0,
+      "pitchM": 0,
+      "endInsetM": 0,
+      "occupiedM": 0,
+      "marginM": 6.5,
+      "firstCenterM": 0
+    },
+    {
+      "face": "rear",
+      "spanM": 11.2,
+      "count": 0,
+      "pitchM": 0,
+      "endInsetM": 0,
+      "occupiedM": 0,
+      "marginM": 5.6,
+      "firstCenterM": 0
+    },
+    {
+      "face": "left",
+      "spanM": 13,
+      "count": 0,
+      "pitchM": 0,
+      "endInsetM": 0,
+      "occupiedM": 0,
+      "marginM": 6.5,
+      "firstCenterM": 0
+    }
+  ],
+  "units": []
+}

@@ -1,0 +1,106 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "review-packet-inventory",
+  "entries": [
+    {
+      "path": "before-source-pins.json",
+      "sizeBytes": 59718,
+      "sha256": "2d3cf9efd9a2b1fc266d7eb1989f64c579df225b6654e6f86dd3fa4aa483a76d"
+    },
+    {
+      "path": "export-plans.mjs.txt",
+      "sizeBytes": 2182,
+      "sha256": "925c15b64462610b40c8bef2af25090dbb878952579365f8eefb05b51e14724c"
+    },
+    {
+      "path": "focused-01.log",
+      "sizeBytes": 355,
+      "sha256": "547c1a1daf5198a62bef0e3d815ab01535bcd2aa7c47197843294024957bc27d"
+    },
+    {
+      "path": "lint-01.log",
+      "sizeBytes": 37,
+      "sha256": "a21c6d2dedb756f860b052cb2d84cd603fbbe38ee53e1ad76ab9c5803f028958"
+    },
+    {
+      "path": "lint-result.json",
+      "sizeBytes": 42,
+      "sha256": "05b7053844e5a7e1b8b5384a5eea1deeeedd718cf7eb7eb86377fcb81e8814e5"
+    },
+    {
+      "path": "planning-proof.json",
+      "sizeBytes": 2102,
+      "sha256": "6057c6e05cc930a8ca5c639ba218607a4ba0eda1b1dcf676fbf9b78400ccc33e"
+    },
+    {
+      "path": "plans/bracket-course-plan.json",
+      "sizeBytes": 11837,
+      "sha256": "519554b8d5179f56309acf267980eaf85f1485787b9ee9a87bf2558d23baa831"
+    },
+    {
+      "path": "plans/bracket-course-request.json",
+      "sizeBytes": 255,
+      "sha256": "6e583402ccac4a94a7d08d8e6715380ee2308758e11912c226bde236ea58dbcf"
+    },
+    {
+      "path": "plans/dentil-course-plan.json",
+      "sizeBytes": 19349,
+      "sha256": "8a6fdc52c2f43e973a2d7e2ed41d4ea43560ecccf1603207c0d6bf41177b0807"
+    },
+    {
+      "path": "plans/dentil-course-request.json",
+      "sizeBytes": 254,
+      "sha256": "140832e832436fd6b99f2f35684b6a16599326034a413437a6c053c3c49c606c"
+    },
+    {
+      "path": "plans/moulded-plan.json",
+      "sizeBytes": 2164,
+      "sha256": "ba0cd5a9b9ea1767a5ea63729fe53677cb4bfb277d677526f3f4d33fb8dd0aa5"
+    },
+    {
+      "path": "plans/moulded-request.json",
+      "sizeBytes": 248,
+      "sha256": "ef6e1d6b1c4230139dbd36e0c03d04bda34b03c1f2045c4c48c17ce2996d3789"
+    },
+    {
+      "path": "README.md",
+      "sizeBytes": 2770,
+      "sha256": "62ec6629bf43c522a86d7f5f34082ab034d3c00d86dc606467f74abdad79d416"
+    },
+    {
+      "path": "source/src/features/building-family/contracts/constructionCorniceDetail.ts.txt",
+      "sizeBytes": 2865,
+      "sha256": "b8d76bedf5f9796df8fb11c5ef871f2cde73dc588e555ce30902c15fbf0b281a"
+    },
+    {
+      "path": "source/src/features/building-family/core/constructionCorniceDetail.ts.txt",
+      "sizeBytes": 5130,
+      "sha256": "3abbf6c57e2d4a78e88e07dca32cc6403e5834d8128cae2e6694810ec8d3710c"
+    },
+    {
+      "path": "source/src/features/building-family/tests/constructionCorniceDetail.test.ts.txt",
+      "sizeBytes": 11223,
+      "sha256": "56f3d2a007413c683240a05c50c0e16a35ebd594801a33002c22fd30f796bf47"
+    },
+    {
+      "path": "source-pins.json",
+      "sizeBytes": 60257,
+      "sha256": "a8f3cdb0f3929735f4b6d0789ab06b69de4d3f24449c444dfdc56d0cecab5919"
+    },
+    {
+      "path": "typecheck-01.log",
+      "sizeBytes": 49,
+      "sha256": "1927639a5b89b1406e25b817bb2c8efb1e16fccc181e86591db136d628e7f5e6"
+    },
+    {
+      "path": "typecheck-result.json",
+      "sizeBytes": 47,
+      "sha256": "1ea13550de397cdf39fecae1a218fd9744912bc9d81732461675a32efc490886"
+    },
+    {
+      "path": "verification.json",
+      "sizeBytes": 3011,
+      "sha256": "87a06f07f0f59a11f250dc46be7cbc13ff3a85e1bb45dfba8505882e58788bd4"
+    }
+  ]
+}

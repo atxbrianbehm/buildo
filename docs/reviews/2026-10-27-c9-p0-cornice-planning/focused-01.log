@@ -1,0 +1,13 @@
+
+> buildo@0.0.0 test
+> vitest run src/features/building-family/tests/constructionCorniceDetail.test.ts
+
+
+ RUN  v4.1.9 C:/Users/behmb/Documents/Cascade Projects/buildo
+
+
+ Test Files  1 passed (1)
+      Tests  33 passed (33)
+   Start at  00:22:17
+   Duration  1.51s (transform 228ms, setup 103ms, import 330ms, tests 203ms, environment 728ms)
+

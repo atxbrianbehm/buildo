@@ -1,0 +1,19 @@
+import { createServer } from 'vite';
+import { readFile,writeFile,mkdir } from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import assert from 'node:assert/strict';
+const out='test-results/c9-p0-cornice-planning-2026-10-27';await mkdir(out+'/plans',{recursive:true});
+const server=await createServer({cacheDir:out+'/.vite',appType:'custom',server:{middlewareMode:true,hmr:false,host:'127.0.0.1'}});
+try {
+ const mod=await server.ssrLoadModule('/src/features/building-family/core/constructionCorniceDetail.ts');
+ const sourceBytes=await readFile('test-results/t2-regular-trim-recovery-2026-10-26/final-02-webgl/final-textured-v8.json');const project=JSON.parse(sourceBytes);
+ const footprint=project.graph.nodes.find(n=>n.type==='Footprint').parameters,storeys=project.graph.nodes.find(n=>n.type==='Storeys').parameters,roof=project.graph.nodes.find(n=>n.type==='BuildingRoof').parameters;
+ const receipts=[];
+ for(const assembly of ['moulded','dentil-course','bracket-course']){
+  const request={schemaVersion:'0.1.0',kind:'construction-cornice-detail-request',assembly,building:{widthM:footprint.widthM,depthM:footprint.depthM,heightM:storeys.groundHeightM+(storeys.count-1)*storeys.upperHeightM},cornice:{heightM:roof.corniceHeightM,projectionM:roof.corniceProjectionM}};
+  const plan=mod.resolveConstructionCorniceDetail(request);assert.deepEqual(mod.readConstructionCorniceDetailPlan(JSON.parse(JSON.stringify(plan))),plan);
+  for(const [name,value] of [['request',request],['plan',plan]])await writeFile(out+'/plans/'+assembly+'-'+name+'.json',JSON.stringify(value,null,2));
+  receipts.push({assembly,units:plan.units.length,profilePoints:plan.envelopeProfile.length,backingPoints:plan.backingProfile.length,recipe:plan.recipe.kind,readbackExact:true,faceCounts:plan.faces.map(f=>({face:f.face,count:f.count,marginM:f.marginM}))});
+ }
+ await writeFile(out+'/planning-proof.json',JSON.stringify({schemaVersion:'0.1.0',kind:'cornice-planning-proof',sourceProjectSha256:createHash('sha256').update(sourceBytes).digest('hex'),sourceOnly:true,noProductRuntimeChange:true,cases:receipts},null,2));console.log(JSON.stringify(receipts));
+}finally{await server.close();}
