@@ -1,0 +1,25 @@
+Port 5173 is in use, trying another one...
+1:32:56 AM [vite] (client) [optimizer] scanning dependencies...
+1:32:57 AM [vite] (client) [optimizer] bundling dependencies...
+{"api":"webgpu","state":"bracket-source"}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.evaluate: TypeError: Cannot read properties of null (reading 'depthTexture')
+    at ShadowNode.updateShadow (http://127.0.0.1:5174/test-results/shadow-discriminator-2026-10-27/webgpu-01/.vite/deps/three_webgpu.js?v=1b020079:30516:34)
+    at ShadowNode.updateBefore (http://127.0.0.1:5174/test-results/shadow-discriminator-2026-10-27/webgpu-01/.vite/deps/three_webgpu.js?v=1b020079:30596:9)
+    at NodeFrame.updateBeforeNode (http://127.0.0.1:5174/test-results/shadow-discriminator-2026-10-27/webgpu-01/.vite/deps/three_webgpu.js?v=1b020079:37031:14)
+    at NodeManager.updateBefore (http://127.0.0.1:5174/test-results/shadow-discriminator-2026-10-27/webgpu-01/.vite/deps/three_webgpu.js?v=1b020079:38204:94)
+    at WebGPURenderer._renderObjectDirect (http://127.0.0.1:5174/test-results/shadow-discriminator-2026-10-27/webgpu-01/.vite/deps/three_webgpu.js?v=1b020079:42330:16)
+    at WebGPURenderer.renderObject (http://127.0.0.1:5174/test-results/shadow-discriminator-2026-10-27/webgpu-01/.vite/deps/three_webgpu.js?v=1b020079:42287:15)
+    at WebGPURenderer._renderObjects (http://127.0.0.1:5174/test-results/shadow-discriminator-2026-10-27/webgpu-01/.vite/deps/three_webgpu.js?v=1b020079:42182:9)
+    at WebGPURenderer._renderScene (http://127.0.0.1:5174/test-results/shadow-discriminator-2026-10-27/webgpu-01/.vite/deps/three_webgpu.js?v=1b020079:41217:62)
+    at WebGPURenderer.render (http://127.0.0.1:5174/test-results/shadow-discriminator-2026-10-27/webgpu-01/.vite/deps/three_webgpu.js?v=1b020079:41013:8)
+    at renderer.render (http://127.0.0.1:5174/src/features/building-family/renderer-three/assemblyRendererFactory.ts:9:3)
+    at probe (C:\Users\behmb\Documents\Cascade Projects\buildo\test-results\shadow-discriminator-2026-10-27\probe.mjs:237:18)
+    at async file:///C:/Users/behmb/Documents/Cascade%20Projects/buildo/test-results/shadow-discriminator-2026-10-27/probe.mjs:243:125 {
+  log: []
+}
+
+Node.js v24.14.1

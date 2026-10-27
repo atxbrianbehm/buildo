@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "shadow-discriminator-verification",
+  "parentCommit": "e95c198b9aadf715bd151e262117084167965e36",
+  "productionSourceChanged": false,
+  "all354ProductionCodeConfigTestPinsExact": true,
+  "backends": [
+    "webgl",
+    "webgpu"
+  ],
+  "conditionsPerView": 4,
+  "viewsPerBackend": 2,
+  "exactNativeRestorations": 16,
+  "cameraMatricesExactAtRestoration": true,
+  "providerOrMaterialGenerationCalls": 0,
+  "gpuLightToggleAttemptExcluded": true,
+  "biasSweepsExcluded": true,
+  "rendererRepairProven": false,
+  "c9VisualReview": "pending"
+}

@@ -1,0 +1,515 @@
+{
+  "schemaVersion": "0.1.0",
+  "files": [
+    {
+      "file": "bias-sweep-02.mjs",
+      "sha256": "bd7b6c44a577234b90141d29bd74aa23d006ea4a9ab6b63dfc7848b8657ac245",
+      "bytes": 30947
+    },
+    {
+      "file": "bias-sweep.mjs",
+      "sha256": "f188a9ab2fb7fc87f93ddc3884e7aa94697257f59a9e570e8d3ab26338b9af99",
+      "bytes": 30772
+    },
+    {
+      "file": "excluded/bias-webgl-01/failure.png",
+      "sha256": "29b3ff8df6974f8d41446d56501617aaf1d2938c5decb5a2195b506a05558959",
+      "bytes": 495204
+    },
+    {
+      "file": "excluded/bias-webgl-01/failure.txt",
+      "sha256": "8aa32d1396eb48578024583a25d33021984b72b30b0074732f0770502d105f59",
+      "bytes": 511
+    },
+    {
+      "file": "excluded/bias-webgl-01/native-bracket-baseline.png",
+      "sha256": "ea4296150e62ad8d9c881ee6f84c40a02bb3f29c23bab39e3b5267188b4dd54f",
+      "bytes": 705222
+    },
+    {
+      "file": "excluded/bias-webgl-01/native-bracket-bias-0.00015-restored.png",
+      "sha256": "de41c37805656b73117cef7fb59ea04a8cc9875ae1c63c8f789b1b7169311b1f",
+      "bytes": 704942
+    },
+    {
+      "file": "excluded/bias-webgl-01/native-bracket-bias-0.00015.png",
+      "sha256": "45b3ed4d0088f797b6931d25e70659251e0826c111522a92669bc9a0a68c7c34",
+      "bytes": 708627
+    },
+    {
+      "file": "excluded/bias-webgl-01/run.log",
+      "sha256": "6069566e4d52da1aa944ef0aba9e2785d9262d826e0c9ac625caab5e421d0a38",
+      "bytes": 2219
+    },
+    {
+      "file": "excluded/bias-webgl-02/failure.png",
+      "sha256": "f5d7c84d0e54d0fc6717b612e907c3c6044968be45d0a022ced6dbab6aee199f",
+      "bytes": 559127
+    },
+    {
+      "file": "excluded/bias-webgl-02/failure.txt",
+      "sha256": "e6e52d276a1878ef39e273dca1587cf2743d19e2eb56339ebf05726a6b0d19a0",
+      "bytes": 518
+    },
+    {
+      "file": "excluded/bias-webgl-02/native-bracket-baseline.png",
+      "sha256": "f0f7455527d264279d470198ff6ddaa1e079e85e7e8525ad7d84a8e4091cb0c7",
+      "bytes": 705502
+    },
+    {
+      "file": "excluded/bias-webgl-02/native-bracket-bias-0.00015-restored.png",
+      "sha256": "f0f7455527d264279d470198ff6ddaa1e079e85e7e8525ad7d84a8e4091cb0c7",
+      "bytes": 705502
+    },
+    {
+      "file": "excluded/bias-webgl-02/native-bracket-bias-0.00015.png",
+      "sha256": "d78e2b592262ef06b9f3ccb622a51ac5e6955075005c2061ff775fb0c346fd37",
+      "bytes": 709133
+    },
+    {
+      "file": "excluded/bias-webgl-02/native-sill-baseline.png",
+      "sha256": "b9fe5e07f7f968066c3e37f36f9790970f6b3ed7638a84058d1bccbd99431a5b",
+      "bytes": 795718
+    },
+    {
+      "file": "excluded/bias-webgl-02/native-sill-bias-0.00015-restored.png",
+      "sha256": "a19a8023d07efa2004c6c9525bcb4486ed2451cdec12fc858f3bde0f0ee3bc8d",
+      "bytes": 795738
+    },
+    {
+      "file": "excluded/bias-webgl-02/run.log",
+      "sha256": "c5eb59891637bb2368ddf69df30c3a7324ed23601fafdf2db02863222f70892b",
+      "bytes": 2309
+    },
+    {
+      "file": "excluded/webgpu-01/failure.png",
+      "sha256": "d8f8c5aa3a6e39d284c341a6667463d07e278ef59006098ddf61df5098458d17",
+      "bytes": 441701
+    },
+    {
+      "file": "excluded/webgpu-01/failure.txt",
+      "sha256": "9f4e1ae4335d6e4e549eecaec552d05ffd99df53e6c4a4b4b0fbdd9f2a8482de",
+      "bytes": 1901
+    },
+    {
+      "file": "excluded/webgpu-01/native-bracket-baseline.png",
+      "sha256": "1595d4e315965426dbfa24545533b7a572518c9bc9f108ed0966bb25358fea81",
+      "bytes": 701278
+    },
+    {
+      "file": "excluded/webgpu-01/run.log",
+      "sha256": "b3a8efc200eea8a71a79912011b2cf3775457f7d7cfd056434a7655def9703b6",
+      "bytes": 2244
+    },
+    {
+      "file": "metrics.json",
+      "sha256": "c9b8d2502ffdcff282d7e55d80adf0df241379c71d376f662ffbad4bfc3346d5",
+      "bytes": 4313
+    },
+    {
+      "file": "probe-webgpu-02.mjs",
+      "sha256": "2626dfde07607a7a24b50c8cebcc812767916ebd50d8a2bc03a1abe94791359c",
+      "bytes": 32022
+    },
+    {
+      "file": "probe.mjs",
+      "sha256": "8064a7ad28e84582e8bf7daeda509cd63e0b6887c069de47977b4b0e96c53f84",
+      "bytes": 31918
+    },
+    {
+      "file": "README.md",
+      "sha256": "d90af5e212ec5c5d3fd81b13bf95903222d3cf739fad4e70a9391969205af248",
+      "bytes": 3470
+    },
+    {
+      "file": "source-pins.json",
+      "sha256": "7ae955bb7f4281f8acaea68b35a1ae390419ad19b099a7f5c9c3b8464515de11",
+      "bytes": 62401
+    },
+    {
+      "file": "verification.json",
+      "sha256": "5531bc6e7e258326d98df294d6492ef778a094896437d5a171f55698000509eb",
+      "bytes": 596
+    },
+    {
+      "file": "webgl/bracket-baseline.png",
+      "sha256": "7c8d60626cfc4656bcac97189eb9c376a879ebf19bf6baef603bf4907459f50c",
+      "bytes": 412494
+    },
+    {
+      "file": "webgl/bracket-cornice-cast-off-restored.png",
+      "sha256": "7c8d60626cfc4656bcac97189eb9c376a879ebf19bf6baef603bf4907459f50c",
+      "bytes": 412494
+    },
+    {
+      "file": "webgl/bracket-cornice-cast-off.png",
+      "sha256": "d7bcf5156dc9f447d94c3bd43560a6aac7f8db072071d98d79abcfbeee9199fb",
+      "bytes": 379260
+    },
+    {
+      "file": "webgl/bracket-cornice-receive-off-restored.png",
+      "sha256": "7c8d60626cfc4656bcac97189eb9c376a879ebf19bf6baef603bf4907459f50c",
+      "bytes": 412494
+    },
+    {
+      "file": "webgl/bracket-cornice-receive-off.png",
+      "sha256": "b31109505058033826e779d781c4fcd51feae3968e4329c9087fcaefa96e2c2c",
+      "bytes": 409863
+    },
+    {
+      "file": "webgl/bracket-lights-off-restored.png",
+      "sha256": "7c8d60626cfc4656bcac97189eb9c376a879ebf19bf6baef603bf4907459f50c",
+      "bytes": 412494
+    },
+    {
+      "file": "webgl/bracket-lights-off.png",
+      "sha256": "bc10a8b5daec067193b224270022acfaf19be54d129f99289625fb32f0c8a447",
+      "bytes": 361950
+    },
+    {
+      "file": "webgl/bracket-wall-receive-off-restored.png",
+      "sha256": "7c8d60626cfc4656bcac97189eb9c376a879ebf19bf6baef603bf4907459f50c",
+      "bytes": 412494
+    },
+    {
+      "file": "webgl/bracket-wall-receive-off.png",
+      "sha256": "02ef480307be5717e87bd4c748ade237130f5e7e4007a581e1bef17fa628e7f6",
+      "bytes": 394626
+    },
+    {
+      "file": "webgl/native-bracket-baseline.png",
+      "sha256": "40efe767cf1cc4443c0da150d106319028aa552d81d467408320794ee665b36e",
+      "bytes": 705018
+    },
+    {
+      "file": "webgl/native-bracket-cornice-cast-off-restored.png",
+      "sha256": "40efe767cf1cc4443c0da150d106319028aa552d81d467408320794ee665b36e",
+      "bytes": 705018
+    },
+    {
+      "file": "webgl/native-bracket-cornice-cast-off.png",
+      "sha256": "2e02a2aff333e355f9dd3fcf64ede62886bc650dcf4f523c77f7494e3ff8861e",
+      "bytes": 681656
+    },
+    {
+      "file": "webgl/native-bracket-cornice-receive-off-restored.png",
+      "sha256": "40efe767cf1cc4443c0da150d106319028aa552d81d467408320794ee665b36e",
+      "bytes": 705018
+    },
+    {
+      "file": "webgl/native-bracket-cornice-receive-off.png",
+      "sha256": "f56f0cd6cd69885cb1c18484cb0189a51330610a33b81e9c6647c7179cfd1a3a",
+      "bytes": 706985
+    },
+    {
+      "file": "webgl/native-bracket-lights-off-restored.png",
+      "sha256": "40efe767cf1cc4443c0da150d106319028aa552d81d467408320794ee665b36e",
+      "bytes": 705018
+    },
+    {
+      "file": "webgl/native-bracket-lights-off.png",
+      "sha256": "929c2bf686710e2869bef16957426c3f2e83939493d08e360fbb0b3d5a029c39",
+      "bytes": 661099
+    },
+    {
+      "file": "webgl/native-bracket-wall-receive-off-restored.png",
+      "sha256": "40efe767cf1cc4443c0da150d106319028aa552d81d467408320794ee665b36e",
+      "bytes": 705018
+    },
+    {
+      "file": "webgl/native-bracket-wall-receive-off.png",
+      "sha256": "3567b6359adbf3b63c65253e4e95bf23cfa6c47253b99a81d251b389dabc13c9",
+      "bytes": 692693
+    },
+    {
+      "file": "webgl/native-sill-baseline.png",
+      "sha256": "58bfae6baf2f11b84d64b1c68377dfdac9c2854df1e3422658a92c42b7189426",
+      "bytes": 795725
+    },
+    {
+      "file": "webgl/native-sill-cornice-cast-off-restored.png",
+      "sha256": "58bfae6baf2f11b84d64b1c68377dfdac9c2854df1e3422658a92c42b7189426",
+      "bytes": 795725
+    },
+    {
+      "file": "webgl/native-sill-cornice-cast-off.png",
+      "sha256": "4941d69684537dc288de4adfdbcc933dbbf02f7c7dd700e604c06f3b3b41a482",
+      "bytes": 795576
+    },
+    {
+      "file": "webgl/native-sill-cornice-receive-off-restored.png",
+      "sha256": "58bfae6baf2f11b84d64b1c68377dfdac9c2854df1e3422658a92c42b7189426",
+      "bytes": 795725
+    },
+    {
+      "file": "webgl/native-sill-cornice-receive-off.png",
+      "sha256": "58bfae6baf2f11b84d64b1c68377dfdac9c2854df1e3422658a92c42b7189426",
+      "bytes": 795725
+    },
+    {
+      "file": "webgl/native-sill-lights-off-restored.png",
+      "sha256": "58bfae6baf2f11b84d64b1c68377dfdac9c2854df1e3422658a92c42b7189426",
+      "bytes": 795725
+    },
+    {
+      "file": "webgl/native-sill-lights-off.png",
+      "sha256": "5b51cc3c71b9afa3ce5c5a87b99f593f6f7c7e432beabc56834a7b6083fd0923",
+      "bytes": 742701
+    },
+    {
+      "file": "webgl/native-sill-wall-receive-off-restored.png",
+      "sha256": "58bfae6baf2f11b84d64b1c68377dfdac9c2854df1e3422658a92c42b7189426",
+      "bytes": 795725
+    },
+    {
+      "file": "webgl/native-sill-wall-receive-off.png",
+      "sha256": "c135abc192787da92ce1eb3cb823c95cc8d0d0e25527765ea7b8a57e804ff48c",
+      "bytes": 790742
+    },
+    {
+      "file": "webgl/receipt.json",
+      "sha256": "16a6394d6c0ca6774b9f34f559b1fc8a5a5ba10a7720c317bd9c6945dbd99456",
+      "bytes": 325867
+    },
+    {
+      "file": "webgl/sill-baseline.png",
+      "sha256": "23432f7af017e6b7a06bcea04693984fb9b992ed2ee86629a400c79c2605f9d3",
+      "bytes": 478936
+    },
+    {
+      "file": "webgl/sill-cornice-cast-off-restored.png",
+      "sha256": "23432f7af017e6b7a06bcea04693984fb9b992ed2ee86629a400c79c2605f9d3",
+      "bytes": 478936
+    },
+    {
+      "file": "webgl/sill-cornice-cast-off.png",
+      "sha256": "9be76f611825d3caeb5deed7ac03550cc635afc576446e88aaea506a62d5615e",
+      "bytes": 477852
+    },
+    {
+      "file": "webgl/sill-cornice-receive-off-restored.png",
+      "sha256": "23432f7af017e6b7a06bcea04693984fb9b992ed2ee86629a400c79c2605f9d3",
+      "bytes": 478936
+    },
+    {
+      "file": "webgl/sill-cornice-receive-off.png",
+      "sha256": "23432f7af017e6b7a06bcea04693984fb9b992ed2ee86629a400c79c2605f9d3",
+      "bytes": 478936
+    },
+    {
+      "file": "webgl/sill-lights-off-restored.png",
+      "sha256": "23432f7af017e6b7a06bcea04693984fb9b992ed2ee86629a400c79c2605f9d3",
+      "bytes": 478936
+    },
+    {
+      "file": "webgl/sill-lights-off.png",
+      "sha256": "990fd6a574d77450b5d890272ce8b903229896440d18ad732dcd3289722b29f0",
+      "bytes": 436739
+    },
+    {
+      "file": "webgl/sill-wall-receive-off-restored.png",
+      "sha256": "23432f7af017e6b7a06bcea04693984fb9b992ed2ee86629a400c79c2605f9d3",
+      "bytes": 478936
+    },
+    {
+      "file": "webgl/sill-wall-receive-off.png",
+      "sha256": "27c09deab6cafffd2f9cf104b0a32a2b3909d81f2d97b2e31311464644e7e788",
+      "bytes": 472028
+    },
+    {
+      "file": "webgl-01.log",
+      "sha256": "6e2f901715e0a7a9509f924f1eb9dfd8fb0a79b568a9e0ab2a459c8fa49071da",
+      "bytes": 2212
+    },
+    {
+      "file": "webgpu/bracket-all-receive-off-restored.png",
+      "sha256": "653f2791da81aeabf6d79742f8799fac4e6a8816edaba3b479543307d2c832f0",
+      "bytes": 391671
+    },
+    {
+      "file": "webgpu/bracket-all-receive-off.png",
+      "sha256": "383572f566eed1ca28e17675e73f69fcbffc2bc43a36ed21bcf1d84d5a73af3c",
+      "bytes": 360604
+    },
+    {
+      "file": "webgpu/bracket-baseline.png",
+      "sha256": "653f2791da81aeabf6d79742f8799fac4e6a8816edaba3b479543307d2c832f0",
+      "bytes": 391671
+    },
+    {
+      "file": "webgpu/bracket-cornice-cast-off-restored.png",
+      "sha256": "653f2791da81aeabf6d79742f8799fac4e6a8816edaba3b479543307d2c832f0",
+      "bytes": 391671
+    },
+    {
+      "file": "webgpu/bracket-cornice-cast-off.png",
+      "sha256": "624f9f2b2e7aafa286e298b412e141e72919e10d8efb7113ad7e48f031275722",
+      "bytes": 372444
+    },
+    {
+      "file": "webgpu/bracket-cornice-receive-off-restored.png",
+      "sha256": "653f2791da81aeabf6d79742f8799fac4e6a8816edaba3b479543307d2c832f0",
+      "bytes": 391671
+    },
+    {
+      "file": "webgpu/bracket-cornice-receive-off.png",
+      "sha256": "6d1104c55d8b8aa40dbb52db8320e9b3cea1d8e9c12e7a8351878fe89953178e",
+      "bytes": 390810
+    },
+    {
+      "file": "webgpu/bracket-wall-receive-off-restored.png",
+      "sha256": "653f2791da81aeabf6d79742f8799fac4e6a8816edaba3b479543307d2c832f0",
+      "bytes": 391671
+    },
+    {
+      "file": "webgpu/bracket-wall-receive-off.png",
+      "sha256": "3aa40d10095a42a058ca32fb54311c48c69f9963c59f3204249afbfb1986395e",
+      "bytes": 382300
+    },
+    {
+      "file": "webgpu/native-bracket-all-receive-off-restored.png",
+      "sha256": "bcb8cba4b9ac837f0caa2d2d063c1822cc92a01918dd68cb854685bd16bc1875",
+      "bytes": 700755
+    },
+    {
+      "file": "webgpu/native-bracket-all-receive-off.png",
+      "sha256": "3895b9a0373c9450cb56e121b5bde0cb18d22bd0c842e8dd8b5d460000051f39",
+      "bytes": 661192
+    },
+    {
+      "file": "webgpu/native-bracket-baseline.png",
+      "sha256": "bcb8cba4b9ac837f0caa2d2d063c1822cc92a01918dd68cb854685bd16bc1875",
+      "bytes": 700755
+    },
+    {
+      "file": "webgpu/native-bracket-cornice-cast-off-restored.png",
+      "sha256": "bcb8cba4b9ac837f0caa2d2d063c1822cc92a01918dd68cb854685bd16bc1875",
+      "bytes": 700755
+    },
+    {
+      "file": "webgpu/native-bracket-cornice-cast-off.png",
+      "sha256": "8f89fd0b67f5f26ce455e1129e022be45f0027805480f92aad96443872cb4c8d",
+      "bytes": 679717
+    },
+    {
+      "file": "webgpu/native-bracket-cornice-receive-off-restored.png",
+      "sha256": "bcb8cba4b9ac837f0caa2d2d063c1822cc92a01918dd68cb854685bd16bc1875",
+      "bytes": 700755
+    },
+    {
+      "file": "webgpu/native-bracket-cornice-receive-off.png",
+      "sha256": "a7922f08fa751a03c9988ac9fbfc2ad95393cf0be9db192481b17439c5bb7209",
+      "bytes": 702620
+    },
+    {
+      "file": "webgpu/native-bracket-wall-receive-off-restored.png",
+      "sha256": "bcb8cba4b9ac837f0caa2d2d063c1822cc92a01918dd68cb854685bd16bc1875",
+      "bytes": 700755
+    },
+    {
+      "file": "webgpu/native-bracket-wall-receive-off.png",
+      "sha256": "9bb13c672ccece6d0d698829e4b164eef31955455df9fce15686627c66f1e98f",
+      "bytes": 690206
+    },
+    {
+      "file": "webgpu/native-sill-all-receive-off-restored.png",
+      "sha256": "d76820ddcf5dccbfdda73649edb485549bef0a802e0b3999866f9ab41b3f506d",
+      "bytes": 792455
+    },
+    {
+      "file": "webgpu/native-sill-all-receive-off.png",
+      "sha256": "bde848a71867a5189f285a52992279e6094566c233d73b0161c054aa6afa2fac",
+      "bytes": 742618
+    },
+    {
+      "file": "webgpu/native-sill-baseline.png",
+      "sha256": "d76820ddcf5dccbfdda73649edb485549bef0a802e0b3999866f9ab41b3f506d",
+      "bytes": 792455
+    },
+    {
+      "file": "webgpu/native-sill-cornice-cast-off-restored.png",
+      "sha256": "d76820ddcf5dccbfdda73649edb485549bef0a802e0b3999866f9ab41b3f506d",
+      "bytes": 792455
+    },
+    {
+      "file": "webgpu/native-sill-cornice-cast-off.png",
+      "sha256": "617893d2e4bb6063394c075ea8a594ecd180af3e8fe36c85858912e2f835fa69",
+      "bytes": 791688
+    },
+    {
+      "file": "webgpu/native-sill-cornice-receive-off-restored.png",
+      "sha256": "d76820ddcf5dccbfdda73649edb485549bef0a802e0b3999866f9ab41b3f506d",
+      "bytes": 792455
+    },
+    {
+      "file": "webgpu/native-sill-cornice-receive-off.png",
+      "sha256": "d76820ddcf5dccbfdda73649edb485549bef0a802e0b3999866f9ab41b3f506d",
+      "bytes": 792455
+    },
+    {
+      "file": "webgpu/native-sill-wall-receive-off-restored.png",
+      "sha256": "d76820ddcf5dccbfdda73649edb485549bef0a802e0b3999866f9ab41b3f506d",
+      "bytes": 792455
+    },
+    {
+      "file": "webgpu/native-sill-wall-receive-off.png",
+      "sha256": "05c61cdf0b1e234e59d514648ac2aa7a5f1b7660ca763fac88dbff9d11cdc5bc",
+      "bytes": 784860
+    },
+    {
+      "file": "webgpu/receipt.json",
+      "sha256": "a016b6e5810fe12f9d6c41e067695e9ad36ded12fcf9a0b9dbb8bc56849c41c9",
+      "bytes": 325930
+    },
+    {
+      "file": "webgpu/sill-all-receive-off-restored.png",
+      "sha256": "b9d06f69e7912b67275daaa2e4901e19df51ac8c15dd7327482acbab5436ba60",
+      "bytes": 469459
+    },
+    {
+      "file": "webgpu/sill-all-receive-off.png",
+      "sha256": "b6e84cef0298bf060959725ef0e4190059c86bdf8adc819034ed81b107be31b5",
+      "bytes": 437682
+    },
+    {
+      "file": "webgpu/sill-baseline.png",
+      "sha256": "b9d06f69e7912b67275daaa2e4901e19df51ac8c15dd7327482acbab5436ba60",
+      "bytes": 469459
+    },
+    {
+      "file": "webgpu/sill-cornice-cast-off-restored.png",
+      "sha256": "b9d06f69e7912b67275daaa2e4901e19df51ac8c15dd7327482acbab5436ba60",
+      "bytes": 469459
+    },
+    {
+      "file": "webgpu/sill-cornice-cast-off.png",
+      "sha256": "11da0f3291d282001800aa6289daed10248d1414839cbc60e3e1d3ac0ea132c1",
+      "bytes": 468516
+    },
+    {
+      "file": "webgpu/sill-cornice-receive-off-restored.png",
+      "sha256": "b9d06f69e7912b67275daaa2e4901e19df51ac8c15dd7327482acbab5436ba60",
+      "bytes": 469459
+    },
+    {
+      "file": "webgpu/sill-cornice-receive-off.png",
+      "sha256": "b9d06f69e7912b67275daaa2e4901e19df51ac8c15dd7327482acbab5436ba60",
+      "bytes": 469459
+    },
+    {
+      "file": "webgpu/sill-wall-receive-off-restored.png",
+      "sha256": "b9d06f69e7912b67275daaa2e4901e19df51ac8c15dd7327482acbab5436ba60",
+      "bytes": 469459
+    },
+    {
+      "file": "webgpu/sill-wall-receive-off.png",
+      "sha256": "1b13a51a9a9b0e834ba2ecc7de3606a183f0e62e2c5125265c94d8812bfbdaf3",
+      "bytes": 462865
+    },
+    {
+      "file": "webgpu-02.log",
+      "sha256": "7aff920abb0872d6fdecbfdb30ef32e09538939286e1cdfa9caeda83cd43269e",
+      "bytes": 1107
+    }
+  ]
+}
