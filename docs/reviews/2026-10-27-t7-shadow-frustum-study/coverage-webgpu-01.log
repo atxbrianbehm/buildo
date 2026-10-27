@@ -1,0 +1,21 @@
+Port 5173 is in use, trying another one...
+Port 5174 is in use, trying another one...
+Port 5175 is in use, trying another one...
+2:09:00 AM [vite] (client) [optimizer] scanning dependencies...
+2:09:03 AM [vite] (client) [optimizer] bundling dependencies...
+{"api":"webgpu","state":"whole-default-source"}
+{"api":"webgpu","label":"whole-default","requiredHalfExtent":11.057885277563964,"originalHalfExtent":14.027999639511108,"proposed":[{"factor":1.1,"halfExtent":12.2}],"admitted":[{"factor":1.1,"halfExtent":12.2}]}
+{"api":"webgpu","state":"whole-default-restored"}
+{"api":"webgpu","state":"close-default-source"}
+{"api":"webgpu","label":"close-default","requiredHalfExtent":11.057885277563964,"originalHalfExtent":14.027999639511108,"proposed":[{"factor":1.1,"halfExtent":12.2}],"admitted":[{"factor":1.1,"halfExtent":12.2}]}
+{"api":"webgpu","state":"close-default-restored"}
+{"api":"webgpu","state":"close-lower-source"}
+{"api":"webgpu","label":"close-lower","requiredHalfExtent":9.329766419512461,"originalHalfExtent":14.027999639511108,"proposed":[{"factor":1.1,"halfExtent":10.3}],"admitted":[{"factor":1.1,"halfExtent":10.3}]}
+{"api":"webgpu","state":"close-lower-restored"}
+{"api":"webgpu","state":"whole-lower-source"}
+{"api":"webgpu","label":"whole-lower","requiredHalfExtent":9.329766419512461,"originalHalfExtent":14.027999639511108,"proposed":[{"factor":1.1,"halfExtent":10.3}],"admitted":[{"factor":1.1,"halfExtent":10.3}]}
+{"api":"webgpu","state":"whole-lower-restored"}
+{"api":"webgpu","state":"sill-default-source"}
+{"api":"webgpu","label":"sill-default","requiredHalfExtent":11.057885277563964,"originalHalfExtent":14.027999639511108,"proposed":[{"factor":1.1,"halfExtent":12.2}],"admitted":[{"factor":1.1,"halfExtent":12.2}]}
+{"api":"webgpu","state":"sill-default-restored"}
+{"api":"webgpu","cases":[{"label":"whole-default","factor":1.1,"halfExtent":12.2,"changedPixels":true},{"label":"close-default","factor":1.1,"halfExtent":12.2,"changedPixels":true},{"label":"close-lower","factor":1.1,"halfExtent":10.3,"changedPixels":true},{"label":"whole-lower","factor":1.1,"halfExtent":10.3,"changedPixels":true},{"label":"sill-default","factor":1.1,"halfExtent":12.2,"changedPixels":true}],"states":10,"captures":20,"errors":[]}

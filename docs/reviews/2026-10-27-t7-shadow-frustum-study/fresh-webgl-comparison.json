@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "fresh-webgl-frustum-comparison",
+  "backends": {
+    "whole-default": {
+      "cameraExact": true,
+      "cameraMaxInverseDelta": 0.0,
+      "lightsExact": true,
+      "compiledGeometryExact": true,
+      "bindingsExact": true,
+      "changedPixels": 19837,
+      "meanAbsoluteRgbDelta": 0.06832,
+      "maxChannelDelta": 37
+    },
+    "close-default": {
+      "cameraExact": false,
+      "cameraMaxInverseDelta": 0.0031645277234950697,
+      "lightsExact": true,
+      "compiledGeometryExact": true,
+      "bindingsExact": true
+    },
+    "close-lower": {
+      "cameraExact": false,
+      "cameraMaxInverseDelta": 0.00031813903107469343,
+      "lightsExact": true,
+      "compiledGeometryExact": true,
+      "bindingsExact": true
+    },
+    "whole-lower": {
+      "cameraExact": true,
+      "cameraMaxInverseDelta": 0.0,
+      "lightsExact": true,
+      "compiledGeometryExact": true,
+      "bindingsExact": true,
+      "changedPixels": 13091,
+      "meanAbsoluteRgbDelta": 0.04583,
+      "maxChannelDelta": 46
+    },
+    "sill-default": {
+      "cameraExact": true,
+      "cameraMaxInverseDelta": 0.0,
+      "lightsExact": true,
+      "compiledGeometryExact": true,
+      "bindingsExact": true,
+      "changedPixels": 30366,
+      "meanAbsoluteRgbDelta": 0.1156,
+      "maxChannelDelta": 49
+    }
+  }
+}

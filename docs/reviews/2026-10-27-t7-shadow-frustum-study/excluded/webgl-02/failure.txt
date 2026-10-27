@@ -1,0 +1,8 @@
+AssertionError [ERR_ASSERTION]: Original shadow frustum failed to restore
++ actual - expected
+
++ 'c09549431ea588066bd37cd6bea3551f0474b41879b77d45a1e41cc1ff136a89'
+- '60bfa71debdd3cee8dba5470a15271a88cde5a394e0ddf67c84a290c070d2c56'
+
+    at sweep (file:///C:/Users/behmb/Documents/Cascade%20Projects/buildo/test-results/t7-shadow-frustum-2026-10-27/sweep-02.mjs:229:45)
+    at async file:///C:/Users/behmb/Documents/Cascade%20Projects/buildo/test-results/t7-shadow-frustum-2026-10-27/sweep-02.mjs:235:18

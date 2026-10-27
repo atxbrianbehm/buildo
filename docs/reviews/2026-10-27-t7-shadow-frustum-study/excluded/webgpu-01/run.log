@@ -1,0 +1,21 @@
+Port 5173 is in use, trying another one...
+Port 5174 is in use, trying another one...
+2:03:36 AM [vite] (client) [optimizer] scanning dependencies...
+2:03:39 AM [vite] (client) [optimizer] bundling dependencies...
+{"api":"webgpu","state":"default-source"}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Candidate must contain all caster bounds and improve map coverage
+    at sweep (file:///C:/Users/behmb/Documents/Cascade%20Projects/buildo/test-results/t7-shadow-frustum-2026-10-27/sweep.mjs:224:118)
+    at async file:///C:/Users/behmb/Documents/Cascade%20Projects/buildo/test-results/t7-shadow-frustum-2026-10-27/sweep.mjs:235:18 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.14.1

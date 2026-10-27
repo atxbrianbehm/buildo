@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "fresh-shadow-reference-comparison",
+  "reference": "8192 map, original frustum; finite-resolution diagnostic, not ground truth",
+  "method": "Per-pixel sRGB absolute error against same-camera, same-light reference; only views with exact camera, lights, geometry and material bindings across all three runs are scored.",
+  "views": {
+    "whole-default": {
+      "exactCameraLightsGeometryAndBindings": true,
+      "consideredPixels": 15395,
+      "baselineMeanAbsoluteChannelError": 4.8541,
+      "tightMeanAbsoluteChannelError": 3.9807,
+      "tightCloserPixels": 8796,
+      "baselineCloserPixels": 5779,
+      "equalErrorPixels": 820
+    },
+    "close-default": {
+      "exactCameraLightsGeometryAndBindings": false,
+      "excludedReason": "Camera differs between independently interacted views; no pixel score."
+    },
+    "close-lower": {
+      "exactCameraLightsGeometryAndBindings": false,
+      "excludedReason": "Camera differs between independently interacted views; no pixel score."
+    },
+    "whole-lower": {
+      "exactCameraLightsGeometryAndBindings": true,
+      "consideredPixels": 10859,
+      "baselineMeanAbsoluteChannelError": 4.1816,
+      "tightMeanAbsoluteChannelError": 3.5324,
+      "tightCloserPixels": 5950,
+      "baselineCloserPixels": 4223,
+      "equalErrorPixels": 686
+    },
+    "sill-default": {
+      "exactCameraLightsGeometryAndBindings": true,
+      "consideredPixels": 24756,
+      "baselineMeanAbsoluteChannelError": 5.5625,
+      "tightMeanAbsoluteChannelError": 4.0289,
+      "tightCloserPixels": 16904,
+      "baselineCloserPixels": 6626,
+      "equalErrorPixels": 1226
+    }
+  }
+}

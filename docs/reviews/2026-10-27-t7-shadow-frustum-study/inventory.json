@@ -1,0 +1,795 @@
+{
+  "schemaVersion": "0.1.0",
+  "files": [
+    {
+      "file": "coverage-webgpu-01/close-default-baseline.png",
+      "sha256": "c15e1987e594d06bccac279f74c6313805dbc9559f8611ac2cce4f7d600072db",
+      "bytes": 392213
+    },
+    {
+      "file": "coverage-webgpu-01/close-default-factor-1.1-restored.png",
+      "sha256": "c15e1987e594d06bccac279f74c6313805dbc9559f8611ac2cce4f7d600072db",
+      "bytes": 392213
+    },
+    {
+      "file": "coverage-webgpu-01/close-default-factor-1.1.png",
+      "sha256": "304826ff81088bae48e6b629db111b37033bad467c71fb6ee05fff18a3de13ec",
+      "bytes": 387705
+    },
+    {
+      "file": "coverage-webgpu-01/close-default-stable.png",
+      "sha256": "c15e1987e594d06bccac279f74c6313805dbc9559f8611ac2cce4f7d600072db",
+      "bytes": 392213
+    },
+    {
+      "file": "coverage-webgpu-01/close-lower-baseline.png",
+      "sha256": "c90be587c1b001f05ce3906f23e7cd3f4feb2784738552c53b003b58a6181290",
+      "bytes": 394397
+    },
+    {
+      "file": "coverage-webgpu-01/close-lower-factor-1.1-restored.png",
+      "sha256": "c90be587c1b001f05ce3906f23e7cd3f4feb2784738552c53b003b58a6181290",
+      "bytes": 394397
+    },
+    {
+      "file": "coverage-webgpu-01/close-lower-factor-1.1.png",
+      "sha256": "80968c59e44c3db0634c7f2e597276e36cbcdff4eb390a8d156fda842ce5458c",
+      "bytes": 388616
+    },
+    {
+      "file": "coverage-webgpu-01/close-lower-stable.png",
+      "sha256": "c90be587c1b001f05ce3906f23e7cd3f4feb2784738552c53b003b58a6181290",
+      "bytes": 394397
+    },
+    {
+      "file": "coverage-webgpu-01/native-close-default-baseline.png",
+      "sha256": "8cc987bbe78d8d230c0a260f2b52a657c38972e2e9908ba767f22b8db402622a",
+      "bytes": 701424
+    },
+    {
+      "file": "coverage-webgpu-01/native-close-default-factor-1.1-restored.png",
+      "sha256": "8cc987bbe78d8d230c0a260f2b52a657c38972e2e9908ba767f22b8db402622a",
+      "bytes": 701424
+    },
+    {
+      "file": "coverage-webgpu-01/native-close-default-factor-1.1.png",
+      "sha256": "3457ae96653fbdadc6c24f51d6193589aa6213943c166d48452afe4415896fb0",
+      "bytes": 693105
+    },
+    {
+      "file": "coverage-webgpu-01/native-close-default-stable.png",
+      "sha256": "8cc987bbe78d8d230c0a260f2b52a657c38972e2e9908ba767f22b8db402622a",
+      "bytes": 701424
+    },
+    {
+      "file": "coverage-webgpu-01/native-close-lower-baseline.png",
+      "sha256": "0abc8431cb30af29f827366e75787a9f619d4486227303394a44c52a715f9eea",
+      "bytes": 709907
+    },
+    {
+      "file": "coverage-webgpu-01/native-close-lower-factor-1.1-restored.png",
+      "sha256": "0abc8431cb30af29f827366e75787a9f619d4486227303394a44c52a715f9eea",
+      "bytes": 709907
+    },
+    {
+      "file": "coverage-webgpu-01/native-close-lower-factor-1.1.png",
+      "sha256": "e15dc08d3357fd267182852007ea1f2e48357d13ddd4308f2b8a55c7aee1fa15",
+      "bytes": 702989
+    },
+    {
+      "file": "coverage-webgpu-01/native-close-lower-stable.png",
+      "sha256": "0abc8431cb30af29f827366e75787a9f619d4486227303394a44c52a715f9eea",
+      "bytes": 709907
+    },
+    {
+      "file": "coverage-webgpu-01/native-sill-default-baseline.png",
+      "sha256": "d76820ddcf5dccbfdda73649edb485549bef0a802e0b3999866f9ab41b3f506d",
+      "bytes": 792455
+    },
+    {
+      "file": "coverage-webgpu-01/native-sill-default-factor-1.1-restored.png",
+      "sha256": "d76820ddcf5dccbfdda73649edb485549bef0a802e0b3999866f9ab41b3f506d",
+      "bytes": 792455
+    },
+    {
+      "file": "coverage-webgpu-01/native-sill-default-factor-1.1.png",
+      "sha256": "13e040eb12576844943e4aa795bd1dc7ed164fec75546fab68b66c96c223798d",
+      "bytes": 783395
+    },
+    {
+      "file": "coverage-webgpu-01/native-sill-default-stable.png",
+      "sha256": "d76820ddcf5dccbfdda73649edb485549bef0a802e0b3999866f9ab41b3f506d",
+      "bytes": 792455
+    },
+    {
+      "file": "coverage-webgpu-01/native-whole-default-baseline.png",
+      "sha256": "f1540b7dbd83038e638f9f6555a0d1a17db0f1282cd76684c7a5e19b4d73fc03",
+      "bytes": 595946
+    },
+    {
+      "file": "coverage-webgpu-01/native-whole-default-factor-1.1-restored.png",
+      "sha256": "f1540b7dbd83038e638f9f6555a0d1a17db0f1282cd76684c7a5e19b4d73fc03",
+      "bytes": 595946
+    },
+    {
+      "file": "coverage-webgpu-01/native-whole-default-factor-1.1.png",
+      "sha256": "e5fe12efd472be9a8f42fafec05f977d4c630d7f8e3a93370cf4a33a9a578339",
+      "bytes": 594044
+    },
+    {
+      "file": "coverage-webgpu-01/native-whole-default-stable.png",
+      "sha256": "f1540b7dbd83038e638f9f6555a0d1a17db0f1282cd76684c7a5e19b4d73fc03",
+      "bytes": 595946
+    },
+    {
+      "file": "coverage-webgpu-01/native-whole-lower-baseline.png",
+      "sha256": "f61d6ff9f59c9f6aa2e17998a002fd6880b3950a4153d4a4a0968250bf90c626",
+      "bytes": 588499
+    },
+    {
+      "file": "coverage-webgpu-01/native-whole-lower-factor-1.1-restored.png",
+      "sha256": "f61d6ff9f59c9f6aa2e17998a002fd6880b3950a4153d4a4a0968250bf90c626",
+      "bytes": 588499
+    },
+    {
+      "file": "coverage-webgpu-01/native-whole-lower-factor-1.1.png",
+      "sha256": "6a189d80bc46896b191cb129e5293b37fcaaa0fe6568a97ea7e2465bcf48a9d5",
+      "bytes": 585265
+    },
+    {
+      "file": "coverage-webgpu-01/native-whole-lower-stable.png",
+      "sha256": "f61d6ff9f59c9f6aa2e17998a002fd6880b3950a4153d4a4a0968250bf90c626",
+      "bytes": 588499
+    },
+    {
+      "file": "coverage-webgpu-01/receipt.json",
+      "sha256": "e9a03258963714b78d5480e7b679953312ad2bf03dd768bbbbabd2dd2b2c686d",
+      "bytes": 633355
+    },
+    {
+      "file": "coverage-webgpu-01/sill-default-baseline.png",
+      "sha256": "b9d06f69e7912b67275daaa2e4901e19df51ac8c15dd7327482acbab5436ba60",
+      "bytes": 469459
+    },
+    {
+      "file": "coverage-webgpu-01/sill-default-factor-1.1-restored.png",
+      "sha256": "b9d06f69e7912b67275daaa2e4901e19df51ac8c15dd7327482acbab5436ba60",
+      "bytes": 469459
+    },
+    {
+      "file": "coverage-webgpu-01/sill-default-factor-1.1.png",
+      "sha256": "37b9e14aed34c3776ff5c734cd2519f9a4fdb868b2ce1d4387f8af667bf021fd",
+      "bytes": 463902
+    },
+    {
+      "file": "coverage-webgpu-01/sill-default-stable.png",
+      "sha256": "b9d06f69e7912b67275daaa2e4901e19df51ac8c15dd7327482acbab5436ba60",
+      "bytes": 469459
+    },
+    {
+      "file": "coverage-webgpu-01/whole-default-baseline.png",
+      "sha256": "9ec7664524bfb07fa0cd4b83b86ab06b6735a244311fd3b9e8c022e189afa4d2",
+      "bytes": 439981
+    },
+    {
+      "file": "coverage-webgpu-01/whole-default-factor-1.1-restored.png",
+      "sha256": "9ec7664524bfb07fa0cd4b83b86ab06b6735a244311fd3b9e8c022e189afa4d2",
+      "bytes": 439981
+    },
+    {
+      "file": "coverage-webgpu-01/whole-default-factor-1.1.png",
+      "sha256": "ba87243624e926b4378eb1cf51d9322d2ef79824d5bbe1b607896b3b76162333",
+      "bytes": 438569
+    },
+    {
+      "file": "coverage-webgpu-01/whole-default-stable.png",
+      "sha256": "9ec7664524bfb07fa0cd4b83b86ab06b6735a244311fd3b9e8c022e189afa4d2",
+      "bytes": 439981
+    },
+    {
+      "file": "coverage-webgpu-01/whole-lower-baseline.png",
+      "sha256": "cc11577b3eea6d096436daec50e09181ee7d205e979289eaa63c14a263ce6bf4",
+      "bytes": 439583
+    },
+    {
+      "file": "coverage-webgpu-01/whole-lower-factor-1.1-restored.png",
+      "sha256": "cc11577b3eea6d096436daec50e09181ee7d205e979289eaa63c14a263ce6bf4",
+      "bytes": 439583
+    },
+    {
+      "file": "coverage-webgpu-01/whole-lower-factor-1.1.png",
+      "sha256": "66adb91de515f5ece96c67c1dc461db93c1d63c15de31f45c5d6d17fe8099a3c",
+      "bytes": 437366
+    },
+    {
+      "file": "coverage-webgpu-01/whole-lower-stable.png",
+      "sha256": "cc11577b3eea6d096436daec50e09181ee7d205e979289eaa63c14a263ce6bf4",
+      "bytes": 439583
+    },
+    {
+      "file": "coverage-webgpu-01.log",
+      "sha256": "6ab2f152f148ef7f4484e3d5ddf722b401e8d9c249ac530e2222d7a3dd41d9b1",
+      "bytes": 2266
+    },
+    {
+      "file": "coverage.mjs",
+      "sha256": "391bcfbbaeaefcc896bf178d8f1eb88bde335cd3fcaf724ec07368044573a2c2",
+      "bytes": 33627
+    },
+    {
+      "file": "excluded/webgl-01/failure.png",
+      "sha256": "b14bae1c1b3c5a25644002805f123aa3d29b04477dd726a481de32c98fd1cd17",
+      "bytes": 495730
+    },
+    {
+      "file": "excluded/webgl-01/failure.txt",
+      "sha256": "d4fb0bc90efeebb1a931aacea460fd3706d27e1388e2b64e9f93049afdae4ad5",
+      "bytes": 362
+    },
+    {
+      "file": "excluded/webgl-01/partial-captures.json",
+      "sha256": "74033eeefa36e10fd8a77d536297996521f0e9d03134efb9727bebb93cdf7a0d",
+      "bytes": 5662
+    },
+    {
+      "file": "excluded/webgl-01/run.log",
+      "sha256": "2a392ca3bf2eb1a5d3f25b94c6be6465cd28742ff0c4101f1a27ac6458f53141",
+      "bytes": 2065
+    },
+    {
+      "file": "excluded/webgl-02/failure.png",
+      "sha256": "6d14754f0b4c75431ca864f06303b152689c2ec8e105b871ee03eb8437d9e5ea",
+      "bytes": 495607
+    },
+    {
+      "file": "excluded/webgl-02/failure.txt",
+      "sha256": "4bc720d5cf47cf81dfad42b6f633a49e250d5c53eb86e75dbbdee33e31f475f4",
+      "bytes": 503
+    },
+    {
+      "file": "excluded/webgl-02/partial-captures.json",
+      "sha256": "bfb9f298b5c4f8b25fa8668764c98f8888707dc211775a3e027b8cfcf3114309",
+      "bytes": 11259
+    },
+    {
+      "file": "excluded/webgl-02/run.log",
+      "sha256": "99ec7f212c6b9550d186d9d5020576ccc95fb31174f959f3ee14a93892718e37",
+      "bytes": 2706
+    },
+    {
+      "file": "excluded/webgl-03/failure.png",
+      "sha256": "acd95a190b961f066d31c24104efb669e0a15f77dd62056581bf15c5896f6043",
+      "bytes": 495785
+    },
+    {
+      "file": "excluded/webgl-03/failure.txt",
+      "sha256": "ea610b1bcd8c071d08f5dd115990098adf039bcb81fe39b8c5dfab3ffd2b6ce5",
+      "bytes": 504
+    },
+    {
+      "file": "excluded/webgl-03/native-lower-light-baseline.png",
+      "sha256": "07c7fd96e18c4088ecbc128ca87981785230fb7381d2df6ad56b72d8ec822e3b",
+      "bytes": 717734
+    },
+    {
+      "file": "excluded/webgl-03/native-lower-light-factor-1.05-restored.png",
+      "sha256": "49f27c43401286cff96c050a00e64a0ee956a29e929e0b3a71989fbbeba876c5",
+      "bytes": 717734
+    },
+    {
+      "file": "excluded/webgl-03/partial-captures.json",
+      "sha256": "44f5e4c758fdfedc6f2947be767569bb5ffd523df28c9d16ac53ec9c10b0ae78",
+      "bytes": 34002
+    },
+    {
+      "file": "excluded/webgl-03/run.log",
+      "sha256": "c9511594ee2cd4c1ae0ffeadbd50b43d842d97b8268b13e0f9f0dc7152f642f2",
+      "bytes": 3267
+    },
+    {
+      "file": "excluded/webgl-04/failure.png",
+      "sha256": "e6de387c57b5f63ca1fa31ef89a27675a2f94d2dd20e2d16ace20434a6346c3d",
+      "bytes": 498335
+    },
+    {
+      "file": "excluded/webgl-04/failure.txt",
+      "sha256": "f5c62120b04fedd2233ab312cf953358804254b8f6e4133b46cb25f5cd65ab96",
+      "bytes": 504
+    },
+    {
+      "file": "excluded/webgl-04/native-lower-light-baseline.png",
+      "sha256": "34499fee70e9d10c9affdc42c3ab903e1360a5ec53ecded394c1293c8ba5054b",
+      "bytes": 720076
+    },
+    {
+      "file": "excluded/webgl-04/native-lower-light-factor-1.05-restored.png",
+      "sha256": "0e84b88b26185d291ccf93523c3d8220ef2f1c74d958bce7c49aa3b3b0252972",
+      "bytes": 720058
+    },
+    {
+      "file": "excluded/webgl-04/partial-captures.json",
+      "sha256": "2b9bcd6f16a9716d00efd7a8816e375a7d9061bf04a381376be9c36237cbeaa1",
+      "bytes": 34026
+    },
+    {
+      "file": "excluded/webgl-04/run.log",
+      "sha256": "666dd74c906c64e84eddb26529ae37df2c647952ac46fbeee0835a38e8d2631c",
+      "bytes": 3267
+    },
+    {
+      "file": "excluded/webgpu-01/failure.png",
+      "sha256": "96f450e7df680f832467e1fc446b4f683c8d77edc7fe07823670c0cf9eebd897",
+      "bytes": 474612
+    },
+    {
+      "file": "excluded/webgpu-01/failure.txt",
+      "sha256": "d4fb0bc90efeebb1a931aacea460fd3706d27e1388e2b64e9f93049afdae4ad5",
+      "bytes": 362
+    },
+    {
+      "file": "excluded/webgpu-01/partial-captures.json",
+      "sha256": "967b4c609f812d8c81bc10a17cf6b990d365c8a2b616271c30c40c6de60822d2",
+      "bytes": 5654
+    },
+    {
+      "file": "excluded/webgpu-01/run.log",
+      "sha256": "e2478bdce0087477ca91eaa6df90f356d330c127237855e3b9c69dd5f9796f64",
+      "bytes": 856
+    },
+    {
+      "file": "fresh-candidate.mjs",
+      "sha256": "2071099d4d193834e52dd5bb2cdb7814f1220bc7a7b9d6b787244a8e2dfc12a9",
+      "bytes": 31116
+    },
+    {
+      "file": "fresh-reference.mjs",
+      "sha256": "e44f8430abb15970f59eac292f670579c3844a55e5849b6bda1a0a078aa3d1a0",
+      "bytes": 31637
+    },
+    {
+      "file": "fresh-webgl-baseline-01/close-default.png",
+      "sha256": "befd3ced1a91ac757b3dc228501ab93482b5120dade7d2d8d22ddc441a57469e",
+      "bytes": 412524
+    },
+    {
+      "file": "fresh-webgl-baseline-01/close-lower.png",
+      "sha256": "852a38cb2029ccd49dddbaa6b6e5b35b1afdefb609650ef9572813987cd292e0",
+      "bytes": 413115
+    },
+    {
+      "file": "fresh-webgl-baseline-01/native-close-default.png",
+      "sha256": "2743eb39896c982e6316e80dfbf01b904e0ce3c409d5d9d956cd28307c7bcf35",
+      "bytes": 705392
+    },
+    {
+      "file": "fresh-webgl-baseline-01/native-close-lower.png",
+      "sha256": "f36308cc57787a0041e15d09c3a7526aaee38677818ab46f8f44d51762c2b066",
+      "bytes": 719804
+    },
+    {
+      "file": "fresh-webgl-baseline-01/native-sill-default.png",
+      "sha256": "b9fe5e07f7f968066c3e37f36f9790970f6b3ed7638a84058d1bccbd99431a5b",
+      "bytes": 795718
+    },
+    {
+      "file": "fresh-webgl-baseline-01/native-whole-default.png",
+      "sha256": "5785a67582691406699cbf9716297e5b2ccdc18cab2a3dcd6af231b3f977e587",
+      "bytes": 592418
+    },
+    {
+      "file": "fresh-webgl-baseline-01/native-whole-lower.png",
+      "sha256": "e6c6070b0ce8f5736f440b0f42b0174d527694df2587ab28d0c245ab4b00ace3",
+      "bytes": 587746
+    },
+    {
+      "file": "fresh-webgl-baseline-01/receipt.json",
+      "sha256": "d82b939272445aa43b5d951351a1889b640b231af59532e49152d7000a000a44",
+      "bytes": 328582
+    },
+    {
+      "file": "fresh-webgl-baseline-01/sill-default.png",
+      "sha256": "5a4b3b996610f57da73370c6184811627c2471909d17153e0e0c8b4eae98a86e",
+      "bytes": 478930
+    },
+    {
+      "file": "fresh-webgl-baseline-01/whole-default.png",
+      "sha256": "d4cadccf2096980ee5d9aa80c5a2ef7e3c7131f5d9b551c54522029ef38f0b24",
+      "bytes": 441550
+    },
+    {
+      "file": "fresh-webgl-baseline-01/whole-lower.png",
+      "sha256": "9f05190063aa08c11b380595fee5c012007427f1105da3a94c594a3b3d67e73f",
+      "bytes": 441884
+    },
+    {
+      "file": "fresh-webgl-baseline-01.log",
+      "sha256": "63c07d038854aacd7acc99517ece064f724ed1c82d5659f2a3a0a0c8c9290ab1",
+      "bytes": 1872
+    },
+    {
+      "file": "fresh-webgl-comparison.json",
+      "sha256": "b536963c7105c285367a752af48f38ddd8e9193c069983ddf25f244b80eec4c8",
+      "bytes": 1395
+    },
+    {
+      "file": "fresh-webgl-reference8192-01/close-default.png",
+      "sha256": "b23ae998c8d3308d12fa288231b78299dd318ce61ba02ff5a6aa0d1ca9e44116",
+      "bytes": 383556
+    },
+    {
+      "file": "fresh-webgl-reference8192-01/close-lower.png",
+      "sha256": "c27fadbd0b282d91ac0603a43684500dde19c181a27a08da4d2f3ed64bb482cc",
+      "bytes": 387537
+    },
+    {
+      "file": "fresh-webgl-reference8192-01/native-close-default.png",
+      "sha256": "6cfb509034ac740eba4d28623a1122c235b70afefd0dc0e2db403794a866f918",
+      "bytes": 672741
+    },
+    {
+      "file": "fresh-webgl-reference8192-01/native-close-lower.png",
+      "sha256": "682377c8841466b219e16f6c9be0091d560e49dcb8983e5fbfb82ef5a262df5d",
+      "bytes": 689963
+    },
+    {
+      "file": "fresh-webgl-reference8192-01/native-sill-default.png",
+      "sha256": "6c3c4af3d285866650da4ebdf6429b2074fb05531efcea9bb27051bc504e4701",
+      "bytes": 771610
+    },
+    {
+      "file": "fresh-webgl-reference8192-01/native-whole-default.png",
+      "sha256": "262538ba135104f79f32c7964812c20c1e3b3d9d78b34e456481d28d8db17ca0",
+      "bytes": 583102
+    },
+    {
+      "file": "fresh-webgl-reference8192-01/native-whole-lower.png",
+      "sha256": "9dc833c7264b3884afd718b4c4189fc1bc18772c4f391d6d74e3651ca1840a9b",
+      "bytes": 583771
+    },
+    {
+      "file": "fresh-webgl-reference8192-01/receipt.json",
+      "sha256": "0070de44b1b7846cd519e58722521007cd82966b123d5f693fadacd3041cabc6",
+      "bytes": 328589
+    },
+    {
+      "file": "fresh-webgl-reference8192-01/sill-default.png",
+      "sha256": "9d11a95eded0cc507165385176f986e0102af4791d700610fae672f6677f94e4",
+      "bytes": 458337
+    },
+    {
+      "file": "fresh-webgl-reference8192-01/whole-default.png",
+      "sha256": "70f8ec5edfce1118a60c34200690fb8258385db6d05805c13624c78f8b21ea43",
+      "bytes": 436282
+    },
+    {
+      "file": "fresh-webgl-reference8192-01/whole-lower.png",
+      "sha256": "deba33f320c197b464740578c0966c85a01a85153b44a8cd07fdab09e8a3005a",
+      "bytes": 439593
+    },
+    {
+      "file": "fresh-webgl-reference8192-01.log",
+      "sha256": "d9daf190d2859e3d6243d0b58a3efbc2c030fdd6c23d5990322a3f9a36078520",
+      "bytes": 1877
+    },
+    {
+      "file": "fresh-webgl-tight-01/close-default.png",
+      "sha256": "5655ed2c19e0ea1ef038a22e9c4723b3f86cd5dd46721361c742453e15169b92",
+      "bytes": 404893
+    },
+    {
+      "file": "fresh-webgl-tight-01/close-lower.png",
+      "sha256": "48cf76d70dee4e9f766838bff9cb5e46db9c66b35c1293b86923dcc5fc7a8e14",
+      "bytes": 408374
+    },
+    {
+      "file": "fresh-webgl-tight-01/native-close-default.png",
+      "sha256": "2af75c77c8be24075b182f8d73415504b48f417b09e6ac3c3470616f325ef95b",
+      "bytes": 695600
+    },
+    {
+      "file": "fresh-webgl-tight-01/native-close-lower.png",
+      "sha256": "6271fb0eb8a6b0cc52f5d1261a0b7e6ebee74af1e88f9d61ca09e53fadd70ce2",
+      "bytes": 714598
+    },
+    {
+      "file": "fresh-webgl-tight-01/native-sill-default.png",
+      "sha256": "267a8a9762b9492d69ae5b0eb0bd0961451a13aa5b12e47b30266084f2f57b56",
+      "bytes": 784190
+    },
+    {
+      "file": "fresh-webgl-tight-01/native-whole-default.png",
+      "sha256": "7b938c38592a9ef9885ca9ec4fec2f794e2769dda5832e7663535f38becb5395",
+      "bytes": 589950
+    },
+    {
+      "file": "fresh-webgl-tight-01/native-whole-lower.png",
+      "sha256": "48af2ad3507511fac197aec32d9de985031c4ba5cb4d4fe2e36f5895acdb6602",
+      "bytes": 587621
+    },
+    {
+      "file": "fresh-webgl-tight-01/receipt.json",
+      "sha256": "864c41bc7670240e3b95937d9708ef5d09b1dbbf3f67c2575fec8d33e0704769",
+      "bytes": 328456
+    },
+    {
+      "file": "fresh-webgl-tight-01/sill-default.png",
+      "sha256": "c674497930ae5d6d01623620a218e3ab3c78f84d578a02902e3087d9ea273024",
+      "bytes": 468978
+    },
+    {
+      "file": "fresh-webgl-tight-01/whole-default.png",
+      "sha256": "25ba1c3cc9b98874dd1cd75fc79c6434e042da68ab4778f23686531c163cea15",
+      "bytes": 440056
+    },
+    {
+      "file": "fresh-webgl-tight-01/whole-lower.png",
+      "sha256": "05129a9537c0d4e24284ed325111184e1e657c5003833253edefb34765f3822d",
+      "bytes": 441975
+    },
+    {
+      "file": "fresh-webgl-tight-01.log",
+      "sha256": "258ca2dab962e12a66562239c33d2cb1654cf42f17a06661f3acbe23ffd30f0f",
+      "bytes": 1857
+    },
+    {
+      "file": "offline-bounds.mjs",
+      "sha256": "7c61a78109eba986dbdec5d53eae4af9a906347ed1b8ea9110c39976c9dac9ec",
+      "bytes": 864
+    },
+    {
+      "file": "query-limits.mjs",
+      "sha256": "780b3d155e5ca0e238e2a0786e03590d2c93703260f5fed29712adac924e9f4a",
+      "bytes": 502
+    },
+    {
+      "file": "README.md",
+      "sha256": "68e76c48e1cff6daedf2423643dac9af0f1fd0a6be7df3de125ff62d2b5d71f1",
+      "bytes": 3346
+    },
+    {
+      "file": "reference-comparison.json",
+      "sha256": "505a4872c5b2479835ff086b7f347e9382888beb58117f20dded7165ddf06bc3",
+      "bytes": 1710
+    },
+    {
+      "file": "reference-metrics.py",
+      "sha256": "0d98fc15414b4937a4a3e2d86726c0e99d1397a97b4f9e126571bf642dee6cfa",
+      "bytes": 2025
+    },
+    {
+      "file": "source-pins.json",
+      "sha256": "7ae955bb7f4281f8acaea68b35a1ae390419ad19b099a7f5c9c3b8464515de11",
+      "bytes": 62401
+    },
+    {
+      "file": "sweep-02.mjs",
+      "sha256": "8f37d0be3560efab4167a184ff61eb795f3bafbf91241a89d0fe52cdcb96f8c1",
+      "bytes": 32727
+    },
+    {
+      "file": "sweep-03.mjs",
+      "sha256": "f4f9a086f432ac823fe43fd23f74f27ce8dc0c166d20026ad23189f6ac963269",
+      "bytes": 32973
+    },
+    {
+      "file": "sweep.mjs",
+      "sha256": "23bc90b7b40b664029127f4f97bbca2eade0b8c8339df049d1d4cb0529db739e",
+      "bytes": 32540
+    },
+    {
+      "file": "verification.json",
+      "sha256": "c8ebdcababd39740dade2713e948d3e732e0605da748b20d5a4812c103ba3d56",
+      "bytes": 1905
+    },
+    {
+      "file": "webgpu-02/default-baseline.png",
+      "sha256": "1289f805ab7d76c5646461d99ef98e33d37598ea6707c0a8e1414faaa253c2f6",
+      "bytes": 392272
+    },
+    {
+      "file": "webgpu-02/default-factor-1.05-restored.png",
+      "sha256": "1289f805ab7d76c5646461d99ef98e33d37598ea6707c0a8e1414faaa253c2f6",
+      "bytes": 392272
+    },
+    {
+      "file": "webgpu-02/default-factor-1.05.png",
+      "sha256": "fe94ec39a6c8ddd9054bcb1a055a80763b5d821468acdf9a1fc78ad22794b66b",
+      "bytes": 387156
+    },
+    {
+      "file": "webgpu-02/default-factor-1.1-restored.png",
+      "sha256": "1289f805ab7d76c5646461d99ef98e33d37598ea6707c0a8e1414faaa253c2f6",
+      "bytes": 392272
+    },
+    {
+      "file": "webgpu-02/default-factor-1.1.png",
+      "sha256": "de1d84d8e63b22d9df0c298683c85c73a5d061f55a442294e768c7449a0e33b0",
+      "bytes": 387905
+    },
+    {
+      "file": "webgpu-02/default-factor-1.2-restored.png",
+      "sha256": "1289f805ab7d76c5646461d99ef98e33d37598ea6707c0a8e1414faaa253c2f6",
+      "bytes": 392272
+    },
+    {
+      "file": "webgpu-02/default-factor-1.2.png",
+      "sha256": "f986032fc64758993a3c938816e6bdddaf22e8f6480a80e08d605ddbc828c99b",
+      "bytes": 390351
+    },
+    {
+      "file": "webgpu-02/default-stable.png",
+      "sha256": "1289f805ab7d76c5646461d99ef98e33d37598ea6707c0a8e1414faaa253c2f6",
+      "bytes": 392272
+    },
+    {
+      "file": "webgpu-02/lower-light-baseline.png",
+      "sha256": "0bdbf490ba274dc3e3f5ef6e13c2764b31f9b150216586ce5c6685568dfa6572",
+      "bytes": 395055
+    },
+    {
+      "file": "webgpu-02/lower-light-factor-1.05-restored.png",
+      "sha256": "0bdbf490ba274dc3e3f5ef6e13c2764b31f9b150216586ce5c6685568dfa6572",
+      "bytes": 395055
+    },
+    {
+      "file": "webgpu-02/lower-light-factor-1.05.png",
+      "sha256": "273dcdf91945a0a455a16cb69305f3a46fe56aaefcd75256ac2fc4fc0b72bb5d",
+      "bytes": 388304
+    },
+    {
+      "file": "webgpu-02/lower-light-factor-1.1-restored.png",
+      "sha256": "0bdbf490ba274dc3e3f5ef6e13c2764b31f9b150216586ce5c6685568dfa6572",
+      "bytes": 395055
+    },
+    {
+      "file": "webgpu-02/lower-light-factor-1.1.png",
+      "sha256": "7321ab1b119cb1e7f9a4ff3c03e23b3af685463f76c7f8a2c7dedd907f9eab3a",
+      "bytes": 388901
+    },
+    {
+      "file": "webgpu-02/lower-light-factor-1.2-restored.png",
+      "sha256": "0bdbf490ba274dc3e3f5ef6e13c2764b31f9b150216586ce5c6685568dfa6572",
+      "bytes": 395055
+    },
+    {
+      "file": "webgpu-02/lower-light-factor-1.2.png",
+      "sha256": "57b6675ff199bb4d28bee0fdd5bf71e636def5c4ef19ccfc7b18195af95e4faf",
+      "bytes": 390194
+    },
+    {
+      "file": "webgpu-02/lower-light-factor-1.3-restored.png",
+      "sha256": "0bdbf490ba274dc3e3f5ef6e13c2764b31f9b150216586ce5c6685568dfa6572",
+      "bytes": 395055
+    },
+    {
+      "file": "webgpu-02/lower-light-factor-1.3.png",
+      "sha256": "2957604390d5dc9730f59125d86f69d5fa89d00fcbd6eb5eb5824c0a8013b7fe",
+      "bytes": 391456
+    },
+    {
+      "file": "webgpu-02/lower-light-factor-1.5-restored.png",
+      "sha256": "0bdbf490ba274dc3e3f5ef6e13c2764b31f9b150216586ce5c6685568dfa6572",
+      "bytes": 395055
+    },
+    {
+      "file": "webgpu-02/lower-light-factor-1.5.png",
+      "sha256": "7b504c29270b7510d81f4e9eea128754d7a9d4222e49dcdecd270a02f6bf84a7",
+      "bytes": 393528
+    },
+    {
+      "file": "webgpu-02/lower-light-stable.png",
+      "sha256": "0bdbf490ba274dc3e3f5ef6e13c2764b31f9b150216586ce5c6685568dfa6572",
+      "bytes": 395055
+    },
+    {
+      "file": "webgpu-02/native-default-baseline.png",
+      "sha256": "48863c45abdc415e06d49c8d5b57c55bf96c44769a60c24890cfd80a6d878af3",
+      "bytes": 701596
+    },
+    {
+      "file": "webgpu-02/native-default-factor-1.05-restored.png",
+      "sha256": "48863c45abdc415e06d49c8d5b57c55bf96c44769a60c24890cfd80a6d878af3",
+      "bytes": 701596
+    },
+    {
+      "file": "webgpu-02/native-default-factor-1.05.png",
+      "sha256": "eefe71c17153efa31b09d368f39ee7727141d2e967811293f39c5a43c7135498",
+      "bytes": 692209
+    },
+    {
+      "file": "webgpu-02/native-default-factor-1.1-restored.png",
+      "sha256": "48863c45abdc415e06d49c8d5b57c55bf96c44769a60c24890cfd80a6d878af3",
+      "bytes": 701596
+    },
+    {
+      "file": "webgpu-02/native-default-factor-1.1.png",
+      "sha256": "66f98a5ae065bb3c2e8cc038d2f306dc025c9f467586998d591f5670c7b23170",
+      "bytes": 694013
+    },
+    {
+      "file": "webgpu-02/native-default-factor-1.2-restored.png",
+      "sha256": "48863c45abdc415e06d49c8d5b57c55bf96c44769a60c24890cfd80a6d878af3",
+      "bytes": 701596
+    },
+    {
+      "file": "webgpu-02/native-default-factor-1.2.png",
+      "sha256": "9e2f98645080d4bb4540b311dc06af88a8cc1f0b3ffa5aa648b4460d25b29486",
+      "bytes": 698559
+    },
+    {
+      "file": "webgpu-02/native-default-stable.png",
+      "sha256": "48863c45abdc415e06d49c8d5b57c55bf96c44769a60c24890cfd80a6d878af3",
+      "bytes": 701596
+    },
+    {
+      "file": "webgpu-02/native-lower-light-baseline.png",
+      "sha256": "eeec8ec9d22e5feeb63db1204b9ba46e46eafa1e67426b34ed1edd737dba974f",
+      "bytes": 709773
+    },
+    {
+      "file": "webgpu-02/native-lower-light-factor-1.05-restored.png",
+      "sha256": "eeec8ec9d22e5feeb63db1204b9ba46e46eafa1e67426b34ed1edd737dba974f",
+      "bytes": 709773
+    },
+    {
+      "file": "webgpu-02/native-lower-light-factor-1.05.png",
+      "sha256": "a006416da7e1ebf3f9d17277ffa76a9a6f8f16242f3fc08c42ee4acec47ed6dd",
+      "bytes": 702210
+    },
+    {
+      "file": "webgpu-02/native-lower-light-factor-1.1-restored.png",
+      "sha256": "eeec8ec9d22e5feeb63db1204b9ba46e46eafa1e67426b34ed1edd737dba974f",
+      "bytes": 709773
+    },
+    {
+      "file": "webgpu-02/native-lower-light-factor-1.1.png",
+      "sha256": "d5c483aeb3b0b9e491b8ed5f5258e6a028cc002364b24c17f79f215ff92d770a",
+      "bytes": 702643
+    },
+    {
+      "file": "webgpu-02/native-lower-light-factor-1.2-restored.png",
+      "sha256": "eeec8ec9d22e5feeb63db1204b9ba46e46eafa1e67426b34ed1edd737dba974f",
+      "bytes": 709773
+    },
+    {
+      "file": "webgpu-02/native-lower-light-factor-1.2.png",
+      "sha256": "f7c8287858f303ef1e1996445386c7c4a7fccfea88ab01d25cacfdeb1d6bb04f",
+      "bytes": 704522
+    },
+    {
+      "file": "webgpu-02/native-lower-light-factor-1.3-restored.png",
+      "sha256": "eeec8ec9d22e5feeb63db1204b9ba46e46eafa1e67426b34ed1edd737dba974f",
+      "bytes": 709773
+    },
+    {
+      "file": "webgpu-02/native-lower-light-factor-1.3.png",
+      "sha256": "d5a91429e8d9fdd62331cabbdf08942253b1c2b66a93963f2de359abe2c85057",
+      "bytes": 705874
+    },
+    {
+      "file": "webgpu-02/native-lower-light-factor-1.5-restored.png",
+      "sha256": "eeec8ec9d22e5feeb63db1204b9ba46e46eafa1e67426b34ed1edd737dba974f",
+      "bytes": 709773
+    },
+    {
+      "file": "webgpu-02/native-lower-light-factor-1.5.png",
+      "sha256": "145c50142c85edded7d62e71c03837b3cead33ffef02b31e667e6800bc81a0ee",
+      "bytes": 707672
+    },
+    {
+      "file": "webgpu-02/native-lower-light-stable.png",
+      "sha256": "eeec8ec9d22e5feeb63db1204b9ba46e46eafa1e67426b34ed1edd737dba974f",
+      "bytes": 709773
+    },
+    {
+      "file": "webgpu-02/receipt.json",
+      "sha256": "a52886faddd05c8f34a56fa5d09f7a95b75f6976ab610dc625ea743ea34831c9",
+      "bytes": 327495
+    },
+    {
+      "file": "webgpu-02.log",
+      "sha256": "0a35219c3072500af4a16d9a6c5bffb6b532b91f1114ba3c49556deae06a1c5c",
+      "bytes": 3508
+    }
+  ]
+}
