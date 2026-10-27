@@ -1,0 +1,13 @@
+
+> buildo@0.0.0 test
+> vitest run
+
+
+ RUN  v4.1.9 C:/Users/behmb/Documents/Cascade Projects/buildo
+
+
+ Test Files  128 passed (128)
+      Tests  1860 passed (1860)
+   Start at  21:33:42
+   Duration  394.07s (transform 5.59s, setup 10.88s, import 22.19s, tests 1067.74s, environment 86.68s)
+

@@ -567,6 +567,45 @@ it("generates, edits, locks and rerolls through the actual workbench with saved 
     for(const record of rendererState.records)expect(record.dispose).toHaveBeenCalledTimes(1);
   },60000);
 
+  it("edits one selected window with material retention, portable/checkpoint source, local history and reset", async () => {
+    const view=mount({graph:createBuildingConstructionGraph(),materials});
+    try {
+      await ready();
+      const path=screen.getByRole("option",{name:"Front · Storey 2 · Bay 3"}).getAttribute("value")!;
+      fireEvent.change(screen.getByRole("combobox",{name:"Window to edit"}),{target:{value:path}});
+      expect(screen.getByLabelText("Selected width (m)")).toHaveValue(1.22);
+      fireEvent.change(screen.getByLabelText("Selected width (m)"),{target:{value:"1.8"}});
+      expect(screen.getByRole("button",{name:"Save construction"})).toBeDisabled();
+      expect(screen.getByRole("button",{name:"Apply construction"})).toBeDisabled();
+      fireEvent.click(screen.getByRole("button",{name:"Apply window width"}));
+      await waitFor(()=>expect(view.onSessionChange).toHaveBeenCalledTimes(2),{timeout:15000});await ready();
+      const edited=view.onSessionChange.mock.calls.at(-1)![0];
+      expect(edited.graph.schemaVersion).toBe("0.7.0");expect(edited.materials).toBe(materials);
+      expect(edited.graph.nodes.find(node=>node.type==="EditOpeningWidth")!.overrides).toEqual([{target:{documentId:edited.graph.documentId,storeysNodeId:"facade",windowNodeId:"window",face:"front",floorIndex:1,bayIndex:2},widthM:1.8}]);
+      expect(screen.getByLabelText("Selected width (m)")).toHaveValue(1.8);
+      const file=await createBayConstructionProject(edited.graph,edited.materials.file);
+      expect(file.schemaVersion).toBe("0.8.0");expect((await readBayConstructionProject(JSON.parse(JSON.stringify(file)))).project).toEqual(file);
+      await expect(readBayConstructionProject({...file,schemaVersion:"0.7.0"})).rejects.toThrow("versions must agree");
+      const checkpoint=await createConstructionCheckpoint("local-opening-workspace",edited.graph,edited.materials.file);
+      expect((await readConstructionCheckpoint(checkpoint)).project.graph).toEqual(edited.graph);
+      fireEvent.change(screen.getByLabelText("Selected width (m)"),{target:{value:"3"}});
+      fireEvent.click(screen.getByRole("button",{name:"Apply window width"}));
+      await waitFor(()=>expect(screen.getByRole("alert")).toHaveTextContent("piers"),{timeout:15000});
+      expect(view.onSessionChange).toHaveBeenCalledTimes(2);
+      fireEvent.click(screen.getByRole("button",{name:"Revert width"}));await ready();
+      fireEvent.click(screen.getByRole("button",{name:"Undo construction"}));
+      await waitFor(()=>expect(view.onSessionChange).toHaveBeenCalledTimes(3),{timeout:15000});await ready();
+      expect(view.onSessionChange.mock.calls.at(-1)![0].graph.schemaVersion).toBe("0.4.0");
+      fireEvent.click(screen.getByRole("button",{name:"Redo construction"}));
+      await waitFor(()=>expect(view.onSessionChange).toHaveBeenCalledTimes(4),{timeout:15000});await ready();
+      fireEvent.click(screen.getByRole("button",{name:"Use shared width"}));
+      await waitFor(()=>expect(view.onSessionChange).toHaveBeenCalledTimes(5),{timeout:15000});await ready();
+      expect(view.onSessionChange.mock.calls.at(-1)![0].graph.nodes.find(node=>node.type==="EditOpeningWidth")!.overrides).toEqual([]);
+      expect(generate).toHaveBeenCalledTimes(sourceCalls);
+    } finally {view.unmount();}
+    for(const record of rendererState.records)expect(record.dispose).toHaveBeenCalledTimes(1);
+  },90000);
+
   it("publishes storefronts with unchanged materials, local history, version-seven source and invalid-fit retention", async () => {
     const view = mount({ graph: createBuildingConstructionGraph(), materials });
     try {

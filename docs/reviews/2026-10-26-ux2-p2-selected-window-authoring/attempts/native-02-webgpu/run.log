@@ -1,0 +1,25 @@
+9:34:23 PM [vite] (client) [optimizer] scanning dependencies...
+9:34:26 PM [vite] (client) [optimizer] bundling dependencies...
+{"api":"webgpu","state":"legacy-default"}
+{"api":"webgpu","state":"legacy-v7-opened"}
+{"api":"webgpu","state":"one-window-widened"}
+{"api":"webgpu","state":"undo-local-width"}
+{"api":"webgpu","state":"redo-local-width"}
+{"api":"webgpu","state":"reset-to-shared"}
+{"api":"webgpu","state":"undo-reset"}
+{"api":"webgpu","state":"shared-width-with-local-override"}
+{"api":"webgpu","state":"local-width-and-finish"}
+{"api":"webgpu","state":"authored-generation"}
+{"api":"webgpu","state":"opening-lock-retention"}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.waitForFunction: Timeout 120000ms exceeded.
+    at generate (C:\Users\behmb\Documents\Cascade Projects\buildo\test-results\ux2-p2-selected-window-authoring-2026-10-26\capture-selected-window-02.mjs:145:188)
+    at async file:///C:/Users/behmb/Documents/Cascade%20Projects/buildo/test-results/ux2-p2-selected-window-authoring-2026-10-26/capture-selected-window-02.mjs:183:65 {
+  log: [],
+  name: 'TimeoutError'
+}
+
+Node.js v24.14.1

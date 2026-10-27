@@ -1,0 +1,58 @@
+9:43:32 PM [vite] (client) [optimizer] bundling dependencies...
+{"api":"webgpu","state":"legacy-default"}
+{"api":"webgpu","state":"legacy-v7-opened"}
+{"api":"webgpu","state":"one-window-widened"}
+{"api":"webgpu","state":"undo-local-width"}
+{"api":"webgpu","state":"redo-local-width"}
+{"api":"webgpu","state":"reset-to-shared"}
+{"api":"webgpu","state":"undo-reset"}
+{"api":"webgpu","state":"shared-width-with-local-override"}
+{"api":"webgpu","state":"local-width-and-finish"}
+{"api":"webgpu","state":"authored-generation"}
+{"api":"webgpu","state":"opening-lock-retention"}
+{"api":"webgpu","state":"remove-target-finish-explicitly"}
+{"api":"webgpu","state":"explicit-release-and-smaller-building"}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+
++ [
++   {
++     target: {
++       bayIndex: 1,
++       documentId: 'authored-building',
++       face: 'front',
++       floorIndex: 2,
++       storeysNodeId: 'facade',
++       windowNodeId: 'window'
++     },
++     widthM: 1.8
++   }
++ ]
+- []
+
+    at file:///C:/Users/behmb/Documents/Cascade%20Projects/buildo/test-results/ux2-p2-selected-window-authoring-2026-10-26/capture-selected-window-03.mjs:184:319 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: [
+    {
+      target: {
+        documentId: 'authored-building',
+        storeysNodeId: 'facade',
+        windowNodeId: 'window',
+        face: 'front',
+        floorIndex: 2,
+        bayIndex: 1
+      },
+      widthM: 1.8
+    }
+  ],
+  expected: [],
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.14.1

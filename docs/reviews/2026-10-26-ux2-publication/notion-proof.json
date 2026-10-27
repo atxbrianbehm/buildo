@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "selected-window-gallery-publication",
+  "pageId": "3fdb77d6cd4f812a9f88f1316beb9c25",
+  "url": "https://app.notion.com/p/3fdb77d6cd4f812a9f88f1316beb9c25?pvs=204",
+  "beforeImageBlocks": 112,
+  "afterImageBlocks": 120,
+  "newImageBlocks": 8,
+  "allPreviousImageReferencesRetained": true,
+  "allImmutablePublicImagesPresent": true,
+  "imageHosting": "public GitHub immutable commit",
+  "imageCommit": "36bc79cbb4144186a70cecb9b5ae2a24bcdf3bfd",
+  "uploadCredentialsUsed": false,
+  "uploadCredentialsPersisted": false,
+  "contentClosingTagPresent": true,
+  "pageLastEditedAt": "2026-10-27T03:05:57.123Z",
+  "buildoParentPlacement": "unresolved; no move performed",
+  "permissionsChanged": false,
+  "metadataReturned": {
+    "type": "page"
+  }
+}

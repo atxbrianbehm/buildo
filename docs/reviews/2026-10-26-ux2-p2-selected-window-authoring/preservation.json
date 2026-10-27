@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "0.1.0",
+  "previousSourcePins": 344,
+  "literalUnchanged": 332,
+  "changedPaths": [
+    "src/app/App.css",
+    "src/features/building-family/core/constructionOpeningEditGraph.ts",
+    "src/features/building-family/core/constructionStorefrontGraph.ts",
+    "src/features/building-family/state/bayConstructionProject.ts",
+    "src/features/building-family/state/constructionGenerationState.ts",
+    "src/features/building-family/tests/ConstructionBuildingControls.test.tsx",
+    "src/features/building-family/tests/bayConstructionWorkbench.test.tsx",
+    "src/features/building-family/tests/constructionGenerationState.test.ts",
+    "src/features/building-family/ui/AssemblyHall.tsx",
+    "src/features/building-family/ui/BayConstructionWorkbench.tsx",
+    "src/features/building-family/ui/ConstructionBuildingControls.tsx",
+    "src/features/building-family/ui/constructionBuildingBindings.ts"
+  ],
+  "finalSourcePinsStable": 346,
+  "rendererAndMaterialModulesUnchanged": true
+}

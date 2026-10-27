@@ -1,0 +1,4 @@
+page.waitForFunction: Timeout 120000ms exceeded.
+    at generate (C:\Users\behmb\Documents\Cascade Projects\buildo\test-results\ux2-p2-selected-window-authoring-2026-10-26\capture-selected-window-02.mjs:145:188)
+    at async file:///C:/Users/behmb/Documents/Cascade%20Projects/buildo/test-results/ux2-p2-selected-window-authoring-2026-10-26/capture-selected-window-02.mjs:183:65
+[]

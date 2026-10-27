@@ -23,7 +23,7 @@ it("keeps shared controls explicit and forwards owned draft text without mutatin
   const graph=createBuildingConstructionGraph(),before=structuredClone(graph),view=mount(graph);
   expect(screen.getByText("Applies to all 47 generated windows.")).toBeInTheDocument();
   expect(screen.queryByLabelText("Scope input")).not.toBeInTheDocument();
-  expect(screen.getByLabelText("Local geometry editing unavailable")).toHaveTextContent("not implemented");
+  expect(screen.getByLabelText("Local geometry scope")).toHaveTextContent("Other local geometry edits are not implemented");
   fireEvent.change(screen.getByLabelText("Recess (m)"),{target:{value:""}});expect(view.onFieldChange).toHaveBeenCalledWith("window","recessM","");
   fireEvent.click(screen.getByRole("button",{name:"Apply construction"}));expect(view.onApply).toHaveBeenCalledOnce();expect(graph).toEqual(before);
 });

@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "0.1.0",
+  "images": [
+    {
+      "filename": "buildo-ux2-before-local-width.png",
+      "path": "native-04-webgpu/legacy-storefront-building.png",
+      "caption": "Before the local edit: the continued C8 building."
+    },
+    {
+      "filename": "buildo-ux2-selected-width-building.png",
+      "path": "native-04-webgpu/one-window-widened.png",
+      "caption": "First local edit: one upper-front opening widened from 1.22m to 1.8m; every other opening remains unchanged."
+    },
+    {
+      "filename": "buildo-ux2-selected-window-controls.png",
+      "path": "native-04-webgpu/selected-window-controls.png",
+      "caption": "Actual selected-window controls after a later intentional shared-width edit; the local width remains1.8m."
+    },
+    {
+      "filename": "buildo-ux2-widened-window-close.png",
+      "path": "native-04-webgpu/widened-window-close.png",
+      "caption": "Textured close view of the wider frame, glazing and sill."
+    },
+    {
+      "filename": "buildo-ux2-widened-window-clay.png",
+      "path": "native-04-webgpu/widened-window-clay-close.png",
+      "caption": "Clay close view: actual frame, reveal, glazing bars and closed trim geometry."
+    },
+    {
+      "filename": "buildo-ux2-phone-controls.png",
+      "path": "ui-compact.png",
+      "caption": "Uninstrumented phone-width controls: full target label and keyboard focus."
+    },
+    {
+      "filename": "buildo-ux2-desktop-controls.png",
+      "path": "ui-desktop.png",
+      "caption": "Uninstrumented desktop inspector with the selected window highlighted."
+    },
+    {
+      "filename": "buildo-ux2-webgl-cold-recovery.png",
+      "path": "native-01-webgl/cold-recovered.png",
+      "caption": "WebGL cold recovery of the final workflow source, including the later shared edit and local finish. Final native pixels are exact within this backend; inherited rendering differences remain."
+    }
+  ]
+}

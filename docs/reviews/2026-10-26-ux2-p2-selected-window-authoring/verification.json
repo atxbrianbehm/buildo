@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "selected-window-product-verification",
+  "baseCommit": "3308201128a604eb52a60430cad872611fa900d7",
+  "checks": [
+    {
+      "name": "typecheck",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-27T02:33:11.9594628Z",
+      "endedAtUtc": "2026-10-27T02:33:23.4910040Z",
+      "sourcePinsStable": true,
+      "log": "test-results/ux2-p2-selected-window-authoring-2026-10-26/typecheck-final.log"
+    },
+    {
+      "name": "lint",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-27T02:33:23.5875423Z",
+      "endedAtUtc": "2026-10-27T02:33:41.7087693Z",
+      "sourcePinsStable": true,
+      "log": "test-results/ux2-p2-selected-window-authoring-2026-10-26/lint-final.log"
+    },
+    {
+      "name": "test",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-27T02:33:41.7753133Z",
+      "endedAtUtc": "2026-10-27T02:40:16.8475168Z",
+      "sourcePinsStable": true,
+      "log": "test-results/ux2-p2-selected-window-authoring-2026-10-26/test-final.log"
+    },
+    {
+      "name": "build",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-27T02:40:16.8895108Z",
+      "endedAtUtc": "2026-10-27T02:40:29.2688383Z",
+      "sourcePinsStable": true,
+      "log": "test-results/ux2-p2-selected-window-authoring-2026-10-26/build-final.log"
+    },
+    {
+      "name": "test:e2e",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-27T02:40:29.3134757Z",
+      "endedAtUtc": "2026-10-27T02:43:03.8527829Z",
+      "sourcePinsStable": true,
+      "log": "test-results/ux2-p2-selected-window-authoring-2026-10-26/test-e2e-final.log"
+    }
+  ],
+  "tests": 1860,
+  "testFiles": 128,
+  "addedTests": 4,
+  "standardE2EWorkflows": 8,
+  "native": {
+    "webgpu": {
+      "states": 19,
+      "captures": 16,
+      "errors": []
+    },
+    "webgl": {
+      "states": 19,
+      "captures": 16,
+      "errors": []
+    }
+  },
+  "sourcePinsStable": 346,
+  "previousSourcePinsUnchanged": 332,
+  "changedExistingSourcePaths": [
+    "src/app/App.css",
+    "src/features/building-family/core/constructionOpeningEditGraph.ts",
+    "src/features/building-family/core/constructionStorefrontGraph.ts",
+    "src/features/building-family/state/bayConstructionProject.ts",
+    "src/features/building-family/state/constructionGenerationState.ts",
+    "src/features/building-family/tests/ConstructionBuildingControls.test.tsx",
+    "src/features/building-family/tests/bayConstructionWorkbench.test.tsx",
+    "src/features/building-family/tests/constructionGenerationState.test.ts",
+    "src/features/building-family/ui/AssemblyHall.tsx",
+    "src/features/building-family/ui/BayConstructionWorkbench.tsx",
+    "src/features/building-family/ui/ConstructionBuildingControls.tsx",
+    "src/features/building-family/ui/constructionBuildingBindings.ts"
+  ],
+  "newSourcePaths": [
+    "src/features/building-family/ui/ConstructionOpeningControls.tsx",
+    "src/features/building-family/tests/constructionOpeningControls.test.tsx"
+  ],
+  "graphWorkerVersion": "0.7.0",
+  "portableVersion": "0.8.0",
+  "coldProviderCalls": 0,
+  "coldMaterialGenerations": 0,
+  "finalPortableLiteralEqualAcrossBackends": true,
+  "reviewedUiPortableLiteralEqualToFinal": true,
+  "orphanFinishGuardPreserved": true,
+  "privateUploadCredentialsPersisted": false,
+  "notionImagePublicationPending": true,
+  "humanTaskReview": "pending"
+}

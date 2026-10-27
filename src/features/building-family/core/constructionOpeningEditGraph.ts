@@ -2,6 +2,7 @@ import { BayConstructionGraphSchema, createBuildingConstructionGraph, type BayCo
 import { ConstructionOpeningTargetSchema, ConstructionOpeningWidthOverrideSchema, type ConstructionOpeningTarget } from "../contracts/constructionOpeningEdit";
 import { withConstructionStorefront } from "./constructionStorefrontGraph";
 import { canonicalJson } from "./canonicalJson";
+import { resolveConstructionOpeningWidth } from "./constructionOpeningEdit";
 
 function topology(graph: BayConstructionGraph) {
   return canonicalJson({ output: graph.outputNodeId, nodes: graph.nodes.map(node => ({ id: node.id, type: node.type,
@@ -43,5 +44,31 @@ export function withoutConstructionOpeningWidth(input: unknown, targetInput: unk
       !graph.nodes.some(node => node.id === target.windowNodeId && node.type === "AssembleWindow")) throw new Error("Reset requires a target in this construction.");
   const node = graph.nodes.find(node => node.type === "EditOpeningWidth")!;
   node.overrides = node.overrides.filter(value => address(value.target) !== address(target));
+  return BayConstructionGraphSchema.parse(graph);
+}
+
+/** Preserve explicit local widths over the immutable recipe, or release every override. */
+export function retainConstructionOpeningEdits(currentInput: unknown, generatedInput: unknown, preserve: boolean) {
+  const current = BayConstructionGraphSchema.parse(currentInput);
+  if (current.schemaVersion !== "0.7.0") return BayConstructionGraphSchema.parse(generatedInput);
+  const graph = withConstructionOpeningEdits(generatedInput);
+  const source = current.nodes.find(node => node.type === "EditOpeningWidth")!;
+  const operation = graph.nodes.find(node => node.type === "EditOpeningWidth")!;
+  operation.overrides = preserve ? structuredClone(source.overrides) : [];
+  const footprint = graph.nodes.find(node => node.type === "Footprint")!.parameters;
+  const storeys = graph.nodes.find(node => node.type === "Storeys")!, bays = graph.nodes.find(node => node.type === "SplitBays")!.parameters.count;
+  const opening = graph.nodes.find(node => node.type === "PlaceOpening")!.parameters;
+  const window = graph.nodes.find(node => node.type === "AssembleWindow")!;
+  for (const { target, widthM } of operation.overrides) {
+    if (target.floorIndex >= storeys.parameters.count || target.bayIndex >= bays || target.storeysNodeId !== storeys.id || target.windowNodeId !== window.id) {
+      throw new Error("A preserved selected window no longer exists. Keep its storey/bay, reset its local width, or release edited dimensions and opening locks.");
+    }
+    const span = footprint.widthM/bays, bottom = storeys.parameters.groundHeightM+(target.floorIndex-1)*storeys.parameters.upperHeightM;
+    const left = -footprint.widthM/2+target.bayIndex*span;
+    resolveConstructionOpeningWidth({schemaVersion:"0.1.0",kind:"construction-opening-width-request",target,widthM,frameWidthM:window.parameters.frameWidthM,
+      scope:{id:`${target.storeysNodeId}/floor/${target.floorIndex}/bay/${target.bayIndex}`,face:"front",floorIndex:target.floorIndex,bayIndex:target.bayIndex,
+        originM:[left,bottom,-footprint.wallDepthM],sizeM:[span,storeys.parameters.upperHeightM,footprint.wallDepthM],
+        opening:{kind:"window",widthM:opening.widthM,heightM:opening.heightM,centerAlongM:left+span/2,centerYM:bottom+opening.sillM+opening.heightM/2}}});
+  }
   return BayConstructionGraphSchema.parse(graph);
 }

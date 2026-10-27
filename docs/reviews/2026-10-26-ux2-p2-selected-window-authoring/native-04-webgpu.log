@@ -1,0 +1,21 @@
+9:48:43 PM [vite] (client) [optimizer] bundling dependencies...
+{"api":"webgpu","state":"legacy-default"}
+{"api":"webgpu","state":"legacy-v7-opened"}
+{"api":"webgpu","state":"one-window-widened"}
+{"api":"webgpu","state":"undo-local-width"}
+{"api":"webgpu","state":"redo-local-width"}
+{"api":"webgpu","state":"reset-to-shared"}
+{"api":"webgpu","state":"undo-reset"}
+{"api":"webgpu","state":"shared-width-with-local-override"}
+{"api":"webgpu","state":"local-width-and-finish"}
+{"api":"webgpu","state":"authored-generation"}
+{"api":"webgpu","state":"opening-lock-retention"}
+{"api":"webgpu","state":"remove-target-finish-explicitly"}
+{"api":"webgpu","state":"explicit-release-and-smaller-building"}
+{"api":"webgpu","state":"restored-kept-source"}
+{"api":"webgpu","state":"restored-supported-topology"}
+{"api":"webgpu","state":"final-local-width-source"}
+{"api":"webgpu","state":"opened-v8"}
+{"api":"webgpu","state":"room-return"}
+{"api":"webgpu","state":"cold-recovered-v8"}
+{"api":"webgpu","draws":19,"captures":16,"errors":[]}

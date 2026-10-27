@@ -3687,3 +3687,7 @@ h1 {
 .construction-grouped__field select { width: 100%; min-width: 0; min-height: 44px; padding: 9px 10px; border: 1px solid #bcc7bd; border-radius: 5px; background: #fbfcf9; color: #18201c; font: inherit; }
 .construction-grouped__assembly { grid-template-columns: minmax(0,1fr) minmax(180px,1.1fr); }
 .construction-grouped select:focus-visible { outline: 3px solid #526f46; outline-offset: 3px; }
+.construction-opening-edit { padding-bottom: 20px; border-bottom: 1px solid var(--workspace-line); }
+.construction-opening-edit h3 { margin: 0 0 18px; font-size: 1.05rem; }
+.construction-opening-edit__target { grid-template-columns: minmax(0,1fr); gap: 10px; }
+.construction-opening-edit > fieldset > p { line-height: 1.5; }

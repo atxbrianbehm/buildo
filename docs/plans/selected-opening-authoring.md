@@ -1,6 +1,6 @@
 # UX2: widen one selected upper-front window
 
-The grouped workflow and three-recipe geometric baseline were [accepted on October26](../reviews/2026-10-26-authoring-review-decisions.md). The concrete task is existing artist-protocol task7: select one upper-front regular window, make it wider, and retain every other window and the material library. The current selected-frame control changes surface finishes only. This packet must make the wall hole, frame, sill and glazing agree; a visual transform or global width edit is insufficient.
+The grouped workflow and three-recipe geometric baseline were [accepted on October26](../reviews/2026-10-26-authoring-review-decisions.md). The concrete task is existing artist-protocol task7: select one upper-front regular window, make it wider, and retain every other window and the material library. P0/P1/P2 now implement that task on the existing source/compiler path: the wall hole, frame, sill and glazing agree. [Final product evidence](../reviews/2026-10-26-ux2-p2-selected-window-authoring/README.md). Human task review remains pending.
 
 ## Current implementation seams
 
@@ -17,9 +17,9 @@ The grouped workflow and three-recipe geometric baseline were [accepted on Octob
 |---|---|---|
 | UX2.P0 — complete | Pure versioned selected-opening address/request/derived plan. Only upper-front regular windows, one absolute width per request. No graph/operator/UI change. | Typecheck, lint, targeted adversarial/fit/ownership/readback tests and preexisting-source pin preservation. Durable source/check receipt. |
 | UX2.P1 — complete | Explicit graph/worker admission and one scope-edit operation after frontage, shared by wall/window consumers. Store overrides in graph source using structural addresses. | Actual compiled aperture/assembly causality, unchanged unrelated openings and protected geometry, native buffers/UV/winding/identity, missing/duplicate/stale target rejection, old graph hashes and request/reply validation. Typecheck/lint and focused tests. |
-| UX2.P2 — ready | Selected-window width control with one clearly named target, apply/reset and existing publication/history flow. Portable/history/checkpoint, authored/locked generation retention and explicit release. | All five repository checks and both native backends: select one real frame, widen it, inspect wall/frame/glass, materials/finishes exact, invalid-fit retention, Undo/Redo, Save/Open, room/cold recovery, selection ownership, keyboard/compact operation. Real gallery images. |
+| UX2.P2 — engineering complete | Selected-window width control with one clearly named target, apply/reset and existing publication/history flow. Portable/history/checkpoint, authored/locked generation retention and explicit release. | All five repository checks and both native backends: select one real frame, widen it, inspect wall/frame/glass, materials/finishes exact, invalid-fit retention, Undo/Redo, Save/Open, room/cold recovery, selection ownership, keyboard/compact operation. Real gallery images. |
 
-P1 follows P0 and P2 follows P1 without inserting another human approval gate. Keep one commit and PR per milestone. After P2, human review of the actual task and the existing artist protocol remains required before broader UI migration or more targeted operations. No recruitment or external outreach is authorized here.
+P1 follows P0 and P2 follows P1 without inserting another human approval gate. Keep implementation milestones separate, with one PR per packet. Externally verified publication results may follow in a small documentation-only commit. After P2, human review of the actual task and the existing artist protocol remains required before broader UI migration or more targeted operations. No recruitment or external outreach is authorized here.
 
 ## Structural and continuation rules
 
@@ -27,10 +27,12 @@ The target is `{documentId, storeysNodeId, windowNodeId, face: "front", floorInd
 
 Width is absolute metres. Preserve opening centre/height, assembly choice, recess, sill projection and window semantic identity. Retain at least80mm masonry at both edges and enough width/height for the current frame. Account only for floating-point coordinate roundoff. Reject physical misfit instead of clamping, moving the opening or changing neighbouring windows. The planner verifies its owned supplied scope; P1 must bind that scope to the evaluated graph.
 
-Use one versioned scope instruction containing unique structural targets and widths, inserted explicitly into registered topology. Its complete output feeds wall and opening assemblies. Reject missing or duplicate targets and cross-document/assembly addresses. Do not add preassembled meshes, renderer transforms or a parallel generator. P1 admits graph/worker0.7 explicitly. Portable project0.8 remains P2 work; P0 alone did not admit either format.
+Use one versioned scope instruction containing unique structural targets and widths, inserted explicitly into registered topology. Its complete output feeds wall and opening assemblies. Reject missing or duplicate targets and cross-document/assembly addresses. Do not add preassembled meshes, renderer transforms or a parallel generator. P1 admits graph/worker0.7 explicitly. P2 admits portable project0.8 and source/history/checkpoint/cold continuation. P0 alone did not admit either format.
 
 Keep edited dimensions and assemblies or Lock openings preserves explicit local widths. Clearing both releases them to the actual seeded recipe. If a preserved target disappears after reducing floors/bays, reject the candidate and retain the accepted source/scene; do not drop, clamp or retarget it. Shared opening-width changes continue to affect unoverridden windows; resetting a local override returns that cell to the current shared value. Custom graphs retain honest advanced fallback and safe generation rejection unless explicitly admitted.
 
 Structural edits preserve material artifacts, local finish layers, semantic addresses and generation/reference lineage. Old project reads remain literal. New portable source must bind the graph version and immutable material source, with exact source roundtrip and zero cold material/provider generation. Selection is transient UI state, not a renderer-instance index serialized into the project.
 
 The UTDG architecture adapter, historical evidence, additional opening families, artist sessions and family/block performance remain separate. Passing this task does not establish them.
+
+[Published PRs and phone-gallery receipt](../reviews/2026-10-26-ux2-publication/README.md): three packet PRs;120 image blocks, with all112 prior references retained. Human review of the new task remains pending.
