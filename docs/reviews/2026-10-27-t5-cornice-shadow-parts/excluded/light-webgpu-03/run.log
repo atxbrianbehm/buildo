@@ -1,0 +1,14 @@
+Port 5173 is in use, trying another one...
+Port 5174 is in use, trying another one...
+1:48:36 AM [vite] (client) [optimizer] scanning dependencies...
+1:48:37 AM [vite] (client) [optimizer] bundling dependencies...
+{"api":"webgpu","state":"home"}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+Error: Camera did not settle through normal canvas interaction.
+    at settleCamera (file:///C:/Users/behmb/Documents/Cascade%20Projects/buildo/test-results/t5-cornice-shadow-parts-2026-10-27/light-gesture-03.mjs:218:11)
+    at async file:///C:/Users/behmb/Documents/Cascade%20Projects/buildo/test-results/t5-cornice-shadow-parts-2026-10-27/light-gesture-03.mjs:221:53
+
+Node.js v24.14.1

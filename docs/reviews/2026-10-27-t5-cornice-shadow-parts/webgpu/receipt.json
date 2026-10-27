@@ -1,0 +1,3126 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "cornice-shadow-parts-discriminator",
+  "backend": "webgpu",
+  "diagnosticOnly": true,
+  "partition": {
+    "batch": "building/authored-building/node/roof/building/cornice",
+    "totalIndices": 19992,
+    "vertexCount": 16448,
+    "backingIndices": 192,
+    "copingIndices": 144,
+    "unitCount": 78,
+    "unitIndices": 19656,
+    "allIndicesExact": true
+  },
+  "cases": [
+    {
+      "mode": "all",
+      "indexCount": 19992,
+      "changedPixels": false
+    },
+    {
+      "mode": "without-backing",
+      "indexCount": 19800,
+      "changedPixels": true
+    },
+    {
+      "mode": "without-coping",
+      "indexCount": 19848,
+      "changedPixels": true
+    },
+    {
+      "mode": "without-units",
+      "indexCount": 336,
+      "changedPixels": true
+    },
+    {
+      "mode": "only-backing",
+      "indexCount": 192,
+      "changedPixels": true
+    },
+    {
+      "mode": "only-coping",
+      "indexCount": 144,
+      "changedPixels": true
+    },
+    {
+      "mode": "only-units",
+      "indexCount": 19656,
+      "changedPixels": true
+    }
+  ],
+  "draws": [
+    {
+      "label": "bracket-source",
+      "hash": "b571eeb02ea5937486b6582421bb2a6763b39a7410e7c324064b8417faba5036",
+      "compiler": "eeea1042a6b59b20e99e0a46cf90d385eda0bdb5c70c34c627d99aa14b115b52",
+      "semantics": {
+        "building/authored-building/node/wall/facade/wall": "d4fd7a82ad02a1f34465ecea9254944db3c8054df257dc3387b25ac5a453041a",
+        "building/authored-building/node/wall/facade/right/wall": "09b89d9fead011b75b7cf3d06d5f0f5de4fdf211fa3473c6108ebc702bf54512",
+        "building/authored-building/node/wall/facade/rear/wall": "92ee0cfab4b07796d9a00196f961926653dea91607d744ab22c4b6ec748a29be",
+        "building/authored-building/node/wall/facade/left/wall": "8fff7b002752a6b93549eb03b308db2de3719607a977990c48a193f424e460f5",
+        "building/authored-building/node/door/facade/floor/0/bay/1/frame": "962c39aa742daf2146626a5ef532e5f2ad602cb888984b2f08fd351b2309ad80",
+        "building/authored-building/node/door/facade/floor/0/bay/1/leaf": "60514f09b9bb7c49bcafb0f6a7431e729761485e25fa3ea183f9f6b3e92fb1c4",
+        "building/authored-building/node/door/facade/floor/0/bay/1/hardware": "42e64a460908f1f87921b7155a3793799ffcd3e38e586917617f68031e1b869b",
+        "building/authored-building/node/door/facade/floor/0/bay/1/glass": "2b18db40589a4ae42917f88f6e0a26ade7d4561cb157aa41481bcde7374352cf",
+        "building/authored-building/node/door/facade/floor/0/bay/1/trim": "cccb97e288f2d3976f4725cc678deb5b6f9dc34fadc0625ad6fa3d0c9a92a8f7",
+        "building/authored-building/node/bands/building/band.3.7": "32ab4d5b05b46a05b9afba9870ae739235301a82f733dfa26788dafbdd0c5483",
+        "building/authored-building/node/bands/building/band.7.2": "832896254da77d946265cc7eabb36c7ae937c81ea44a0f2752bc832353122e2f",
+        "building/authored-building/node/roof/building/roof": "2c6777bbcf81a9177ba104fd23f120129d0c7bd70e04e869ea7b7e56c83f6bc6",
+        "building/authored-building/node/roof/building/parapet": "b9334eb89f54e0438e2c2314b8f6aed65534c6773788297dc04a73f8bdf9ec21",
+        "building/authored-building/node/roof/building/cornice": "51db651b50acfd2c112978ea8b56c34b827fe76d58da780a04c9866d39a1088f",
+        "building/authored-building/node/window/facade/floor/0/bay/0/frame": "2b682998e0acea84c6e2f47cf43a02678e6b5d9ffc6806eeaf4fd94d22bc215b",
+        "building/authored-building/node/window/facade/floor/0/bay/2/frame": "7fecd5a44ec566d32562a7f4d9a2352273f006b501c60575bb9ff08bcf2ecd00",
+        "building/authored-building/node/window/facade/floor/0/bay/3/frame": "091bf0d16ce0d742eaf916c993e2632c2e1308f05e50e4dfd38b0fc30eef6766",
+        "building/authored-building/node/window/facade/floor/0/bay/0/glass": "e96aa7cc6430a9e5bb99d6e43ce40575d5c31c84962c9727882ee5d141b8d037",
+        "building/authored-building/node/window/facade/floor/0/bay/2/glass": "37a864971a26e4f88f82617542a86b37979876abe5be6a32e9ad77804cc49c9c",
+        "building/authored-building/node/window/facade/floor/0/bay/3/glass": "933aaf8aaa0a92cc184a059173b2cf671da7f29ce7ec3983f53393fd638e3ef0",
+        "building/authored-building/node/window/facade/floor/0/bay/0/trim": "a017982a72261ba9be035a0b6e2b8edd604eff7602ee5dd43f5d3335bca43064",
+        "building/authored-building/node/window/facade/floor/0/bay/2/trim": "2e79450ff5a8f83b4e0e5df507e82c9f2b40b287cddbe4e3d267247736909611",
+        "building/authored-building/node/window/facade/floor/0/bay/3/trim": "2af48021ff2878495397866b571d8437bd42f9a48181b02accc99c3d5c0a0620",
+        "building/authored-building/node/window/facade/floor/1/bay/0/frame": "b46e0627abe8e2ba368de01a53c155da4bd467d91e60ac965116c534b017feff",
+        "building/authored-building/node/window/facade/floor/1/bay/1/frame": "6259abd94901b3ef72cccfb1ae6bad5a5e057d945f76328302bdeb971a2beaf7",
+        "building/authored-building/node/window/facade/floor/1/bay/2/frame": "c5be7054b1a222afb8dbf77f07f4bac44063a1ee657755908ee3b58c9d6e2051",
+        "building/authored-building/node/window/facade/floor/1/bay/3/frame": "113075c067a2cb2213bbd1e9fe6cb468f42592ee1f3116e459bd33b94db7f13c",
+        "building/authored-building/node/window/facade/floor/2/bay/0/frame": "9249d14f68b0ae2aad72af91d89fe9ecde125c33e3e1cb9e76a32bb597eaf78e",
+        "building/authored-building/node/window/facade/floor/2/bay/2/frame": "cf98392cf18384d41996a11764a3fd71b32a7734d67ee16d473429613f0b2213",
+        "building/authored-building/node/window/facade/floor/2/bay/3/frame": "303cb39411fadf3363692178f138358fa2392f59f5722c718365071e27f580c4",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/frame": "0be480dd3a8b494fa81bbf6df12a2f9c159ec147174de035e7e14f1da2b50034",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/frame": "d788c3089c11478591e7628db47567036265f14afaa781efa5dcfe555384c0fc",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/frame": "6b185e0530646bd233fb13302a71ce6d1bb72e1a766395dbff7ae0a63a0ae012",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/frame": "188f4586e39b9ce999f6cc7148bd4175df6bf2d485426de2116e85afbfb096b9",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/frame": "31f586903213b3a5d1ec4a9d4640a1997447df0ce2da5be5f22ce9efef22fae2",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/frame": "9cc877149ef1e1df37dbe6324860d2ff7891feeb2ef97bfa3010c9750823d9f5",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/frame": "e09a05ab3c46c2b0dae6231a1efb46aef08049ccb65292f809a330500aedefca",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/frame": "52d9636b7cfc9ba3754649252bb538089c458919f2fdb83bb4d8e13887847351",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/frame": "f53cb8b134eefe858ef56013522b8f9e83bdb5f2c52809106c4259c3bdb16a2a",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/frame": "327fcc5c7583f07d16413fb4c215bf2d008f9c35dfeaa37b46ac68909a2eba51",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/frame": "ff13ffe18b2662cbdf0041c246d08000d36e2ba1bcd2cafd0b09b5a48a257f95",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/frame": "4d41f2833735b89162b3c6eca4d83b6ddd8139b7f64f88d8326c6cc024445e23",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/frame": "446224d3622e1a4ad8cbd364a221a62b6cc998c6180226e237f67508727c3328",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/frame": "b44a57be85c628da5e57588fc57bcb563e96b71b45503b09751e2b75a866e92a",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/frame": "c80e8827878473a3cc709066c7ad3aaa080d1e99ab08291d2959bf9e94257982",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/frame": "90202968c05af8203444fddb5c22f85299fa3bc137ee2b1005021baeebdceebf",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/frame": "89a79cbc39f8babe51bead490f54639952086ac6ed6fe3e79aeb79e026fcb97c",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/frame": "35d656246853959c5274a4c0aed9b8203add9ac75c44fa11a4ccdba661d5a19d",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/frame": "00622b08e20ea13d39f7febc20c3b222fa0b99fed2038fe17e26fcbebf5dd5dd",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/frame": "41de04fdf491b9a9035fb04ee331bf972a4955ffd2c07cc201cef87485cee13d",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/frame": "0facf1676dce88efdc8b05886959ef3a4a87613584a52c087221856ca85fe88c",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/frame": "c692a4a7570c8f715e98a32cbe7533963fe3688186b055285dc3a9d6104c3db8",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/frame": "a46d85ad2331d5671c245184990dac0306e42f8a826c806ac5851685a3360b4b",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/frame": "952fdd146cfab6b0b24f566b052b629d321890860fd3264b9f48cef0b99c2604",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/frame": "82ea1df5e0cf3c78ab29b7bcdacf728eaf62342d8f85c38e4c60dfac7b5b0506",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/frame": "ceb5c96f43f1697c1d4d33705e96789e95d2ccf933b3ef39682d0476f32b3104",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/frame": "a973d5c5f69fb73d3e26821e226e21e93c15053074e6b871682662b454523faa",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/frame": "7fceba210c633a15057f0ddf70d661f627507ca44761c9a2cf47130418da1fee",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/frame": "4e4ebcd4d5ce5a1394f4bb3753a257df1740c957b1ebe380a747ebd633b0cbb4",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/frame": "f55ba8cea3c5e13dc9d2c5097ebc84df96875216d5c26926b14aa6cc325c1202",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/frame": "2ab448a36959066f87be6d02b67d2f52abeb7be9c13b567325c1baf9d9fd2d89",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/frame": "f90048d46fb9f97a4f4bc6fbd9f9525768d44677b2985bf026eb5e2cd5d055e0",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/frame": "81f4f351f9d35a3cd9555dfd97d3fd5a2b3fdd5bc146a9a5de99aba04e3403c0",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/frame": "94757596536077b249f8abfc65266a3edd8325f67e4a0ebf31dc62d6abe53b9f",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/frame": "c50ae11fd30f4e1578255546980cff636a5ad5d37adf24fb65001f30ccad5b70",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/frame": "cb6dadde6f8ce4632f64ab76642f37d24ce8939d1d4fbfdd046bc7e95dd272e2",
+        "building/authored-building/node/window/facade/floor/1/bay/0/glass": "b4f312b016c6fd5b05bf24bcd8451f3d8f648f0b318b6785a86b162585b18f51",
+        "building/authored-building/node/window/facade/floor/1/bay/1/glass": "bdc61bf53698b87e894a077639912f939eafc2d3920ef43c468ba21fc0041513",
+        "building/authored-building/node/window/facade/floor/1/bay/2/glass": "61d29689da2308b2a7ebf52d98e7dcfcfe5df41539f3698e5e00d2228b3e8d3c",
+        "building/authored-building/node/window/facade/floor/1/bay/3/glass": "5288f511598bd36b30f611f0f5dbdab6a1c0c879166b73bfeeb0793dcf47188c",
+        "building/authored-building/node/window/facade/floor/2/bay/0/glass": "2ce5e4016f8bfc06507e8121592a2245a960dd6f7734938bcd89c0037dc64a7f",
+        "building/authored-building/node/window/facade/floor/2/bay/2/glass": "0bfd83519becc6bad510efb29b8a9c497fc98ab317666e2261991a9d86c7ba5e",
+        "building/authored-building/node/window/facade/floor/2/bay/3/glass": "eaed40d8788d336174d09730d56976431581298d3b3d3a2f80a566fb9bcb2adf",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/glass": "dac8fef69e2db9a8a4eaab9717fdc3cf805852b6f43cb035747e34151d3a9970",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/glass": "01966dce2703dc395327ed14f48af0ac22c0fe4348c0e4f680f37d3f1909fd65",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/glass": "e3486a9b3c7cdf9e1c7994fe731e85d15d80711cb4d55015fc9c3e7a087c1f2d",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/glass": "5f58e71dc6787d555ad22fade8f58d2211b34494e91c86b7a487284326638269",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/glass": "702e48bf695ca194ee332022def8b16842fb96c735a4fd5617aaa7dda859dc15",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/glass": "f48b638f780991e3f149e3769fa3c87b263a28f65a1557856d6bb216085a6038",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/glass": "6639a73ec9dc0a31d3013ffb1fa7735b3f9a34c64d39a50e5cf1cfea9bd8a41c",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/glass": "72835347fa3d3761891c041f217960ec3799d4e88716f8c74054284049e40e3f",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/glass": "b3d5958ab9353243a628f2a56e92e3fa59339db312694f2379b16e84f4e8df8f",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/glass": "59b4038cff628942d691659644e81a56fb43f6f78cb86936bb4e5740075d7444",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/glass": "ba964f9e51ffb9b743fdeef033438c4ea295c1c2eb59252bf131a27bfed9ca20",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/glass": "de0648e83c7b7d2430f25e41637c5c7c33d0d88cb6ef1b11b68387a2b7f66d4e",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/glass": "5625fd179cec7dc772eb04b1a55334ba55241b1bf8ff8097c6156284aae5a87d",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/glass": "55c8da007c86defae6c40fd4e91a8d6a76f600d00b60f2f39b273228d002b53a",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/glass": "a7113b58855ab175e10e3b1de2f7fe7a55d97fb7ce0b1b36c2b072748ecd98b5",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/glass": "0f4dd42ef0a1a3b15a24478606da63ca3a72bb45d5c41b67d2686d5e079f0017",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/glass": "b65061276a9b8cd2f342edee5bfc7ac983b47ebf31462805437745db9586b702",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/glass": "98087ac1020f174a47ac589b70689c7e02e1b958d37bd58ce329a56055a9419f",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/glass": "990c04ae7d887d46fbe3d3bdf1953f9cfb7b6b3ae2ec30c2055f03a8105c409f",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/glass": "67c7ff95baf33aaba78f8a1f2e864fec7eee1609e49dcca26d0ae4bad25172ab",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/glass": "390cf1ca6bcc21d01108de5a42c362185637e1c31c385d296dd9e865cbccb5e2",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/glass": "31d844f7d7fa6eead5d394f16121673b514f14abd600cf2d4729b1e885713145",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/glass": "0340a49f2cb46eb3e043d2f548ecf41c0f3517fdb82a72461b0eb323c63cb6f1",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/glass": "4aeba4d5e1d1fe063c71fefe9f6ce2f575e353a3221bb2743cb4e9a3113f15b8",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/glass": "b939f2127670273c56ab1d4c60a3dd89a6ba4b840f436cb320f51e6037bddef4",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/glass": "36131b858bd354fe7cccace7dfd71c3a761b3244cb3390a8f1a132cffdfc709e",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/glass": "ff7988c1e7014e60520789bb1b6fd67aab916185bb2922aec5d47481897238d9",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/glass": "a8f8854fdc86dfdde53cb2f4ac7bcabfb2f073e69ae4a43a5d14317b20369843",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/glass": "c5d04b1e795043c893ce15ba486f7fd88e64aecf204fdd3cd38e86578604c025",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/glass": "9155ddec18c23fa8babff1b8aa7cd5c36c78b46fea96e4d9b7de210fd60755e4",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/glass": "790b9dbd2739707c2f0108ae5b42d201b119a87e4469de2fd84d62c600119def",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/glass": "1d3e9b4ec2ac44b681b8b6028a22602c61447fd4276e233b08d32b3651eaf1f4",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/glass": "211fd59a3bde6a49558ff16ae8a079d186c986c2dd514430f410d7796a245ed7",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/glass": "b3194e72db228d96ac456f894409ea4f2c863d584889350f6d70ca40be1dcd11",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/glass": "e2584011056c320748f254b4abad40004f9f084c08a1a8a3f5fb134e68026b15",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/glass": "762f6c800afea06c1376134a55ba81a58cfd6a16c45dbccca03bf0f178a7e974",
+        "building/authored-building/node/window/facade/floor/1/bay/0/trim": "1aa820a74b25dfdc48c4dd1aabc54b811c319a0564a99c8d614cbeea010bcee5",
+        "building/authored-building/node/window/facade/floor/1/bay/1/trim": "6abbce44fcaaa3c81216ac6e128f3d3fb1b819f971b1da20c35bdcda1290cd3c",
+        "building/authored-building/node/window/facade/floor/1/bay/2/trim": "5565382329b05d4ce30fe0e3736e8a5fd1e05c196219ff2e3e1e92b0e45df6d5",
+        "building/authored-building/node/window/facade/floor/1/bay/3/trim": "00a67cb9b9ac36a81c717931f7630cdd4875afd54d36ebd9ce0287872433586f",
+        "building/authored-building/node/window/facade/floor/2/bay/0/trim": "710fe36c301472c04fbada9b95b4e229e0161693f90db251341f8b3f9a4d09a6",
+        "building/authored-building/node/window/facade/floor/2/bay/2/trim": "b9749caa41170cb749b211a377df1adb3ac480b80d680500ba85517144b959db",
+        "building/authored-building/node/window/facade/floor/2/bay/3/trim": "6b3e3c8b4bd1722a1d9ac3184cc88f60b0e20e447ae44712512138e2ca262ea0",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/trim": "e558192bc0fb6af0799e5cc168c59e542885a6b51e4f83ccaaf64c2456ae181b",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/trim": "c9b4d22fb0f99fccbcd7ee2156a45fba090fc743a3ea4782ba9159f7f9139ed9",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/trim": "fd73d4bfd86d386243bebbc84ef0ee85501be1d632c504183f89619c85da1bbf",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/trim": "f006b1dc741199c06ff9bf6de2c8ce659f035af863c256712d97c52554c6ca00",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/trim": "8ac1ff8c099d77f8c2d060e942816eee842ca19fe10786e7aeee899d2e7f6a97",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/trim": "22cc4e944dbfa643dd0585ff22d983ff8af370d24eed2cd98e4082d017111594",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/trim": "2cc8d56c8edd1d83005e0791fa6d0d9cf6a61ed517fd8beb8be21072d3d7b5b1",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/trim": "3e0df7952466aff8c1918b3bf627a629665fe2f66eae74b0c63d63d6e09c7387",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/trim": "a852fba32bac1e701b4a36d1e9e2d7c019cbd47cb1e5e2dcfc8884e75dcd1910",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/trim": "a5f14ca7846bb09a6b2dc2ef745c0a07b8c5a46c87c7df0dffa3c4726abe29a9",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/trim": "3d7548b6671ec9a991acbc8fd37d3d952b29c14a0806e8e71002f49510a83780",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/trim": "a836bd1c38fd585f5fe841d29177b35e4b1221fe64994df626861c22458909c1",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/trim": "f356009cdce30baf6a0e03e18a880daec7c6dbcc8d175aee54a2102a16bfb3c6",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/trim": "b7316d332877b0dd391390381c9c26295e8a1461fbc1ca541dc664b64ee0e61b",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/trim": "ee2f58eafd44d2c1929c36f4b5513f8c2d184e5952aab8ff21488d18de0f94ca",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/trim": "dbe4bb2ff7638172374f8a557055a819bf268f53d5e404a8d8b6d1cf162ae953",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/trim": "34e3245c4cded98fb451e2eb9176f033edd1fdae5d34711cf612e5de2ac4c7a7",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/trim": "78a9c057b56a9965b236d29186622ef691ad09152342390fc5dfc1463508f27e",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/trim": "1c2cae14e091147f68ccdab38a7f8e38922693fcb9eb6ad65e889feac4a86908",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/trim": "847b2312e5fb18d4761e82bba46cd16acc3093b9e3f352f4202abf5b4f301f2b",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/trim": "78f1cdd9d4054777bdfe217a2a7a6c350fcf1639a20ac14fddda462b979889b5",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/trim": "b754770ef9a9687aca7a5159ed01fe64aa7720bb730eea8ce2a8d09ff7203988",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/trim": "164b2175ab317a006872b79d137b94d95de3bb34cf859eb245d09ff98f12dd82",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/trim": "23f753a9af88a1f520a7395e35675ec0964cb86683a95ff7e2291f43755e0f92",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/trim": "73cf694e4beeda65954d7256337f0b0fd890019a85e9eba46119a916f4913ad6",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/trim": "dc0d254b22c2e6d3e8a0b1e30ec187de1b079729345d766cd0d909a07c39968e",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/trim": "b7c27c5f6ef5a485eaddb8e0cb7677aba4476af7a59907510406cc500e82960f",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/trim": "dba12787c9d55e16da91820b19e1470d2768be14f0b36b8675993da9c57953c5",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/trim": "d8d8c992ed952073dda8b86c10a7f4508c6d8eb441aa0a85d209924e018d8686",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/trim": "e2fe9c6fbc96945be3edea9a56eb28dc70907f018c84818815f4b160926beeb5",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/trim": "f73f401fc5b79224ebd114b92c1b1240c6a1e82fc364f6ea77c8f9e86ce3b867",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/trim": "300a395fdbe559ab3ece1ac91d3c5cfb11848e7e9121ac50742cfc46f5a316e4",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/trim": "c02cb8fb311cad6104f791940ae47a2003c67c05d1d1615526e579730280c7ab",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/trim": "81e5cbfe6dad7502bdd539a67aa0c5a33a4b73fec6d0dd44fbf5e4dac9b4cbc0",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/trim": "378b14e6e443924779d1bc424debe679fb316f6eee4217fd645a91edc260a119",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/trim": "c4593f6021599a8e0b33244942a1aef06b56d987513cb8f978b56f7475af7cef",
+        "building/authored-building/node/window/facade/floor/2/bay/1/frame": "31d23eb3ada085f65500c8af216c6bd74b8bd889757c402e201b3afaf13b46a2",
+        "building/authored-building/node/window/facade/floor/2/bay/1/glass": "43da34b29533c2319eaa85d2fb16089882d5377046034d78e45921d1394ea7dc",
+        "building/authored-building/node/window/facade/floor/2/bay/1/trim": "0552d4e8c07c6ce0ff75fdded279963f7844eec6933b01404c57e7e9b16964d7"
+      },
+      "bindings": {
+        "building/authored-building/node/wall/facade/wall": "c58e1f478a061724d3e6afcbb18d466b2a5fca658f7f5555b902c409f8147e4a",
+        "building/authored-building/node/wall/facade/right/wall": "c58e1f478a061724d3e6afcbb18d466b2a5fca658f7f5555b902c409f8147e4a",
+        "building/authored-building/node/wall/facade/rear/wall": "c58e1f478a061724d3e6afcbb18d466b2a5fca658f7f5555b902c409f8147e4a",
+        "building/authored-building/node/wall/facade/left/wall": "c58e1f478a061724d3e6afcbb18d466b2a5fca658f7f5555b902c409f8147e4a",
+        "building/authored-building/node/door/facade/floor/0/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/door/facade/floor/0/bay/1/leaf": "af2da47348dc4fededa8af859677cd98096b41d359f368247f353dadfb45188e",
+        "building/authored-building/node/door/facade/floor/0/bay/1/hardware": "c0c1b193a51c1299ba6d9e8bad73fefde063479d18596f79ca3f9228655bd4a9",
+        "building/authored-building/node/door/facade/floor/0/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/door/facade/floor/0/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/bands/building/band.3.7": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/bands/building/band.7.2": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/roof/building/roof": "6f5a3f0a6001c907f7f944871e09b27fc4488122dd3b6e518338269de84724ae",
+        "building/authored-building/node/roof/building/parapet": "c58e1f478a061724d3e6afcbb18d466b2a5fca658f7f5555b902c409f8147e4a",
+        "building/authored-building/node/roof/building/cornice": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/0/bay/0/frame": "c0099fdea82a1eef9ab231f4a1791b95fb371462037883593585ebcb74eded1f",
+        "building/authored-building/node/window/facade/floor/0/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/floor/0/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/floor/0/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/0/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/0/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/0/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/0/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/0/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/1/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/floor/1/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/floor/1/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/floor/1/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/floor/2/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/floor/2/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/floor/2/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/floor/1/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/1/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/1/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/1/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/2/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/2/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/2/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/1/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/1/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/1/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/1/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/2/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/2/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/2/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/2/bay/1/frame": "c0099fdea82a1eef9ab231f4a1791b95fb371462037883593585ebcb74eded1f",
+        "building/authored-building/node/window/facade/floor/2/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/2/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542"
+      },
+      "channels": {
+        "baseColor": "03612d14a7cc5e6004cea315e9db0ae9075701d6afcdcb309fbfcb3262aa1ddb",
+        "normal": "5a567d45e69b00bf9300548dfd1bd55ead5b2b2bd5f228cb1dfc22583f02e549",
+        "orm": "6f212dcaba3300dfbf5955c90ebf41dcc708e5e6d078ac4b97120a0ce04a2375",
+        "height": "f611b09b43e10f5e5b1ecf52f9292aa7370ddd2e684023bc8790acba40361738",
+        "opacity": "7b8d96493ae701cc8c2f889d8683843e8be4d3678411e2ebbad56d0d541057e6"
+      },
+      "drawCamera": {
+        "fov": 42,
+        "aspect": 1.0895170789163722,
+        "projection": [
+          2.391049314513554,
+          0,
+          0,
+          0,
+          0,
+          2.6050890646938014,
+          0,
+          0,
+          0,
+          0,
+          -1.0007490636896756,
+          -1,
+          0,
+          0,
+          -0.10007490636896757,
+          0
+        ],
+        "inverse": [
+          -0.8464080042363296,
+          -0.008364695695793572,
+          0.5324692688133189,
+          0,
+          -1.734723475976807e-18,
+          0.9998766324816606,
+          0.015707317311820623,
+          0,
+          -0.5325349663305442,
+          0.01329479909780484,
+          -0.8463035849813441,
+          0,
+          -1.346143983149234,
+          -10.392259750511633,
+          -9.31318242559352,
+          1
+        ]
+      },
+      "drawLights": [
+        {
+          "type": "AmbientLight",
+          "intensity": 0.12,
+          "position": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "HemisphereLight",
+          "intensity": 0.75,
+          "position": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "type": "DirectionalLight",
+          "intensity": 2.8,
+          "position": [
+            14.695999622344972,
+            29.518999576568604,
+            -17.36799955368042
+          ]
+        },
+        {
+          "type": "DirectionalLight",
+          "intensity": 0.35,
+          "position": [
+            -17.36799955368042,
+            18.830999851226807,
+            9.351999759674072
+          ]
+        }
+      ],
+      "layerCount": 3,
+      "layers": [
+        {
+          "id": "finish",
+          "target": {
+            "kind": "element",
+            "relativePath": "node/window/facade/floor/0/bay/0/frame",
+            "expectedRole": "frame"
+          },
+          "sourceId": "source.frame.primary",
+          "mask": {
+            "kind": "constant",
+            "value": 1
+          },
+          "blend": "replace",
+          "opacity": 0.3,
+          "physicalSizeM": {
+            "width": 0.32,
+            "height": 0.32
+          },
+          "channels": [
+            "baseColor",
+            "normal",
+            "orm"
+          ]
+        },
+        {
+          "id": "finish_1",
+          "target": {
+            "kind": "element",
+            "relativePath": "node/window/facade/floor/2/bay/1/frame",
+            "expectedRole": "frame"
+          },
+          "sourceId": "source.frame.primary",
+          "mask": {
+            "kind": "constant",
+            "value": 1
+          },
+          "blend": "replace",
+          "opacity": 0.3,
+          "physicalSizeM": {
+            "width": 0.32,
+            "height": 0.32
+          },
+          "channels": [
+            "baseColor",
+            "normal",
+            "orm"
+          ]
+        },
+        {
+          "id": "t2.stone.trim",
+          "target": {
+            "kind": "role",
+            "role": "horizontalTrim"
+          },
+          "sourceId": "t2.stone",
+          "mask": {
+            "kind": "constant",
+            "value": 1
+          },
+          "blend": "replace",
+          "opacity": 1,
+          "physicalSizeM": {
+            "width": 0.64,
+            "height": 0.64
+          },
+          "channels": [
+            "baseColor",
+            "normal",
+            "orm"
+          ]
+        }
+      ],
+      "materialCount": 2,
+      "exactSubmittedGeometryAndTransforms": true,
+      "prototypeHash": "5c3c046a71d9dab8e5e2acccbe46cef23952b238911be1f38c10620320ca9283",
+      "bounds": {
+        "min": [
+          -5.779999999999999,
+          0,
+          -6.68
+        ],
+        "max": [
+          5.779999999999999,
+          11.345,
+          6.68
+        ]
+      },
+      "backend": "webgpu"
+    },
+    {
+      "label": "restored",
+      "hash": "b571eeb02ea5937486b6582421bb2a6763b39a7410e7c324064b8417faba5036",
+      "compiler": "eeea1042a6b59b20e99e0a46cf90d385eda0bdb5c70c34c627d99aa14b115b52",
+      "semantics": {
+        "building/authored-building/node/wall/facade/wall": "d4fd7a82ad02a1f34465ecea9254944db3c8054df257dc3387b25ac5a453041a",
+        "building/authored-building/node/wall/facade/right/wall": "09b89d9fead011b75b7cf3d06d5f0f5de4fdf211fa3473c6108ebc702bf54512",
+        "building/authored-building/node/wall/facade/rear/wall": "92ee0cfab4b07796d9a00196f961926653dea91607d744ab22c4b6ec748a29be",
+        "building/authored-building/node/wall/facade/left/wall": "8fff7b002752a6b93549eb03b308db2de3719607a977990c48a193f424e460f5",
+        "building/authored-building/node/door/facade/floor/0/bay/1/frame": "962c39aa742daf2146626a5ef532e5f2ad602cb888984b2f08fd351b2309ad80",
+        "building/authored-building/node/door/facade/floor/0/bay/1/leaf": "60514f09b9bb7c49bcafb0f6a7431e729761485e25fa3ea183f9f6b3e92fb1c4",
+        "building/authored-building/node/door/facade/floor/0/bay/1/hardware": "42e64a460908f1f87921b7155a3793799ffcd3e38e586917617f68031e1b869b",
+        "building/authored-building/node/door/facade/floor/0/bay/1/glass": "2b18db40589a4ae42917f88f6e0a26ade7d4561cb157aa41481bcde7374352cf",
+        "building/authored-building/node/door/facade/floor/0/bay/1/trim": "cccb97e288f2d3976f4725cc678deb5b6f9dc34fadc0625ad6fa3d0c9a92a8f7",
+        "building/authored-building/node/bands/building/band.3.7": "32ab4d5b05b46a05b9afba9870ae739235301a82f733dfa26788dafbdd0c5483",
+        "building/authored-building/node/bands/building/band.7.2": "832896254da77d946265cc7eabb36c7ae937c81ea44a0f2752bc832353122e2f",
+        "building/authored-building/node/roof/building/roof": "2c6777bbcf81a9177ba104fd23f120129d0c7bd70e04e869ea7b7e56c83f6bc6",
+        "building/authored-building/node/roof/building/parapet": "b9334eb89f54e0438e2c2314b8f6aed65534c6773788297dc04a73f8bdf9ec21",
+        "building/authored-building/node/roof/building/cornice": "51db651b50acfd2c112978ea8b56c34b827fe76d58da780a04c9866d39a1088f",
+        "building/authored-building/node/window/facade/floor/0/bay/0/frame": "2b682998e0acea84c6e2f47cf43a02678e6b5d9ffc6806eeaf4fd94d22bc215b",
+        "building/authored-building/node/window/facade/floor/0/bay/2/frame": "7fecd5a44ec566d32562a7f4d9a2352273f006b501c60575bb9ff08bcf2ecd00",
+        "building/authored-building/node/window/facade/floor/0/bay/3/frame": "091bf0d16ce0d742eaf916c993e2632c2e1308f05e50e4dfd38b0fc30eef6766",
+        "building/authored-building/node/window/facade/floor/0/bay/0/glass": "e96aa7cc6430a9e5bb99d6e43ce40575d5c31c84962c9727882ee5d141b8d037",
+        "building/authored-building/node/window/facade/floor/0/bay/2/glass": "37a864971a26e4f88f82617542a86b37979876abe5be6a32e9ad77804cc49c9c",
+        "building/authored-building/node/window/facade/floor/0/bay/3/glass": "933aaf8aaa0a92cc184a059173b2cf671da7f29ce7ec3983f53393fd638e3ef0",
+        "building/authored-building/node/window/facade/floor/0/bay/0/trim": "a017982a72261ba9be035a0b6e2b8edd604eff7602ee5dd43f5d3335bca43064",
+        "building/authored-building/node/window/facade/floor/0/bay/2/trim": "2e79450ff5a8f83b4e0e5df507e82c9f2b40b287cddbe4e3d267247736909611",
+        "building/authored-building/node/window/facade/floor/0/bay/3/trim": "2af48021ff2878495397866b571d8437bd42f9a48181b02accc99c3d5c0a0620",
+        "building/authored-building/node/window/facade/floor/1/bay/0/frame": "b46e0627abe8e2ba368de01a53c155da4bd467d91e60ac965116c534b017feff",
+        "building/authored-building/node/window/facade/floor/1/bay/1/frame": "6259abd94901b3ef72cccfb1ae6bad5a5e057d945f76328302bdeb971a2beaf7",
+        "building/authored-building/node/window/facade/floor/1/bay/2/frame": "c5be7054b1a222afb8dbf77f07f4bac44063a1ee657755908ee3b58c9d6e2051",
+        "building/authored-building/node/window/facade/floor/1/bay/3/frame": "113075c067a2cb2213bbd1e9fe6cb468f42592ee1f3116e459bd33b94db7f13c",
+        "building/authored-building/node/window/facade/floor/2/bay/0/frame": "9249d14f68b0ae2aad72af91d89fe9ecde125c33e3e1cb9e76a32bb597eaf78e",
+        "building/authored-building/node/window/facade/floor/2/bay/2/frame": "cf98392cf18384d41996a11764a3fd71b32a7734d67ee16d473429613f0b2213",
+        "building/authored-building/node/window/facade/floor/2/bay/3/frame": "303cb39411fadf3363692178f138358fa2392f59f5722c718365071e27f580c4",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/frame": "0be480dd3a8b494fa81bbf6df12a2f9c159ec147174de035e7e14f1da2b50034",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/frame": "d788c3089c11478591e7628db47567036265f14afaa781efa5dcfe555384c0fc",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/frame": "6b185e0530646bd233fb13302a71ce6d1bb72e1a766395dbff7ae0a63a0ae012",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/frame": "188f4586e39b9ce999f6cc7148bd4175df6bf2d485426de2116e85afbfb096b9",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/frame": "31f586903213b3a5d1ec4a9d4640a1997447df0ce2da5be5f22ce9efef22fae2",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/frame": "9cc877149ef1e1df37dbe6324860d2ff7891feeb2ef97bfa3010c9750823d9f5",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/frame": "e09a05ab3c46c2b0dae6231a1efb46aef08049ccb65292f809a330500aedefca",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/frame": "52d9636b7cfc9ba3754649252bb538089c458919f2fdb83bb4d8e13887847351",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/frame": "f53cb8b134eefe858ef56013522b8f9e83bdb5f2c52809106c4259c3bdb16a2a",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/frame": "327fcc5c7583f07d16413fb4c215bf2d008f9c35dfeaa37b46ac68909a2eba51",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/frame": "ff13ffe18b2662cbdf0041c246d08000d36e2ba1bcd2cafd0b09b5a48a257f95",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/frame": "4d41f2833735b89162b3c6eca4d83b6ddd8139b7f64f88d8326c6cc024445e23",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/frame": "446224d3622e1a4ad8cbd364a221a62b6cc998c6180226e237f67508727c3328",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/frame": "b44a57be85c628da5e57588fc57bcb563e96b71b45503b09751e2b75a866e92a",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/frame": "c80e8827878473a3cc709066c7ad3aaa080d1e99ab08291d2959bf9e94257982",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/frame": "90202968c05af8203444fddb5c22f85299fa3bc137ee2b1005021baeebdceebf",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/frame": "89a79cbc39f8babe51bead490f54639952086ac6ed6fe3e79aeb79e026fcb97c",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/frame": "35d656246853959c5274a4c0aed9b8203add9ac75c44fa11a4ccdba661d5a19d",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/frame": "00622b08e20ea13d39f7febc20c3b222fa0b99fed2038fe17e26fcbebf5dd5dd",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/frame": "41de04fdf491b9a9035fb04ee331bf972a4955ffd2c07cc201cef87485cee13d",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/frame": "0facf1676dce88efdc8b05886959ef3a4a87613584a52c087221856ca85fe88c",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/frame": "c692a4a7570c8f715e98a32cbe7533963fe3688186b055285dc3a9d6104c3db8",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/frame": "a46d85ad2331d5671c245184990dac0306e42f8a826c806ac5851685a3360b4b",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/frame": "952fdd146cfab6b0b24f566b052b629d321890860fd3264b9f48cef0b99c2604",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/frame": "82ea1df5e0cf3c78ab29b7bcdacf728eaf62342d8f85c38e4c60dfac7b5b0506",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/frame": "ceb5c96f43f1697c1d4d33705e96789e95d2ccf933b3ef39682d0476f32b3104",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/frame": "a973d5c5f69fb73d3e26821e226e21e93c15053074e6b871682662b454523faa",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/frame": "7fceba210c633a15057f0ddf70d661f627507ca44761c9a2cf47130418da1fee",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/frame": "4e4ebcd4d5ce5a1394f4bb3753a257df1740c957b1ebe380a747ebd633b0cbb4",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/frame": "f55ba8cea3c5e13dc9d2c5097ebc84df96875216d5c26926b14aa6cc325c1202",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/frame": "2ab448a36959066f87be6d02b67d2f52abeb7be9c13b567325c1baf9d9fd2d89",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/frame": "f90048d46fb9f97a4f4bc6fbd9f9525768d44677b2985bf026eb5e2cd5d055e0",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/frame": "81f4f351f9d35a3cd9555dfd97d3fd5a2b3fdd5bc146a9a5de99aba04e3403c0",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/frame": "94757596536077b249f8abfc65266a3edd8325f67e4a0ebf31dc62d6abe53b9f",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/frame": "c50ae11fd30f4e1578255546980cff636a5ad5d37adf24fb65001f30ccad5b70",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/frame": "cb6dadde6f8ce4632f64ab76642f37d24ce8939d1d4fbfdd046bc7e95dd272e2",
+        "building/authored-building/node/window/facade/floor/1/bay/0/glass": "b4f312b016c6fd5b05bf24bcd8451f3d8f648f0b318b6785a86b162585b18f51",
+        "building/authored-building/node/window/facade/floor/1/bay/1/glass": "bdc61bf53698b87e894a077639912f939eafc2d3920ef43c468ba21fc0041513",
+        "building/authored-building/node/window/facade/floor/1/bay/2/glass": "61d29689da2308b2a7ebf52d98e7dcfcfe5df41539f3698e5e00d2228b3e8d3c",
+        "building/authored-building/node/window/facade/floor/1/bay/3/glass": "5288f511598bd36b30f611f0f5dbdab6a1c0c879166b73bfeeb0793dcf47188c",
+        "building/authored-building/node/window/facade/floor/2/bay/0/glass": "2ce5e4016f8bfc06507e8121592a2245a960dd6f7734938bcd89c0037dc64a7f",
+        "building/authored-building/node/window/facade/floor/2/bay/2/glass": "0bfd83519becc6bad510efb29b8a9c497fc98ab317666e2261991a9d86c7ba5e",
+        "building/authored-building/node/window/facade/floor/2/bay/3/glass": "eaed40d8788d336174d09730d56976431581298d3b3d3a2f80a566fb9bcb2adf",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/glass": "dac8fef69e2db9a8a4eaab9717fdc3cf805852b6f43cb035747e34151d3a9970",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/glass": "01966dce2703dc395327ed14f48af0ac22c0fe4348c0e4f680f37d3f1909fd65",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/glass": "e3486a9b3c7cdf9e1c7994fe731e85d15d80711cb4d55015fc9c3e7a087c1f2d",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/glass": "5f58e71dc6787d555ad22fade8f58d2211b34494e91c86b7a487284326638269",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/glass": "702e48bf695ca194ee332022def8b16842fb96c735a4fd5617aaa7dda859dc15",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/glass": "f48b638f780991e3f149e3769fa3c87b263a28f65a1557856d6bb216085a6038",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/glass": "6639a73ec9dc0a31d3013ffb1fa7735b3f9a34c64d39a50e5cf1cfea9bd8a41c",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/glass": "72835347fa3d3761891c041f217960ec3799d4e88716f8c74054284049e40e3f",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/glass": "b3d5958ab9353243a628f2a56e92e3fa59339db312694f2379b16e84f4e8df8f",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/glass": "59b4038cff628942d691659644e81a56fb43f6f78cb86936bb4e5740075d7444",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/glass": "ba964f9e51ffb9b743fdeef033438c4ea295c1c2eb59252bf131a27bfed9ca20",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/glass": "de0648e83c7b7d2430f25e41637c5c7c33d0d88cb6ef1b11b68387a2b7f66d4e",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/glass": "5625fd179cec7dc772eb04b1a55334ba55241b1bf8ff8097c6156284aae5a87d",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/glass": "55c8da007c86defae6c40fd4e91a8d6a76f600d00b60f2f39b273228d002b53a",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/glass": "a7113b58855ab175e10e3b1de2f7fe7a55d97fb7ce0b1b36c2b072748ecd98b5",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/glass": "0f4dd42ef0a1a3b15a24478606da63ca3a72bb45d5c41b67d2686d5e079f0017",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/glass": "b65061276a9b8cd2f342edee5bfc7ac983b47ebf31462805437745db9586b702",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/glass": "98087ac1020f174a47ac589b70689c7e02e1b958d37bd58ce329a56055a9419f",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/glass": "990c04ae7d887d46fbe3d3bdf1953f9cfb7b6b3ae2ec30c2055f03a8105c409f",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/glass": "67c7ff95baf33aaba78f8a1f2e864fec7eee1609e49dcca26d0ae4bad25172ab",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/glass": "390cf1ca6bcc21d01108de5a42c362185637e1c31c385d296dd9e865cbccb5e2",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/glass": "31d844f7d7fa6eead5d394f16121673b514f14abd600cf2d4729b1e885713145",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/glass": "0340a49f2cb46eb3e043d2f548ecf41c0f3517fdb82a72461b0eb323c63cb6f1",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/glass": "4aeba4d5e1d1fe063c71fefe9f6ce2f575e353a3221bb2743cb4e9a3113f15b8",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/glass": "b939f2127670273c56ab1d4c60a3dd89a6ba4b840f436cb320f51e6037bddef4",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/glass": "36131b858bd354fe7cccace7dfd71c3a761b3244cb3390a8f1a132cffdfc709e",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/glass": "ff7988c1e7014e60520789bb1b6fd67aab916185bb2922aec5d47481897238d9",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/glass": "a8f8854fdc86dfdde53cb2f4ac7bcabfb2f073e69ae4a43a5d14317b20369843",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/glass": "c5d04b1e795043c893ce15ba486f7fd88e64aecf204fdd3cd38e86578604c025",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/glass": "9155ddec18c23fa8babff1b8aa7cd5c36c78b46fea96e4d9b7de210fd60755e4",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/glass": "790b9dbd2739707c2f0108ae5b42d201b119a87e4469de2fd84d62c600119def",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/glass": "1d3e9b4ec2ac44b681b8b6028a22602c61447fd4276e233b08d32b3651eaf1f4",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/glass": "211fd59a3bde6a49558ff16ae8a079d186c986c2dd514430f410d7796a245ed7",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/glass": "b3194e72db228d96ac456f894409ea4f2c863d584889350f6d70ca40be1dcd11",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/glass": "e2584011056c320748f254b4abad40004f9f084c08a1a8a3f5fb134e68026b15",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/glass": "762f6c800afea06c1376134a55ba81a58cfd6a16c45dbccca03bf0f178a7e974",
+        "building/authored-building/node/window/facade/floor/1/bay/0/trim": "1aa820a74b25dfdc48c4dd1aabc54b811c319a0564a99c8d614cbeea010bcee5",
+        "building/authored-building/node/window/facade/floor/1/bay/1/trim": "6abbce44fcaaa3c81216ac6e128f3d3fb1b819f971b1da20c35bdcda1290cd3c",
+        "building/authored-building/node/window/facade/floor/1/bay/2/trim": "5565382329b05d4ce30fe0e3736e8a5fd1e05c196219ff2e3e1e92b0e45df6d5",
+        "building/authored-building/node/window/facade/floor/1/bay/3/trim": "00a67cb9b9ac36a81c717931f7630cdd4875afd54d36ebd9ce0287872433586f",
+        "building/authored-building/node/window/facade/floor/2/bay/0/trim": "710fe36c301472c04fbada9b95b4e229e0161693f90db251341f8b3f9a4d09a6",
+        "building/authored-building/node/window/facade/floor/2/bay/2/trim": "b9749caa41170cb749b211a377df1adb3ac480b80d680500ba85517144b959db",
+        "building/authored-building/node/window/facade/floor/2/bay/3/trim": "6b3e3c8b4bd1722a1d9ac3184cc88f60b0e20e447ae44712512138e2ca262ea0",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/trim": "e558192bc0fb6af0799e5cc168c59e542885a6b51e4f83ccaaf64c2456ae181b",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/trim": "c9b4d22fb0f99fccbcd7ee2156a45fba090fc743a3ea4782ba9159f7f9139ed9",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/trim": "fd73d4bfd86d386243bebbc84ef0ee85501be1d632c504183f89619c85da1bbf",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/trim": "f006b1dc741199c06ff9bf6de2c8ce659f035af863c256712d97c52554c6ca00",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/trim": "8ac1ff8c099d77f8c2d060e942816eee842ca19fe10786e7aeee899d2e7f6a97",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/trim": "22cc4e944dbfa643dd0585ff22d983ff8af370d24eed2cd98e4082d017111594",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/trim": "2cc8d56c8edd1d83005e0791fa6d0d9cf6a61ed517fd8beb8be21072d3d7b5b1",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/trim": "3e0df7952466aff8c1918b3bf627a629665fe2f66eae74b0c63d63d6e09c7387",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/trim": "a852fba32bac1e701b4a36d1e9e2d7c019cbd47cb1e5e2dcfc8884e75dcd1910",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/trim": "a5f14ca7846bb09a6b2dc2ef745c0a07b8c5a46c87c7df0dffa3c4726abe29a9",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/trim": "3d7548b6671ec9a991acbc8fd37d3d952b29c14a0806e8e71002f49510a83780",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/trim": "a836bd1c38fd585f5fe841d29177b35e4b1221fe64994df626861c22458909c1",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/trim": "f356009cdce30baf6a0e03e18a880daec7c6dbcc8d175aee54a2102a16bfb3c6",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/trim": "b7316d332877b0dd391390381c9c26295e8a1461fbc1ca541dc664b64ee0e61b",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/trim": "ee2f58eafd44d2c1929c36f4b5513f8c2d184e5952aab8ff21488d18de0f94ca",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/trim": "dbe4bb2ff7638172374f8a557055a819bf268f53d5e404a8d8b6d1cf162ae953",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/trim": "34e3245c4cded98fb451e2eb9176f033edd1fdae5d34711cf612e5de2ac4c7a7",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/trim": "78a9c057b56a9965b236d29186622ef691ad09152342390fc5dfc1463508f27e",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/trim": "1c2cae14e091147f68ccdab38a7f8e38922693fcb9eb6ad65e889feac4a86908",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/trim": "847b2312e5fb18d4761e82bba46cd16acc3093b9e3f352f4202abf5b4f301f2b",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/trim": "78f1cdd9d4054777bdfe217a2a7a6c350fcf1639a20ac14fddda462b979889b5",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/trim": "b754770ef9a9687aca7a5159ed01fe64aa7720bb730eea8ce2a8d09ff7203988",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/trim": "164b2175ab317a006872b79d137b94d95de3bb34cf859eb245d09ff98f12dd82",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/trim": "23f753a9af88a1f520a7395e35675ec0964cb86683a95ff7e2291f43755e0f92",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/trim": "73cf694e4beeda65954d7256337f0b0fd890019a85e9eba46119a916f4913ad6",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/trim": "dc0d254b22c2e6d3e8a0b1e30ec187de1b079729345d766cd0d909a07c39968e",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/trim": "b7c27c5f6ef5a485eaddb8e0cb7677aba4476af7a59907510406cc500e82960f",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/trim": "dba12787c9d55e16da91820b19e1470d2768be14f0b36b8675993da9c57953c5",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/trim": "d8d8c992ed952073dda8b86c10a7f4508c6d8eb441aa0a85d209924e018d8686",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/trim": "e2fe9c6fbc96945be3edea9a56eb28dc70907f018c84818815f4b160926beeb5",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/trim": "f73f401fc5b79224ebd114b92c1b1240c6a1e82fc364f6ea77c8f9e86ce3b867",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/trim": "300a395fdbe559ab3ece1ac91d3c5cfb11848e7e9121ac50742cfc46f5a316e4",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/trim": "c02cb8fb311cad6104f791940ae47a2003c67c05d1d1615526e579730280c7ab",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/trim": "81e5cbfe6dad7502bdd539a67aa0c5a33a4b73fec6d0dd44fbf5e4dac9b4cbc0",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/trim": "378b14e6e443924779d1bc424debe679fb316f6eee4217fd645a91edc260a119",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/trim": "c4593f6021599a8e0b33244942a1aef06b56d987513cb8f978b56f7475af7cef",
+        "building/authored-building/node/window/facade/floor/2/bay/1/frame": "31d23eb3ada085f65500c8af216c6bd74b8bd889757c402e201b3afaf13b46a2",
+        "building/authored-building/node/window/facade/floor/2/bay/1/glass": "43da34b29533c2319eaa85d2fb16089882d5377046034d78e45921d1394ea7dc",
+        "building/authored-building/node/window/facade/floor/2/bay/1/trim": "0552d4e8c07c6ce0ff75fdded279963f7844eec6933b01404c57e7e9b16964d7"
+      },
+      "bindings": {
+        "building/authored-building/node/wall/facade/wall": "c58e1f478a061724d3e6afcbb18d466b2a5fca658f7f5555b902c409f8147e4a",
+        "building/authored-building/node/wall/facade/right/wall": "c58e1f478a061724d3e6afcbb18d466b2a5fca658f7f5555b902c409f8147e4a",
+        "building/authored-building/node/wall/facade/rear/wall": "c58e1f478a061724d3e6afcbb18d466b2a5fca658f7f5555b902c409f8147e4a",
+        "building/authored-building/node/wall/facade/left/wall": "c58e1f478a061724d3e6afcbb18d466b2a5fca658f7f5555b902c409f8147e4a",
+        "building/authored-building/node/door/facade/floor/0/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/door/facade/floor/0/bay/1/leaf": "af2da47348dc4fededa8af859677cd98096b41d359f368247f353dadfb45188e",
+        "building/authored-building/node/door/facade/floor/0/bay/1/hardware": "c0c1b193a51c1299ba6d9e8bad73fefde063479d18596f79ca3f9228655bd4a9",
+        "building/authored-building/node/door/facade/floor/0/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/door/facade/floor/0/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/bands/building/band.3.7": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/bands/building/band.7.2": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/roof/building/roof": "6f5a3f0a6001c907f7f944871e09b27fc4488122dd3b6e518338269de84724ae",
+        "building/authored-building/node/roof/building/parapet": "c58e1f478a061724d3e6afcbb18d466b2a5fca658f7f5555b902c409f8147e4a",
+        "building/authored-building/node/roof/building/cornice": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/0/bay/0/frame": "c0099fdea82a1eef9ab231f4a1791b95fb371462037883593585ebcb74eded1f",
+        "building/authored-building/node/window/facade/floor/0/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/floor/0/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/floor/0/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/0/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/0/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/0/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/0/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/0/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/1/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/floor/1/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/floor/1/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/floor/1/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/floor/2/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/floor/2/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/floor/2/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/floor/1/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/1/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/1/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/1/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/2/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/2/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/2/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/1/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/1/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/1/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/1/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/2/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/2/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/2/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/2/bay/1/frame": "c0099fdea82a1eef9ab231f4a1791b95fb371462037883593585ebcb74eded1f",
+        "building/authored-building/node/window/facade/floor/2/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/2/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542"
+      },
+      "channels": {
+        "baseColor": "03612d14a7cc5e6004cea315e9db0ae9075701d6afcdcb309fbfcb3262aa1ddb",
+        "normal": "5a567d45e69b00bf9300548dfd1bd55ead5b2b2bd5f228cb1dfc22583f02e549",
+        "orm": "6f212dcaba3300dfbf5955c90ebf41dcc708e5e6d078ac4b97120a0ce04a2375",
+        "height": "f611b09b43e10f5e5b1ecf52f9292aa7370ddd2e684023bc8790acba40361738",
+        "opacity": "7b8d96493ae701cc8c2f889d8683843e8be4d3678411e2ebbad56d0d541057e6"
+      },
+      "drawCamera": {
+        "fov": 42,
+        "aspect": 1.0895170789163722,
+        "projection": [
+          2.391049314513554,
+          0,
+          0,
+          0,
+          0,
+          2.6050890646938014,
+          0,
+          0,
+          0,
+          0,
+          -1.0007490636896756,
+          -1,
+          0,
+          0,
+          -0.10007490636896757,
+          0
+        ],
+        "inverse": [
+          -0.8464080042363298,
+          -0.00836469569579356,
+          0.5324692688133184,
+          0,
+          -2.60208521396521e-18,
+          0.9998766324816606,
+          0.015707317311820623,
+          0,
+          -0.5325349663305436,
+          0.013294799097804844,
+          -0.8463035849813443,
+          0,
+          -1.3461798352702001,
+          -10.392357990893025,
+          -9.31318242559352,
+          1
+        ]
+      },
+      "drawLights": [
+        {
+          "type": "AmbientLight",
+          "intensity": 0.12,
+          "position": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "HemisphereLight",
+          "intensity": 0.75,
+          "position": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "type": "DirectionalLight",
+          "intensity": 2.8,
+          "position": [
+            14.695999622344972,
+            29.518999576568604,
+            -17.36799955368042
+          ]
+        },
+        {
+          "type": "DirectionalLight",
+          "intensity": 0.35,
+          "position": [
+            -17.36799955368042,
+            18.830999851226807,
+            9.351999759674072
+          ]
+        }
+      ],
+      "layerCount": 3,
+      "layers": [
+        {
+          "id": "finish",
+          "target": {
+            "kind": "element",
+            "relativePath": "node/window/facade/floor/0/bay/0/frame",
+            "expectedRole": "frame"
+          },
+          "sourceId": "source.frame.primary",
+          "mask": {
+            "kind": "constant",
+            "value": 1
+          },
+          "blend": "replace",
+          "opacity": 0.3,
+          "physicalSizeM": {
+            "width": 0.32,
+            "height": 0.32
+          },
+          "channels": [
+            "baseColor",
+            "normal",
+            "orm"
+          ]
+        },
+        {
+          "id": "finish_1",
+          "target": {
+            "kind": "element",
+            "relativePath": "node/window/facade/floor/2/bay/1/frame",
+            "expectedRole": "frame"
+          },
+          "sourceId": "source.frame.primary",
+          "mask": {
+            "kind": "constant",
+            "value": 1
+          },
+          "blend": "replace",
+          "opacity": 0.3,
+          "physicalSizeM": {
+            "width": 0.32,
+            "height": 0.32
+          },
+          "channels": [
+            "baseColor",
+            "normal",
+            "orm"
+          ]
+        },
+        {
+          "id": "t2.stone.trim",
+          "target": {
+            "kind": "role",
+            "role": "horizontalTrim"
+          },
+          "sourceId": "t2.stone",
+          "mask": {
+            "kind": "constant",
+            "value": 1
+          },
+          "blend": "replace",
+          "opacity": 1,
+          "physicalSizeM": {
+            "width": 0.64,
+            "height": 0.64
+          },
+          "channels": [
+            "baseColor",
+            "normal",
+            "orm"
+          ]
+        }
+      ],
+      "materialCount": 2,
+      "exactSubmittedGeometryAndTransforms": true,
+      "prototypeHash": "5c3c046a71d9dab8e5e2acccbe46cef23952b238911be1f38c10620320ca9283",
+      "bounds": {
+        "min": [
+          -5.779999999999999,
+          0,
+          -6.68
+        ],
+        "max": [
+          5.779999999999999,
+          11.345,
+          6.68
+        ]
+      },
+      "backend": "webgpu"
+    }
+  ],
+  "captures": [
+    {
+      "name": "baseline",
+      "camera": {
+        "position": [
+          3.7326683038840756,
+          10.537262794757941,
+          -8.460485409552234
+        ],
+        "projection": [
+          2.391049314513554,
+          0,
+          0,
+          0,
+          0,
+          2.6050890646938014,
+          0,
+          0,
+          0,
+          0,
+          -1.0007490636896756,
+          -1,
+          0,
+          0,
+          -0.10007490636896757,
+          0
+        ],
+        "inverse": [
+          -0.8464080042363296,
+          -0.008364695695793572,
+          0.5324692688133189,
+          0,
+          -1.734723475976807e-18,
+          0.9998766324816606,
+          0.015707317311820623,
+          0,
+          -0.5325349663305442,
+          0.01329479909780484,
+          -0.8463035849813441,
+          0,
+          -1.346143983149234,
+          -10.392259750511633,
+          -9.31318242559352,
+          1
+        ]
+      },
+      "sha256": "256da75379838fa1b2bc7de62b0edb03472158e34214083ad836f47776adcaf6",
+      "nativePixelHash": "7bdd2e3ffd17ebf7aad6b53e706e37fd048b5f7cd6fa22af0f3bdc210ff3daaa",
+      "nativeFrame": {
+        "camera": {
+          "fov": 42,
+          "aspect": 1.0895170789163722,
+          "projection": [
+            2.391049314513554,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0007490636896756,
+            -1,
+            0,
+            0,
+            -0.10007490636896757,
+            0
+          ],
+          "inverse": [
+            -0.8464080042363296,
+            -0.008364695695793572,
+            0.5324692688133189,
+            0,
+            -1.734723475976807e-18,
+            0.9998766324816606,
+            0.015707317311820623,
+            0,
+            -0.5325349663305442,
+            0.01329479909780484,
+            -0.8463035849813441,
+            0,
+            -1.346143983149234,
+            -10.392259750511633,
+            -9.31318242559352,
+            1
+          ]
+        },
+        "lights": [
+          {
+            "type": "AmbientLight",
+            "intensity": 0.12,
+            "position": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "HemisphereLight",
+            "intensity": 0.75,
+            "position": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 2.8,
+            "position": [
+              14.695999622344972,
+              29.518999576568604,
+              -17.36799955368042
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 0.35,
+            "position": [
+              -17.36799955368042,
+              18.830999851226807,
+              9.351999759674072
+            ]
+          }
+        ],
+        "sourceGraphHash": "b571eeb02ea5937486b6582421bb2a6763b39a7410e7c324064b8417faba5036",
+        "frame": 225
+      }
+    },
+    {
+      "name": "baseline-stable",
+      "camera": {
+        "position": [
+          3.7326683038840756,
+          10.537262794757941,
+          -8.460485409552234
+        ],
+        "projection": [
+          2.391049314513554,
+          0,
+          0,
+          0,
+          0,
+          2.6050890646938014,
+          0,
+          0,
+          0,
+          0,
+          -1.0007490636896756,
+          -1,
+          0,
+          0,
+          -0.10007490636896757,
+          0
+        ],
+        "inverse": [
+          -0.8464080042363296,
+          -0.008364695695793572,
+          0.5324692688133189,
+          0,
+          -1.734723475976807e-18,
+          0.9998766324816606,
+          0.015707317311820623,
+          0,
+          -0.5325349663305442,
+          0.01329479909780484,
+          -0.8463035849813441,
+          0,
+          -1.346143983149234,
+          -10.392259750511633,
+          -9.31318242559352,
+          1
+        ]
+      },
+      "sha256": "256da75379838fa1b2bc7de62b0edb03472158e34214083ad836f47776adcaf6",
+      "nativePixelHash": "7bdd2e3ffd17ebf7aad6b53e706e37fd048b5f7cd6fa22af0f3bdc210ff3daaa",
+      "nativeFrame": {
+        "camera": {
+          "fov": 42,
+          "aspect": 1.0895170789163722,
+          "projection": [
+            2.391049314513554,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0007490636896756,
+            -1,
+            0,
+            0,
+            -0.10007490636896757,
+            0
+          ],
+          "inverse": [
+            -0.8464080042363296,
+            -0.008364695695793572,
+            0.5324692688133189,
+            0,
+            -1.734723475976807e-18,
+            0.9998766324816606,
+            0.015707317311820623,
+            0,
+            -0.5325349663305442,
+            0.01329479909780484,
+            -0.8463035849813441,
+            0,
+            -1.346143983149234,
+            -10.392259750511633,
+            -9.31318242559352,
+            1
+          ]
+        },
+        "lights": [
+          {
+            "type": "AmbientLight",
+            "intensity": 0.12,
+            "position": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "HemisphereLight",
+            "intensity": 0.75,
+            "position": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 2.8,
+            "position": [
+              14.695999622344972,
+              29.518999576568604,
+              -17.36799955368042
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 0.35,
+            "position": [
+              -17.36799955368042,
+              18.830999851226807,
+              9.351999759674072
+            ]
+          }
+        ],
+        "sourceGraphHash": "b571eeb02ea5937486b6582421bb2a6763b39a7410e7c324064b8417faba5036",
+        "frame": 225
+      }
+    },
+    {
+      "name": "all",
+      "camera": {
+        "position": [
+          3.7326683038840756,
+          10.537262794757941,
+          -8.460485409552234
+        ],
+        "projection": [
+          2.391049314513554,
+          0,
+          0,
+          0,
+          0,
+          2.6050890646938014,
+          0,
+          0,
+          0,
+          0,
+          -1.0007490636896756,
+          -1,
+          0,
+          0,
+          -0.10007490636896757,
+          0
+        ],
+        "inverse": [
+          -0.8464080042363296,
+          -0.008364695695793572,
+          0.5324692688133189,
+          0,
+          -1.734723475976807e-18,
+          0.9998766324816606,
+          0.015707317311820623,
+          0,
+          -0.5325349663305442,
+          0.01329479909780484,
+          -0.8463035849813441,
+          0,
+          -1.346143983149234,
+          -10.392259750511633,
+          -9.31318242559352,
+          1
+        ]
+      },
+      "sha256": "256da75379838fa1b2bc7de62b0edb03472158e34214083ad836f47776adcaf6",
+      "nativePixelHash": "7bdd2e3ffd17ebf7aad6b53e706e37fd048b5f7cd6fa22af0f3bdc210ff3daaa",
+      "nativeFrame": {
+        "camera": {
+          "fov": 42,
+          "aspect": 1.0895170789163722,
+          "projection": [
+            2.391049314513554,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0007490636896756,
+            -1,
+            0,
+            0,
+            -0.10007490636896757,
+            0
+          ],
+          "inverse": [
+            -0.8464080042363296,
+            -0.008364695695793572,
+            0.5324692688133189,
+            0,
+            -1.734723475976807e-18,
+            0.9998766324816606,
+            0.015707317311820623,
+            0,
+            -0.5325349663305442,
+            0.01329479909780484,
+            -0.8463035849813441,
+            0,
+            -1.346143983149234,
+            -10.392259750511633,
+            -9.31318242559352,
+            1
+          ]
+        },
+        "lights": [
+          {
+            "type": "AmbientLight",
+            "intensity": 0.12,
+            "position": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "HemisphereLight",
+            "intensity": 0.75,
+            "position": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 2.8,
+            "position": [
+              14.695999622344972,
+              29.518999576568604,
+              -17.36799955368042
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 0.35,
+            "position": [
+              -17.36799955368042,
+              18.830999851226807,
+              9.351999759674072
+            ]
+          }
+        ],
+        "sourceGraphHash": "b571eeb02ea5937486b6582421bb2a6763b39a7410e7c324064b8417faba5036",
+        "frame": 226
+      }
+    },
+    {
+      "name": "all-restored",
+      "camera": {
+        "position": [
+          3.7326683038840756,
+          10.537262794757941,
+          -8.460485409552234
+        ],
+        "projection": [
+          2.391049314513554,
+          0,
+          0,
+          0,
+          0,
+          2.6050890646938014,
+          0,
+          0,
+          0,
+          0,
+          -1.0007490636896756,
+          -1,
+          0,
+          0,
+          -0.10007490636896757,
+          0
+        ],
+        "inverse": [
+          -0.8464080042363296,
+          -0.008364695695793572,
+          0.5324692688133189,
+          0,
+          -1.734723475976807e-18,
+          0.9998766324816606,
+          0.015707317311820623,
+          0,
+          -0.5325349663305442,
+          0.01329479909780484,
+          -0.8463035849813441,
+          0,
+          -1.346143983149234,
+          -10.392259750511633,
+          -9.31318242559352,
+          1
+        ]
+      },
+      "sha256": "256da75379838fa1b2bc7de62b0edb03472158e34214083ad836f47776adcaf6",
+      "nativePixelHash": "7bdd2e3ffd17ebf7aad6b53e706e37fd048b5f7cd6fa22af0f3bdc210ff3daaa",
+      "nativeFrame": {
+        "camera": {
+          "fov": 42,
+          "aspect": 1.0895170789163722,
+          "projection": [
+            2.391049314513554,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0007490636896756,
+            -1,
+            0,
+            0,
+            -0.10007490636896757,
+            0
+          ],
+          "inverse": [
+            -0.8464080042363296,
+            -0.008364695695793572,
+            0.5324692688133189,
+            0,
+            -1.734723475976807e-18,
+            0.9998766324816606,
+            0.015707317311820623,
+            0,
+            -0.5325349663305442,
+            0.01329479909780484,
+            -0.8463035849813441,
+            0,
+            -1.346143983149234,
+            -10.392259750511633,
+            -9.31318242559352,
+            1
+          ]
+        },
+        "lights": [
+          {
+            "type": "AmbientLight",
+            "intensity": 0.12,
+            "position": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "HemisphereLight",
+            "intensity": 0.75,
+            "position": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 2.8,
+            "position": [
+              14.695999622344972,
+              29.518999576568604,
+              -17.36799955368042
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 0.35,
+            "position": [
+              -17.36799955368042,
+              18.830999851226807,
+              9.351999759674072
+            ]
+          }
+        ],
+        "sourceGraphHash": "b571eeb02ea5937486b6582421bb2a6763b39a7410e7c324064b8417faba5036",
+        "frame": 227
+      }
+    },
+    {
+      "name": "without-backing",
+      "camera": {
+        "position": [
+          3.7326683038840756,
+          10.537262794757941,
+          -8.460485409552234
+        ],
+        "projection": [
+          2.391049314513554,
+          0,
+          0,
+          0,
+          0,
+          2.6050890646938014,
+          0,
+          0,
+          0,
+          0,
+          -1.0007490636896756,
+          -1,
+          0,
+          0,
+          -0.10007490636896757,
+          0
+        ],
+        "inverse": [
+          -0.8464080042363296,
+          -0.008364695695793572,
+          0.5324692688133189,
+          0,
+          -1.734723475976807e-18,
+          0.9998766324816606,
+          0.015707317311820623,
+          0,
+          -0.5325349663305442,
+          0.01329479909780484,
+          -0.8463035849813441,
+          0,
+          -1.346143983149234,
+          -10.392259750511633,
+          -9.31318242559352,
+          1
+        ]
+      },
+      "sha256": "a75102cce466f807392b463b5d8aa7430f03929a26fd466c9a40a741a504c477",
+      "nativePixelHash": "60e96a3ac92c3397e77f35799a99517105c554902214823f4539343eb4474e01",
+      "nativeFrame": {
+        "camera": {
+          "fov": 42,
+          "aspect": 1.0895170789163722,
+          "projection": [
+            2.391049314513554,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0007490636896756,
+            -1,
+            0,
+            0,
+            -0.10007490636896757,
+            0
+          ],
+          "inverse": [
+            -0.8464080042363296,
+            -0.008364695695793572,
+            0.5324692688133189,
+            0,
+            -1.734723475976807e-18,
+            0.9998766324816606,
+            0.015707317311820623,
+            0,
+            -0.5325349663305442,
+            0.01329479909780484,
+            -0.8463035849813441,
+            0,
+            -1.346143983149234,
+            -10.392259750511633,
+            -9.31318242559352,
+            1
+          ]
+        },
+        "lights": [
+          {
+            "type": "AmbientLight",
+            "intensity": 0.12,
+            "position": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "HemisphereLight",
+            "intensity": 0.75,
+            "position": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 2.8,
+            "position": [
+              14.695999622344972,
+              29.518999576568604,
+              -17.36799955368042
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 0.35,
+            "position": [
+              -17.36799955368042,
+              18.830999851226807,
+              9.351999759674072
+            ]
+          }
+        ],
+        "sourceGraphHash": "b571eeb02ea5937486b6582421bb2a6763b39a7410e7c324064b8417faba5036",
+        "frame": 228
+      }
+    },
+    {
+      "name": "without-backing-restored",
+      "camera": {
+        "position": [
+          3.7326683038840756,
+          10.537262794757941,
+          -8.460485409552234
+        ],
+        "projection": [
+          2.391049314513554,
+          0,
+          0,
+          0,
+          0,
+          2.6050890646938014,
+          0,
+          0,
+          0,
+          0,
+          -1.0007490636896756,
+          -1,
+          0,
+          0,
+          -0.10007490636896757,
+          0
+        ],
+        "inverse": [
+          -0.8464080042363296,
+          -0.008364695695793572,
+          0.5324692688133189,
+          0,
+          -1.734723475976807e-18,
+          0.9998766324816606,
+          0.015707317311820623,
+          0,
+          -0.5325349663305442,
+          0.01329479909780484,
+          -0.8463035849813441,
+          0,
+          -1.346143983149234,
+          -10.392259750511633,
+          -9.31318242559352,
+          1
+        ]
+      },
+      "sha256": "256da75379838fa1b2bc7de62b0edb03472158e34214083ad836f47776adcaf6",
+      "nativePixelHash": "7bdd2e3ffd17ebf7aad6b53e706e37fd048b5f7cd6fa22af0f3bdc210ff3daaa",
+      "nativeFrame": {
+        "camera": {
+          "fov": 42,
+          "aspect": 1.0895170789163722,
+          "projection": [
+            2.391049314513554,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0007490636896756,
+            -1,
+            0,
+            0,
+            -0.10007490636896757,
+            0
+          ],
+          "inverse": [
+            -0.8464080042363296,
+            -0.008364695695793572,
+            0.5324692688133189,
+            0,
+            -1.734723475976807e-18,
+            0.9998766324816606,
+            0.015707317311820623,
+            0,
+            -0.5325349663305442,
+            0.01329479909780484,
+            -0.8463035849813441,
+            0,
+            -1.346143983149234,
+            -10.392259750511633,
+            -9.31318242559352,
+            1
+          ]
+        },
+        "lights": [
+          {
+            "type": "AmbientLight",
+            "intensity": 0.12,
+            "position": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "HemisphereLight",
+            "intensity": 0.75,
+            "position": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 2.8,
+            "position": [
+              14.695999622344972,
+              29.518999576568604,
+              -17.36799955368042
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 0.35,
+            "position": [
+              -17.36799955368042,
+              18.830999851226807,
+              9.351999759674072
+            ]
+          }
+        ],
+        "sourceGraphHash": "b571eeb02ea5937486b6582421bb2a6763b39a7410e7c324064b8417faba5036",
+        "frame": 229
+      }
+    },
+    {
+      "name": "without-coping",
+      "camera": {
+        "position": [
+          3.7326683038840756,
+          10.537262794757941,
+          -8.460485409552234
+        ],
+        "projection": [
+          2.391049314513554,
+          0,
+          0,
+          0,
+          0,
+          2.6050890646938014,
+          0,
+          0,
+          0,
+          0,
+          -1.0007490636896756,
+          -1,
+          0,
+          0,
+          -0.10007490636896757,
+          0
+        ],
+        "inverse": [
+          -0.8464080042363296,
+          -0.008364695695793572,
+          0.5324692688133189,
+          0,
+          -1.734723475976807e-18,
+          0.9998766324816606,
+          0.015707317311820623,
+          0,
+          -0.5325349663305442,
+          0.01329479909780484,
+          -0.8463035849813441,
+          0,
+          -1.346143983149234,
+          -10.392259750511633,
+          -9.31318242559352,
+          1
+        ]
+      },
+      "sha256": "53f4aff4f74216c678f8b907120dd3e3daf67b041f5a7578921f1372862addd4",
+      "nativePixelHash": "bb537ec40d704b70440f7554a99bbcdd0520d472f51ab0c24c40464951e00889",
+      "nativeFrame": {
+        "camera": {
+          "fov": 42,
+          "aspect": 1.0895170789163722,
+          "projection": [
+            2.391049314513554,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0007490636896756,
+            -1,
+            0,
+            0,
+            -0.10007490636896757,
+            0
+          ],
+          "inverse": [
+            -0.8464080042363296,
+            -0.008364695695793572,
+            0.5324692688133189,
+            0,
+            -1.734723475976807e-18,
+            0.9998766324816606,
+            0.015707317311820623,
+            0,
+            -0.5325349663305442,
+            0.01329479909780484,
+            -0.8463035849813441,
+            0,
+            -1.346143983149234,
+            -10.392259750511633,
+            -9.31318242559352,
+            1
+          ]
+        },
+        "lights": [
+          {
+            "type": "AmbientLight",
+            "intensity": 0.12,
+            "position": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "HemisphereLight",
+            "intensity": 0.75,
+            "position": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 2.8,
+            "position": [
+              14.695999622344972,
+              29.518999576568604,
+              -17.36799955368042
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 0.35,
+            "position": [
+              -17.36799955368042,
+              18.830999851226807,
+              9.351999759674072
+            ]
+          }
+        ],
+        "sourceGraphHash": "b571eeb02ea5937486b6582421bb2a6763b39a7410e7c324064b8417faba5036",
+        "frame": 230
+      }
+    },
+    {
+      "name": "without-coping-restored",
+      "camera": {
+        "position": [
+          3.7326683038840756,
+          10.537262794757941,
+          -8.460485409552234
+        ],
+        "projection": [
+          2.391049314513554,
+          0,
+          0,
+          0,
+          0,
+          2.6050890646938014,
+          0,
+          0,
+          0,
+          0,
+          -1.0007490636896756,
+          -1,
+          0,
+          0,
+          -0.10007490636896757,
+          0
+        ],
+        "inverse": [
+          -0.8464080042363296,
+          -0.008364695695793572,
+          0.5324692688133189,
+          0,
+          -1.734723475976807e-18,
+          0.9998766324816606,
+          0.015707317311820623,
+          0,
+          -0.5325349663305442,
+          0.01329479909780484,
+          -0.8463035849813441,
+          0,
+          -1.346143983149234,
+          -10.392259750511633,
+          -9.31318242559352,
+          1
+        ]
+      },
+      "sha256": "256da75379838fa1b2bc7de62b0edb03472158e34214083ad836f47776adcaf6",
+      "nativePixelHash": "7bdd2e3ffd17ebf7aad6b53e706e37fd048b5f7cd6fa22af0f3bdc210ff3daaa",
+      "nativeFrame": {
+        "camera": {
+          "fov": 42,
+          "aspect": 1.0895170789163722,
+          "projection": [
+            2.391049314513554,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0007490636896756,
+            -1,
+            0,
+            0,
+            -0.10007490636896757,
+            0
+          ],
+          "inverse": [
+            -0.8464080042363296,
+            -0.008364695695793572,
+            0.5324692688133189,
+            0,
+            -1.734723475976807e-18,
+            0.9998766324816606,
+            0.015707317311820623,
+            0,
+            -0.5325349663305442,
+            0.01329479909780484,
+            -0.8463035849813441,
+            0,
+            -1.346143983149234,
+            -10.392259750511633,
+            -9.31318242559352,
+            1
+          ]
+        },
+        "lights": [
+          {
+            "type": "AmbientLight",
+            "intensity": 0.12,
+            "position": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "HemisphereLight",
+            "intensity": 0.75,
+            "position": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 2.8,
+            "position": [
+              14.695999622344972,
+              29.518999576568604,
+              -17.36799955368042
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 0.35,
+            "position": [
+              -17.36799955368042,
+              18.830999851226807,
+              9.351999759674072
+            ]
+          }
+        ],
+        "sourceGraphHash": "b571eeb02ea5937486b6582421bb2a6763b39a7410e7c324064b8417faba5036",
+        "frame": 231
+      }
+    },
+    {
+      "name": "without-units",
+      "camera": {
+        "position": [
+          3.7326683038840756,
+          10.537262794757941,
+          -8.460485409552234
+        ],
+        "projection": [
+          2.391049314513554,
+          0,
+          0,
+          0,
+          0,
+          2.6050890646938014,
+          0,
+          0,
+          0,
+          0,
+          -1.0007490636896756,
+          -1,
+          0,
+          0,
+          -0.10007490636896757,
+          0
+        ],
+        "inverse": [
+          -0.8464080042363296,
+          -0.008364695695793572,
+          0.5324692688133189,
+          0,
+          -1.734723475976807e-18,
+          0.9998766324816606,
+          0.015707317311820623,
+          0,
+          -0.5325349663305442,
+          0.01329479909780484,
+          -0.8463035849813441,
+          0,
+          -1.346143983149234,
+          -10.392259750511633,
+          -9.31318242559352,
+          1
+        ]
+      },
+      "sha256": "f38fb8bd22e51a6286dedf624db22b053a57808e5a881e9b0cdaa345d485b6ef",
+      "nativePixelHash": "c896acb157350c1bd09be0f8d6f793e765ae7b2275929ecc529036e93b24f349",
+      "nativeFrame": {
+        "camera": {
+          "fov": 42,
+          "aspect": 1.0895170789163722,
+          "projection": [
+            2.391049314513554,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0007490636896756,
+            -1,
+            0,
+            0,
+            -0.10007490636896757,
+            0
+          ],
+          "inverse": [
+            -0.8464080042363296,
+            -0.008364695695793572,
+            0.5324692688133189,
+            0,
+            -1.734723475976807e-18,
+            0.9998766324816606,
+            0.015707317311820623,
+            0,
+            -0.5325349663305442,
+            0.01329479909780484,
+            -0.8463035849813441,
+            0,
+            -1.346143983149234,
+            -10.392259750511633,
+            -9.31318242559352,
+            1
+          ]
+        },
+        "lights": [
+          {
+            "type": "AmbientLight",
+            "intensity": 0.12,
+            "position": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "HemisphereLight",
+            "intensity": 0.75,
+            "position": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 2.8,
+            "position": [
+              14.695999622344972,
+              29.518999576568604,
+              -17.36799955368042
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 0.35,
+            "position": [
+              -17.36799955368042,
+              18.830999851226807,
+              9.351999759674072
+            ]
+          }
+        ],
+        "sourceGraphHash": "b571eeb02ea5937486b6582421bb2a6763b39a7410e7c324064b8417faba5036",
+        "frame": 232
+      }
+    },
+    {
+      "name": "without-units-restored",
+      "camera": {
+        "position": [
+          3.7326683038840756,
+          10.537262794757941,
+          -8.460485409552234
+        ],
+        "projection": [
+          2.391049314513554,
+          0,
+          0,
+          0,
+          0,
+          2.6050890646938014,
+          0,
+          0,
+          0,
+          0,
+          -1.0007490636896756,
+          -1,
+          0,
+          0,
+          -0.10007490636896757,
+          0
+        ],
+        "inverse": [
+          -0.8464080042363296,
+          -0.008364695695793572,
+          0.5324692688133189,
+          0,
+          -1.734723475976807e-18,
+          0.9998766324816606,
+          0.015707317311820623,
+          0,
+          -0.5325349663305442,
+          0.01329479909780484,
+          -0.8463035849813441,
+          0,
+          -1.346143983149234,
+          -10.392259750511633,
+          -9.31318242559352,
+          1
+        ]
+      },
+      "sha256": "256da75379838fa1b2bc7de62b0edb03472158e34214083ad836f47776adcaf6",
+      "nativePixelHash": "7bdd2e3ffd17ebf7aad6b53e706e37fd048b5f7cd6fa22af0f3bdc210ff3daaa",
+      "nativeFrame": {
+        "camera": {
+          "fov": 42,
+          "aspect": 1.0895170789163722,
+          "projection": [
+            2.391049314513554,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0007490636896756,
+            -1,
+            0,
+            0,
+            -0.10007490636896757,
+            0
+          ],
+          "inverse": [
+            -0.8464080042363296,
+            -0.008364695695793572,
+            0.5324692688133189,
+            0,
+            -1.734723475976807e-18,
+            0.9998766324816606,
+            0.015707317311820623,
+            0,
+            -0.5325349663305442,
+            0.01329479909780484,
+            -0.8463035849813441,
+            0,
+            -1.346143983149234,
+            -10.392259750511633,
+            -9.31318242559352,
+            1
+          ]
+        },
+        "lights": [
+          {
+            "type": "AmbientLight",
+            "intensity": 0.12,
+            "position": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "HemisphereLight",
+            "intensity": 0.75,
+            "position": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 2.8,
+            "position": [
+              14.695999622344972,
+              29.518999576568604,
+              -17.36799955368042
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 0.35,
+            "position": [
+              -17.36799955368042,
+              18.830999851226807,
+              9.351999759674072
+            ]
+          }
+        ],
+        "sourceGraphHash": "b571eeb02ea5937486b6582421bb2a6763b39a7410e7c324064b8417faba5036",
+        "frame": 233
+      }
+    },
+    {
+      "name": "only-backing",
+      "camera": {
+        "position": [
+          3.7326683038840756,
+          10.537262794757941,
+          -8.460485409552234
+        ],
+        "projection": [
+          2.391049314513554,
+          0,
+          0,
+          0,
+          0,
+          2.6050890646938014,
+          0,
+          0,
+          0,
+          0,
+          -1.0007490636896756,
+          -1,
+          0,
+          0,
+          -0.10007490636896757,
+          0
+        ],
+        "inverse": [
+          -0.8464080042363296,
+          -0.008364695695793572,
+          0.5324692688133189,
+          0,
+          -1.734723475976807e-18,
+          0.9998766324816606,
+          0.015707317311820623,
+          0,
+          -0.5325349663305442,
+          0.01329479909780484,
+          -0.8463035849813441,
+          0,
+          -1.346143983149234,
+          -10.392259750511633,
+          -9.31318242559352,
+          1
+        ]
+      },
+      "sha256": "4f0a6b3693e24ae99167a73c8e713c6f4e2dc76eec43b1f491ea34e0b880989f",
+      "nativePixelHash": "2430c2df81e4dc1b8c3afc892248c1fa95db8e8829ec30b53535bc41c68f024f",
+      "nativeFrame": {
+        "camera": {
+          "fov": 42,
+          "aspect": 1.0895170789163722,
+          "projection": [
+            2.391049314513554,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0007490636896756,
+            -1,
+            0,
+            0,
+            -0.10007490636896757,
+            0
+          ],
+          "inverse": [
+            -0.8464080042363296,
+            -0.008364695695793572,
+            0.5324692688133189,
+            0,
+            -1.734723475976807e-18,
+            0.9998766324816606,
+            0.015707317311820623,
+            0,
+            -0.5325349663305442,
+            0.01329479909780484,
+            -0.8463035849813441,
+            0,
+            -1.346143983149234,
+            -10.392259750511633,
+            -9.31318242559352,
+            1
+          ]
+        },
+        "lights": [
+          {
+            "type": "AmbientLight",
+            "intensity": 0.12,
+            "position": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "HemisphereLight",
+            "intensity": 0.75,
+            "position": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 2.8,
+            "position": [
+              14.695999622344972,
+              29.518999576568604,
+              -17.36799955368042
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 0.35,
+            "position": [
+              -17.36799955368042,
+              18.830999851226807,
+              9.351999759674072
+            ]
+          }
+        ],
+        "sourceGraphHash": "b571eeb02ea5937486b6582421bb2a6763b39a7410e7c324064b8417faba5036",
+        "frame": 234
+      }
+    },
+    {
+      "name": "only-backing-restored",
+      "camera": {
+        "position": [
+          3.7326683038840756,
+          10.537262794757941,
+          -8.460485409552234
+        ],
+        "projection": [
+          2.391049314513554,
+          0,
+          0,
+          0,
+          0,
+          2.6050890646938014,
+          0,
+          0,
+          0,
+          0,
+          -1.0007490636896756,
+          -1,
+          0,
+          0,
+          -0.10007490636896757,
+          0
+        ],
+        "inverse": [
+          -0.8464080042363296,
+          -0.008364695695793572,
+          0.5324692688133189,
+          0,
+          -1.734723475976807e-18,
+          0.9998766324816606,
+          0.015707317311820623,
+          0,
+          -0.5325349663305442,
+          0.01329479909780484,
+          -0.8463035849813441,
+          0,
+          -1.346143983149234,
+          -10.392259750511633,
+          -9.31318242559352,
+          1
+        ]
+      },
+      "sha256": "256da75379838fa1b2bc7de62b0edb03472158e34214083ad836f47776adcaf6",
+      "nativePixelHash": "7bdd2e3ffd17ebf7aad6b53e706e37fd048b5f7cd6fa22af0f3bdc210ff3daaa",
+      "nativeFrame": {
+        "camera": {
+          "fov": 42,
+          "aspect": 1.0895170789163722,
+          "projection": [
+            2.391049314513554,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0007490636896756,
+            -1,
+            0,
+            0,
+            -0.10007490636896757,
+            0
+          ],
+          "inverse": [
+            -0.8464080042363296,
+            -0.008364695695793572,
+            0.5324692688133189,
+            0,
+            -1.734723475976807e-18,
+            0.9998766324816606,
+            0.015707317311820623,
+            0,
+            -0.5325349663305442,
+            0.01329479909780484,
+            -0.8463035849813441,
+            0,
+            -1.346143983149234,
+            -10.392259750511633,
+            -9.31318242559352,
+            1
+          ]
+        },
+        "lights": [
+          {
+            "type": "AmbientLight",
+            "intensity": 0.12,
+            "position": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "HemisphereLight",
+            "intensity": 0.75,
+            "position": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 2.8,
+            "position": [
+              14.695999622344972,
+              29.518999576568604,
+              -17.36799955368042
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 0.35,
+            "position": [
+              -17.36799955368042,
+              18.830999851226807,
+              9.351999759674072
+            ]
+          }
+        ],
+        "sourceGraphHash": "b571eeb02ea5937486b6582421bb2a6763b39a7410e7c324064b8417faba5036",
+        "frame": 235
+      }
+    },
+    {
+      "name": "only-coping",
+      "camera": {
+        "position": [
+          3.7326683038840756,
+          10.537262794757941,
+          -8.460485409552234
+        ],
+        "projection": [
+          2.391049314513554,
+          0,
+          0,
+          0,
+          0,
+          2.6050890646938014,
+          0,
+          0,
+          0,
+          0,
+          -1.0007490636896756,
+          -1,
+          0,
+          0,
+          -0.10007490636896757,
+          0
+        ],
+        "inverse": [
+          -0.8464080042363296,
+          -0.008364695695793572,
+          0.5324692688133189,
+          0,
+          -1.734723475976807e-18,
+          0.9998766324816606,
+          0.015707317311820623,
+          0,
+          -0.5325349663305442,
+          0.01329479909780484,
+          -0.8463035849813441,
+          0,
+          -1.346143983149234,
+          -10.392259750511633,
+          -9.31318242559352,
+          1
+        ]
+      },
+      "sha256": "de94db7f0785d528afa956418eb964899f66ea69651e8e433cd950c5c47e50cb",
+      "nativePixelHash": "a13c1c80e7c9722c8d98a456bc6fa85b870f5d1dc196a56adf7226eb4a17bfeb",
+      "nativeFrame": {
+        "camera": {
+          "fov": 42,
+          "aspect": 1.0895170789163722,
+          "projection": [
+            2.391049314513554,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0007490636896756,
+            -1,
+            0,
+            0,
+            -0.10007490636896757,
+            0
+          ],
+          "inverse": [
+            -0.8464080042363296,
+            -0.008364695695793572,
+            0.5324692688133189,
+            0,
+            -1.734723475976807e-18,
+            0.9998766324816606,
+            0.015707317311820623,
+            0,
+            -0.5325349663305442,
+            0.01329479909780484,
+            -0.8463035849813441,
+            0,
+            -1.346143983149234,
+            -10.392259750511633,
+            -9.31318242559352,
+            1
+          ]
+        },
+        "lights": [
+          {
+            "type": "AmbientLight",
+            "intensity": 0.12,
+            "position": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "HemisphereLight",
+            "intensity": 0.75,
+            "position": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 2.8,
+            "position": [
+              14.695999622344972,
+              29.518999576568604,
+              -17.36799955368042
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 0.35,
+            "position": [
+              -17.36799955368042,
+              18.830999851226807,
+              9.351999759674072
+            ]
+          }
+        ],
+        "sourceGraphHash": "b571eeb02ea5937486b6582421bb2a6763b39a7410e7c324064b8417faba5036",
+        "frame": 236
+      }
+    },
+    {
+      "name": "only-coping-restored",
+      "camera": {
+        "position": [
+          3.7326683038840756,
+          10.537262794757941,
+          -8.460485409552234
+        ],
+        "projection": [
+          2.391049314513554,
+          0,
+          0,
+          0,
+          0,
+          2.6050890646938014,
+          0,
+          0,
+          0,
+          0,
+          -1.0007490636896756,
+          -1,
+          0,
+          0,
+          -0.10007490636896757,
+          0
+        ],
+        "inverse": [
+          -0.8464080042363296,
+          -0.008364695695793572,
+          0.5324692688133189,
+          0,
+          -1.734723475976807e-18,
+          0.9998766324816606,
+          0.015707317311820623,
+          0,
+          -0.5325349663305442,
+          0.01329479909780484,
+          -0.8463035849813441,
+          0,
+          -1.346143983149234,
+          -10.392259750511633,
+          -9.31318242559352,
+          1
+        ]
+      },
+      "sha256": "256da75379838fa1b2bc7de62b0edb03472158e34214083ad836f47776adcaf6",
+      "nativePixelHash": "7bdd2e3ffd17ebf7aad6b53e706e37fd048b5f7cd6fa22af0f3bdc210ff3daaa",
+      "nativeFrame": {
+        "camera": {
+          "fov": 42,
+          "aspect": 1.0895170789163722,
+          "projection": [
+            2.391049314513554,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0007490636896756,
+            -1,
+            0,
+            0,
+            -0.10007490636896757,
+            0
+          ],
+          "inverse": [
+            -0.8464080042363296,
+            -0.008364695695793572,
+            0.5324692688133189,
+            0,
+            -1.734723475976807e-18,
+            0.9998766324816606,
+            0.015707317311820623,
+            0,
+            -0.5325349663305442,
+            0.01329479909780484,
+            -0.8463035849813441,
+            0,
+            -1.346143983149234,
+            -10.392259750511633,
+            -9.31318242559352,
+            1
+          ]
+        },
+        "lights": [
+          {
+            "type": "AmbientLight",
+            "intensity": 0.12,
+            "position": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "HemisphereLight",
+            "intensity": 0.75,
+            "position": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 2.8,
+            "position": [
+              14.695999622344972,
+              29.518999576568604,
+              -17.36799955368042
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 0.35,
+            "position": [
+              -17.36799955368042,
+              18.830999851226807,
+              9.351999759674072
+            ]
+          }
+        ],
+        "sourceGraphHash": "b571eeb02ea5937486b6582421bb2a6763b39a7410e7c324064b8417faba5036",
+        "frame": 237
+      }
+    },
+    {
+      "name": "only-units",
+      "camera": {
+        "position": [
+          3.7326683038840756,
+          10.537262794757941,
+          -8.460485409552234
+        ],
+        "projection": [
+          2.391049314513554,
+          0,
+          0,
+          0,
+          0,
+          2.6050890646938014,
+          0,
+          0,
+          0,
+          0,
+          -1.0007490636896756,
+          -1,
+          0,
+          0,
+          -0.10007490636896757,
+          0
+        ],
+        "inverse": [
+          -0.8464080042363296,
+          -0.008364695695793572,
+          0.5324692688133189,
+          0,
+          -1.734723475976807e-18,
+          0.9998766324816606,
+          0.015707317311820623,
+          0,
+          -0.5325349663305442,
+          0.01329479909780484,
+          -0.8463035849813441,
+          0,
+          -1.346143983149234,
+          -10.392259750511633,
+          -9.31318242559352,
+          1
+        ]
+      },
+      "sha256": "18705f09ad64a26e7a1e67372826f524512910e7c8e996909b97f96f8af1b244",
+      "nativePixelHash": "72cf1498355b902eb8fad622334c67dddf1576f3e70e2f24480454de826738d9",
+      "nativeFrame": {
+        "camera": {
+          "fov": 42,
+          "aspect": 1.0895170789163722,
+          "projection": [
+            2.391049314513554,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0007490636896756,
+            -1,
+            0,
+            0,
+            -0.10007490636896757,
+            0
+          ],
+          "inverse": [
+            -0.8464080042363296,
+            -0.008364695695793572,
+            0.5324692688133189,
+            0,
+            -1.734723475976807e-18,
+            0.9998766324816606,
+            0.015707317311820623,
+            0,
+            -0.5325349663305442,
+            0.01329479909780484,
+            -0.8463035849813441,
+            0,
+            -1.346143983149234,
+            -10.392259750511633,
+            -9.31318242559352,
+            1
+          ]
+        },
+        "lights": [
+          {
+            "type": "AmbientLight",
+            "intensity": 0.12,
+            "position": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "HemisphereLight",
+            "intensity": 0.75,
+            "position": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 2.8,
+            "position": [
+              14.695999622344972,
+              29.518999576568604,
+              -17.36799955368042
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 0.35,
+            "position": [
+              -17.36799955368042,
+              18.830999851226807,
+              9.351999759674072
+            ]
+          }
+        ],
+        "sourceGraphHash": "b571eeb02ea5937486b6582421bb2a6763b39a7410e7c324064b8417faba5036",
+        "frame": 238
+      }
+    },
+    {
+      "name": "only-units-restored",
+      "camera": {
+        "position": [
+          3.7326683038840756,
+          10.537262794757941,
+          -8.460485409552234
+        ],
+        "projection": [
+          2.391049314513554,
+          0,
+          0,
+          0,
+          0,
+          2.6050890646938014,
+          0,
+          0,
+          0,
+          0,
+          -1.0007490636896756,
+          -1,
+          0,
+          0,
+          -0.10007490636896757,
+          0
+        ],
+        "inverse": [
+          -0.8464080042363296,
+          -0.008364695695793572,
+          0.5324692688133189,
+          0,
+          -1.734723475976807e-18,
+          0.9998766324816606,
+          0.015707317311820623,
+          0,
+          -0.5325349663305442,
+          0.01329479909780484,
+          -0.8463035849813441,
+          0,
+          -1.346143983149234,
+          -10.392259750511633,
+          -9.31318242559352,
+          1
+        ]
+      },
+      "sha256": "256da75379838fa1b2bc7de62b0edb03472158e34214083ad836f47776adcaf6",
+      "nativePixelHash": "7bdd2e3ffd17ebf7aad6b53e706e37fd048b5f7cd6fa22af0f3bdc210ff3daaa",
+      "nativeFrame": {
+        "camera": {
+          "fov": 42,
+          "aspect": 1.0895170789163722,
+          "projection": [
+            2.391049314513554,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0007490636896756,
+            -1,
+            0,
+            0,
+            -0.10007490636896757,
+            0
+          ],
+          "inverse": [
+            -0.8464080042363296,
+            -0.008364695695793572,
+            0.5324692688133189,
+            0,
+            -1.734723475976807e-18,
+            0.9998766324816606,
+            0.015707317311820623,
+            0,
+            -0.5325349663305442,
+            0.01329479909780484,
+            -0.8463035849813441,
+            0,
+            -1.346143983149234,
+            -10.392259750511633,
+            -9.31318242559352,
+            1
+          ]
+        },
+        "lights": [
+          {
+            "type": "AmbientLight",
+            "intensity": 0.12,
+            "position": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "HemisphereLight",
+            "intensity": 0.75,
+            "position": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 2.8,
+            "position": [
+              14.695999622344972,
+              29.518999576568604,
+              -17.36799955368042
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 0.35,
+            "position": [
+              -17.36799955368042,
+              18.830999851226807,
+              9.351999759674072
+            ]
+          }
+        ],
+        "sourceGraphHash": "b571eeb02ea5937486b6582421bb2a6763b39a7410e7c324064b8417faba5036",
+        "frame": 239
+      }
+    }
+  ],
+  "errors": []
+}

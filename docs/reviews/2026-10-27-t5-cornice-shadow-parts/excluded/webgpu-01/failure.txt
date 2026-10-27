@@ -1,0 +1,5 @@
+page.evaluate: Error: Empty shadow-only proxy
+    at eval (eval at evaluate (:303:30), <anonymous>:4:117)
+    at UtilityScript.evaluate (<anonymous>:305:16)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)
+    at C:\Users\behmb\Documents\Cascade Projects\buildo\test-results\t5-cornice-shadow-parts-2026-10-27\probe.mjs:235:27

@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "cornice-shadow-parts-metrics",
+  "roi": [
+    60,
+    355,
+    850,
+    430
+  ],
+  "method": "Absolute RGB difference in a925x849 native frame versus unmodified baseline",
+  "backends": {
+    "webgl": {
+      "partition": {
+        "batch": "building/authored-building/node/roof/building/cornice",
+        "totalIndices": 19992,
+        "vertexCount": 16448,
+        "backingIndices": 192,
+        "copingIndices": 144,
+        "unitCount": 78,
+        "unitIndices": 19656,
+        "allIndicesExact": true
+      },
+      "exactRestorations": 7,
+      "cases": {
+        "all": {
+          "imageChangedPixels": 0,
+          "roiChangedPixels": 0,
+          "roiMeanAbsoluteRgbDifference": 0.0
+        },
+        "without-backing": {
+          "imageChangedPixels": 83346,
+          "roiChangedPixels": 44838,
+          "roiMeanAbsoluteRgbDifference": 62.1867
+        },
+        "without-coping": {
+          "imageChangedPixels": 32015,
+          "roiChangedPixels": 0,
+          "roiMeanAbsoluteRgbDifference": 0.0
+        },
+        "without-units": {
+          "imageChangedPixels": 6,
+          "roiChangedPixels": 6,
+          "roiMeanAbsoluteRgbDifference": 0.0007
+        },
+        "only-backing": {
+          "imageChangedPixels": 32021,
+          "roiChangedPixels": 6,
+          "roiMeanAbsoluteRgbDifference": 0.0007
+        },
+        "only-coping": {
+          "imageChangedPixels": 85915,
+          "roiChangedPixels": 46440,
+          "roiMeanAbsoluteRgbDifference": 67.7324
+        },
+        "only-units": {
+          "imageChangedPixels": 115361,
+          "roiChangedPixels": 44838,
+          "roiMeanAbsoluteRgbDifference": 62.1867
+        }
+      }
+    },
+    "webgpu": {
+      "partition": {
+        "batch": "building/authored-building/node/roof/building/cornice",
+        "totalIndices": 19992,
+        "vertexCount": 16448,
+        "backingIndices": 192,
+        "copingIndices": 144,
+        "unitCount": 78,
+        "unitIndices": 19656,
+        "allIndicesExact": true
+      },
+      "exactRestorations": 7,
+      "cases": {
+        "all": {
+          "imageChangedPixels": 0,
+          "roiChangedPixels": 0,
+          "roiMeanAbsoluteRgbDifference": 0.0
+        },
+        "without-backing": {
+          "imageChangedPixels": 87172,
+          "roiChangedPixels": 43878,
+          "roiMeanAbsoluteRgbDifference": 60.6714
+        },
+        "without-coping": {
+          "imageChangedPixels": 34510,
+          "roiChangedPixels": 0,
+          "roiMeanAbsoluteRgbDifference": 0.0
+        },
+        "without-units": {
+          "imageChangedPixels": 17,
+          "roiChangedPixels": 15,
+          "roiMeanAbsoluteRgbDifference": 0.0011
+        },
+        "only-backing": {
+          "imageChangedPixels": 34527,
+          "roiChangedPixels": 15,
+          "roiMeanAbsoluteRgbDifference": 0.0011
+        },
+        "only-coping": {
+          "imageChangedPixels": 88954,
+          "roiChangedPixels": 44966,
+          "roiMeanAbsoluteRgbDifference": 65.9601
+        },
+        "only-units": {
+          "imageChangedPixels": 121682,
+          "roiChangedPixels": 43878,
+          "roiMeanAbsoluteRgbDifference": 60.6714
+        }
+      }
+    }
+  }
+}
