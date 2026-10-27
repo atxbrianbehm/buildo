@@ -1,0 +1,102 @@
+{
+  "schemaVersion": "0.1.0",
+  "commit": "d94e90be56028e3c70bd81a545ca7361e1e887e6",
+  "images": [
+    {
+      "file": "native-webgpu/bracket-whole.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/d94e90be56028e3c70bd81a545ca7361e1e887e6/docs/reviews/2026-10-27-c9-p2-cornice-authoring/native-webgpu/bracket-whole.png",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "sha256": "9ec7664524bfb07fa0cd4b83b86ab06b6735a244311fd3b9e8c022e189afa4d2",
+      "literalLocalBytesExact": true
+    },
+    {
+      "file": "close-webgpu/moulded-close.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/d94e90be56028e3c70bd81a545ca7361e1e887e6/docs/reviews/2026-10-27-c9-p2-cornice-authoring/close-webgpu/moulded-close.png",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "sha256": "00bd87c17b2e4ce5f0bb2c1bd2152da12a88d2f8c8f182201b08e5d266113003",
+      "literalLocalBytesExact": true
+    },
+    {
+      "file": "close-webgpu/dentil-close.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/d94e90be56028e3c70bd81a545ca7361e1e887e6/docs/reviews/2026-10-27-c9-p2-cornice-authoring/close-webgpu/dentil-close.png",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "sha256": "014c110bcdd5713df1cc20b6895726f44c0d3cc68788552270b4aeb43d5a0f68",
+      "literalLocalBytesExact": true
+    },
+    {
+      "file": "close-webgpu/bracket-close.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/d94e90be56028e3c70bd81a545ca7361e1e887e6/docs/reviews/2026-10-27-c9-p2-cornice-authoring/close-webgpu/bracket-close.png",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "sha256": "fe3605fdb4bcf5e8eb03003732c406aa7fdf261c31641df2a22975054242a1d1",
+      "literalLocalBytesExact": true
+    },
+    {
+      "file": "close-webgpu/dentil-clay-close.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/d94e90be56028e3c70bd81a545ca7361e1e887e6/docs/reviews/2026-10-27-c9-p2-cornice-authoring/close-webgpu/dentil-clay-close.png",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "sha256": "b7f508e3ca2322e3856dde5159e25dc5ab976462aa2bb70bca351b3439fab366",
+      "literalLocalBytesExact": true
+    },
+    {
+      "file": "close-webgpu/bracket-clay-close.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/d94e90be56028e3c70bd81a545ca7361e1e887e6/docs/reviews/2026-10-27-c9-p2-cornice-authoring/close-webgpu/bracket-clay-close.png",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "sha256": "7e7c6a59c4b0710965235f142a15eebea7c20701c5feb7787379489e43afbc38",
+      "literalLocalBytesExact": true
+    },
+    {
+      "file": "close-webgpu/bracket-no-normal.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/d94e90be56028e3c70bd81a545ca7361e1e887e6/docs/reviews/2026-10-27-c9-p2-cornice-authoring/close-webgpu/bracket-no-normal.png",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "sha256": "d50380aba7f39f8f53797f4444ad8f1c5f6f328756837d38fc538c5c11b874e5",
+      "literalLocalBytesExact": true
+    },
+    {
+      "file": "close-webgpu/bracket-no-textures.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/d94e90be56028e3c70bd81a545ca7361e1e887e6/docs/reviews/2026-10-27-c9-p2-cornice-authoring/close-webgpu/bracket-no-textures.png",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "sha256": "f3c92df845fd2c2f150cc48fcec6250fd54174fbf85fc102b54346aff48b3aa0",
+      "literalLocalBytesExact": true
+    },
+    {
+      "file": "native-webgpu/sill-textured.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/d94e90be56028e3c70bd81a545ca7361e1e887e6/docs/reviews/2026-10-27-c9-p2-cornice-authoring/native-webgpu/sill-textured.png",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "sha256": "321fe4c198905283a67d6d1af881cb2493f46f465d4fad656ca046ce62eb9306",
+      "literalLocalBytesExact": true
+    },
+    {
+      "file": "native-webgpu/sill-no-normal.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/d94e90be56028e3c70bd81a545ca7361e1e887e6/docs/reviews/2026-10-27-c9-p2-cornice-authoring/native-webgpu/sill-no-normal.png",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "sha256": "388e76bf71fefb87d1ffe9bb0e8aa20fb30ef498e0e5fc9b53199d7c003f299d",
+      "literalLocalBytesExact": true
+    },
+    {
+      "file": "native-webgl/sill-no-textures.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/d94e90be56028e3c70bd81a545ca7361e1e887e6/docs/reviews/2026-10-27-c9-p2-cornice-authoring/native-webgl/sill-no-textures.png",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "sha256": "13618a7695877544434aa7560d26f3a2a5f13b0b8afbb4a84ba65ede826c20b0",
+      "literalLocalBytesExact": true
+    },
+    {
+      "file": "native-webgpu/compact-controls.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/d94e90be56028e3c70bd81a545ca7361e1e887e6/docs/reviews/2026-10-27-c9-p2-cornice-authoring/native-webgpu/compact-controls.png",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "sha256": "58b0a60f73d52af4dbea57506adddf214932e33459e93d29e8b67e5b4b6bc923",
+      "literalLocalBytesExact": true
+    }
+  ]
+}

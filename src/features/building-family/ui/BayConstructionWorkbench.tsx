@@ -1,3 +1,4 @@
+import { CONSTRUCTION_CORNICE_LAYOUTS, withConstructionCorniceLayout } from "../core/constructionCorniceVocabulary";
 import { withConstructionStorefront, constructionHasStorefront, CONSTRUCTION_FRONTAGE_OPTIONS } from "../core/constructionStorefrontGraph";
 import { CONSTRUCTION_WINDOW_LAYOUTS, upgradeConstructionWindowVocabulary } from "../core/constructionWindowVocabulary";
 import { ConstructionBuildingControls } from "./ConstructionBuildingControls";
@@ -43,7 +44,7 @@ const names: Record<BayConstructionNode["type"], string> = {
 };
 const labels: Record<string, string> = {
   mode: "Ground frontage", pierWidthM: "Masonry pier width (m)", bulkheadHeightM: "Bulkhead height (m)", headHeightM: "Head band height (m)", transomBaseM: "Transom level (m)",
-  layout: "Window assembly",
+  layout: "Window assembly", corniceAssembly: "Cornice treatment",
   groundHeightM: "Ground storey height (m)", upperHeightM: "Upper storey height (m)", leafHeightM: "Door leaf height (m)", thresholdProjectionM: "Threshold projection (m)", parapetHeightM: "Parapet height (m)", copingProjectionM: "Coping projection (m)", corniceHeightM: "Cornice height (m)", corniceProjectionM: "Cornice projection (m)",
   widthM: "Width (m)", heightM: "Height (m)", wallDepthM: "Wall depth (m)", sillM: "Sill height (m)",
   recessM: "Recess (m)", frameWidthM: "Frame width (m)", sillProjectionM: "Sill projection (m)",
@@ -372,6 +373,9 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
               <span>{labelFor(key)}</span>{key === "layout" ? <select aria-label={labelFor(key)} value={fields[node.id]?.[key] ?? "0"}
                 onChange={event => { const text=event.currentTarget.value;setFields(all=>({...all,[node.id]:{...all[node.id],[key]:text}}));setDirty(true); }}>
                 {CONSTRUCTION_WINDOW_LAYOUTS.map(option=><option key={option.value} value={option.value}>{option.label}</option>)}
+              </select> : key === "corniceAssembly" ? <select aria-label="Cornice treatment" value={fields[node.id]?.[key] ?? "0"}
+                onChange={event => {const text=event.currentTarget.value;setFields(all=>({...all,[node.id]:{...all[node.id],[key]:text}}));setDirty(true);}}>
+                {CONSTRUCTION_CORNICE_LAYOUTS.map(option=><option key={option.value} value={option.value}>{option.label}</option>)}
               </select> : key === "mode" && node.type === "PlaceStorefront" ? <select aria-label="Ground frontage" value={fields[node.id]?.[key] ?? "0"}
                 onChange={event => {const text=event.currentTarget.value;setFields(all=>({...all,[node.id]:{...all[node.id],[key]:text}}));setDirty(true);}}>
                 {CONSTRUCTION_FRONTAGE_OPTIONS.map(option=><option key={option.value} value={option.value}>{option.label}</option>)}
@@ -390,7 +394,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
               </select>
             </label> : null}
             {"input" in node && node.type !== "Storeys" ? <label className="control-panel__field-wide construction-contribution"><input type="checkbox" aria-label="Bypass selected node" checked={Boolean(node.bypassed)}
-              onChange={event => { setDraft(graph => ({ ...graph, schemaVersion: ["0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0"].includes(graph.schemaVersion) ? graph.schemaVersion : "0.2.0" })); replace({ ...node, bypassed: event.currentTarget.checked }); }} /><span>Bypass this node</span></label> : null}
+              onChange={event => { setDraft(graph => ({ ...graph, schemaVersion: ["0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0"].includes(graph.schemaVersion) ? graph.schemaVersion : "0.2.0" })); replace({ ...node, bypassed: event.currentTarget.checked }); }} /><span>Bypass this node</span></label> : null}
             {"inputs" in node ? draft.nodes.filter(value => value.id !== node.id && constructionOutputSocket(value.type) === "geometry").map(value =>
               <label className="control-panel__field-wide construction-contribution" key={value.id}>
                 <input type="checkbox" aria-label={`Include ${displayName(value)}`} checked={node.inputs.some(link => link.nodeId === value.id)}
@@ -440,7 +444,10 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       {buildingMode && !advancedOpen && accepted ? <ConstructionBuildingControls graph={draft} fields={fields} windowCount={groupedWindowCount(accepted.construction.graph,accepted.ir)} storefrontCount={groupedStorefrontCount(accepted.construction.graph,accepted.ir)} localWidthCount={constructionOpeningOptions(accepted.construction.graph,accepted.ir).filter(option=>option.overridden).length}
         disabled={disabled || !viewerReady || Boolean(previewNode)} dirty={buildingDirty}
         onFieldChange={(id,key,text) => {
-          if (id === "frontage" && !draft.nodes.some(node => node.id === "frontage")) {
+          if (key === "corniceAssembly") {
+            const migrated = withConstructionCorniceLayout(draft, draft.nodes.find(node => node.type === "BuildingRoof")?.parameters.corniceAssembly ?? 0);
+            setDraft(migrated);setFields(all => ({...fieldsFor(migrated),...all,[id]:{...fieldsFor(migrated)[id],...all[id],[key]:text}}));
+          } else if (id === "frontage" && !draft.nodes.some(node => node.id === "frontage")) {
             const migrated = withConstructionStorefront(draft, 0);
             setDraft(migrated);setFields(all => ({...fieldsFor(migrated),...all,[id]:{...fieldsFor(migrated)[id],...all[id],[key]:text}}));
           } else {

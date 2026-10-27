@@ -1,0 +1,6 @@
+1:22:23 AM [vite] (client) [optimizer] bundling dependencies...
+{"api":"webgpu","state":"original-moulded"}
+{"api":"webgpu","state":"moulded"}
+{"api":"webgpu","state":"dentil"}
+{"api":"webgpu","state":"bracket"}
+{"api":"webgpu","states":4,"captures":12,"errors":[]}

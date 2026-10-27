@@ -2,6 +2,10 @@ import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/re
 import { CubeTexture, DataTexture, DirectionalLight, LinearFilter, LinearMipmapLinearFilter, Vector3, type Camera, type Scene } from "three";
 import { vi } from "vitest";
 import { BayConstructionWorkbench, type BayConstructionSession } from "../ui/BayConstructionWorkbench";
+import { withConstructionCorniceLayout } from "../core/constructionCorniceVocabulary";
+import { withConstructionOpeningWidth } from "../core/constructionOpeningEditGraph";
+import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
+import { withConstructionWindowLayout } from "../core/constructionWindowVocabulary";
 import { AssemblyHall } from "../ui/AssemblyHall";
 import { createAssemblyHallFixture, type AssemblyHallFixture } from "../ui/assemblyHallFixture";
 import * as fixtures from "../ui/bayConstructionFixture";
@@ -566,6 +570,39 @@ it("generates, edits, locks and rerolls through the actual workbench with saved 
     } finally {view.unmount();}
     for(const record of rendererState.records)expect(record.dispose).toHaveBeenCalledTimes(1);
   },60000);
+
+  it("publishes cornice treatment with prior authored choices, portable9, checkpoint, history and failed-candidate retention",async()=>{
+    const base=createBuildingConstructionGraph(),target={documentId:base.documentId,storeysNodeId:"facade",windowNodeId:"window",face:"front" as const,floorIndex:1,bayIndex:2};
+    const graph=withConstructionOpeningWidth(withConstructionStorefront(withConstructionWindowLayout(base,"window",2),1),{target,widthM:1.8});
+    const original=structuredClone(graph),view=mount({graph,materials});
+    try{
+      await ready();fireEvent.click(screen.getByText("Roof & trim",{selector:"summary"}));
+      fireEvent.change(screen.getByRole("combobox",{name:"Cornice treatment"}),{target:{value:"1"}});
+      expect(view.onSessionChange).toHaveBeenCalledTimes(1);fireEvent.click(screen.getByRole("button",{name:"Apply construction"}));
+      await waitFor(()=>expect(view.onSessionChange).toHaveBeenCalledTimes(2),{timeout:15000});await ready();
+      const edited=view.onSessionChange.mock.calls.at(-1)![0];expect(edited.graph).toEqual(withConstructionCorniceLayout(original,1));expect(edited.materials).toBe(materials);
+      const file=await createBayConstructionProject(edited.graph,edited.materials.file);expect(file.schemaVersion).toBe("0.9.0");
+      expect((await readBayConstructionProject(JSON.parse(JSON.stringify(file)))).project).toEqual(file);
+      await expect(readBayConstructionProject({...file,schemaVersion:"0.8.0"})).rejects.toThrow("versions must agree");
+      await expect(readBayConstructionProject({...file,graph:original})).rejects.toThrow("versions must agree");
+      const checkpoint=await createConstructionCheckpoint("cornice-workspace",edited.graph,edited.materials.file);
+      expect((await readConstructionCheckpoint(checkpoint)).project.graph).toEqual(edited.graph);
+      rendererState.reject=true;fireEvent.change(screen.getByRole("combobox",{name:"Cornice treatment"}),{target:{value:"2"}});
+      fireEvent.click(screen.getByRole("button",{name:"Apply construction"}));
+      await waitFor(()=>expect(screen.getByRole("alert")).toHaveTextContent("Candidate renderer rejected"),{timeout:15000});expect(view.onSessionChange).toHaveBeenCalledTimes(2);
+      fireEvent.click(screen.getByRole("button",{name:"Revert draft"}));
+      fireEvent.click(screen.getByRole("button",{name:"Undo construction"}));await waitFor(()=>expect(view.onSessionChange).toHaveBeenCalledTimes(3),{timeout:15000});await ready();
+      expect(view.onSessionChange.mock.calls.at(-1)![0].graph).toEqual(original);
+      fireEvent.click(screen.getByRole("button",{name:"Redo construction"}));await waitFor(()=>expect(view.onSessionChange).toHaveBeenCalledTimes(4),{timeout:15000});await ready();
+      expect(screen.getByRole("combobox",{name:"Cornice treatment"})).toHaveValue("1");
+      fireEvent.click(screen.getByText("Openings",{selector:"summary"}));fireEvent.change(screen.getByRole("combobox",{name:"Window assembly"}),{target:{value:"1"}});
+      fireEvent.click(screen.getByRole("button",{name:"Apply construction"}));await waitFor(()=>expect(view.onSessionChange).toHaveBeenCalledTimes(5),{timeout:15000});await ready();
+      const changed=view.onSessionChange.mock.calls.at(-1)![0];expect(changed.graph.schemaVersion).toBe("0.8.0");expect(changed.graph.nodes.find(n=>n.type==="BuildingRoof")!.parameters.corniceAssembly).toBe(1);
+      expect(changed.graph.nodes.find(n=>n.type==="EditOpeningWidth")!.overrides).toEqual([{target,widthM:1.8}]);expect(changed.materials).toBe(materials);
+      expect(generate).toHaveBeenCalledTimes(sourceCalls);
+    }finally{view.unmount();}
+    for(const record of rendererState.records)expect(record.dispose).toHaveBeenCalledTimes(1);
+  },90000);
 
   it("edits one selected window with material retention, portable/checkpoint source, local history and reset", async () => {
     const view=mount({graph:createBuildingConstructionGraph(),materials});

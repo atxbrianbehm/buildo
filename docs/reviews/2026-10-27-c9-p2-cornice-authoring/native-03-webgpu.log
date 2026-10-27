@@ -1,0 +1,20 @@
+Port 5173 is in use, trying another one...
+Port 5174 is in use, trying another one...
+1:17:59 AM [vite] (client) [optimizer] scanning dependencies...
+1:18:01 AM [vite] (client) [optimizer] bundling dependencies...
+{"api":"webgpu","state":"legacy-moulded"}
+{"api":"webgpu","state":"dentil"}
+{"api":"webgpu","state":"bracket"}
+{"api":"webgpu","state":"undo"}
+{"api":"webgpu","state":"redo"}
+{"api":"webgpu","state":"dimensioned"}
+{"api":"webgpu","state":"undo-dimensions"}
+{"api":"webgpu","state":"authored-generation"}
+{"api":"webgpu","state":"opening-lock-releases-roof"}
+{"api":"webgpu","state":"explicit-release"}
+{"api":"webgpu","state":"restored"}
+{"api":"webgpu","state":"keyboard-dentil"}
+{"api":"webgpu","state":"final"}
+{"api":"webgpu","state":"room-return"}
+{"api":"webgpu","state":"cold"}
+{"api":"webgpu","states":15,"captures":21,"errors":[]}

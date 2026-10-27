@@ -1,3 +1,4 @@
+import { CONSTRUCTION_CORNICE_LAYOUTS } from "../core/constructionCorniceVocabulary";
 import { CONSTRUCTION_WINDOW_LAYOUTS } from "../core/constructionWindowVocabulary";
 import { useId, useState } from "react";
 import type { BayConstructionGraph } from "../contracts/bayConstructionGraph";
@@ -10,7 +11,7 @@ const groups = [
   { id: "storeys", label: "Storeys", fields: [["facade", "count", "Floor count", "Number of storeys on every elevation."], ["facade", "groundHeightM", "Ground storey height (m)", "Height of the ground storey."], ["facade", "upperHeightM", "Upper storey height (m)", "Height of each upper storey."], ["bays", "count", "Bays per elevation", "Repeating divisions on each elevation."]] },
   { id: "openings", label: "Openings", fields: [["window", "recessM", "Recess (m)", "Distance from facade to window frame."], ["window", "frameWidthM", "Frame width (m)", "Width of the window frame."], ["window", "sillProjectionM", "Sill projection (m)", "How far the sill extends from the facade."]] },
   { id: "frontage", label: "Ground floor", fields: [] },
-  { id: "roof", label: "Roof & trim", fields: [["roof", "parapetHeightM", "Parapet height (m)", "Wall above the roof deck."], ["roof", "copingProjectionM", "Coping projection (m)", "Overhang of the parapet cap."], ["roof", "corniceHeightM", "Cornice height (m)", "Height of the continuous roof profile."], ["roof", "corniceProjectionM", "Cornice projection (m)", "How far the cornice projects."], ["bands", "heightM", "Belt height (m)", "Height of the horizontal storey bands."], ["bands", "projectionM", "Belt projection (m)", "How far the storey bands project."]] }
+  { id: "roof", label: "Roof & trim", fields: [["roof", "parapetHeightM", "Parapet height (m)", "Wall above the roof deck."], ["roof", "copingProjectionM", "Coping projection (m)", "Overhang of the parapet cap."], ["roof", "corniceHeightM", "Cornice height (m)", "Height of the cornice profile and detail course."], ["roof", "corniceProjectionM", "Cornice projection (m)", "How far the cornice projects."], ["bands", "heightM", "Belt height (m)", "Height of the horizontal storey bands."], ["bands", "projectionM", "Belt projection (m)", "How far the storey bands project."]] }
 ] as const;
 const proportions = [["opening", "widthM", "Opening width (m)", "Width of regular openings without a local width override."], ["opening", "heightM", "Opening height (m)", "Height of the repeated window opening."], ["opening", "sillM", "Sill height (m)", "Height above each storey floor."]] as const;
 const frontageProportions = [
@@ -77,6 +78,13 @@ export function ConstructionBuildingControls({ graph, fields, windowCount, store
               <p>Head band and transom level set the entrance height. Regular window controls stay under Openings.</p>
             </> : null}
           </> : null}
+          {group.id === "roof" ? <label className="construction-grouped__field construction-grouped__assembly">
+            <span><strong>Cornice treatment</strong><small id={prefix+"cornice"}>Profile and detail course on all four elevations.{graph.nodes.some(node => node.type === "BuildingRoof" && node.bypassed) ? " This operator is bypassed in the advanced graph." : ""}</small></span>
+            <select aria-label="Cornice treatment" aria-describedby={prefix+"cornice"} value={fields.roof?.corniceAssembly ?? "0"}
+              disabled={graph.nodes.some(node => node.type === "BuildingRoof" && node.bypassed)} onChange={event => onFieldChange("roof","corniceAssembly",event.currentTarget.value)}>
+              {CONSTRUCTION_CORNICE_LAYOUTS.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
+            </select>
+          </label> : null}
           {group.fields.map(field)}
           {group.id === "openings" ? <details className="construction-grouped__proportions"><summary>Opening proportions</summary>{proportions.map(field)}</details> : null}
           {dirty ? <p className="construction-grouped__draft">Apply commits all pending building changes. Undo restores the previous building.</p> : null}

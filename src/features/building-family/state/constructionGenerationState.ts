@@ -1,3 +1,4 @@
+import { retainConstructionCorniceVocabulary, withConstructionCorniceLayout } from "../core/constructionCorniceVocabulary";
 import { retainConstructionStorefront, withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { retainConstructionOpeningEdits, withConstructionOpeningEdits } from "../core/constructionOpeningEditGraph";
 import { retainConstructionWindowVocabulary } from "../core/constructionWindowVocabulary";
@@ -49,7 +50,8 @@ const controlsSchema = z.object({ recipeId: z.string().min(1).max(512).optional(
   lockFootprint: z.boolean(), lockStoreys: z.boolean(), lockOpenings: z.boolean(), preserveAuthored: z.boolean() }).strict();
 
 function assertTopology(current: BayConstructionGraph, generated: BayConstructionGraph) {
-  if (current.schemaVersion === "0.7.0") generated = withConstructionOpeningEdits(generated);
+  if (current.schemaVersion === "0.8.0") generated = withConstructionCorniceLayout(generated, 0);
+  else if (current.schemaVersion === "0.7.0") generated = withConstructionOpeningEdits(generated);
   else if (current.schemaVersion === "0.6.0") generated = withConstructionStorefront(generated, 0);
   const topology = (graph: BayConstructionGraph) => ({ ...graph, schemaVersion: graph.schemaVersion === "0.5.0" ? "0.4.0" : graph.schemaVersion, nodes: graph.nodes.map(node => {
     if (node.type === "SetSurface") return { ...node, composition: null };
@@ -98,9 +100,9 @@ export async function resolveWorkbenchGeneration(currentInput: unknown, previous
     if (node.type === "PlaceStorefront") continue;
     const original = template.graph.nodes.find(item => item.id === node.id)!;
     if (!("parameters" in original)) throw new Error("Generation parameter topology changed.");
-    const groupLocked = node.type === "Footprint" && controls.lockFootprint || node.type === "Storeys" && controls.lockStoreys || (["PlaceOpening", "AssembleWindow"].includes(node.type) || ["0.6.0", "0.7.0"].includes(current.schemaVersion) && ["PlaceDoor", "AssembleDoor"].includes(node.type)) && controls.lockOpenings;
+    const groupLocked = node.type === "Footprint" && controls.lockFootprint || node.type === "Storeys" && controls.lockStoreys || (["PlaceOpening", "AssembleWindow"].includes(node.type) || ["0.6.0", "0.7.0", "0.8.0"].includes(current.schemaVersion) && ["PlaceDoor", "AssembleDoor"].includes(node.type)) && controls.lockOpenings;
     for (const [field, value] of Object.entries(node.parameters)) {
-      if (node.type === "AssembleWindow" && field === "layout") continue;
+      if (node.type === "AssembleWindow" && field === "layout" || node.type === "BuildingRoof" && field === "corniceAssembly") continue;
       const path = "construction/" + node.id + "/" + field;
       const authored = controls.preserveAuthored && (value !== (original.parameters as Record<string, number>)[field] ||
         input.intent.locks.some(lock => lock.semanticPath === path && lock.reason === "Authored numeric edit"));
@@ -135,7 +137,7 @@ export async function resolveWorkbenchGeneration(currentInput: unknown, previous
     "$constructionPsgDocument": document, "$constructionPsgTrace": JSON.parse(canonicalJson(evaluation.trace)) };
   const source = await captureConstructionGenerationSource(input), resolution = await resolveConstructionGeneration(source);
   const preserve = controls.preserveAuthored || controls.lockOpenings;
-  const graph = retainConstructionOpeningEdits(current, retainConstructionStorefront(current, retainConstructionWindowVocabulary(current, structuredClone(resolution.graph), preserve), preserve), preserve);
+  const graph = retainConstructionCorniceVocabulary(current, retainConstructionOpeningEdits(current, retainConstructionStorefront(current, retainConstructionWindowVocabulary(current, structuredClone(resolution.graph), preserve), preserve), preserve), controls.preserveAuthored);
   for (const node of graph.nodes) if (node.type === "SetSurface") {
     const authored = current.nodes.find(item => item.id === node.id);
     if (authored?.type === "SetSurface") node.composition = structuredClone(authored.composition);

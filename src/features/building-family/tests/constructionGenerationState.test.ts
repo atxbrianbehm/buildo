@@ -1,4 +1,5 @@
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
+import { withConstructionCorniceLayout } from "../core/constructionCorniceVocabulary";
 import { withConstructionOpeningWidth } from "../core/constructionOpeningEditGraph";
 import { withConstructionWindowLayout } from "../core/constructionWindowVocabulary";
 import { describe, expect, it } from "vitest";
@@ -19,6 +20,31 @@ async function initial() {
   return { ...result, lineage, template };
 }
 const footprint = (graph: ReturnType<typeof createBuildingConstructionGraph>) => graph.nodes.find(node => node.type === "Footprint")!.parameters;
+
+it("retains authored cornice separately from opening locks over immutable recipe and material lineage",async()=>{
+  const a=await initial(),target={documentId:a.graph.documentId,storeysNodeId:"facade",windowNodeId:"window",face:"front" as const,floorIndex:1,bayIndex:2};
+  const edited=withConstructionCorniceLayout(withConstructionOpeningWidth(withConstructionStorefront(withConstructionWindowLayout(a.graph,"window",2),1),{target,widthM:1.8}),2),before=structuredClone(edited);
+  const roof=(graph:typeof edited)=>graph.nodes.find(node=>node.type==="BuildingRoof")!.parameters;
+  const kept=await resolveWorkbenchGeneration(edited,a.lineage,defaultConstructionGenerationControls,true);
+  expect(kept.graph.schemaVersion).toBe("0.8.0");expect(roof(kept.graph).corniceAssembly).toBe(2);expect(edited).toEqual(before);
+  expect(kept.resolution.graph.schemaVersion).toBe("0.4.0");expect(roof(kept.resolution.graph)).not.toHaveProperty("corniceAssembly");
+  expect(kept.source.intent.locks.some(lock=>lock.semanticPath.endsWith("/corniceAssembly"))).toBe(false);
+  const materialPlan=await planConstructionReferenceMaterials(a.template,kept.source);
+  expect(materialPlan.materialInputsHash).toBe(a.lineage.materialPlan.materialInputsHash);
+  const next={...a.lineage,source:kept.source,resolution:kept.resolution,materialPlan};
+  const openingLocked=await resolveWorkbenchGeneration(kept.graph,next,{...kept.controls,preserveAuthored:false,lockOpenings:true},true);
+  expect(roof(openingLocked.graph).corniceAssembly).toBe(0);
+  expect(openingLocked.graph.nodes.find(node=>node.type==="AssembleWindow")!.parameters.layout).toBe(2);
+  expect(openingLocked.graph.nodes.find(node=>node.type==="PlaceStorefront")!.parameters.mode).toBe(1);
+  expect(openingLocked.graph.nodes.find(node=>node.type==="EditOpeningWidth")!.overrides).toEqual([{target,widthM:1.8}]);
+  const released=await resolveWorkbenchGeneration(edited,a.lineage,{...defaultConstructionGenerationControls,preserveAuthored:false,lockOpenings:false});
+  expect(roof(released.graph)).toEqual({...roof(released.resolution.graph),corniceAssembly:0});
+  expect(released.graph.nodes.find(node=>node.type==="AssembleWindow")!.parameters.layout).toBe(0);
+  expect(released.graph.nodes.find(node=>node.type==="PlaceStorefront")!.parameters.mode).toBe(0);
+  expect(released.graph.nodes.find(node=>node.type==="EditOpeningWidth")!.overrides).toEqual([]);
+  edited.nodes.find(node=>node.type==="BuildingRoof")!.input.nodeId="bays";
+  await expect(resolveWorkbenchGeneration(edited,a.lineage,defaultConstructionGenerationControls)).rejects.toThrow(/authored connections/);
+});
 
 it("retains one local width through authored/locked generation and explicitly releases or rejects target loss", async () => {
   const a=await initial(), target={documentId:a.graph.documentId,storeysNodeId:"facade",windowNodeId:"window",face:"front" as const,floorIndex:2,bayIndex:3};

@@ -1,0 +1,13 @@
+
+> buildo@0.0.0 test
+> vitest run src/features/building-family/tests/constructionCorniceGeometry.test.ts src/features/building-family/tests/ConstructionBuildingControls.test.tsx src/features/building-family/tests/constructionGenerationState.test.ts src/features/building-family/tests/bayConstructionWorkbench.test.tsx
+
+
+ RUN  v4.1.9 C:/Users/behmb/Documents/Cascade Projects/buildo
+
+
+ Test Files  4 passed (4)
+      Tests  65 passed (65)
+   Start at  01:10:01
+   Duration  137.81s (transform 1.79s, setup 462ms, import 2.72s, tests 140.32s, environment 3.11s)
+
