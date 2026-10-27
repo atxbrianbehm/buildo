@@ -1,0 +1,180 @@
+{
+  "schemaVersion": "0.1.0",
+  "display": {
+    "schemaVersion": "0.1.0",
+    "kind": "construction-storefront-plan",
+    "source": {
+      "schemaVersion": "0.1.0",
+      "kind": "construction-storefront-request",
+      "scope": {
+        "id": "building/study/front/floor/0/bay/0",
+        "face": "front",
+        "floorIndex": 0,
+        "bayIndex": 0,
+        "originM": [
+          -5.6,
+          0,
+          -0.36
+        ],
+        "sizeM": [
+          2.8,
+          4,
+          0.36
+        ]
+      },
+      "assembly": "display",
+      "parameters": {
+        "pierWidthM": 0.16,
+        "bulkheadHeightM": 0.55,
+        "headHeightM": 0.45,
+        "transomBaseM": 2.35,
+        "frameWidthM": 0.075,
+        "recessM": 0.14,
+        "entranceWidthM": 1.22
+      }
+    },
+    "aperture": {
+      "leftM": -5.4399999999999995,
+      "bottomM": 0.55,
+      "widthM": 2.48,
+      "heightM": 3
+    },
+    "lowerClearRegion": {
+      "leftM": -5.364999999999999,
+      "bottomM": 0.625,
+      "widthM": 2.33,
+      "heightM": 1.725
+    },
+    "transomRail": {
+      "leftM": -5.364999999999999,
+      "bottomM": 2.35,
+      "widthM": 2.33,
+      "heightM": 0.075
+    },
+    "transomClearRegion": {
+      "leftM": -5.364999999999999,
+      "bottomM": 2.4250000000000003,
+      "widthM": 2.33,
+      "heightM": 1.0499999999999994
+    }
+  },
+  "entrance": {
+    "schemaVersion": "0.1.0",
+    "kind": "construction-storefront-plan",
+    "source": {
+      "schemaVersion": "0.1.0",
+      "kind": "construction-storefront-request",
+      "scope": {
+        "id": "building/study/front/floor/0/bay/0",
+        "face": "front",
+        "floorIndex": 0,
+        "bayIndex": 0,
+        "originM": [
+          -5.6,
+          0,
+          -0.36
+        ],
+        "sizeM": [
+          2.8,
+          4,
+          0.36
+        ]
+      },
+      "assembly": "glazed-entrance",
+      "parameters": {
+        "pierWidthM": 0.16,
+        "bulkheadHeightM": 0.55,
+        "headHeightM": 0.45,
+        "transomBaseM": 2.35,
+        "frameWidthM": 0.075,
+        "recessM": 0.14,
+        "entranceWidthM": 1.22
+      }
+    },
+    "aperture": {
+      "leftM": -4.81,
+      "bottomM": 0,
+      "widthM": 1.22,
+      "heightM": 3.55
+    },
+    "lowerClearRegion": {
+      "leftM": -4.734999999999999,
+      "bottomM": 0.075,
+      "widthM": 1.07,
+      "heightM": 2.275
+    },
+    "transomRail": {
+      "leftM": -4.734999999999999,
+      "bottomM": 2.35,
+      "widthM": 1.07,
+      "heightM": 0.075
+    },
+    "transomClearRegion": {
+      "leftM": -4.734999999999999,
+      "bottomM": 2.4250000000000003,
+      "widthM": 1.07,
+      "heightM": 1.0499999999999994
+    }
+  },
+  "wide": {
+    "schemaVersion": "0.1.0",
+    "kind": "construction-storefront-plan",
+    "source": {
+      "schemaVersion": "0.1.0",
+      "kind": "construction-storefront-request",
+      "scope": {
+        "id": "building/study/front/floor/0/bay/0",
+        "face": "front",
+        "floorIndex": 0,
+        "bayIndex": 0,
+        "originM": [
+          -5.6,
+          0,
+          -0.36
+        ],
+        "sizeM": [
+          3.2,
+          4,
+          0.36
+        ]
+      },
+      "assembly": "display",
+      "parameters": {
+        "pierWidthM": 0.16,
+        "bulkheadHeightM": 0.55,
+        "headHeightM": 0.45,
+        "transomBaseM": 2.35,
+        "frameWidthM": 0.075,
+        "recessM": 0.14,
+        "entranceWidthM": 1.22
+      }
+    },
+    "aperture": {
+      "leftM": -5.4399999999999995,
+      "bottomM": 0.55,
+      "widthM": 2.8800000000000003,
+      "heightM": 3
+    },
+    "lowerClearRegion": {
+      "leftM": -5.364999999999999,
+      "bottomM": 0.625,
+      "widthM": 2.7300000000000004,
+      "heightM": 1.725
+    },
+    "transomRail": {
+      "leftM": -5.364999999999999,
+      "bottomM": 2.35,
+      "widthM": 2.7300000000000004,
+      "heightM": 0.075
+    },
+    "transomClearRegion": {
+      "leftM": -5.364999999999999,
+      "bottomM": 2.4250000000000003,
+      "widthM": 2.7300000000000004,
+      "heightM": 1.0499999999999994
+    }
+  },
+  "continuationExact": true,
+  "rendered": false,
+  "productIntegrated": false
+}

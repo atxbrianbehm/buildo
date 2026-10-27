@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "0.1.0",
+  "packet": "C8.P0",
+  "baseCommit": "14a47b94b8b2bf477a33d8e92d402cd744620a64",
+  "verifiedAtUtc": "2026-10-25T06:36:08.102565+00:00",
+  "status": "Pure aperture planning complete; no product/renderer integration claimed.",
+  "preexistingSourcePinsVerifiedUnchanged": 332,
+  "newSourcePins": [
+    {
+      "file": "src/features/building-family/contracts/constructionStorefront.ts",
+      "sha256": "12c76f84cc41c060ea643b9b864f7501c7d6a0d155ff5e04ba267501c7f9b9ef",
+      "snapshot": "source/src/features/building-family/contracts/constructionStorefront.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/core/constructionStorefront.ts",
+      "sha256": "2d8a82dd90d9bbb2eb710c2c19094ab7a58796226bf0468c2fc6fe1db5e933a3",
+      "snapshot": "source/src/features/building-family/core/constructionStorefront.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionStorefront.test.ts",
+      "sha256": "4e7c0ff6476d2e7422efeedf3808fdd5e412fbe8265a0b63bd57a8326c00d8a8",
+      "snapshot": "source/src/features/building-family/tests/constructionStorefront.test.ts.txt"
+    }
+  ],
+  "checks": {
+    "typecheck": 0,
+    "lint": 0,
+    "focused": 0
+  },
+  "focusedTests": 38,
+  "focusedFiles": 2,
+  "newTests": 24,
+  "actualPlans": "plans.json",
+  "constructionGraphOrCodecChanged": false,
+  "rendered": false,
+  "productIntegrated": false,
+  "providerCalls": 0,
+  "notes": [
+    "First optional probe executed successfully but Vite dependency discovery raced its immediate loader shutdown; final probe disables discovery and isolates its cache, exits cleanly. Production source unchanged between probes.",
+    "Legacy and C7 hashes are covered directly by the inherited constructionWindowVocabulary suite.",
+    "Public publication remains blocked by pending exact-payload approval; no push or PR."
+  ]
+}
