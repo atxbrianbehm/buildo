@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "public-image-verification",
+  "authenticationUsed": false,
+  "images": [
+    {
+      "filename": "buildo-ux2-before-local-width.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/36bc79cbb4144186a70cecb9b5ae2a24bcdf3bfd/docs/reviews/2026-10-26-ux2-p2-selected-window-authoring/webgpu/legacy-storefront-building.png",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "bytes": 440673,
+      "sha256": "1421dae9f47b1a58221fb785f155b7ab74df88654ce38870019e553cca75ded3"
+    },
+    {
+      "filename": "buildo-ux2-selected-width-building.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/36bc79cbb4144186a70cecb9b5ae2a24bcdf3bfd/docs/reviews/2026-10-26-ux2-p2-selected-window-authoring/webgpu/one-window-widened.png",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "bytes": 438222,
+      "sha256": "72da93a3af5a3233915f137ff69a30ee3d36306e05eb175a52cde17b984e45fc"
+    },
+    {
+      "filename": "buildo-ux2-selected-window-controls.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/36bc79cbb4144186a70cecb9b5ae2a24bcdf3bfd/docs/reviews/2026-10-26-ux2-p2-selected-window-authoring/webgpu/selected-window-controls.png",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "bytes": 501192,
+      "sha256": "f719bd3eb233955a70dbd2d181a2cfd974fb95e8b62ac735ed52a1db807ddb34"
+    },
+    {
+      "filename": "buildo-ux2-widened-window-close.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/36bc79cbb4144186a70cecb9b5ae2a24bcdf3bfd/docs/reviews/2026-10-26-ux2-p2-selected-window-authoring/webgpu/widened-window-close.png",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "bytes": 404995,
+      "sha256": "8bb77189005c5be332431d8666fd5e7f4701e78247169374ae7e1b32269c4675"
+    },
+    {
+      "filename": "buildo-ux2-widened-window-clay.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/36bc79cbb4144186a70cecb9b5ae2a24bcdf3bfd/docs/reviews/2026-10-26-ux2-p2-selected-window-authoring/webgpu/widened-window-clay-close.png",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "bytes": 111103,
+      "sha256": "3da5ee457b55fe2a8651ac9a512401193870f8485025ee4e7aa3cc974b9f4d33"
+    },
+    {
+      "filename": "buildo-ux2-phone-controls.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/36bc79cbb4144186a70cecb9b5ae2a24bcdf3bfd/docs/reviews/2026-10-26-ux2-p2-selected-window-authoring/ui-compact.png",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "bytes": 247127,
+      "sha256": "2bb2420a4f4ba193424dc3686e6d8df4e33a514ae982f741345c1a5dbaba0fdb"
+    },
+    {
+      "filename": "buildo-ux2-desktop-controls.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/36bc79cbb4144186a70cecb9b5ae2a24bcdf3bfd/docs/reviews/2026-10-26-ux2-p2-selected-window-authoring/ui-desktop.png",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "bytes": 504427,
+      "sha256": "66d1a08ce0ad3b102bc7d59aad094a65623a9320c8afbfa8e6936b37bdf1d3d6"
+    },
+    {
+      "filename": "buildo-ux2-webgl-cold-recovery.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/36bc79cbb4144186a70cecb9b5ae2a24bcdf3bfd/docs/reviews/2026-10-26-ux2-p2-selected-window-authoring/webgl/cold-recovered.png",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "bytes": 432571,
+      "sha256": "0f9365da3946a8e8664304e2c21fa4f7437870c50ffa7ec8403e1d39f92371b5"
+    }
+  ]
+}

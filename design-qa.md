@@ -15,3 +15,5 @@ All five checks pass on unchanged final source:1,860 tests/128 files plus eight 
 Limits: no real mobile/Safari, assistive-technology or recruited-artist evidence. Existing WebGL shadow-map fallback, shader precision warnings and visible legacy trim/material differences remain; within-backend continuation does not establish visual parity between backends. P1 corrected closed trim only for explicitly edited windows, retaining other accepted legacy geometry. Native driver failures and the orphan-finish diagnostic are preserved without weaker assertions or production changes between native attempts.
 
 The earlier C8 root QA is preserved as pre-ux2-design-qa.md in the packet. Human UX1 direction and C6 recipe decisions are accepted; this new selected-window task still needs its own human review. Family/block, performance and live historical UTDG coverage remain separate.
+
+The phone gallery append is verified: eight new actual images,120 total and all112 earlier references retained. Images use immutable public GitHub sources; no upload credentials were persisted or used. [Publication receipt](docs/reviews/2026-10-26-ux2-publication/README.md).

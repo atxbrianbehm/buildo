@@ -25,6 +25,8 @@ Inside **Advanced recipe graph**, **Advanced generator** returns to the existing
 
 Local width overrides survive **Keep edited dimensions and assemblies** or **Lock openings** during generation; clearing both releases them. Removing a preserved target rejects the candidate and retains the accepted building. A finish painted onto a removed frame has its own guard: explicitly remove that finish before removing its storey, or keep the target. Side/rear windows, ground frontage and other local structural dimensions remain outside this first scoped task. Portable project0.8 retains graph0.7, materials and generation lineage; old files remain literal.
 
+[Review the actual images on your phone](https://app.notion.com/p/3fdb77d6cd4f812a9f88f1316beb9c25). [PR and gallery publication receipt](docs/reviews/2026-10-26-ux2-publication/README.md).
+
 ## Project Docs
 
 - `docs/plans/building-authoring-revival.md` - October repository audit and building-first revival plan.

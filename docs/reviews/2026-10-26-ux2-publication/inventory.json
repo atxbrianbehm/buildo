@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "publication-inventory",
+  "files": [
+    {
+      "file": "gallery-public-image-proof.json",
+      "bytes": 3635,
+      "sha256": "f27b1f2af3b68ea4fc058a1fa5b9f8947b7d085b71e713d9a826bccb2fa45f8a"
+    },
+    {
+      "file": "notion-proof.json",
+      "bytes": 784,
+      "sha256": "6b83de60fea50f78ee46f8b20b2e581e3b6c662ab3c198d7d12345db8854ad09"
+    },
+    {
+      "file": "notion-section.md",
+      "bytes": 4124,
+      "sha256": "6f74e6df964131161a58593a9e24bef7b1bac18fa91a865174d4a2940fb74b4a"
+    },
+    {
+      "file": "README.md",
+      "bytes": 3346,
+      "sha256": "ed9102ff78dabd97a961cf3f14f9c26eca4c7e4f068be5a1355d9a280df5d8ab"
+    }
+  ]
+}

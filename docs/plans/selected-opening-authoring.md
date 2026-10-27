@@ -19,7 +19,7 @@ The grouped workflow and three-recipe geometric baseline were [accepted on Octob
 | UX2.P1 — complete | Explicit graph/worker admission and one scope-edit operation after frontage, shared by wall/window consumers. Store overrides in graph source using structural addresses. | Actual compiled aperture/assembly causality, unchanged unrelated openings and protected geometry, native buffers/UV/winding/identity, missing/duplicate/stale target rejection, old graph hashes and request/reply validation. Typecheck/lint and focused tests. |
 | UX2.P2 — engineering complete | Selected-window width control with one clearly named target, apply/reset and existing publication/history flow. Portable/history/checkpoint, authored/locked generation retention and explicit release. | All five repository checks and both native backends: select one real frame, widen it, inspect wall/frame/glass, materials/finishes exact, invalid-fit retention, Undo/Redo, Save/Open, room/cold recovery, selection ownership, keyboard/compact operation. Real gallery images. |
 
-P1 follows P0 and P2 follows P1 without inserting another human approval gate. Keep one commit and PR per milestone. After P2, human review of the actual task and the existing artist protocol remains required before broader UI migration or more targeted operations. No recruitment or external outreach is authorized here.
+P1 follows P0 and P2 follows P1 without inserting another human approval gate. Keep implementation milestones separate, with one PR per packet. Externally verified publication results may follow in a small documentation-only commit. After P2, human review of the actual task and the existing artist protocol remains required before broader UI migration or more targeted operations. No recruitment or external outreach is authorized here.
 
 ## Structural and continuation rules
 
@@ -34,3 +34,5 @@ Keep edited dimensions and assemblies or Lock openings preserves explicit local 
 Structural edits preserve material artifacts, local finish layers, semantic addresses and generation/reference lineage. Old project reads remain literal. New portable source must bind the graph version and immutable material source, with exact source roundtrip and zero cold material/provider generation. Selection is transient UI state, not a renderer-instance index serialized into the project.
 
 The UTDG architecture adapter, historical evidence, additional opening families, artist sessions and family/block performance remain separate. Passing this task does not establish them.
+
+[Published PRs and phone-gallery receipt](../reviews/2026-10-26-ux2-publication/README.md): three packet PRs;120 image blocks, with all112 prior references retained. Human review of the new task remains pending.
