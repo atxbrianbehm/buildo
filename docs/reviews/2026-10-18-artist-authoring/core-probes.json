@@ -1,0 +1,2070 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "artist-authoring-core-probes",
+  "baseline": {
+    "nodes": 14,
+    "instanceCounts": [
+      {
+        "id": "construction.window.construction.prototype.frame.e250839262bfa0a60932",
+        "count": 47
+      },
+      {
+        "id": "construction.window.construction.prototype.glass.e250839262bfa0a60932",
+        "count": 47
+      },
+      {
+        "id": "construction.window.construction.prototype.trim.e250839262bfa0a60932",
+        "count": 47
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "all-window-frame-width",
+      "status": "compiled",
+      "nodes": 14,
+      "instanceCounts": [
+        {
+          "id": "construction.window.construction.prototype.frame.a1ae081f8db7a1a5cda6",
+          "count": 47
+        },
+        {
+          "id": "construction.window.construction.prototype.glass.a1ae081f8db7a1a5cda6",
+          "count": 47
+        },
+        {
+          "id": "construction.window.construction.prototype.trim.a1ae081f8db7a1a5cda6",
+          "count": 47
+        }
+      ],
+      "geometryEqualsBaseline": false,
+      "bounds": {
+        "min": [
+          -5.84,
+          0,
+          -4.44
+        ],
+        "max": [
+          5.84,
+          12.045000000000002,
+          4.44
+        ]
+      },
+      "trace": [
+        {
+          "nodeId": "footprint",
+          "type": "Footprint",
+          "output": "footprint",
+          "openingCount": 0,
+          "meshCount": 0,
+          "bounds": {
+            "min": [
+              -5.6,
+              0,
+              -4.2
+            ],
+            "max": [
+              5.6,
+              0,
+              4.2
+            ]
+          }
+        },
+        {
+          "nodeId": "facade",
+          "type": "Storeys",
+          "output": "scope",
+          "openingCount": 0,
+          "meshCount": 0,
+          "bounds": {
+            "min": [
+              -5.6,
+              0,
+              -4.2
+            ],
+            "max": [
+              5.6,
+              11.4,
+              4.2
+            ]
+          },
+          "scopeCount": 12,
+          "scopeNames": [
+            "facade/floor/0/bay/0",
+            "facade/floor/1/bay/0",
+            "facade/floor/2/bay/0",
+            "facade/right/floor/0/bay/0",
+            "facade/right/floor/1/bay/0",
+            "facade/right/floor/2/bay/0",
+            "facade/rear/floor/0/bay/0",
+            "facade/rear/floor/1/bay/0",
+            "facade/rear/floor/2/bay/0",
+            "facade/left/floor/0/bay/0",
+            "facade/left/floor/1/bay/0",
+            "facade/left/floor/2/bay/0"
+          ]
+        },
+        {
+          "nodeId": "bays",
+          "type": "SplitBays",
+          "output": "scope",
+          "openingCount": 0,
+          "meshCount": 0,
+          "bounds": {
+            "min": [
+              -5.6,
+              0,
+              -4.200000000000001
+            ],
+            "max": [
+              5.6,
+              11.4,
+              4.200000000000001
+            ]
+          },
+          "scopeCount": 48,
+          "scopeNames": [
+            "facade/floor/0/bay/0",
+            "facade/floor/0/bay/1",
+            "facade/floor/0/bay/2",
+            "facade/floor/0/bay/3",
+            "facade/floor/1/bay/0",
+            "facade/floor/1/bay/1",
+            "facade/floor/1/bay/2",
+            "facade/floor/1/bay/3",
+            "facade/floor/2/bay/0",
+            "facade/floor/2/bay/1",
+            "facade/floor/2/bay/2",
+            "facade/floor/2/bay/3",
+            "facade/right/floor/0/bay/0",
+            "facade/right/floor/0/bay/1",
+            "facade/right/floor/0/bay/2",
+            "facade/right/floor/0/bay/3",
+            "facade/right/floor/1/bay/0",
+            "facade/right/floor/1/bay/1",
+            "facade/right/floor/1/bay/2",
+            "facade/right/floor/1/bay/3",
+            "facade/right/floor/2/bay/0",
+            "facade/right/floor/2/bay/1",
+            "facade/right/floor/2/bay/2",
+            "facade/right/floor/2/bay/3",
+            "facade/rear/floor/0/bay/0",
+            "facade/rear/floor/0/bay/1",
+            "facade/rear/floor/0/bay/2",
+            "facade/rear/floor/0/bay/3",
+            "facade/rear/floor/1/bay/0",
+            "facade/rear/floor/1/bay/1",
+            "facade/rear/floor/1/bay/2",
+            "facade/rear/floor/1/bay/3",
+            "facade/rear/floor/2/bay/0",
+            "facade/rear/floor/2/bay/1",
+            "facade/rear/floor/2/bay/2",
+            "facade/rear/floor/2/bay/3",
+            "facade/left/floor/0/bay/0",
+            "facade/left/floor/0/bay/1",
+            "facade/left/floor/0/bay/2",
+            "facade/left/floor/0/bay/3",
+            "facade/left/floor/1/bay/0",
+            "facade/left/floor/1/bay/1",
+            "facade/left/floor/1/bay/2",
+            "facade/left/floor/1/bay/3",
+            "facade/left/floor/2/bay/0",
+            "facade/left/floor/2/bay/1",
+            "facade/left/floor/2/bay/2",
+            "facade/left/floor/2/bay/3"
+          ]
+        },
+        {
+          "nodeId": "opening",
+          "type": "PlaceOpening",
+          "output": "scope",
+          "openingCount": 48,
+          "meshCount": 0,
+          "bounds": {
+            "min": [
+              -5.6,
+              0,
+              -4.200000000000001
+            ],
+            "max": [
+              5.6,
+              11.4,
+              4.200000000000001
+            ]
+          },
+          "scopeCount": 48,
+          "scopeNames": [
+            "facade/floor/0/bay/0",
+            "facade/floor/0/bay/1",
+            "facade/floor/0/bay/2",
+            "facade/floor/0/bay/3",
+            "facade/floor/1/bay/0",
+            "facade/floor/1/bay/1",
+            "facade/floor/1/bay/2",
+            "facade/floor/1/bay/3",
+            "facade/floor/2/bay/0",
+            "facade/floor/2/bay/1",
+            "facade/floor/2/bay/2",
+            "facade/floor/2/bay/3",
+            "facade/right/floor/0/bay/0",
+            "facade/right/floor/0/bay/1",
+            "facade/right/floor/0/bay/2",
+            "facade/right/floor/0/bay/3",
+            "facade/right/floor/1/bay/0",
+            "facade/right/floor/1/bay/1",
+            "facade/right/floor/1/bay/2",
+            "facade/right/floor/1/bay/3",
+            "facade/right/floor/2/bay/0",
+            "facade/right/floor/2/bay/1",
+            "facade/right/floor/2/bay/2",
+            "facade/right/floor/2/bay/3",
+            "facade/rear/floor/0/bay/0",
+            "facade/rear/floor/0/bay/1",
+            "facade/rear/floor/0/bay/2",
+            "facade/rear/floor/0/bay/3",
+            "facade/rear/floor/1/bay/0",
+            "facade/rear/floor/1/bay/1",
+            "facade/rear/floor/1/bay/2",
+            "facade/rear/floor/1/bay/3",
+            "facade/rear/floor/2/bay/0",
+            "facade/rear/floor/2/bay/1",
+            "facade/rear/floor/2/bay/2",
+            "facade/rear/floor/2/bay/3",
+            "facade/left/floor/0/bay/0",
+            "facade/left/floor/0/bay/1",
+            "facade/left/floor/0/bay/2",
+            "facade/left/floor/0/bay/3",
+            "facade/left/floor/1/bay/0",
+            "facade/left/floor/1/bay/1",
+            "facade/left/floor/1/bay/2",
+            "facade/left/floor/1/bay/3",
+            "facade/left/floor/2/bay/0",
+            "facade/left/floor/2/bay/1",
+            "facade/left/floor/2/bay/2",
+            "facade/left/floor/2/bay/3"
+          ]
+        },
+        {
+          "nodeId": "entrance",
+          "type": "PlaceDoor",
+          "output": "scope",
+          "openingCount": 48,
+          "meshCount": 0,
+          "bounds": {
+            "min": [
+              -5.6,
+              0,
+              -4.200000000000001
+            ],
+            "max": [
+              5.6,
+              11.4,
+              4.200000000000001
+            ]
+          },
+          "scopeCount": 48,
+          "scopeNames": [
+            "facade/floor/0/bay/0",
+            "facade/floor/0/bay/1",
+            "facade/floor/0/bay/2",
+            "facade/floor/0/bay/3",
+            "facade/floor/1/bay/0",
+            "facade/floor/1/bay/1",
+            "facade/floor/1/bay/2",
+            "facade/floor/1/bay/3",
+            "facade/floor/2/bay/0",
+            "facade/floor/2/bay/1",
+            "facade/floor/2/bay/2",
+            "facade/floor/2/bay/3",
+            "facade/right/floor/0/bay/0",
+            "facade/right/floor/0/bay/1",
+            "facade/right/floor/0/bay/2",
+            "facade/right/floor/0/bay/3",
+            "facade/right/floor/1/bay/0",
+            "facade/right/floor/1/bay/1",
+            "facade/right/floor/1/bay/2",
+            "facade/right/floor/1/bay/3",
+            "facade/right/floor/2/bay/0",
+            "facade/right/floor/2/bay/1",
+            "facade/right/floor/2/bay/2",
+            "facade/right/floor/2/bay/3",
+            "facade/rear/floor/0/bay/0",
+            "facade/rear/floor/0/bay/1",
+            "facade/rear/floor/0/bay/2",
+            "facade/rear/floor/0/bay/3",
+            "facade/rear/floor/1/bay/0",
+            "facade/rear/floor/1/bay/1",
+            "facade/rear/floor/1/bay/2",
+            "facade/rear/floor/1/bay/3",
+            "facade/rear/floor/2/bay/0",
+            "facade/rear/floor/2/bay/1",
+            "facade/rear/floor/2/bay/2",
+            "facade/rear/floor/2/bay/3",
+            "facade/left/floor/0/bay/0",
+            "facade/left/floor/0/bay/1",
+            "facade/left/floor/0/bay/2",
+            "facade/left/floor/0/bay/3",
+            "facade/left/floor/1/bay/0",
+            "facade/left/floor/1/bay/1",
+            "facade/left/floor/1/bay/2",
+            "facade/left/floor/1/bay/3",
+            "facade/left/floor/2/bay/0",
+            "facade/left/floor/2/bay/1",
+            "facade/left/floor/2/bay/2",
+            "facade/left/floor/2/bay/3"
+          ]
+        },
+        {
+          "nodeId": "wall",
+          "type": "EmitWall",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 4,
+          "bounds": {
+            "min": [
+              -5.6,
+              0,
+              -4.2
+            ],
+            "max": [
+              5.6,
+              11.4,
+              4.2
+            ]
+          }
+        },
+        {
+          "nodeId": "selection",
+          "type": "SelectScopes",
+          "output": "scope",
+          "openingCount": 48,
+          "meshCount": 0,
+          "bounds": {
+            "min": [
+              -5.6,
+              0,
+              -4.200000000000001
+            ],
+            "max": [
+              5.6,
+              11.4,
+              4.200000000000001
+            ]
+          },
+          "scopeCount": 48,
+          "scopeNames": [
+            "facade/floor/0/bay/0",
+            "facade/floor/0/bay/1",
+            "facade/floor/0/bay/2",
+            "facade/floor/0/bay/3",
+            "facade/floor/1/bay/0",
+            "facade/floor/1/bay/1",
+            "facade/floor/1/bay/2",
+            "facade/floor/1/bay/3",
+            "facade/floor/2/bay/0",
+            "facade/floor/2/bay/1",
+            "facade/floor/2/bay/2",
+            "facade/floor/2/bay/3",
+            "facade/right/floor/0/bay/0",
+            "facade/right/floor/0/bay/1",
+            "facade/right/floor/0/bay/2",
+            "facade/right/floor/0/bay/3",
+            "facade/right/floor/1/bay/0",
+            "facade/right/floor/1/bay/1",
+            "facade/right/floor/1/bay/2",
+            "facade/right/floor/1/bay/3",
+            "facade/right/floor/2/bay/0",
+            "facade/right/floor/2/bay/1",
+            "facade/right/floor/2/bay/2",
+            "facade/right/floor/2/bay/3",
+            "facade/rear/floor/0/bay/0",
+            "facade/rear/floor/0/bay/1",
+            "facade/rear/floor/0/bay/2",
+            "facade/rear/floor/0/bay/3",
+            "facade/rear/floor/1/bay/0",
+            "facade/rear/floor/1/bay/1",
+            "facade/rear/floor/1/bay/2",
+            "facade/rear/floor/1/bay/3",
+            "facade/rear/floor/2/bay/0",
+            "facade/rear/floor/2/bay/1",
+            "facade/rear/floor/2/bay/2",
+            "facade/rear/floor/2/bay/3",
+            "facade/left/floor/0/bay/0",
+            "facade/left/floor/0/bay/1",
+            "facade/left/floor/0/bay/2",
+            "facade/left/floor/0/bay/3",
+            "facade/left/floor/1/bay/0",
+            "facade/left/floor/1/bay/1",
+            "facade/left/floor/1/bay/2",
+            "facade/left/floor/1/bay/3",
+            "facade/left/floor/2/bay/0",
+            "facade/left/floor/2/bay/1",
+            "facade/left/floor/2/bay/2",
+            "facade/left/floor/2/bay/3"
+          ]
+        },
+        {
+          "nodeId": "window",
+          "type": "AssembleWindow",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 141,
+          "bounds": {
+            "min": [
+              -5.719999997317791,
+              0.675000011920929,
+              -4.319999997317791
+            ],
+            "max": [
+              5.719999997317791,
+              10.782499980926513,
+              4.319999997317791
+            ]
+          }
+        },
+        {
+          "nodeId": "door",
+          "type": "AssembleDoor",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 5,
+          "bounds": {
+            "min": [
+              -2.05,
+              0,
+              -4.3500000000000005
+            ],
+            "max": [
+              -0.7499999999999999,
+              2.9,
+              -3.97
+            ]
+          }
+        },
+        {
+          "nodeId": "bands",
+          "type": "ProfileTrim",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 2,
+          "bounds": {
+            "min": [
+              -5.67,
+              3.88,
+              -4.2700000000000005
+            ],
+            "max": [
+              5.67,
+              7.7,
+              4.2700000000000005
+            ]
+          }
+        },
+        {
+          "nodeId": "roof",
+          "type": "BuildingRoof",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 3,
+          "bounds": {
+            "min": [
+              -5.84,
+              11.1,
+              -4.44
+            ],
+            "max": [
+              5.84,
+              12.045000000000002,
+              4.44
+            ]
+          }
+        },
+        {
+          "nodeId": "join",
+          "type": "JoinGeometry",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 155,
+          "bounds": {
+            "min": [
+              -5.84,
+              0,
+              -4.44
+            ],
+            "max": [
+              5.84,
+              12.045000000000002,
+              4.44
+            ]
+          }
+        },
+        {
+          "nodeId": "surface",
+          "type": "SetSurface",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 155,
+          "bounds": {
+            "min": [
+              -5.84,
+              0,
+              -4.44
+            ],
+            "max": [
+              5.84,
+              12.045000000000002,
+              4.44
+            ]
+          }
+        },
+        {
+          "nodeId": "output",
+          "type": "Output",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 155,
+          "bounds": {
+            "min": [
+              -5.84,
+              0,
+              -4.44
+            ],
+            "max": [
+              5.84,
+              12.045000000000002,
+              4.44
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "select-one-floor-and-bay",
+      "status": "compiled",
+      "nodes": 14,
+      "instanceCounts": [
+        {
+          "id": "construction.window.construction.prototype.frame.e250839262bfa0a60932",
+          "count": 4
+        },
+        {
+          "id": "construction.window.construction.prototype.glass.e250839262bfa0a60932",
+          "count": 4
+        },
+        {
+          "id": "construction.window.construction.prototype.trim.e250839262bfa0a60932",
+          "count": 4
+        }
+      ],
+      "geometryEqualsBaseline": false,
+      "bounds": {
+        "min": [
+          -5.84,
+          0,
+          -4.44
+        ],
+        "max": [
+          5.84,
+          12.045000000000002,
+          4.44
+        ]
+      },
+      "trace": [
+        {
+          "nodeId": "footprint",
+          "type": "Footprint",
+          "output": "footprint",
+          "openingCount": 0,
+          "meshCount": 0,
+          "bounds": {
+            "min": [
+              -5.6,
+              0,
+              -4.2
+            ],
+            "max": [
+              5.6,
+              0,
+              4.2
+            ]
+          }
+        },
+        {
+          "nodeId": "facade",
+          "type": "Storeys",
+          "output": "scope",
+          "openingCount": 0,
+          "meshCount": 0,
+          "bounds": {
+            "min": [
+              -5.6,
+              0,
+              -4.2
+            ],
+            "max": [
+              5.6,
+              11.4,
+              4.2
+            ]
+          },
+          "scopeCount": 12,
+          "scopeNames": [
+            "facade/floor/0/bay/0",
+            "facade/floor/1/bay/0",
+            "facade/floor/2/bay/0",
+            "facade/right/floor/0/bay/0",
+            "facade/right/floor/1/bay/0",
+            "facade/right/floor/2/bay/0",
+            "facade/rear/floor/0/bay/0",
+            "facade/rear/floor/1/bay/0",
+            "facade/rear/floor/2/bay/0",
+            "facade/left/floor/0/bay/0",
+            "facade/left/floor/1/bay/0",
+            "facade/left/floor/2/bay/0"
+          ]
+        },
+        {
+          "nodeId": "bays",
+          "type": "SplitBays",
+          "output": "scope",
+          "openingCount": 0,
+          "meshCount": 0,
+          "bounds": {
+            "min": [
+              -5.6,
+              0,
+              -4.200000000000001
+            ],
+            "max": [
+              5.6,
+              11.4,
+              4.200000000000001
+            ]
+          },
+          "scopeCount": 48,
+          "scopeNames": [
+            "facade/floor/0/bay/0",
+            "facade/floor/0/bay/1",
+            "facade/floor/0/bay/2",
+            "facade/floor/0/bay/3",
+            "facade/floor/1/bay/0",
+            "facade/floor/1/bay/1",
+            "facade/floor/1/bay/2",
+            "facade/floor/1/bay/3",
+            "facade/floor/2/bay/0",
+            "facade/floor/2/bay/1",
+            "facade/floor/2/bay/2",
+            "facade/floor/2/bay/3",
+            "facade/right/floor/0/bay/0",
+            "facade/right/floor/0/bay/1",
+            "facade/right/floor/0/bay/2",
+            "facade/right/floor/0/bay/3",
+            "facade/right/floor/1/bay/0",
+            "facade/right/floor/1/bay/1",
+            "facade/right/floor/1/bay/2",
+            "facade/right/floor/1/bay/3",
+            "facade/right/floor/2/bay/0",
+            "facade/right/floor/2/bay/1",
+            "facade/right/floor/2/bay/2",
+            "facade/right/floor/2/bay/3",
+            "facade/rear/floor/0/bay/0",
+            "facade/rear/floor/0/bay/1",
+            "facade/rear/floor/0/bay/2",
+            "facade/rear/floor/0/bay/3",
+            "facade/rear/floor/1/bay/0",
+            "facade/rear/floor/1/bay/1",
+            "facade/rear/floor/1/bay/2",
+            "facade/rear/floor/1/bay/3",
+            "facade/rear/floor/2/bay/0",
+            "facade/rear/floor/2/bay/1",
+            "facade/rear/floor/2/bay/2",
+            "facade/rear/floor/2/bay/3",
+            "facade/left/floor/0/bay/0",
+            "facade/left/floor/0/bay/1",
+            "facade/left/floor/0/bay/2",
+            "facade/left/floor/0/bay/3",
+            "facade/left/floor/1/bay/0",
+            "facade/left/floor/1/bay/1",
+            "facade/left/floor/1/bay/2",
+            "facade/left/floor/1/bay/3",
+            "facade/left/floor/2/bay/0",
+            "facade/left/floor/2/bay/1",
+            "facade/left/floor/2/bay/2",
+            "facade/left/floor/2/bay/3"
+          ]
+        },
+        {
+          "nodeId": "opening",
+          "type": "PlaceOpening",
+          "output": "scope",
+          "openingCount": 48,
+          "meshCount": 0,
+          "bounds": {
+            "min": [
+              -5.6,
+              0,
+              -4.200000000000001
+            ],
+            "max": [
+              5.6,
+              11.4,
+              4.200000000000001
+            ]
+          },
+          "scopeCount": 48,
+          "scopeNames": [
+            "facade/floor/0/bay/0",
+            "facade/floor/0/bay/1",
+            "facade/floor/0/bay/2",
+            "facade/floor/0/bay/3",
+            "facade/floor/1/bay/0",
+            "facade/floor/1/bay/1",
+            "facade/floor/1/bay/2",
+            "facade/floor/1/bay/3",
+            "facade/floor/2/bay/0",
+            "facade/floor/2/bay/1",
+            "facade/floor/2/bay/2",
+            "facade/floor/2/bay/3",
+            "facade/right/floor/0/bay/0",
+            "facade/right/floor/0/bay/1",
+            "facade/right/floor/0/bay/2",
+            "facade/right/floor/0/bay/3",
+            "facade/right/floor/1/bay/0",
+            "facade/right/floor/1/bay/1",
+            "facade/right/floor/1/bay/2",
+            "facade/right/floor/1/bay/3",
+            "facade/right/floor/2/bay/0",
+            "facade/right/floor/2/bay/1",
+            "facade/right/floor/2/bay/2",
+            "facade/right/floor/2/bay/3",
+            "facade/rear/floor/0/bay/0",
+            "facade/rear/floor/0/bay/1",
+            "facade/rear/floor/0/bay/2",
+            "facade/rear/floor/0/bay/3",
+            "facade/rear/floor/1/bay/0",
+            "facade/rear/floor/1/bay/1",
+            "facade/rear/floor/1/bay/2",
+            "facade/rear/floor/1/bay/3",
+            "facade/rear/floor/2/bay/0",
+            "facade/rear/floor/2/bay/1",
+            "facade/rear/floor/2/bay/2",
+            "facade/rear/floor/2/bay/3",
+            "facade/left/floor/0/bay/0",
+            "facade/left/floor/0/bay/1",
+            "facade/left/floor/0/bay/2",
+            "facade/left/floor/0/bay/3",
+            "facade/left/floor/1/bay/0",
+            "facade/left/floor/1/bay/1",
+            "facade/left/floor/1/bay/2",
+            "facade/left/floor/1/bay/3",
+            "facade/left/floor/2/bay/0",
+            "facade/left/floor/2/bay/1",
+            "facade/left/floor/2/bay/2",
+            "facade/left/floor/2/bay/3"
+          ]
+        },
+        {
+          "nodeId": "entrance",
+          "type": "PlaceDoor",
+          "output": "scope",
+          "openingCount": 48,
+          "meshCount": 0,
+          "bounds": {
+            "min": [
+              -5.6,
+              0,
+              -4.200000000000001
+            ],
+            "max": [
+              5.6,
+              11.4,
+              4.200000000000001
+            ]
+          },
+          "scopeCount": 48,
+          "scopeNames": [
+            "facade/floor/0/bay/0",
+            "facade/floor/0/bay/1",
+            "facade/floor/0/bay/2",
+            "facade/floor/0/bay/3",
+            "facade/floor/1/bay/0",
+            "facade/floor/1/bay/1",
+            "facade/floor/1/bay/2",
+            "facade/floor/1/bay/3",
+            "facade/floor/2/bay/0",
+            "facade/floor/2/bay/1",
+            "facade/floor/2/bay/2",
+            "facade/floor/2/bay/3",
+            "facade/right/floor/0/bay/0",
+            "facade/right/floor/0/bay/1",
+            "facade/right/floor/0/bay/2",
+            "facade/right/floor/0/bay/3",
+            "facade/right/floor/1/bay/0",
+            "facade/right/floor/1/bay/1",
+            "facade/right/floor/1/bay/2",
+            "facade/right/floor/1/bay/3",
+            "facade/right/floor/2/bay/0",
+            "facade/right/floor/2/bay/1",
+            "facade/right/floor/2/bay/2",
+            "facade/right/floor/2/bay/3",
+            "facade/rear/floor/0/bay/0",
+            "facade/rear/floor/0/bay/1",
+            "facade/rear/floor/0/bay/2",
+            "facade/rear/floor/0/bay/3",
+            "facade/rear/floor/1/bay/0",
+            "facade/rear/floor/1/bay/1",
+            "facade/rear/floor/1/bay/2",
+            "facade/rear/floor/1/bay/3",
+            "facade/rear/floor/2/bay/0",
+            "facade/rear/floor/2/bay/1",
+            "facade/rear/floor/2/bay/2",
+            "facade/rear/floor/2/bay/3",
+            "facade/left/floor/0/bay/0",
+            "facade/left/floor/0/bay/1",
+            "facade/left/floor/0/bay/2",
+            "facade/left/floor/0/bay/3",
+            "facade/left/floor/1/bay/0",
+            "facade/left/floor/1/bay/1",
+            "facade/left/floor/1/bay/2",
+            "facade/left/floor/1/bay/3",
+            "facade/left/floor/2/bay/0",
+            "facade/left/floor/2/bay/1",
+            "facade/left/floor/2/bay/2",
+            "facade/left/floor/2/bay/3"
+          ]
+        },
+        {
+          "nodeId": "wall",
+          "type": "EmitWall",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 4,
+          "bounds": {
+            "min": [
+              -5.6,
+              0,
+              -4.2
+            ],
+            "max": [
+              5.6,
+              11.4,
+              4.2
+            ]
+          }
+        },
+        {
+          "nodeId": "selection",
+          "type": "SelectScopes",
+          "output": "scope",
+          "openingCount": 4,
+          "meshCount": 0,
+          "bounds": {
+            "min": [
+              -5.6,
+              4,
+              -4.2
+            ],
+            "max": [
+              5.6,
+              7.7,
+              4.2
+            ]
+          },
+          "scopeCount": 4,
+          "scopeNames": [
+            "facade/floor/1/bay/1",
+            "facade/right/floor/1/bay/1",
+            "facade/rear/floor/1/bay/1",
+            "facade/left/floor/1/bay/1"
+          ]
+        },
+        {
+          "nodeId": "window",
+          "type": "AssembleWindow",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 12,
+          "bounds": {
+            "min": [
+              -5.719999997317791,
+              4.675000011920929,
+              -4.319999997317791
+            ],
+            "max": [
+              5.719999997317791,
+              7.082499980926514,
+              4.319999997317791
+            ]
+          }
+        },
+        {
+          "nodeId": "door",
+          "type": "AssembleDoor",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 5,
+          "bounds": {
+            "min": [
+              -2.05,
+              0,
+              -4.3500000000000005
+            ],
+            "max": [
+              -0.7499999999999999,
+              2.9,
+              -3.97
+            ]
+          }
+        },
+        {
+          "nodeId": "bands",
+          "type": "ProfileTrim",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 2,
+          "bounds": {
+            "min": [
+              -5.67,
+              3.88,
+              -4.2700000000000005
+            ],
+            "max": [
+              5.67,
+              7.7,
+              4.2700000000000005
+            ]
+          }
+        },
+        {
+          "nodeId": "roof",
+          "type": "BuildingRoof",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 3,
+          "bounds": {
+            "min": [
+              -5.84,
+              11.1,
+              -4.44
+            ],
+            "max": [
+              5.84,
+              12.045000000000002,
+              4.44
+            ]
+          }
+        },
+        {
+          "nodeId": "join",
+          "type": "JoinGeometry",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 26,
+          "bounds": {
+            "min": [
+              -5.84,
+              0,
+              -4.44
+            ],
+            "max": [
+              5.84,
+              12.045000000000002,
+              4.44
+            ]
+          }
+        },
+        {
+          "nodeId": "surface",
+          "type": "SetSurface",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 26,
+          "bounds": {
+            "min": [
+              -5.84,
+              0,
+              -4.44
+            ],
+            "max": [
+              5.84,
+              12.045000000000002,
+              4.44
+            ]
+          }
+        },
+        {
+          "nodeId": "output",
+          "type": "Output",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 26,
+          "bounds": {
+            "min": [
+              -5.84,
+              0,
+              -4.44
+            ],
+            "max": [
+              5.84,
+              12.045000000000002,
+              4.44
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "new-disconnected-split-floors",
+      "status": "compiled",
+      "nodes": 15,
+      "instanceCounts": [
+        {
+          "id": "construction.window.construction.prototype.frame.e250839262bfa0a60932",
+          "count": 47
+        },
+        {
+          "id": "construction.window.construction.prototype.glass.e250839262bfa0a60932",
+          "count": 47
+        },
+        {
+          "id": "construction.window.construction.prototype.trim.e250839262bfa0a60932",
+          "count": 47
+        }
+      ],
+      "geometryEqualsBaseline": true,
+      "bounds": {
+        "min": [
+          -5.84,
+          0,
+          -4.44
+        ],
+        "max": [
+          5.84,
+          12.045000000000002,
+          4.44
+        ]
+      },
+      "trace": [
+        {
+          "nodeId": "footprint",
+          "type": "Footprint",
+          "output": "footprint",
+          "openingCount": 0,
+          "meshCount": 0,
+          "bounds": {
+            "min": [
+              -5.6,
+              0,
+              -4.2
+            ],
+            "max": [
+              5.6,
+              0,
+              4.2
+            ]
+          }
+        },
+        {
+          "nodeId": "facade",
+          "type": "Storeys",
+          "output": "scope",
+          "openingCount": 0,
+          "meshCount": 0,
+          "bounds": {
+            "min": [
+              -5.6,
+              0,
+              -4.2
+            ],
+            "max": [
+              5.6,
+              11.4,
+              4.2
+            ]
+          },
+          "scopeCount": 12,
+          "scopeNames": [
+            "facade/floor/0/bay/0",
+            "facade/floor/1/bay/0",
+            "facade/floor/2/bay/0",
+            "facade/right/floor/0/bay/0",
+            "facade/right/floor/1/bay/0",
+            "facade/right/floor/2/bay/0",
+            "facade/rear/floor/0/bay/0",
+            "facade/rear/floor/1/bay/0",
+            "facade/rear/floor/2/bay/0",
+            "facade/left/floor/0/bay/0",
+            "facade/left/floor/1/bay/0",
+            "facade/left/floor/2/bay/0"
+          ]
+        },
+        {
+          "nodeId": "bays",
+          "type": "SplitBays",
+          "output": "scope",
+          "openingCount": 0,
+          "meshCount": 0,
+          "bounds": {
+            "min": [
+              -5.6,
+              0,
+              -4.200000000000001
+            ],
+            "max": [
+              5.6,
+              11.4,
+              4.200000000000001
+            ]
+          },
+          "scopeCount": 48,
+          "scopeNames": [
+            "facade/floor/0/bay/0",
+            "facade/floor/0/bay/1",
+            "facade/floor/0/bay/2",
+            "facade/floor/0/bay/3",
+            "facade/floor/1/bay/0",
+            "facade/floor/1/bay/1",
+            "facade/floor/1/bay/2",
+            "facade/floor/1/bay/3",
+            "facade/floor/2/bay/0",
+            "facade/floor/2/bay/1",
+            "facade/floor/2/bay/2",
+            "facade/floor/2/bay/3",
+            "facade/right/floor/0/bay/0",
+            "facade/right/floor/0/bay/1",
+            "facade/right/floor/0/bay/2",
+            "facade/right/floor/0/bay/3",
+            "facade/right/floor/1/bay/0",
+            "facade/right/floor/1/bay/1",
+            "facade/right/floor/1/bay/2",
+            "facade/right/floor/1/bay/3",
+            "facade/right/floor/2/bay/0",
+            "facade/right/floor/2/bay/1",
+            "facade/right/floor/2/bay/2",
+            "facade/right/floor/2/bay/3",
+            "facade/rear/floor/0/bay/0",
+            "facade/rear/floor/0/bay/1",
+            "facade/rear/floor/0/bay/2",
+            "facade/rear/floor/0/bay/3",
+            "facade/rear/floor/1/bay/0",
+            "facade/rear/floor/1/bay/1",
+            "facade/rear/floor/1/bay/2",
+            "facade/rear/floor/1/bay/3",
+            "facade/rear/floor/2/bay/0",
+            "facade/rear/floor/2/bay/1",
+            "facade/rear/floor/2/bay/2",
+            "facade/rear/floor/2/bay/3",
+            "facade/left/floor/0/bay/0",
+            "facade/left/floor/0/bay/1",
+            "facade/left/floor/0/bay/2",
+            "facade/left/floor/0/bay/3",
+            "facade/left/floor/1/bay/0",
+            "facade/left/floor/1/bay/1",
+            "facade/left/floor/1/bay/2",
+            "facade/left/floor/1/bay/3",
+            "facade/left/floor/2/bay/0",
+            "facade/left/floor/2/bay/1",
+            "facade/left/floor/2/bay/2",
+            "facade/left/floor/2/bay/3"
+          ]
+        },
+        {
+          "nodeId": "opening",
+          "type": "PlaceOpening",
+          "output": "scope",
+          "openingCount": 48,
+          "meshCount": 0,
+          "bounds": {
+            "min": [
+              -5.6,
+              0,
+              -4.200000000000001
+            ],
+            "max": [
+              5.6,
+              11.4,
+              4.200000000000001
+            ]
+          },
+          "scopeCount": 48,
+          "scopeNames": [
+            "facade/floor/0/bay/0",
+            "facade/floor/0/bay/1",
+            "facade/floor/0/bay/2",
+            "facade/floor/0/bay/3",
+            "facade/floor/1/bay/0",
+            "facade/floor/1/bay/1",
+            "facade/floor/1/bay/2",
+            "facade/floor/1/bay/3",
+            "facade/floor/2/bay/0",
+            "facade/floor/2/bay/1",
+            "facade/floor/2/bay/2",
+            "facade/floor/2/bay/3",
+            "facade/right/floor/0/bay/0",
+            "facade/right/floor/0/bay/1",
+            "facade/right/floor/0/bay/2",
+            "facade/right/floor/0/bay/3",
+            "facade/right/floor/1/bay/0",
+            "facade/right/floor/1/bay/1",
+            "facade/right/floor/1/bay/2",
+            "facade/right/floor/1/bay/3",
+            "facade/right/floor/2/bay/0",
+            "facade/right/floor/2/bay/1",
+            "facade/right/floor/2/bay/2",
+            "facade/right/floor/2/bay/3",
+            "facade/rear/floor/0/bay/0",
+            "facade/rear/floor/0/bay/1",
+            "facade/rear/floor/0/bay/2",
+            "facade/rear/floor/0/bay/3",
+            "facade/rear/floor/1/bay/0",
+            "facade/rear/floor/1/bay/1",
+            "facade/rear/floor/1/bay/2",
+            "facade/rear/floor/1/bay/3",
+            "facade/rear/floor/2/bay/0",
+            "facade/rear/floor/2/bay/1",
+            "facade/rear/floor/2/bay/2",
+            "facade/rear/floor/2/bay/3",
+            "facade/left/floor/0/bay/0",
+            "facade/left/floor/0/bay/1",
+            "facade/left/floor/0/bay/2",
+            "facade/left/floor/0/bay/3",
+            "facade/left/floor/1/bay/0",
+            "facade/left/floor/1/bay/1",
+            "facade/left/floor/1/bay/2",
+            "facade/left/floor/1/bay/3",
+            "facade/left/floor/2/bay/0",
+            "facade/left/floor/2/bay/1",
+            "facade/left/floor/2/bay/2",
+            "facade/left/floor/2/bay/3"
+          ]
+        },
+        {
+          "nodeId": "entrance",
+          "type": "PlaceDoor",
+          "output": "scope",
+          "openingCount": 48,
+          "meshCount": 0,
+          "bounds": {
+            "min": [
+              -5.6,
+              0,
+              -4.200000000000001
+            ],
+            "max": [
+              5.6,
+              11.4,
+              4.200000000000001
+            ]
+          },
+          "scopeCount": 48,
+          "scopeNames": [
+            "facade/floor/0/bay/0",
+            "facade/floor/0/bay/1",
+            "facade/floor/0/bay/2",
+            "facade/floor/0/bay/3",
+            "facade/floor/1/bay/0",
+            "facade/floor/1/bay/1",
+            "facade/floor/1/bay/2",
+            "facade/floor/1/bay/3",
+            "facade/floor/2/bay/0",
+            "facade/floor/2/bay/1",
+            "facade/floor/2/bay/2",
+            "facade/floor/2/bay/3",
+            "facade/right/floor/0/bay/0",
+            "facade/right/floor/0/bay/1",
+            "facade/right/floor/0/bay/2",
+            "facade/right/floor/0/bay/3",
+            "facade/right/floor/1/bay/0",
+            "facade/right/floor/1/bay/1",
+            "facade/right/floor/1/bay/2",
+            "facade/right/floor/1/bay/3",
+            "facade/right/floor/2/bay/0",
+            "facade/right/floor/2/bay/1",
+            "facade/right/floor/2/bay/2",
+            "facade/right/floor/2/bay/3",
+            "facade/rear/floor/0/bay/0",
+            "facade/rear/floor/0/bay/1",
+            "facade/rear/floor/0/bay/2",
+            "facade/rear/floor/0/bay/3",
+            "facade/rear/floor/1/bay/0",
+            "facade/rear/floor/1/bay/1",
+            "facade/rear/floor/1/bay/2",
+            "facade/rear/floor/1/bay/3",
+            "facade/rear/floor/2/bay/0",
+            "facade/rear/floor/2/bay/1",
+            "facade/rear/floor/2/bay/2",
+            "facade/rear/floor/2/bay/3",
+            "facade/left/floor/0/bay/0",
+            "facade/left/floor/0/bay/1",
+            "facade/left/floor/0/bay/2",
+            "facade/left/floor/0/bay/3",
+            "facade/left/floor/1/bay/0",
+            "facade/left/floor/1/bay/1",
+            "facade/left/floor/1/bay/2",
+            "facade/left/floor/1/bay/3",
+            "facade/left/floor/2/bay/0",
+            "facade/left/floor/2/bay/1",
+            "facade/left/floor/2/bay/2",
+            "facade/left/floor/2/bay/3"
+          ]
+        },
+        {
+          "nodeId": "wall",
+          "type": "EmitWall",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 4,
+          "bounds": {
+            "min": [
+              -5.6,
+              0,
+              -4.2
+            ],
+            "max": [
+              5.6,
+              11.4,
+              4.2
+            ]
+          }
+        },
+        {
+          "nodeId": "selection",
+          "type": "SelectScopes",
+          "output": "scope",
+          "openingCount": 48,
+          "meshCount": 0,
+          "bounds": {
+            "min": [
+              -5.6,
+              0,
+              -4.200000000000001
+            ],
+            "max": [
+              5.6,
+              11.4,
+              4.200000000000001
+            ]
+          },
+          "scopeCount": 48,
+          "scopeNames": [
+            "facade/floor/0/bay/0",
+            "facade/floor/0/bay/1",
+            "facade/floor/0/bay/2",
+            "facade/floor/0/bay/3",
+            "facade/floor/1/bay/0",
+            "facade/floor/1/bay/1",
+            "facade/floor/1/bay/2",
+            "facade/floor/1/bay/3",
+            "facade/floor/2/bay/0",
+            "facade/floor/2/bay/1",
+            "facade/floor/2/bay/2",
+            "facade/floor/2/bay/3",
+            "facade/right/floor/0/bay/0",
+            "facade/right/floor/0/bay/1",
+            "facade/right/floor/0/bay/2",
+            "facade/right/floor/0/bay/3",
+            "facade/right/floor/1/bay/0",
+            "facade/right/floor/1/bay/1",
+            "facade/right/floor/1/bay/2",
+            "facade/right/floor/1/bay/3",
+            "facade/right/floor/2/bay/0",
+            "facade/right/floor/2/bay/1",
+            "facade/right/floor/2/bay/2",
+            "facade/right/floor/2/bay/3",
+            "facade/rear/floor/0/bay/0",
+            "facade/rear/floor/0/bay/1",
+            "facade/rear/floor/0/bay/2",
+            "facade/rear/floor/0/bay/3",
+            "facade/rear/floor/1/bay/0",
+            "facade/rear/floor/1/bay/1",
+            "facade/rear/floor/1/bay/2",
+            "facade/rear/floor/1/bay/3",
+            "facade/rear/floor/2/bay/0",
+            "facade/rear/floor/2/bay/1",
+            "facade/rear/floor/2/bay/2",
+            "facade/rear/floor/2/bay/3",
+            "facade/left/floor/0/bay/0",
+            "facade/left/floor/0/bay/1",
+            "facade/left/floor/0/bay/2",
+            "facade/left/floor/0/bay/3",
+            "facade/left/floor/1/bay/0",
+            "facade/left/floor/1/bay/1",
+            "facade/left/floor/1/bay/2",
+            "facade/left/floor/1/bay/3",
+            "facade/left/floor/2/bay/0",
+            "facade/left/floor/2/bay/1",
+            "facade/left/floor/2/bay/2",
+            "facade/left/floor/2/bay/3"
+          ]
+        },
+        {
+          "nodeId": "window",
+          "type": "AssembleWindow",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 141,
+          "bounds": {
+            "min": [
+              -5.719999997317791,
+              0.675000011920929,
+              -4.319999997317791
+            ],
+            "max": [
+              5.719999997317791,
+              10.782499980926513,
+              4.319999997317791
+            ]
+          }
+        },
+        {
+          "nodeId": "door",
+          "type": "AssembleDoor",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 5,
+          "bounds": {
+            "min": [
+              -2.05,
+              0,
+              -4.3500000000000005
+            ],
+            "max": [
+              -0.7499999999999999,
+              2.9,
+              -3.97
+            ]
+          }
+        },
+        {
+          "nodeId": "bands",
+          "type": "ProfileTrim",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 2,
+          "bounds": {
+            "min": [
+              -5.67,
+              3.88,
+              -4.2700000000000005
+            ],
+            "max": [
+              5.67,
+              7.7,
+              4.2700000000000005
+            ]
+          }
+        },
+        {
+          "nodeId": "roof",
+          "type": "BuildingRoof",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 3,
+          "bounds": {
+            "min": [
+              -5.84,
+              11.1,
+              -4.44
+            ],
+            "max": [
+              5.84,
+              12.045000000000002,
+              4.44
+            ]
+          }
+        },
+        {
+          "nodeId": "join",
+          "type": "JoinGeometry",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 155,
+          "bounds": {
+            "min": [
+              -5.84,
+              0,
+              -4.44
+            ],
+            "max": [
+              5.84,
+              12.045000000000002,
+              4.44
+            ]
+          }
+        },
+        {
+          "nodeId": "surface",
+          "type": "SetSurface",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 155,
+          "bounds": {
+            "min": [
+              -5.84,
+              0,
+              -4.44
+            ],
+            "max": [
+              5.84,
+              12.045000000000002,
+              4.44
+            ]
+          }
+        },
+        {
+          "nodeId": "output",
+          "type": "Output",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 155,
+          "bounds": {
+            "min": [
+              -5.84,
+              0,
+              -4.44
+            ],
+            "max": [
+              5.84,
+              12.045000000000002,
+              4.44
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "delete-window-assembly",
+      "status": "rejected",
+      "error": "[\n  {\n    \"code\": \"custom\",\n    \"message\": \"Node join references missing node window.\",\n    \"path\": [\n      \"nodes\"\n    ]\n  }\n]"
+    },
+    {
+      "name": "bypass-roof",
+      "status": "compiled",
+      "nodes": 14,
+      "instanceCounts": [
+        {
+          "id": "construction.window.construction.prototype.frame.e250839262bfa0a60932",
+          "count": 47
+        },
+        {
+          "id": "construction.window.construction.prototype.glass.e250839262bfa0a60932",
+          "count": 47
+        },
+        {
+          "id": "construction.window.construction.prototype.trim.e250839262bfa0a60932",
+          "count": 47
+        }
+      ],
+      "geometryEqualsBaseline": false,
+      "bounds": {
+        "min": [
+          -5.719999997317791,
+          0,
+          -4.3500000000000005
+        ],
+        "max": [
+          5.719999997317791,
+          11.4,
+          4.319999997317791
+        ]
+      },
+      "trace": [
+        {
+          "nodeId": "footprint",
+          "type": "Footprint",
+          "output": "footprint",
+          "openingCount": 0,
+          "meshCount": 0,
+          "bounds": {
+            "min": [
+              -5.6,
+              0,
+              -4.2
+            ],
+            "max": [
+              5.6,
+              0,
+              4.2
+            ]
+          }
+        },
+        {
+          "nodeId": "facade",
+          "type": "Storeys",
+          "output": "scope",
+          "openingCount": 0,
+          "meshCount": 0,
+          "bounds": {
+            "min": [
+              -5.6,
+              0,
+              -4.2
+            ],
+            "max": [
+              5.6,
+              11.4,
+              4.2
+            ]
+          },
+          "scopeCount": 12,
+          "scopeNames": [
+            "facade/floor/0/bay/0",
+            "facade/floor/1/bay/0",
+            "facade/floor/2/bay/0",
+            "facade/right/floor/0/bay/0",
+            "facade/right/floor/1/bay/0",
+            "facade/right/floor/2/bay/0",
+            "facade/rear/floor/0/bay/0",
+            "facade/rear/floor/1/bay/0",
+            "facade/rear/floor/2/bay/0",
+            "facade/left/floor/0/bay/0",
+            "facade/left/floor/1/bay/0",
+            "facade/left/floor/2/bay/0"
+          ]
+        },
+        {
+          "nodeId": "bays",
+          "type": "SplitBays",
+          "output": "scope",
+          "openingCount": 0,
+          "meshCount": 0,
+          "bounds": {
+            "min": [
+              -5.6,
+              0,
+              -4.200000000000001
+            ],
+            "max": [
+              5.6,
+              11.4,
+              4.200000000000001
+            ]
+          },
+          "scopeCount": 48,
+          "scopeNames": [
+            "facade/floor/0/bay/0",
+            "facade/floor/0/bay/1",
+            "facade/floor/0/bay/2",
+            "facade/floor/0/bay/3",
+            "facade/floor/1/bay/0",
+            "facade/floor/1/bay/1",
+            "facade/floor/1/bay/2",
+            "facade/floor/1/bay/3",
+            "facade/floor/2/bay/0",
+            "facade/floor/2/bay/1",
+            "facade/floor/2/bay/2",
+            "facade/floor/2/bay/3",
+            "facade/right/floor/0/bay/0",
+            "facade/right/floor/0/bay/1",
+            "facade/right/floor/0/bay/2",
+            "facade/right/floor/0/bay/3",
+            "facade/right/floor/1/bay/0",
+            "facade/right/floor/1/bay/1",
+            "facade/right/floor/1/bay/2",
+            "facade/right/floor/1/bay/3",
+            "facade/right/floor/2/bay/0",
+            "facade/right/floor/2/bay/1",
+            "facade/right/floor/2/bay/2",
+            "facade/right/floor/2/bay/3",
+            "facade/rear/floor/0/bay/0",
+            "facade/rear/floor/0/bay/1",
+            "facade/rear/floor/0/bay/2",
+            "facade/rear/floor/0/bay/3",
+            "facade/rear/floor/1/bay/0",
+            "facade/rear/floor/1/bay/1",
+            "facade/rear/floor/1/bay/2",
+            "facade/rear/floor/1/bay/3",
+            "facade/rear/floor/2/bay/0",
+            "facade/rear/floor/2/bay/1",
+            "facade/rear/floor/2/bay/2",
+            "facade/rear/floor/2/bay/3",
+            "facade/left/floor/0/bay/0",
+            "facade/left/floor/0/bay/1",
+            "facade/left/floor/0/bay/2",
+            "facade/left/floor/0/bay/3",
+            "facade/left/floor/1/bay/0",
+            "facade/left/floor/1/bay/1",
+            "facade/left/floor/1/bay/2",
+            "facade/left/floor/1/bay/3",
+            "facade/left/floor/2/bay/0",
+            "facade/left/floor/2/bay/1",
+            "facade/left/floor/2/bay/2",
+            "facade/left/floor/2/bay/3"
+          ]
+        },
+        {
+          "nodeId": "opening",
+          "type": "PlaceOpening",
+          "output": "scope",
+          "openingCount": 48,
+          "meshCount": 0,
+          "bounds": {
+            "min": [
+              -5.6,
+              0,
+              -4.200000000000001
+            ],
+            "max": [
+              5.6,
+              11.4,
+              4.200000000000001
+            ]
+          },
+          "scopeCount": 48,
+          "scopeNames": [
+            "facade/floor/0/bay/0",
+            "facade/floor/0/bay/1",
+            "facade/floor/0/bay/2",
+            "facade/floor/0/bay/3",
+            "facade/floor/1/bay/0",
+            "facade/floor/1/bay/1",
+            "facade/floor/1/bay/2",
+            "facade/floor/1/bay/3",
+            "facade/floor/2/bay/0",
+            "facade/floor/2/bay/1",
+            "facade/floor/2/bay/2",
+            "facade/floor/2/bay/3",
+            "facade/right/floor/0/bay/0",
+            "facade/right/floor/0/bay/1",
+            "facade/right/floor/0/bay/2",
+            "facade/right/floor/0/bay/3",
+            "facade/right/floor/1/bay/0",
+            "facade/right/floor/1/bay/1",
+            "facade/right/floor/1/bay/2",
+            "facade/right/floor/1/bay/3",
+            "facade/right/floor/2/bay/0",
+            "facade/right/floor/2/bay/1",
+            "facade/right/floor/2/bay/2",
+            "facade/right/floor/2/bay/3",
+            "facade/rear/floor/0/bay/0",
+            "facade/rear/floor/0/bay/1",
+            "facade/rear/floor/0/bay/2",
+            "facade/rear/floor/0/bay/3",
+            "facade/rear/floor/1/bay/0",
+            "facade/rear/floor/1/bay/1",
+            "facade/rear/floor/1/bay/2",
+            "facade/rear/floor/1/bay/3",
+            "facade/rear/floor/2/bay/0",
+            "facade/rear/floor/2/bay/1",
+            "facade/rear/floor/2/bay/2",
+            "facade/rear/floor/2/bay/3",
+            "facade/left/floor/0/bay/0",
+            "facade/left/floor/0/bay/1",
+            "facade/left/floor/0/bay/2",
+            "facade/left/floor/0/bay/3",
+            "facade/left/floor/1/bay/0",
+            "facade/left/floor/1/bay/1",
+            "facade/left/floor/1/bay/2",
+            "facade/left/floor/1/bay/3",
+            "facade/left/floor/2/bay/0",
+            "facade/left/floor/2/bay/1",
+            "facade/left/floor/2/bay/2",
+            "facade/left/floor/2/bay/3"
+          ]
+        },
+        {
+          "nodeId": "entrance",
+          "type": "PlaceDoor",
+          "output": "scope",
+          "openingCount": 48,
+          "meshCount": 0,
+          "bounds": {
+            "min": [
+              -5.6,
+              0,
+              -4.200000000000001
+            ],
+            "max": [
+              5.6,
+              11.4,
+              4.200000000000001
+            ]
+          },
+          "scopeCount": 48,
+          "scopeNames": [
+            "facade/floor/0/bay/0",
+            "facade/floor/0/bay/1",
+            "facade/floor/0/bay/2",
+            "facade/floor/0/bay/3",
+            "facade/floor/1/bay/0",
+            "facade/floor/1/bay/1",
+            "facade/floor/1/bay/2",
+            "facade/floor/1/bay/3",
+            "facade/floor/2/bay/0",
+            "facade/floor/2/bay/1",
+            "facade/floor/2/bay/2",
+            "facade/floor/2/bay/3",
+            "facade/right/floor/0/bay/0",
+            "facade/right/floor/0/bay/1",
+            "facade/right/floor/0/bay/2",
+            "facade/right/floor/0/bay/3",
+            "facade/right/floor/1/bay/0",
+            "facade/right/floor/1/bay/1",
+            "facade/right/floor/1/bay/2",
+            "facade/right/floor/1/bay/3",
+            "facade/right/floor/2/bay/0",
+            "facade/right/floor/2/bay/1",
+            "facade/right/floor/2/bay/2",
+            "facade/right/floor/2/bay/3",
+            "facade/rear/floor/0/bay/0",
+            "facade/rear/floor/0/bay/1",
+            "facade/rear/floor/0/bay/2",
+            "facade/rear/floor/0/bay/3",
+            "facade/rear/floor/1/bay/0",
+            "facade/rear/floor/1/bay/1",
+            "facade/rear/floor/1/bay/2",
+            "facade/rear/floor/1/bay/3",
+            "facade/rear/floor/2/bay/0",
+            "facade/rear/floor/2/bay/1",
+            "facade/rear/floor/2/bay/2",
+            "facade/rear/floor/2/bay/3",
+            "facade/left/floor/0/bay/0",
+            "facade/left/floor/0/bay/1",
+            "facade/left/floor/0/bay/2",
+            "facade/left/floor/0/bay/3",
+            "facade/left/floor/1/bay/0",
+            "facade/left/floor/1/bay/1",
+            "facade/left/floor/1/bay/2",
+            "facade/left/floor/1/bay/3",
+            "facade/left/floor/2/bay/0",
+            "facade/left/floor/2/bay/1",
+            "facade/left/floor/2/bay/2",
+            "facade/left/floor/2/bay/3"
+          ]
+        },
+        {
+          "nodeId": "wall",
+          "type": "EmitWall",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 4,
+          "bounds": {
+            "min": [
+              -5.6,
+              0,
+              -4.2
+            ],
+            "max": [
+              5.6,
+              11.4,
+              4.2
+            ]
+          }
+        },
+        {
+          "nodeId": "selection",
+          "type": "SelectScopes",
+          "output": "scope",
+          "openingCount": 48,
+          "meshCount": 0,
+          "bounds": {
+            "min": [
+              -5.6,
+              0,
+              -4.200000000000001
+            ],
+            "max": [
+              5.6,
+              11.4,
+              4.200000000000001
+            ]
+          },
+          "scopeCount": 48,
+          "scopeNames": [
+            "facade/floor/0/bay/0",
+            "facade/floor/0/bay/1",
+            "facade/floor/0/bay/2",
+            "facade/floor/0/bay/3",
+            "facade/floor/1/bay/0",
+            "facade/floor/1/bay/1",
+            "facade/floor/1/bay/2",
+            "facade/floor/1/bay/3",
+            "facade/floor/2/bay/0",
+            "facade/floor/2/bay/1",
+            "facade/floor/2/bay/2",
+            "facade/floor/2/bay/3",
+            "facade/right/floor/0/bay/0",
+            "facade/right/floor/0/bay/1",
+            "facade/right/floor/0/bay/2",
+            "facade/right/floor/0/bay/3",
+            "facade/right/floor/1/bay/0",
+            "facade/right/floor/1/bay/1",
+            "facade/right/floor/1/bay/2",
+            "facade/right/floor/1/bay/3",
+            "facade/right/floor/2/bay/0",
+            "facade/right/floor/2/bay/1",
+            "facade/right/floor/2/bay/2",
+            "facade/right/floor/2/bay/3",
+            "facade/rear/floor/0/bay/0",
+            "facade/rear/floor/0/bay/1",
+            "facade/rear/floor/0/bay/2",
+            "facade/rear/floor/0/bay/3",
+            "facade/rear/floor/1/bay/0",
+            "facade/rear/floor/1/bay/1",
+            "facade/rear/floor/1/bay/2",
+            "facade/rear/floor/1/bay/3",
+            "facade/rear/floor/2/bay/0",
+            "facade/rear/floor/2/bay/1",
+            "facade/rear/floor/2/bay/2",
+            "facade/rear/floor/2/bay/3",
+            "facade/left/floor/0/bay/0",
+            "facade/left/floor/0/bay/1",
+            "facade/left/floor/0/bay/2",
+            "facade/left/floor/0/bay/3",
+            "facade/left/floor/1/bay/0",
+            "facade/left/floor/1/bay/1",
+            "facade/left/floor/1/bay/2",
+            "facade/left/floor/1/bay/3",
+            "facade/left/floor/2/bay/0",
+            "facade/left/floor/2/bay/1",
+            "facade/left/floor/2/bay/2",
+            "facade/left/floor/2/bay/3"
+          ]
+        },
+        {
+          "nodeId": "window",
+          "type": "AssembleWindow",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 141,
+          "bounds": {
+            "min": [
+              -5.719999997317791,
+              0.675000011920929,
+              -4.319999997317791
+            ],
+            "max": [
+              5.719999997317791,
+              10.782499980926513,
+              4.319999997317791
+            ]
+          }
+        },
+        {
+          "nodeId": "door",
+          "type": "AssembleDoor",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 5,
+          "bounds": {
+            "min": [
+              -2.05,
+              0,
+              -4.3500000000000005
+            ],
+            "max": [
+              -0.7499999999999999,
+              2.9,
+              -3.97
+            ]
+          }
+        },
+        {
+          "nodeId": "bands",
+          "type": "ProfileTrim",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 2,
+          "bounds": {
+            "min": [
+              -5.67,
+              3.88,
+              -4.2700000000000005
+            ],
+            "max": [
+              5.67,
+              7.7,
+              4.2700000000000005
+            ]
+          }
+        },
+        {
+          "nodeId": "roof",
+          "type": "BuildingRoof",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 0,
+          "bounds": {
+            "min": [
+              0,
+              0,
+              0
+            ],
+            "max": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "nodeId": "join",
+          "type": "JoinGeometry",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 152,
+          "bounds": {
+            "min": [
+              -5.719999997317791,
+              0,
+              -4.3500000000000005
+            ],
+            "max": [
+              5.719999997317791,
+              11.4,
+              4.319999997317791
+            ]
+          }
+        },
+        {
+          "nodeId": "surface",
+          "type": "SetSurface",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 152,
+          "bounds": {
+            "min": [
+              -5.719999997317791,
+              0,
+              -4.3500000000000005
+            ],
+            "max": [
+              5.719999997317791,
+              11.4,
+              4.319999997317791
+            ]
+          }
+        },
+        {
+          "nodeId": "output",
+          "type": "Output",
+          "output": "geometry",
+          "openingCount": 0,
+          "meshCount": 152,
+          "bounds": {
+            "min": [
+              -5.719999997317791,
+              0,
+              -4.3500000000000005
+            ],
+            "max": [
+              5.719999997317791,
+              11.4,
+              4.319999997317791
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "oversized-window",
+      "status": "rejected",
+      "error": "Node opening: opening exceeds a split scope; retain 80 mm masonry at each edge."
+    },
+    {
+      "name": "reroll-after-disconnected-node",
+      "status": "rejected",
+      "error": "This graph has authored connections or added nodes. Keep editing it, or open a new construction before using this recipe; the current building is retained."
+    }
+  ]
+}

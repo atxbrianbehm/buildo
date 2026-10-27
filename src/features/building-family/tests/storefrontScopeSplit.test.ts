@@ -53,6 +53,14 @@ describe("storefrontScopeSplit", () => {
     expect(split.bulkheadHeightM + split.glazingHeightM + split.lintelHeightM).toBeCloseTo(4.2, 5);
   });
 
+  it("grows glazing on a tall commercial base so the ground band dominates (V1)", () => {
+    const tall = splitGroundStorefrontVertical(0, 5.6);
+    const short = splitGroundStorefrontVertical(0, 3.6);
+    expect(tall.glazingHeightM).toBeGreaterThan(short.glazingHeightM + 0.8);
+    expect(tall.glazingHeightM).toBeGreaterThan(tall.bulkheadHeightM * 2);
+    expect(tall.bulkheadHeightM + tall.glazingHeightM + tall.lintelHeightM).toBeCloseTo(5.6, 5);
+  });
+
   it("clamps door/window openings into the glazing band", () => {
     const split = splitGroundStorefrontVertical(0, 4.2);
     const door = clampOpeningToGlazingBand({ heightM: 3.5, centerYM: 2 }, split, "door");

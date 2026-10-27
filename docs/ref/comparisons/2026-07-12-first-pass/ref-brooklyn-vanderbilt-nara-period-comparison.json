@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "0.1.0",
+  "packetKind": "dynamic-building-family-period-comparison",
+  "createdAt": "2026-07-13T02:16:30.000Z",
+  "catalogId": "period-ref-v0.1",
+  "referenceId": "ref-brooklyn-vanderbilt-nara",
+  "referenceTitle": "Brooklyn architecture on Vanderbilt Avenue (NARA)",
+  "presentationMode": "clay",
+  "fidelityMode": "kit",
+  "seeds": {
+    "family": "family-seed",
+    "building": "building-seed",
+    "material": "material-seed",
+    "trim": "trim-seed"
+  },
+  "screenshotTargetRoute": "#room=assemblyHall",
+  "rubricScores": [
+    {
+      "id": "silhouette",
+      "label": "Silhouette / massing",
+      "status": "fail",
+      "notes": "Reference has stepped crown, corner bay/oriel, and a clear base plinth. Kit is a single extruded rectangle with flat slab roof."
+    },
+    {
+      "id": "facadeRhythm",
+      "label": "Facade rhythm",
+      "status": "partial",
+      "notes": "Kit has regular bay grid. Reference mixes arched decorative panels, flat windows, and a corner vertical accent — more hierarchical than the kit stamp."
+    },
+    {
+      "id": "openingDepth",
+      "label": "Opening depth",
+      "status": "partial",
+      "notes": "Upper punched windows on the ref sit deep in brick with arch frames. Kit openings read as surface-mounted boxes."
+    },
+    {
+      "id": "trimLayering",
+      "label": "Trim layering",
+      "status": "fail",
+      "notes": "Reference cornice and upper decorative bands cast strong shadow. Kit ornate-trim setting does not produce a clay-readable crown stack."
+    },
+    {
+      "id": "storefrontBase",
+      "label": "Storefront / base",
+      "status": "fail",
+      "notes": "Reference red commercial base is ~1/3 height with large arched openings. Kit ground is only modestly different from upper floors — no tall arcade storefront massing."
+    },
+    {
+      "id": "sideRear",
+      "label": "Side / rear hierarchy",
+      "status": "partial",
+      "notes": "Kit side is simpler than front. Reference side/return is still secondary; corner bay breaks the box in a way the kit cannot yet."
+    },
+    {
+      "id": "materialScale",
+      "label": "Material scale (textured mode)",
+      "status": "not-reviewed"
+    }
+  ],
+  "freeformNotes": "Compared same kit clay capture against Brooklyn Vanderbilt. Storefront base height + arched ground openings are the clearest product gap after cornice. Corner bay is a later grammar item, not a G8 regression.",
+  "summary": {
+    "passCount": 0,
+    "partialCount": 3,
+    "failCount": 3,
+    "notReviewedCount": 1
+  }
+}

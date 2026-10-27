@@ -1,0 +1,341 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "construction-generation-resolution",
+  "resolverVersion": "construction-generation-resolver-v1",
+  "sourceContentHash": "76b46703106dd968c4f586b5e1dbcb179b0034a27fcf4c03367635fbd7531b77",
+  "graph": {
+    "schemaVersion": "0.4.0",
+    "kind": "bay-construction",
+    "documentId": "c5-p1-proof",
+    "nodes": [
+      {
+        "id": "footprint",
+        "type": "Footprint",
+        "parameters": {
+          "widthM": 9,
+          "depthM": 8.4,
+          "wallDepthM": 0.36
+        }
+      },
+      {
+        "id": "facade",
+        "type": "Storeys",
+        "input": {
+          "nodeId": "footprint",
+          "socket": "footprint"
+        },
+        "parameters": {
+          "count": 2,
+          "groundHeightM": 4.3,
+          "upperHeightM": 3.7
+        }
+      },
+      {
+        "id": "bays",
+        "type": "SplitBays",
+        "input": {
+          "nodeId": "facade",
+          "socket": "scope"
+        },
+        "parameters": {
+          "count": 3
+        }
+      },
+      {
+        "id": "opening",
+        "type": "PlaceOpening",
+        "input": {
+          "nodeId": "bays",
+          "socket": "scope"
+        },
+        "parameters": {
+          "widthM": 1.22,
+          "heightM": 1.95,
+          "sillM": 0.78
+        }
+      },
+      {
+        "id": "entrance",
+        "type": "PlaceDoor",
+        "input": {
+          "nodeId": "opening",
+          "socket": "scope"
+        },
+        "parameters": {
+          "bayIndex": 1,
+          "widthM": 1.22,
+          "heightM": 2.73
+        }
+      },
+      {
+        "id": "wall",
+        "type": "EmitWall",
+        "input": {
+          "nodeId": "entrance",
+          "socket": "scope"
+        }
+      },
+      {
+        "id": "selection",
+        "type": "SelectScopes",
+        "input": {
+          "nodeId": "entrance",
+          "socket": "scope"
+        },
+        "parameters": {
+          "floorIndex": -1,
+          "bayIndex": -1
+        }
+      },
+      {
+        "id": "window",
+        "type": "AssembleWindow",
+        "input": {
+          "nodeId": "selection",
+          "socket": "scope"
+        },
+        "parameters": {
+          "recessM": 0.14,
+          "frameWidthM": 0.055,
+          "sillProjectionM": 0.12
+        }
+      },
+      {
+        "id": "door",
+        "type": "AssembleDoor",
+        "input": {
+          "nodeId": "entrance",
+          "socket": "scope"
+        },
+        "parameters": {
+          "recessM": 0.14,
+          "frameWidthM": 0.075,
+          "leafHeightM": 2.3,
+          "thresholdProjectionM": 0.15
+        }
+      },
+      {
+        "id": "bands",
+        "type": "ProfileTrim",
+        "input": {
+          "nodeId": "facade",
+          "socket": "scope"
+        },
+        "parameters": {
+          "heightM": 0.12,
+          "projectionM": 0.07
+        }
+      },
+      {
+        "id": "roof",
+        "type": "BuildingRoof",
+        "input": {
+          "nodeId": "facade",
+          "socket": "scope"
+        },
+        "parameters": {
+          "parapetHeightM": 0.55,
+          "copingProjectionM": 0.06,
+          "corniceHeightM": 0.3,
+          "corniceProjectionM": 0.24
+        }
+      },
+      {
+        "id": "join",
+        "type": "JoinGeometry",
+        "inputs": [
+          {
+            "nodeId": "wall",
+            "socket": "geometry"
+          },
+          {
+            "nodeId": "window",
+            "socket": "geometry"
+          },
+          {
+            "nodeId": "door",
+            "socket": "geometry"
+          },
+          {
+            "nodeId": "bands",
+            "socket": "geometry"
+          },
+          {
+            "nodeId": "roof",
+            "socket": "geometry"
+          }
+        ]
+      },
+      {
+        "id": "surface",
+        "type": "SetSurface",
+        "input": {
+          "nodeId": "join",
+          "socket": "geometry"
+        },
+        "composition": {
+          "schemaVersion": "0.1.0",
+          "documentId": "c5-p1-proof",
+          "revision": 0,
+          "sources": [],
+          "layers": []
+        }
+      },
+      {
+        "id": "output",
+        "type": "Output",
+        "inputs": [
+          {
+            "nodeId": "surface",
+            "socket": "geometry"
+          }
+        ]
+      }
+    ],
+    "outputNodeId": "output"
+  },
+  "graphContentHash": "f5e1b48ff76b3808f3165233b3083af6d0dd667045340ec2c5d3f1c9bcd1ea1e",
+  "choices": [
+    {
+      "target": "construction/bands/heightM",
+      "value": 0.12,
+      "basis": "requested"
+    },
+    {
+      "target": "construction/bands/projectionM",
+      "value": 0.07,
+      "basis": "requested"
+    },
+    {
+      "target": "construction/bays/count",
+      "value": 3,
+      "basis": "requested"
+    },
+    {
+      "target": "construction/door/frameWidthM",
+      "value": 0.075,
+      "basis": "default"
+    },
+    {
+      "target": "construction/door/leafHeightM",
+      "value": 2.3,
+      "basis": "default"
+    },
+    {
+      "target": "construction/door/recessM",
+      "value": 0.14,
+      "basis": "default"
+    },
+    {
+      "target": "construction/door/thresholdProjectionM",
+      "value": 0.15,
+      "basis": "default"
+    },
+    {
+      "target": "construction/entrance/bayIndex",
+      "value": 1,
+      "basis": "default"
+    },
+    {
+      "target": "construction/entrance/heightM",
+      "value": 2.73,
+      "basis": "derived"
+    },
+    {
+      "target": "construction/entrance/widthM",
+      "value": 1.22,
+      "basis": "derived"
+    },
+    {
+      "target": "construction/facade/count",
+      "value": 2,
+      "basis": "requested"
+    },
+    {
+      "target": "construction/facade/groundHeightM",
+      "value": 4.3,
+      "basis": "seeded"
+    },
+    {
+      "target": "construction/facade/upperHeightM",
+      "value": 3.7,
+      "basis": "seeded"
+    },
+    {
+      "target": "construction/footprint/depthM",
+      "value": 8.4,
+      "basis": "derived"
+    },
+    {
+      "target": "construction/footprint/wallDepthM",
+      "value": 0.36,
+      "basis": "default"
+    },
+    {
+      "target": "construction/footprint/widthM",
+      "value": 9,
+      "basis": "derived"
+    },
+    {
+      "target": "construction/opening/heightM",
+      "value": 1.95,
+      "basis": "seeded"
+    },
+    {
+      "target": "construction/opening/sillM",
+      "value": 0.78,
+      "basis": "default"
+    },
+    {
+      "target": "construction/opening/widthM",
+      "value": 1.22,
+      "basis": "seeded"
+    },
+    {
+      "target": "construction/roof/copingProjectionM",
+      "value": 0.06,
+      "basis": "default"
+    },
+    {
+      "target": "construction/roof/corniceHeightM",
+      "value": 0.3,
+      "basis": "requested"
+    },
+    {
+      "target": "construction/roof/corniceProjectionM",
+      "value": 0.24,
+      "basis": "requested"
+    },
+    {
+      "target": "construction/roof/parapetHeightM",
+      "value": 0.55,
+      "basis": "default"
+    },
+    {
+      "target": "construction/selection/bayIndex",
+      "value": -1,
+      "basis": "default"
+    },
+    {
+      "target": "construction/selection/floorIndex",
+      "value": -1,
+      "basis": "default"
+    },
+    {
+      "target": "construction/window/frameWidthM",
+      "value": 0.055,
+      "basis": "default"
+    },
+    {
+      "target": "construction/window/recessM",
+      "value": 0.14,
+      "basis": "default"
+    },
+    {
+      "target": "construction/window/sillProjectionM",
+      "value": 0.12,
+      "basis": "default"
+    }
+  ],
+  "contentHash": "dcd1b130e6c815ec44fa231be02cd35f9dc1c2aa181f55bc73799c3fd51e9724"
+}

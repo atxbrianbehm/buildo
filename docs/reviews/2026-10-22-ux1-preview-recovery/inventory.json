@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "0.1.0",
+  "files": [
+    {
+      "path": "diff-check.log",
+      "bytes": 24,
+      "sha256": "519c12601709edef3aa550013646f466727f13fe4497a22d9135556d1f5179e2"
+    },
+    {
+      "path": "focus-desktop.png",
+      "bytes": 478195,
+      "sha256": "430b55a19aa562be30f2077b1a2cf9331382974752d4011f3cd5b7e890ba0e75"
+    },
+    {
+      "path": "hover-desktop.png",
+      "bytes": 478233,
+      "sha256": "35cd97f5c78202edace88e2e66bdbc4f2e5637c48c6fbc0b8fcf2c5da7abe906"
+    },
+    {
+      "path": "interaction-qa.json",
+      "bytes": 550,
+      "sha256": "5e6d6ee75dc6db6bd8a9f625460ccfb47294c7bf683914e3e11bea4304e75889"
+    },
+    {
+      "path": "interaction-qa.mjs.txt",
+      "bytes": 2448,
+      "sha256": "1993462f4a252e036af295d19efef659082194450d741141c04de3b17cc05dd9"
+    },
+    {
+      "path": "preview.json",
+      "bytes": 226,
+      "sha256": "e26d9c99334db3e1e25e66d2ba5d61b39075c53723fbc498e52ab23f4a730aa7"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1895,
+      "sha256": "cf8e3d240341479fa4a7b30c375bc97a759f70d1be88b8505414e4f63781651b"
+    },
+    {
+      "path": "serve-preview.mjs.txt",
+      "bytes": 721,
+      "sha256": "3ca1c7d79e6a2ebee6102d2e905799427ed1f4c54ae28d4037e58d2d93fe7671"
+    },
+    {
+      "path": "source-check.json",
+      "bytes": 150,
+      "sha256": "eca0f70325ecb1503a399e404858d34e5f7e112bdc6638854dd0d0a932a13fe5"
+    },
+    {
+      "path": "verification.json",
+      "bytes": 2701,
+      "sha256": "b3ff16020b09b407563616d4bb444f9614a6c16e2db4eccfb8e096316da55236"
+    }
+  ]
+}

@@ -1,0 +1,384 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "c4-source-and-native-checkpoint",
+  "status": "engineering-complete-human-appearance-pending",
+  "gitHead": "4c0fedeacfc9b4bed0c0000096d7d1ea605d23b9",
+  "acceptedCheckpoint": "docs/reviews/2026-10-17-c3-p1b/verification.json",
+  "acceptedCheckpointSha256": "c9954cb31e0c6e59c6327608c7404f928fc61cc50de3fbf3b84c313d406f243e",
+  "sourcePins": [
+    {
+      "file": "src/app/App.css",
+      "sha256": "de1159987a3f20c2c173fa804eb0754415bf38bb59d4f8e3ce2551d74141855e"
+    },
+    {
+      "file": "src/app/App.tsx",
+      "sha256": "9e963bacf37a73c8c7b54d02f530b66e4fab6d90b76cf66f4bddfacca14bc0e2"
+    },
+    {
+      "file": "src/features/building-family/contracts/bayConstructionGraph.ts",
+      "sha256": "60a597bf53c5f0c663bed802a611134803585f149654042a89a7201cf3b1de77"
+    },
+    {
+      "file": "src/features/building-family/compiler/evaluateBayConstruction.ts",
+      "sha256": "b9e3adc96af50d28b4bb1bd98a82ab290967e23f5b2a4426fbe3096fef24ed6d"
+    },
+    {
+      "file": "src/features/building-family/compiler/bayWindowGeometry.ts",
+      "sha256": "e09992f62d5b8919ed1c2cd2215f18df71fe9cdc2a9fec7587bfc5b1d07bc443"
+    },
+    {
+      "file": "src/features/building-family/compiler/evaluateConstruction.ts",
+      "sha256": "abcbe38a85a2ea1f0234042f949099e1aec4ea55619aa9caa24c78940dac300f"
+    },
+    {
+      "file": "src/features/building-family/compiler/evaluateFacadeConstruction.ts",
+      "sha256": "b4847bbd9153e217e551b7db600804c558fc6ce712c1ec7ad5e4bd6184119bab"
+    },
+    {
+      "file": "src/features/building-family/compiler/bayConstruction.worker.ts",
+      "sha256": "11756a085021e9d53e3b6ff11cd380c58dbe908b863ef428b1dc01f44d28dec1"
+    },
+    {
+      "file": "src/features/building-family/compiler/bayConstructionWorkerProtocol.ts",
+      "sha256": "9458259ada71b67a3535c11514b0e1e38b32c02f40a5854997c743b7b7de0e6d"
+    },
+    {
+      "file": "src/features/building-family/compiler/bayConstructionClient.ts",
+      "sha256": "33f8db72c7bde47cdb41ac6790099e8fc4448e52ad2cfd0cf7b6f52826d8dce7"
+    },
+    {
+      "file": "src/features/building-family/state/bayConstructionProject.ts",
+      "sha256": "8d9eb6474e4cf4b3d8183c541b5286bed3a8c8ba2a390ee090c9f2202e461b4d"
+    },
+    {
+      "file": "src/features/building-family/ui/BayConstructionWorkbench.tsx",
+      "sha256": "b904396d8e02b2c61e14b0d99e2db799f76866e6928624027f4bcd40304acd7d"
+    },
+    {
+      "file": "src/features/building-family/ui/ConstructionNodePanel.tsx",
+      "sha256": "c46efe996f7eb72e800a9d6ebc09d7986754b43761c1deb40ed8a13e47920af8"
+    },
+    {
+      "file": "src/features/building-family/ui/bayConstructionFixture.ts",
+      "sha256": "4a4ec45c102882c19c202204ca269610517e8a8d6d4910e24ab9942c55e69764"
+    },
+    {
+      "file": "src/features/building-family/ui/AssemblyHall.tsx",
+      "sha256": "cc4c0c39423fbccf6ae5301a70b176951962767b863dc65d58027c8ee8cde3b3"
+    },
+    {
+      "file": "src/features/building-family/renderer-three/buildingSceneAdapter.ts",
+      "sha256": "f63eeea40accc2c14ffd94ff382b1474ad964ba9841065e9ea3cdb48ce3c89c9"
+    },
+    {
+      "file": "src/features/building-family/renderer-three/familyRuntime.ts",
+      "sha256": "3d19d6ce556ca64084ca583fe8cca2aa41f57d0232f9df7180035f8688f588a5"
+    },
+    {
+      "file": "src/features/building-family/renderer-three/assemblyRendererFactory.ts",
+      "sha256": "9d25c84743cfe20f407c4b0c8c01c337b50f8fd93c23a83a42c0bf7afc53b56f"
+    },
+    {
+      "file": "src/features/building-family/tests/facadeConstruction.test.ts",
+      "sha256": "478ea3e2b99d0128d66bb86798b14daf223d859802addf89807e1d5ce79de5df"
+    },
+    {
+      "file": "src/features/building-family/tests/ConstructionNodePanel.test.tsx",
+      "sha256": "219d9ebf1fc8f7a2f34f61b8371d7e6a78e69049edb2489993bdb61c4d90a1f3"
+    },
+    {
+      "file": "src/features/building-family/tests/bayConstructionWorkbench.test.tsx",
+      "sha256": "e15972d29ffe380eaeed4af660de6276616dc9f928f01cebfcb41e254d2d780a"
+    },
+    {
+      "file": "eslint.config.js",
+      "sha256": "ebd72019a926815cc06067cdd066a14045811e5c784d7c0d47dd71830426d53f"
+    },
+    {
+      "file": "src/app/App.test.tsx",
+      "sha256": "87de77799326ea869b1cffc09a6659a93f344cc0a8d9c20a5e729c18ce97947d"
+    },
+    {
+      "file": "src/features/building-family/state/constructionHistory.ts",
+      "sha256": "7474eef2301b55b0942da685d98eb41d78886bc44aee973de5a1c8b4d4d3a495"
+    },
+    {
+      "file": "src/features/building-family/state/constructionCheckpoint.ts",
+      "sha256": "8c1c87c51778e8fcc5d4bf034f1cb4147b57367f192e21787b927893278e574d"
+    },
+    {
+      "file": "src/features/building-family/state/constructionCheckpointWriter.ts",
+      "sha256": "4576c208815a34b014f21d8bbe173ea891a275db04346f12dbfde3c1a5359f56"
+    },
+    {
+      "file": "src/features/building-family/state/useConstructionWorkspace.ts",
+      "sha256": "06ea9e636502ea6af36912ad50ef2871bae1d0e8c9a333dfc050d86d7c50253a"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionHistory.test.ts",
+      "sha256": "5e5dba8e342ed0cb799bc9178b5c1e22dff6b1e2a4059c6c15aa4e3013652e98"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionCheckpoint.test.ts",
+      "sha256": "e7ccd21accad4f1cb30f99432b6d16f85c28cbe47a96e4a8cfd5b5752ae38daf"
+    },
+    {
+      "file": "src/features/building-family/tests/useConstructionWorkspace.test.tsx",
+      "sha256": "fdbb656126c67c4e432858fd1b7526799b6a1fa639b2281316ec825a03b06d52"
+    },
+    {
+      "file": "src/features/building-family/renderer-three/wallAtlasGeometry.ts",
+      "sha256": "4224ddd6c63dcea3289a53fb73cb46430a111617a8dd9182153f95f36d854907"
+    },
+    {
+      "file": "src/features/building-family/renderer-three/buildingAtlasTextureFactory.ts",
+      "sha256": "6931aa769b52381635ec8387bd48e1bd843f9084df8bc40ca8e1b7f729d2dd31"
+    },
+    {
+      "file": "src/features/building-family/contracts/surfaceComposition.ts",
+      "sha256": "8933635c2421b77b3768f161e8bd3785e227077cb7ee60a9ecec4d50982c4101"
+    },
+    {
+      "file": "src/features/building-family/materials/composeSurfaceTile.ts",
+      "sha256": "7a976e53739d4999b65c6b36b1eafa5050de71853aece16b03b45ee118f2a5bb"
+    },
+    {
+      "file": "src/features/building-family/renderer-three/surfaceMaterialRuntime.ts",
+      "sha256": "f64b443e7dbbecd5657602431a4ccc145d660fec378b77630bf4bd0840e048fd"
+    },
+    {
+      "file": "src/features/building-family/core/constructionAppearance.ts",
+      "sha256": "048be34ded15b442b58360f9209b711b1a98ea728bb931fa13d54df6ebc53f73"
+    },
+    {
+      "file": "src/features/building-family/contracts/surfaceBaseAppearance.ts",
+      "sha256": "14d4c46d32c67c55d06005aeeef7041bf08928a691a70a77920d18e72e53ed74"
+    },
+    {
+      "file": "src/features/building-family/materials/surfaceBaseAppearance.ts",
+      "sha256": "040fa37d136c428101751e9669f4ec01eebac19ea84f84814304fc9aea7787a6"
+    },
+    {
+      "file": "src/features/building-family/tests/surfaceBaseAppearance.test.ts",
+      "sha256": "5a0f38c8668ea256d5804efa65e7c4cef7efde9fab995c5328a2c185796c6034"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionSurfaceRuntime.test.ts",
+      "sha256": "10d81dcd4f51eca05a61b5c1a8cc9cd5207b4607b26c1fe46a80354329c8fa99"
+    },
+    {
+      "file": "src/features/building-family/core/constructionSurfaceAuthoring.ts",
+      "sha256": "a846be0d5bf9f3b3037d679d59a081e02fe4af590b71db7ff4fe12b5380985d6"
+    },
+    {
+      "file": "src/features/building-family/compiler/constructionSurfaceProgram.ts",
+      "sha256": "efb667b97f0bc35f405553feb671ceff8767a569afe941dd25e3b042af6e7dfe"
+    },
+    {
+      "file": "src/features/building-family/renderer-three/constructionFrameSelection.ts",
+      "sha256": "2cba32c7a5fc46bf42db9d5e0a3fd632ee45e6826e77b5167770edcf79aed005"
+    },
+    {
+      "file": "src/features/building-family/ui/ConstructionSurfacePanel.tsx",
+      "sha256": "c1433f5acae5d52d68b83ee505f6f9be1acb47bbcff56b923d9dcfa5a37c1fdc"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionSurfaceProgram.test.ts",
+      "sha256": "82a1a02ad3fbec56d80bef0f214fd69db8008281c97d801118db62a69175db27"
+    },
+    {
+      "file": "src/features/building-family/compiler/buildingShellGeometry.ts",
+      "sha256": "d3e206bee5018885d9113f97927fd04506e5c0462e3baa85341bf85c0e4769f8"
+    },
+    {
+      "file": "src/features/building-family/tests/buildingConstruction.test.ts",
+      "sha256": "8a7b2aa3f45e672d640d88581b6f656837f4e0e95cc0bd9799007bb675b1d7ad"
+    },
+    {
+      "file": "scripts/e2e-smoke.mjs",
+      "sha256": "db6d95ccdcd22b61b7afad9b44bba49c577a3e2b15d9dca5956ce785d7007665"
+    }
+  ],
+  "changedExistingPaths": [
+    "src/app/App.tsx",
+    "src/features/building-family/contracts/bayConstructionGraph.ts",
+    "src/features/building-family/compiler/evaluateBayConstruction.ts",
+    "src/features/building-family/compiler/bayWindowGeometry.ts",
+    "src/features/building-family/compiler/evaluateConstruction.ts",
+    "src/features/building-family/compiler/evaluateFacadeConstruction.ts",
+    "src/features/building-family/compiler/bayConstructionWorkerProtocol.ts",
+    "src/features/building-family/compiler/bayConstructionClient.ts",
+    "src/features/building-family/state/bayConstructionProject.ts",
+    "src/features/building-family/ui/BayConstructionWorkbench.tsx",
+    "src/features/building-family/ui/ConstructionNodePanel.tsx",
+    "src/features/building-family/ui/bayConstructionFixture.ts",
+    "src/features/building-family/ui/AssemblyHall.tsx",
+    "src/features/building-family/renderer-three/buildingSceneAdapter.ts",
+    "src/features/building-family/tests/ConstructionNodePanel.test.tsx",
+    "src/features/building-family/tests/bayConstructionWorkbench.test.tsx",
+    "src/app/App.test.tsx",
+    "src/features/building-family/core/constructionAppearance.ts",
+    "src/features/building-family/tests/constructionSurfaceRuntime.test.ts",
+    "src/features/building-family/core/constructionSurfaceAuthoring.ts",
+    "src/features/building-family/compiler/constructionSurfaceProgram.ts",
+    "scripts/e2e-smoke.mjs",
+    "src/app/App.css"
+  ],
+  "newSourcePaths": [
+    "src/features/building-family/compiler/buildingShellGeometry.ts",
+    "src/features/building-family/tests/buildingConstruction.test.ts"
+  ],
+  "documentationChanges": [
+    {
+      "file": "README.md",
+      "beforeSha256": "446e698304b854d13cbb66daf46cb373d89a50f8a946ffd3327c1b484ef5ec8a",
+      "sha256": "8af5a7b66fe4964b3dd8335ef5f1a9a7e7bd1ee97487ff349cc94bbcf2548e57"
+    },
+    {
+      "file": "docs/plans/building-authoring-revival.md",
+      "beforeSha256": "20e423671cac797077ee56d3eb5ecc4e89339530a0e076114ac3b54c4fca0059",
+      "sha256": "fd7f24c36541f89f15f636c458a84cf4d0687311f25f147b202c11e0fb0fc732"
+    }
+  ],
+  "checks": [
+    {
+      "name": "test",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T02:33:01.5598939Z",
+      "finishedAt": "2026-10-18T02:41:47.5689047Z",
+      "log": "checks/test-final-02.log",
+      "candidate": "candidate-04"
+    },
+    {
+      "name": "typecheck",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T02:45:12.8024926Z",
+      "finishedAt": "2026-10-18T02:45:22.9202292Z",
+      "log": "checks/typecheck-final-03.log",
+      "candidate": "candidate-05"
+    },
+    {
+      "name": "lint",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T02:45:22.9387231Z",
+      "finishedAt": "2026-10-18T02:45:38.7704602Z",
+      "log": "checks/lint-final-03.log",
+      "candidate": "candidate-05"
+    },
+    {
+      "name": "build",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T02:45:38.7748884Z",
+      "finishedAt": "2026-10-18T02:45:50.4009122Z",
+      "log": "checks/build-final-03.log",
+      "candidate": "candidate-05"
+    },
+    {
+      "name": "test:e2e",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T02:45:50.4033149Z",
+      "finishedAt": "2026-10-18T02:48:23.4030362Z",
+      "log": "checks/test-e2e-final-03.log",
+      "candidate": "candidate-05"
+    }
+  ],
+  "unitTests": 1632,
+  "unitFiles": 116,
+  "standardWorkflows": [
+    "R3_P1_WORKSPACE_E2E",
+    "R3_P6_WINDOW_WIDTH_E2E",
+    "R3_P11_SOURCE_CHECKPOINT_RECOVERY_E2E",
+    "R3_P12_WINDOW_WIDTH_HISTORY_E2E",
+    "R3_P15_WIDTH_BATCH_SOURCE_E2E",
+    "R3_P16_WINDOW_FLOOR_WIDTH_E2E",
+    "R3_P18_WINDOW_BAY_WIDTH_E2E",
+    "R4_P4_SURFACE_SOURCE_APP_E2E"
+  ],
+  "native": [
+    {
+      "api": "webgpu",
+      "receipt": "native-webgpu/receipt.json",
+      "receiptSha256": "2dd20d378c6b3afd2cb7f18049e6c10681b2e4259cdca63ae11fa442429a718d",
+      "draws": 22,
+      "captures": 23,
+      "sourceSnapshot": "candidate-04"
+    },
+    {
+      "api": "webgl",
+      "receipt": "native-webgl/receipt.json",
+      "receiptSha256": "ec964d4556b7dedc02ca3f0eb735163180df58d3ed9de8c9c1611c9199b517d1",
+      "draws": 22,
+      "captures": 23,
+      "sourceSnapshot": "candidate-04"
+    }
+  ],
+  "finalPresentation": [
+    {
+      "api": "webgpu",
+      "receipt": "presentation-webgpu/receipt.json",
+      "receiptSha256": "cbbb6505857c385ab5ea0b279eb2992abcfc0c0993bffa8db1ce42f4f1a3a14a",
+      "draws": 1,
+      "captures": 4,
+      "sourceSnapshot": "candidate-05"
+    },
+    {
+      "api": "webgl",
+      "receipt": "presentation-webgl/receipt.json",
+      "receiptSha256": "dbccd4f9ad4dd2112314bcb0a95ca37f33c9a1ab9ba95c793d14e7c6f2d43de0",
+      "draws": 1,
+      "captures": 4,
+      "sourceSnapshot": "candidate-05"
+    }
+  ],
+  "coreScreenshotCount": 46,
+  "finalPresentationScreenshotCount": 8,
+  "visuallyReviewedScreenshotCount": 54,
+  "coreToFinalOnlyDifference": "src/app/App.css",
+  "fullUnitExecutableSourcesAndTestsUnchanged": true,
+  "finalPresentationNativePixelsEqualCore": true,
+  "providerCalls": {
+    "initialConstructionPerBackend": 12,
+    "afterInitialization": 0,
+    "cold": 0
+  },
+  "portableManifest": "portable/manifest.json",
+  "review": {
+    "automated": "pass",
+    "renderedViewsInspected": true,
+    "wholeBuildingHumanAppearance": "pending",
+    "familyBlock": "not-authorized-before-human-gate",
+    "representativePerformance": "not-established"
+  },
+  "diffReview": [
+    "Only 23 existing packet source paths and two additions differ from pinned C3 baseline; unrelated mixed-tree work retained.",
+    "Pure compiler/core/contracts have no browser or rendering framework imports; all structural placement is deterministic.",
+    "Existing transaction/cancellation/checkpoint paths retained; actual retired owner disposal and cold restoration verified on both APIs.",
+    "Old C1/C2 outputs and C3 native pixels retained; unconnected new graph operators do not change legacy sampling.",
+    "New source files are schema-versioned and admitted through existing validated worker/project boundaries."
+  ],
+  "postArchiveLint": {
+    "command": "npm.cmd run lint",
+    "exitCode": 0,
+    "log": "checks/lint-post-archive.log",
+    "sha256": "a21c6d2dedb756f860b052cb2d84cd603fbbe38ee53e1ad76ab9c5803f028958"
+  },
+  "inventory": {
+    "file": "inventory.json",
+    "sha256": "96ee19d8da37fd5ae13860e3d8655a9858a8dca201f34ffbebe19404b8fdb6f1",
+    "files": 285
+  },
+  "localPreview": {
+    "url": "http://127.0.0.1:4417/#document=c4-review",
+    "httpStatus": 200,
+    "bindAddress": "127.0.0.1",
+    "serverSessionId": 94738,
+    "panelStatus": "queued",
+    "keptRunningForReview": true
+  },
+  "closeoutAttempt": {
+    "first": "Archive source comparison rejected list order before copying native proofs or editing documentation.",
+    "correction": "Compared file-to-SHA maps; all 48 hashes matched exactly and the archive completed.",
+    "productSourceChanges": 0
+  },
+  "finishedAtUtc": "2026-10-18T02:57:56.024322+00:00"
+}

@@ -1,0 +1,84 @@
+import { buildBoxPrimitive, emptyBounds, expandBounds, type PrimitiveGeometry } from "./primitiveGeometry";
+
+/** Closed extruded timber section, with actual chamfers on its two exposed edges. */
+function rail(length: number, width: number, depth: number, center: [number, number, number], vertical = false, metricUvs = false): PrimitiveGeometry {
+  const bevel = Math.min(0.003, width / 8), half = width / 2;
+  const ring = [[-half, -depth / 2], [half, -depth / 2], [half, depth / 2 - bevel],
+    [half - bevel, depth / 2], [-half + bevel, depth / 2], [-half, depth / 2 - bevel]];
+  const positions: number[] = [], normals: number[] = [], uvs: number[] = [], indices: number[] = [];
+  const point = (x: number, y: number, z: number) => vertical ? [-y, x, z] : [x, y, z];
+  const face = (vertices: number[][], outward: number[], coordinates?: Array<[number,number]>) => {
+    const base = positions.length / 3;
+    for (const [vertexIndex,vertex] of vertices.entries()) {
+      const p = point(...vertex as [number, number, number]);
+      positions.push(...p.map((value, axis) => value + center[axis]));
+      normals.push(...point(...outward as [number, number, number])); uvs.push(...(metricUvs ? coordinates?.[vertexIndex] ?? [vertex[1]+half,vertex[2]+depth/2] : [0,0]));
+    }
+    for (let i = 1; i < vertices.length - 1; i++) indices.push(base, base + i, base + i + 1);
+  };
+  // The ring is counter-clockwise viewed from +X; each side winds outward.
+  let sectionDistance=0;
+  for (let i = 0; i < ring.length; i++) {
+    const a = ring[i], b = ring[(i + 1) % ring.length];
+    const dy = b[0] - a[0], dz = b[1] - a[1], norm = Math.hypot(dy, dz);
+    face([[-length / 2, ...a], [-length / 2, ...b], [length / 2, ...b], [length / 2, ...a]], [0, dz / norm, -dy / norm],[[sectionDistance,0],[sectionDistance+norm,0],[sectionDistance+norm,length],[sectionDistance,length]]);
+    sectionDistance+=norm;
+  }
+  face(ring.map(([y, z]) => [length / 2, y, z]), [1, 0, 0]);
+  face([...ring].reverse().map(([y, z]) => [-length / 2, y, z]), [-1, 0, 0]);
+  const bounds = positions.reduce((box, _, i) => i % 3 ? box : expandBounds(box,
+    { min: positions.slice(i, i + 3) as [number, number, number], max: positions.slice(i, i + 3) as [number, number, number] }), emptyBounds());
+  return { positions, normals, uvs, indices, bounds };
+}
+
+/** Parametric double-hung construction: fixed jambs, two offset sash rings, two panes. */
+export function buildBayWindowGeometry(width: number, height: number, frameWidth: number, recess: number, centerY: number, metricUvs = false) {
+  const frame: PrimitiveGeometry[] = [], glass: PrimitiveGeometry[] = [];
+  function rectangularFrame(w: number, h: number, timber: number, depth: number, y: number, z: number) {
+    frame.push(rail(h, timber, depth, [-(w - timber) / 2, y, z], true, metricUvs),
+      rail(h, timber, depth, [(w - timber) / 2, y, z], true, metricUvs),
+      rail(w - timber * 2, timber, depth, [0, y - (h - timber) / 2, z], false, metricUvs),
+      rail(w - timber * 2, timber, depth, [0, y + (h - timber) / 2, z], false, metricUvs));
+  }
+  rectangularFrame(width, height, frameWidth, 0.08, centerY, -recess - 0.04);
+  const sashWidth = width - frameWidth * 2, sashHeight = (height - frameWidth * 2) / 2;
+  const timber = frameWidth * 0.65;
+  for (const upper of [false, true]) {
+    const y = centerY + (upper ? 1 : -1) * sashHeight / 2;
+    const frontZ = -recess - (upper ? 0.045 : 0.009);
+    rectangularFrame(sashWidth, sashHeight, timber, 0.034, y, frontZ - 0.017);
+    glass.push(buildBoxPrimitive({ center: [0, y, frontZ - 0.025],
+      size: [sashWidth - timber * 2, sashHeight - timber * 2, 0.006] }));
+  }
+  return { frame, glass };
+}
+
+/** A paneled door, separate transom glass and chamfered threshold, built from dimensions. */
+export function buildBayDoorGeometry(width: number, height: number, leafHeight: number, timber: number, recess: number, projection: number) {
+  const z = -recess - 0.04, insideWidth = width - timber * 2;
+  const frame: PrimitiveGeometry[] = [rail(height, timber, .1, [-(width - timber) / 2, height / 2, z], true, true),
+    rail(height, timber, .1, [(width - timber) / 2, height / 2, z], true, true), rail(insideWidth, timber, .1, [0, height - timber / 2, z],false,true),
+    rail(insideWidth, timber, .08, [0, leafHeight + timber / 2, z],false,true)];
+  const leaf: PrimitiveGeometry[] = [];
+  const leafWidth = insideWidth - .012, leafBottom = .035, leafTop = leafHeight - .01, stile = Math.min(.11, timber * 1.4), leafZ = -recess - .022;
+  leaf.push(rail(leafTop - leafBottom, stile, .045, [-(leafWidth - stile) / 2, (leafTop + leafBottom) / 2, leafZ], true, true),
+    rail(leafTop - leafBottom, stile, .045, [(leafWidth - stile) / 2, (leafTop + leafBottom) / 2, leafZ], true, true));
+  for (const y of [leafBottom + stile / 2, 1.03, leafTop - stile / 2]) leaf.push(rail(leafWidth - stile * 2, stile, .045, [0, y, leafZ],false,true));
+  for (const [low, high] of [[leafBottom + stile, 1.03 - stile / 2], [1.03 + stile / 2, leafTop - stile]]) {
+    const panelWidth = leafWidth - stile * 2, panelHeight = high - low, y = (low + high) / 2;
+    leaf.push(buildBoxPrimitive({ center: [0,y,leafZ-.014], size: [panelWidth,panelHeight,.018] }),
+      rail(panelHeight,.018,.025,[-panelWidth/2+.009,y,leafZ-.002],true, true),rail(panelHeight,.018,.025,[panelWidth/2-.009,y,leafZ-.002],true, true),
+      rail(panelWidth-.036,.018,.025,[0,low+.009,leafZ-.002],false,true),rail(panelWidth-.036,.018,.025,[0,high-.009,leafZ-.002],false,true));
+  }
+  const glassBottom = leafHeight + timber, glassTop = height - timber;
+  const glass = [buildBoxPrimitive({ center: [0,(glassTop+glassBottom)/2,-recess-.055], size: [insideWidth,glassTop-glassBottom,.006] })];
+  const trim = [buildBoxPrimitive({ center: [0,.015,-recess/2+projection/2], size: [width+.08,.03,recess+projection] })];
+  for(const primitive of trim)for(let i=0;i<primitive.positions.length/3;i++){
+    const p=i*3,nx=Math.abs(primitive.normals[p]),ny=Math.abs(primitive.normals[p+1]);
+    primitive.uvs[i*2]=nx>.9?primitive.positions[p+2]-primitive.bounds.min[2]:primitive.positions[p]-primitive.bounds.min[0];
+    primitive.uvs[i*2+1]=ny>.9?primitive.positions[p+2]-primitive.bounds.min[2]:primitive.positions[p+1]-primitive.bounds.min[1];
+  }
+  const pullX = leafWidth / 2 - stile * .7;
+  const hardware = [rail(.2,.022,.024,[pullX,1.1,-recess+.025],true, true), ...[1.025,1.175].map(y=>buildBoxPrimitive({center:[pullX,y,-recess+.003],size:[.025,.025,.045]}))];
+  return { frame, leaf, glass, trim, hardware };
+}

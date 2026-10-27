@@ -1,0 +1,14 @@
+/** Accepted construction display preset; independent of the hidden source atlas. */
+const appearances = [
+  { slotId: "frame.primary", role: "frame", color: "#ddd7c8", roughness: 0.58, metalness: 0 },
+  { slotId: "glass.primary", role: "glass", color: "#334348", roughness: 0.1, metalness: 0.1 },
+  { slotId: "trim.horizontal.primary", role: "horizontalTrim", color: "#bcb3a1", roughness: 0.86, metalness: 0 }
+] as const;
+for (const appearance of appearances) Object.freeze(appearance);
+export const constructionFlatAppearances = Object.freeze(appearances);
+
+/** Explicit restrained-building-v1 additions; accepted bay paint remains unchanged. */
+export const buildingFlatAppearances = Object.freeze([
+  Object.freeze({ slotId: "door.primary", color: "#28433d", roughness: .5, metalness: 0 }),
+  Object.freeze({ slotId: "ornament.primary", color: "#968363", roughness: .28, metalness: .8 })
+]);

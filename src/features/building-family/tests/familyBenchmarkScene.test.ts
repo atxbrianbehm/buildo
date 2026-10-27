@@ -46,7 +46,8 @@ describe("family benchmark scene", () => {
       benchmark?.familyRuntime.dispose();
       fixture.familyRuntime.dispose();
     }
-  });
+  // This contract constructs 100 physically tiled scenes; timing assertions use a supplied clock.
+  }, 45_000);
 
   it("yields between benchmark compile and mount batches", async () => {
     const fixture = await createAssemblyHallFixture();

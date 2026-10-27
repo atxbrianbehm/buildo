@@ -49,6 +49,10 @@ export interface PlanFacadeModulesInput {
   kit: ArtKitManifest;
 }
 
+export interface DeriveFacadeBodyOpeningPlacementInput extends PlanFacadeModulesInput {
+  cell: FacadeCell;
+}
+
 const SIDE_PANEL_DEPTH_M = 0.6;
 
 export function sideBayCount(spec: BuildingFamilySpec): number {
@@ -363,6 +367,93 @@ function chooseStorefrontDoorModule(kit: ArtKitManifest, diagnostics: Diagnostic
   );
 }
 
+function isBodyOpeningCell(cell: FacadeCell): boolean {
+  return cell.zone === "body" && cell.facade !== "rear";
+}
+
+/** Mix only occupancy scores: module choices retain the semantic seed tree's authored values. */
+function bodyOpeningScore(seedTree: ReturnType<typeof createSeedTree>, cell: FacadeCell): number {
+  const path = cell.facade === "front"
+    ? `front-open/${cell.floorIndex}/${cell.bayIndex}`
+    : `side-opening/${cell.facade}/${cell.floorIndex}/${cell.bayIndex}`;
+  let value = seedTree.uint32(path);
+  value ^= value >>> 16;
+  value = Math.imul(value, 0x85ebca6b);
+  value ^= value >>> 13;
+  value = Math.imul(value, 0xc2b2ae35);
+  value ^= value >>> 16;
+  return (value >>> 0) / 0x100000000;
+}
+
+function bodyOpeningPresence(
+  cells: readonly FacadeCell[],
+  seedTree: ReturnType<typeof createSeedTree>
+): Set<string> {
+  const rows = new Map<string, { cell: FacadeCell; score: number }[]>();
+  for (const cell of cells) {
+    if (!isBodyOpeningCell(cell)) continue;
+    const rowKey = `${cell.facade}/${cell.floorIndex}`;
+    const row = rows.get(rowKey) ?? [];
+    row.push({ cell, score: bodyOpeningScore(seedTree, cell) });
+    rows.set(rowKey, row);
+  }
+
+  const present = new Set<string>();
+  const frontProbability = 0.72 + seedTree.float01("front-density") * 0.22;
+  for (const row of rows.values()) {
+    const isFront = row[0].cell.facade === "front";
+    for (const { cell, score } of row) {
+      if (isFront ? score <= frontProbability : score < 0.55) present.add(cell.id);
+    }
+    const minimum = Math.ceil(row.length * (isFront ? 0.7 : 0.5));
+    let count = row.filter(({ cell }) => present.has(cell.id)).length;
+    if (count >= minimum) continue;
+    // Lowest-score fill preserves the density variation above the per-storey floor.
+    const ranked = [...row].sort((a, b) => a.score - b.score || a.cell.bayIndex - b.cell.bayIndex);
+    for (const { cell } of ranked) {
+      if (present.has(cell.id)) continue;
+      present.add(cell.id);
+      count += 1;
+      if (count >= minimum) break;
+    }
+  }
+  return present;
+}
+
+function deriveBodyOpeningPlacement(
+  input: DeriveFacadeBodyOpeningPlacementInput,
+  seedTree: ReturnType<typeof createSeedTree>,
+  diagnostics: Diagnostic[]
+): FacadeModulePlacement | undefined {
+  const { cell, kit } = input;
+  if (!isBodyOpeningCell(cell)) return undefined;
+  const module = cell.facade === "front"
+    ? chooseWindowModule(kit, cell, seedTree)
+    : kit.modules.find((candidate) => candidate.id === "opening.window.rectangular") ??
+      findModule(kit, "opening", "side", diagnostics) ??
+      findModule(kit, "opening", "body", diagnostics);
+  if (!module) {
+    if (cell.facade === "front") findModule(kit, "opening", "body", diagnostics);
+    return undefined;
+  }
+  return createPlacement({
+    cell,
+    module,
+    layer: "opening",
+    zone: cell.facade === "front" ? "body" : "side",
+    size: placementSizeForFacade(cell.facade, module),
+    centerOnFacade: true
+  });
+}
+
+/** Authored front/side body candidate, independent of the row's occupancy mask. */
+export function deriveFacadeBodyOpeningPlacement(
+  input: DeriveFacadeBodyOpeningPlacementInput
+): FacadeModulePlacement | undefined {
+  const seedTree = createSeedTree(input.spec.seeds.building).fork("art-kit/facades");
+  return deriveBodyOpeningPlacement(input, seedTree, []);
+}
+
 export function planFacadeModules(input: PlanFacadeModulesInput): FacadeModulePlan {
   const { spec, kit } = input;
   const cells = buildFacadeCells(spec);
@@ -371,6 +462,7 @@ export function planFacadeModules(input: PlanFacadeModulesInput): FacadeModulePl
   // Building seed drives per-building facade choices so sample gallery variants
   // and Assembly Hall opens are not identical for a shared family seed.
   const seedTree = createSeedTree(spec.seeds.building).fork("art-kit/facades");
+  const bodyPresence = bodyOpeningPresence(cells, seedTree);
   const centerDoorBay = Math.floor(spec.facade.frontBayCount / 2);
   const doorBayCandidates = [centerDoorBay - 1, centerDoorBay, centerDoorBay + 1].filter(
     (bay) => bay >= 0 && bay < spec.facade.frontBayCount
@@ -426,16 +518,15 @@ export function planFacadeModules(input: PlanFacadeModulesInput): FacadeModulePl
     }
 
     if (cell.facade === "front") {
-      // Building-seed rhythm: sparseness on upper floors only; never empty a whole
-      // ground storefront bay (except the door cell, handled above).
       if (cell.zone === "body") {
-        const openProbability = 0.72 + seedTree.float01("front-density") * 0.22;
-        if (
-          seedTree.float01(`front-open/${cell.floorIndex}/${cell.bayIndex}`) >
-          openProbability
-        ) {
-          continue;
+        if (bodyPresence.has(cell.id)) {
+          const openingPlacement = deriveBodyOpeningPlacement({ spec, kit, cell }, seedTree, diagnostics);
+          if (openingPlacement) {
+            placements.push(openingPlacement);
+            diagnostics.push(...validateBoundsFit(openingPlacement, cell));
+          }
         }
+        continue;
       } else if (cell.zone === "ground") {
         placeStorefrontBands(kit, cell, placements, diagnostics);
       }
@@ -482,22 +573,10 @@ export function planFacadeModules(input: PlanFacadeModulesInput): FacadeModulePl
     if (
       (cell.facade === "left" || cell.facade === "right") &&
       cell.zone === "body" &&
-      seedTree.float01(`side-opening/${cell.facade}/${cell.floorIndex}/${cell.bayIndex}`) < 0.55
+      bodyPresence.has(cell.id)
     ) {
-      const sideWindow =
-        kit.modules.find((module) => module.id === "opening.window.rectangular") ??
-        findModule(kit, "opening", "side", diagnostics) ??
-        findModule(kit, "opening", "body", diagnostics);
-      if (sideWindow) {
-        const size = placementSizeForFacade(cell.facade, sideWindow);
-        const openingPlacement = createPlacement({
-          cell,
-          module: sideWindow,
-          layer: "opening",
-          zone: "side",
-          size,
-          centerOnFacade: true
-        });
+      const openingPlacement = deriveBodyOpeningPlacement({ spec, kit, cell }, seedTree, diagnostics);
+      if (openingPlacement) {
         placements.push(openingPlacement);
         diagnostics.push(...validateBoundsFit(openingPlacement, cell));
       }

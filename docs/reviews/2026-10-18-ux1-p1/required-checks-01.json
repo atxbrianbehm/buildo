@@ -1,0 +1,37 @@
+[
+  {
+    "name": "typecheck",
+    "exitCode": 0,
+    "startedAtUtc": "2026-10-18T06:45:49.0837961Z",
+    "endedAtUtc": "2026-10-18T06:46:00.4195101Z",
+    "log": "typecheck-final-01.log"
+  },
+  {
+    "name": "lint",
+    "exitCode": 0,
+    "startedAtUtc": "2026-10-18T06:46:00.4467201Z",
+    "endedAtUtc": "2026-10-18T06:46:18.1248931Z",
+    "log": "lint-final-01.log"
+  },
+  {
+    "name": "test",
+    "exitCode": 0,
+    "startedAtUtc": "2026-10-18T06:46:18.1298710Z",
+    "endedAtUtc": "2026-10-18T06:52:52.9889101Z",
+    "log": "test-final-01.log"
+  },
+  {
+    "name": "build",
+    "exitCode": 0,
+    "startedAtUtc": "2026-10-18T06:52:52.9922134Z",
+    "endedAtUtc": "2026-10-18T06:53:05.2615918Z",
+    "log": "build-final-01.log"
+  },
+  {
+    "name": "test:e2e",
+    "exitCode": 0,
+    "startedAtUtc": "2026-10-18T06:53:05.2636878Z",
+    "endedAtUtc": "2026-10-18T06:55:25.1939399Z",
+    "log": "test-e2e-final-01.log"
+  }
+]

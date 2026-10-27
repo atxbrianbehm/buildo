@@ -1,0 +1,321 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "c2-execution-checkpoint",
+  "date": "2026-10-17",
+  "baseCommit": "4c0fedeacfc9b4bed0c0000096d7d1ea605d23b9",
+  "status": "engineering-complete",
+  "humanAcceptance": {
+    "C1": "accepted",
+    "C4": "whole-building review remains later"
+  },
+  "checks": [
+    {
+      "file": "typecheck-final-04.log",
+      "exitCode": 0,
+      "sha256": "1927639a5b89b1406e25b817bb2c8efb1e16fccc181e86591db136d628e7f5e6"
+    },
+    {
+      "file": "lint-final-04.log",
+      "exitCode": 0,
+      "sha256": "a21c6d2dedb756f860b052cb2d84cd603fbbe38ee53e1ad76ab9c5803f028958"
+    },
+    {
+      "file": "unit-final-04.log",
+      "exitCode": 0,
+      "sha256": "cb1da2a03f48cc82cb5024020fb6cfde9542fcecd978da7e4ac3793dfa5bcfda"
+    },
+    {
+      "file": "build-final-04.log",
+      "exitCode": 0,
+      "sha256": "e306de777c0f1a8358e4b7a30965f47d21ea25eaac27f65e95aca4088a991ff0"
+    },
+    {
+      "file": "e2e-final-04.log",
+      "exitCode": 0,
+      "sha256": "a5305d5980d15fe1d7653ff4a4d9a3401ae89b1a32da4be45a356c8063e81f7c"
+    }
+  ],
+  "unitTests": 1569,
+  "unitFiles": 109,
+  "legacyNativeWorkflows": 8,
+  "coreAndCompilerPurityScan": "pass",
+  "resourceAndStaleResultReview": "worker shutdown, candidate discard, full/preview viewer leases, textures, download URLs and no-op Open reviewed",
+  "actualBackends": [
+    {
+      "api": "webgpu",
+      "draws": 14,
+      "captures": 22,
+      "materialCallsAfterInitialization": 0,
+      "errors": []
+    },
+    {
+      "api": "webgl",
+      "draws": 14,
+      "captures": 22,
+      "materialCallsAfterInitialization": 0,
+      "errors": []
+    }
+  ],
+  "nativePixelComparison": "Exact full native canvas bitmap, with the app Reset view action; no crops or pixel tolerances. CSS-rounded-frame screenshots are separate visual evidence.",
+  "reviewedImages": [
+    "images/webgpu-final-desktop.png",
+    "images/webgpu-reference-clay-workspace.png",
+    "images/webgpu-facade-close-textured-close-workspace.png",
+    "images/webgpu-facade-close-clay-close-workspace.png",
+    "images/webgpu-compact.png",
+    "images/webgpu-native-facade-close-textured.png",
+    "images/webgpu-native-facade-close-clay.png",
+    "images/webgl-final-desktop.png",
+    "images/webgl-reference-clay-workspace.png",
+    "images/webgl-facade-close-textured-close-workspace.png",
+    "images/webgl-facade-close-clay-close-workspace.png",
+    "images/webgl-compact.png",
+    "images/webgl-native-facade-close-textured.png",
+    "images/webgl-native-facade-close-clay.png"
+  ],
+  "detector": {
+    "warnings": 8,
+    "scope": "inherited accent-border rules in existing App.css"
+  },
+  "preserved": [
+    {
+      "source": "src/app/App.css",
+      "file": "source/src/app/App.css.txt",
+      "sha256": "18a776a7261cbb36de3b9ba8208afb846188d624deedc076cdc760f4353ffa4c"
+    },
+    {
+      "source": "src/app/App.tsx",
+      "file": "source/src/app/App.tsx.txt",
+      "sha256": "04945ba9bdce4223854d2f1ff14c9707f7d5d2d1b2bb73f358314a21921b2dfe"
+    },
+    {
+      "source": "src/features/building-family/contracts/bayConstructionGraph.ts",
+      "file": "source/src/features/building-family/contracts/bayConstructionGraph.ts.txt",
+      "sha256": "480140b469f6bc9a680e9ef4cf7a8193eda76c0d7ad61559ce916a9efdf7b328"
+    },
+    {
+      "source": "src/features/building-family/compiler/evaluateBayConstruction.ts",
+      "file": "source/src/features/building-family/compiler/evaluateBayConstruction.ts.txt",
+      "sha256": "56c801a914402bad4157bc1d768b40ef862812e30be4b6571ce52663388343cd"
+    },
+    {
+      "source": "src/features/building-family/compiler/bayWindowGeometry.ts",
+      "file": "source/src/features/building-family/compiler/bayWindowGeometry.ts.txt",
+      "sha256": "e3646b1daf0b923be228a7dcabc28fcb0ad45d2aa0426cf74ac94a5d607faa6e"
+    },
+    {
+      "source": "src/features/building-family/compiler/evaluateConstruction.ts",
+      "file": "source/src/features/building-family/compiler/evaluateConstruction.ts.txt",
+      "sha256": "905cec750f734b823cccf7d9c9caf7746ea792a27038c2d13bad375d4a98170c"
+    },
+    {
+      "source": "src/features/building-family/compiler/evaluateFacadeConstruction.ts",
+      "file": "source/src/features/building-family/compiler/evaluateFacadeConstruction.ts.txt",
+      "sha256": "e9c1e7350116c3da24fca606378960862b23d0447a76ab3c1015c678965d6088"
+    },
+    {
+      "source": "src/features/building-family/compiler/bayConstruction.worker.ts",
+      "file": "source/src/features/building-family/compiler/bayConstruction.worker.ts.txt",
+      "sha256": "11756a085021e9d53e3b6ff11cd380c58dbe908b863ef428b1dc01f44d28dec1"
+    },
+    {
+      "source": "src/features/building-family/compiler/bayConstructionWorkerProtocol.ts",
+      "file": "source/src/features/building-family/compiler/bayConstructionWorkerProtocol.ts.txt",
+      "sha256": "22dc09057cf82e989e420a348cfa8dbc06b82ec22b1befd75e4d1a7d21380720"
+    },
+    {
+      "source": "src/features/building-family/compiler/bayConstructionClient.ts",
+      "file": "source/src/features/building-family/compiler/bayConstructionClient.ts.txt",
+      "sha256": "cc0dc7e8a767edec78656b775282e54e5bf9d6735aa210d081c5b6ac34e3db25"
+    },
+    {
+      "source": "src/features/building-family/state/bayConstructionProject.ts",
+      "file": "source/src/features/building-family/state/bayConstructionProject.ts.txt",
+      "sha256": "2eb365121255947e9cb683bffa4d079c2837f82b8dd67bf06fda87d31b1e0b5b"
+    },
+    {
+      "source": "src/features/building-family/ui/BayConstructionWorkbench.tsx",
+      "file": "source/src/features/building-family/ui/BayConstructionWorkbench.tsx.txt",
+      "sha256": "16c1fd3f0fbef74c711ae2e807943b147cf9a9d0b160e0c2b6c3517ca5ae0620"
+    },
+    {
+      "source": "src/features/building-family/ui/ConstructionNodePanel.tsx",
+      "file": "source/src/features/building-family/ui/ConstructionNodePanel.tsx.txt",
+      "sha256": "65e8b6f597370311189f02ba700167abcca6daba5aff7d8d010839189b9043a0"
+    },
+    {
+      "source": "src/features/building-family/ui/bayConstructionFixture.ts",
+      "file": "source/src/features/building-family/ui/bayConstructionFixture.ts.txt",
+      "sha256": "a78d66cc1a00b54a2122c53d13aadf0da742f75618b27c845c4cc41e4bc2342d"
+    },
+    {
+      "source": "src/features/building-family/ui/AssemblyHall.tsx",
+      "file": "source/src/features/building-family/ui/AssemblyHall.tsx.txt",
+      "sha256": "19303baea78dbc3487826c5766b76f0ca57c404f479961d77a1ebdbe7854316f"
+    },
+    {
+      "source": "src/features/building-family/renderer-three/buildingSceneAdapter.ts",
+      "file": "source/src/features/building-family/renderer-three/buildingSceneAdapter.ts.txt",
+      "sha256": "41f2e0aba3bc2af27010ba90eede113d2c4adbd985f2c1e05c857f249917df46"
+    },
+    {
+      "source": "src/features/building-family/renderer-three/familyRuntime.ts",
+      "file": "source/src/features/building-family/renderer-three/familyRuntime.ts.txt",
+      "sha256": "3d19d6ce556ca64084ca583fe8cca2aa41f57d0232f9df7180035f8688f588a5"
+    },
+    {
+      "source": "src/features/building-family/renderer-three/assemblyRendererFactory.ts",
+      "file": "source/src/features/building-family/renderer-three/assemblyRendererFactory.ts.txt",
+      "sha256": "9d25c84743cfe20f407c4b0c8c01c337b50f8fd93c23a83a42c0bf7afc53b56f"
+    },
+    {
+      "source": "src/features/building-family/tests/facadeConstruction.test.ts",
+      "file": "source/src/features/building-family/tests/facadeConstruction.test.ts.txt",
+      "sha256": "478ea3e2b99d0128d66bb86798b14daf223d859802addf89807e1d5ce79de5df"
+    },
+    {
+      "source": "src/features/building-family/tests/ConstructionNodePanel.test.tsx",
+      "file": "source/src/features/building-family/tests/ConstructionNodePanel.test.tsx.txt",
+      "sha256": "86fc517b06088c756d74c2fe78d1577c5ab76f6188b473364294e21fd1c9bc83"
+    },
+    {
+      "source": "src/features/building-family/tests/bayConstructionWorkbench.test.tsx",
+      "file": "source/src/features/building-family/tests/bayConstructionWorkbench.test.tsx.txt",
+      "sha256": "86cd639e594e94818e5ee1819ff31ac627e0ebc501696110436b9adbb82e0d4d"
+    },
+    {
+      "source": "test-results/c2-2026-10-17/typecheck-final-04.log",
+      "file": "typecheck-final-04.log",
+      "sha256": "1927639a5b89b1406e25b817bb2c8efb1e16fccc181e86591db136d628e7f5e6"
+    },
+    {
+      "source": "test-results/c2-2026-10-17/lint-final-04.log",
+      "file": "lint-final-04.log",
+      "sha256": "a21c6d2dedb756f860b052cb2d84cd603fbbe38ee53e1ad76ab9c5803f028958"
+    },
+    {
+      "source": "test-results/c2-2026-10-17/unit-final-04.log",
+      "file": "unit-final-04.log",
+      "sha256": "cb1da2a03f48cc82cb5024020fb6cfde9542fcecd978da7e4ac3793dfa5bcfda"
+    },
+    {
+      "source": "test-results/c2-2026-10-17/build-final-04.log",
+      "file": "build-final-04.log",
+      "sha256": "e306de777c0f1a8358e4b7a30965f47d21ea25eaac27f65e95aca4088a991ff0"
+    },
+    {
+      "source": "test-results/c2-2026-10-17/e2e-final-04.log",
+      "file": "e2e-final-04.log",
+      "sha256": "a5305d5980d15fe1d7653ff4a4d9a3401ae89b1a32da4be45a356c8063e81f7c"
+    },
+    {
+      "source": "test-results/c2-2026-10-17/focus-final-04.log",
+      "file": "focus-final-04.log",
+      "sha256": "18a9bf3dc7e8feebf95c574887e55e49197bdf66f8e2a4a65c4f513aa911daa7"
+    },
+    {
+      "source": "test-results/c2-2026-10-17/ui-detector-final-04.json",
+      "file": "ui-detector-final-04.json",
+      "sha256": "740fea597a86e6a5704f83930e1c049374bee6ec2c110643a1d15e18452c9fc3"
+    },
+    {
+      "source": "test-results/c2-2026-10-17/c1-ir-baseline.json",
+      "file": "c1-ir-baseline.json",
+      "sha256": "c645fe97b76c40b41a9af7f94e01e30f9f5bd36624e7c2fb9d671bc4188210a7"
+    },
+    {
+      "source": "test-results/c2-2026-10-17/before.json",
+      "file": "before.json",
+      "sha256": "8eacc4a5e1772ba5b8e25f76daa613787a413d40da2c43c5fe635c5fff8c6583"
+    },
+    {
+      "source": "test-results/c2-2026-10-17/capture-c2-09.mjs",
+      "file": "capture-c2-09.mjs",
+      "sha256": "3e55647541f85e0ea23d878f3f9daee9220a6e91fc4d0edb6dad9516f9d0e827"
+    },
+    {
+      "source": "test-results/c2-2026-10-17/app-08-webgpu/receipt.json",
+      "file": "webgpu-receipt.json",
+      "sha256": "038f0aee0e63985332bd0954e0e732179401825da287dacdda07841c3834f0c7"
+    },
+    {
+      "source": "test-results/c2-2026-10-17/app-08-webgpu/final-desktop.png",
+      "file": "images/webgpu-final-desktop.png",
+      "sha256": "f9b990ebae5242f7e2c7836cceaa5ed416b4d5efaaa0474fa1e9b8e1b62bdb88"
+    },
+    {
+      "source": "test-results/c2-2026-10-17/app-08-webgpu/reference-clay-workspace.png",
+      "file": "images/webgpu-reference-clay-workspace.png",
+      "sha256": "553135b7029f16da4d0676b15cb367e969b46ff78ea7b2e489bd59d6bc240daa"
+    },
+    {
+      "source": "test-results/c2-2026-10-17/app-08-webgpu/facade-close-textured-close-workspace.png",
+      "file": "images/webgpu-facade-close-textured-close-workspace.png",
+      "sha256": "e34059e6ea6e5d921b74a38a5755b295198a5a60554d34f0354546a59b4a256f"
+    },
+    {
+      "source": "test-results/c2-2026-10-17/app-08-webgpu/facade-close-clay-close-workspace.png",
+      "file": "images/webgpu-facade-close-clay-close-workspace.png",
+      "sha256": "590ccab9e6269d6ac27c2552570a9cb46f4cdaa5c37f4770d3fd099054e1b46f"
+    },
+    {
+      "source": "test-results/c2-2026-10-17/app-08-webgpu/compact.png",
+      "file": "images/webgpu-compact.png",
+      "sha256": "fa85443bafe04dc9db142db43c8ad756ddac92ca478196e4df0cee38dd5a974f"
+    },
+    {
+      "source": "test-results/c2-2026-10-17/app-08-webgpu/native-facade-close-textured.png",
+      "file": "images/webgpu-native-facade-close-textured.png",
+      "sha256": "d7523fc3d6f33dbc5256c6892ea9ceebd49386cfceee3eaf9eda56fade1f397d"
+    },
+    {
+      "source": "test-results/c2-2026-10-17/app-08-webgpu/native-facade-close-clay.png",
+      "file": "images/webgpu-native-facade-close-clay.png",
+      "sha256": "a1c959e337bf33928691045db32966bf5ae3af686fb8c6fdf767a943bfccddda"
+    },
+    {
+      "source": "test-results/c2-2026-10-17/app-08-webgl/receipt.json",
+      "file": "webgl-receipt.json",
+      "sha256": "ff3bff846ee20eae2b02a34b6ae12bf21cad55392a07506dd27abfd1aa0ab5d2"
+    },
+    {
+      "source": "test-results/c2-2026-10-17/app-08-webgl/final-desktop.png",
+      "file": "images/webgl-final-desktop.png",
+      "sha256": "7294de0726696648bc42da1e8a68a26a3b8cdc66357e7275b99a3cdd96102291"
+    },
+    {
+      "source": "test-results/c2-2026-10-17/app-08-webgl/reference-clay-workspace.png",
+      "file": "images/webgl-reference-clay-workspace.png",
+      "sha256": "18ca0ff92eb81c926852e39260cd02936fd772d7dc869bc2dc3642e1c145a5c2"
+    },
+    {
+      "source": "test-results/c2-2026-10-17/app-08-webgl/facade-close-textured-close-workspace.png",
+      "file": "images/webgl-facade-close-textured-close-workspace.png",
+      "sha256": "358c770e58ea244d95792797b8b36afbd01d4758feb8fe0b3f891596c25c8ae0"
+    },
+    {
+      "source": "test-results/c2-2026-10-17/app-08-webgl/facade-close-clay-close-workspace.png",
+      "file": "images/webgl-facade-close-clay-close-workspace.png",
+      "sha256": "f179e09a086776350ec31acbcf1fccde28402557046c97ffc4be6af3c22659f8"
+    },
+    {
+      "source": "test-results/c2-2026-10-17/app-08-webgl/compact.png",
+      "file": "images/webgl-compact.png",
+      "sha256": "a12f0af69a652104da088f8d6919bf0cfe0041d84939203e32f9fc38b388ead2"
+    },
+    {
+      "source": "test-results/c2-2026-10-17/app-08-webgl/native-facade-close-textured.png",
+      "file": "images/webgl-native-facade-close-textured.png",
+      "sha256": "eaff23b359f3c91b3a9058dcc5e597061c8ad460a7b0cd92a3cc45f31afa63d0"
+    },
+    {
+      "source": "test-results/c2-2026-10-17/app-08-webgl/native-facade-close-clay.png",
+      "file": "images/webgl-native-facade-close-clay.png",
+      "sha256": "51cba5c88ec26d5fd565eb460a0346a7d5d55e82b11a1f2bf8f7233ac7512d9c"
+    }
+  ],
+  "nextPacket": "C3.P0 construction undo/redo and automatic source recovery",
+  "externalActions": [],
+  "sourceSnapshots": 21,
+  "snapshotExtension": ".txt"
+}

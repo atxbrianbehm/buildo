@@ -31,6 +31,7 @@ export interface AtlasTextureSetInput {
 
 export interface AtlasSlotTextureWindow {
   slotId: string;
+  role: AtlasSlot["role"];
   rectPx: AtlasSlot["rectPx"];
   uvMode: AtlasSlot["uvMode"];
   periodicity: AtlasSlot["periodicity"];
@@ -124,6 +125,7 @@ export function slotTextureWindow(textureSet: AtlasTextureSet, slotId: string): 
   const baseColor = textureSet.textures.baseColor;
   return {
     slotId,
+    role: slot.role,
     rectPx: slot.rectPx,
     uvMode: slot.uvMode,
     periodicity: slot.periodicity,

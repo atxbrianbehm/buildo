@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "0.1.0",
+  "userStatement": "1",
+  "selectedDisplayedOption": 1,
+  "id": "grouped-inspector",
+  "image": "../2026-10-18-authoring-concepts/grouped-inspector.png",
+  "imageSha256": "8a29e1bdc8904771bb4dad1330f23652ab4b6f62aabcb0c3885fca792dfdbd4a",
+  "recordedAtUtc": "2026-10-18T06:36:10.341660+00:00",
+  "scope": "UX1.P1 grouped inspector on the existing document/compiler path; not acceptance of C6 visual gate or authorization for scoped structural operations, engine replacement, release or publication."
+}

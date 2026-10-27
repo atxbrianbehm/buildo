@@ -1,0 +1,117 @@
+{
+  "schemaVersion": "0.1.0",
+  "files": [
+    {
+      "backend": "webgpu",
+      "name": "cold-v5.json",
+      "sha256": "e07743db341596653b420450771a3c83b7f320527ed6ff1fdd96d493adfe208e",
+      "bytes": 28065962,
+      "archive": "portable/e07743db341596653b420450771a3c83b7f320527ed6ff1fdd96d493adfe208e.json"
+    },
+    {
+      "backend": "webgpu",
+      "name": "finished-v5.json",
+      "sha256": "e07743db341596653b420450771a3c83b7f320527ed6ff1fdd96d493adfe208e",
+      "bytes": 28065962,
+      "archive": "portable/e07743db341596653b420450771a3c83b7f320527ed6ff1fdd96d493adfe208e.json"
+    },
+    {
+      "backend": "webgpu",
+      "name": "generated-v5.json",
+      "sha256": "d2b1d58bb83d0e7218b3b4d4c3c66eb94786e84dd0f37dcdc3b31b04ba1fef92",
+      "bytes": 28065957,
+      "archive": "portable/d2b1d58bb83d0e7218b3b4d4c3c66eb94786e84dd0f37dcdc3b31b04ba1fef92.json"
+    },
+    {
+      "backend": "webgpu",
+      "name": "legacy-C5-reopened.json",
+      "sha256": "70dbd258e27e6fe286260d55961677d4dbe338c23cbb8a6da716a6b1e1037301",
+      "bytes": 28065169,
+      "archive": "portable/70dbd258e27e6fe286260d55961677d4dbe338c23cbb8a6da716a6b1e1037301.json"
+    },
+    {
+      "backend": "webgpu",
+      "name": "legacy-default.json",
+      "sha256": "87d67a3797437e894fbc89bd54ad28c5c7cf3090c4c996a1cb7ae1b5ffa90fb1",
+      "bytes": 28011029,
+      "archive": "portable/87d67a3797437e894fbc89bd54ad28c5c7cf3090c4c996a1cb7ae1b5ffa90fb1.json"
+    },
+    {
+      "backend": "webgpu",
+      "name": "local-finish-v4.json",
+      "sha256": "004737c7bb5f6736d31d160f5c34d15a87fe1bb39957f51c9257d91555c29b72",
+      "bytes": 28011966,
+      "archive": "portable/004737c7bb5f6736d31d160f5c34d15a87fe1bb39957f51c9257d91555c29b72.json"
+    },
+    {
+      "backend": "webgpu",
+      "name": "reopened-v5.json",
+      "sha256": "e07743db341596653b420450771a3c83b7f320527ed6ff1fdd96d493adfe208e",
+      "bytes": 28065962,
+      "archive": "portable/e07743db341596653b420450771a3c83b7f320527ed6ff1fdd96d493adfe208e.json"
+    },
+    {
+      "backend": "webgpu",
+      "name": "rerolled-v5.json",
+      "sha256": "9e5a41d407fe21fb4722417d7bc343e76348f6ab3a0301ac115283a93a38a2ab",
+      "bytes": 28065960,
+      "archive": "portable/9e5a41d407fe21fb4722417d7bc343e76348f6ab3a0301ac115283a93a38a2ab.json"
+    },
+    {
+      "backend": "webgl",
+      "name": "cold-v5.json",
+      "sha256": "e07743db341596653b420450771a3c83b7f320527ed6ff1fdd96d493adfe208e",
+      "bytes": 28065962,
+      "archive": "portable/e07743db341596653b420450771a3c83b7f320527ed6ff1fdd96d493adfe208e.json"
+    },
+    {
+      "backend": "webgl",
+      "name": "finished-v5.json",
+      "sha256": "e07743db341596653b420450771a3c83b7f320527ed6ff1fdd96d493adfe208e",
+      "bytes": 28065962,
+      "archive": "portable/e07743db341596653b420450771a3c83b7f320527ed6ff1fdd96d493adfe208e.json"
+    },
+    {
+      "backend": "webgl",
+      "name": "generated-v5.json",
+      "sha256": "d2b1d58bb83d0e7218b3b4d4c3c66eb94786e84dd0f37dcdc3b31b04ba1fef92",
+      "bytes": 28065957,
+      "archive": "portable/d2b1d58bb83d0e7218b3b4d4c3c66eb94786e84dd0f37dcdc3b31b04ba1fef92.json"
+    },
+    {
+      "backend": "webgl",
+      "name": "legacy-C5-reopened.json",
+      "sha256": "70dbd258e27e6fe286260d55961677d4dbe338c23cbb8a6da716a6b1e1037301",
+      "bytes": 28065169,
+      "archive": "portable/70dbd258e27e6fe286260d55961677d4dbe338c23cbb8a6da716a6b1e1037301.json"
+    },
+    {
+      "backend": "webgl",
+      "name": "legacy-default.json",
+      "sha256": "87d67a3797437e894fbc89bd54ad28c5c7cf3090c4c996a1cb7ae1b5ffa90fb1",
+      "bytes": 28011029,
+      "archive": "portable/87d67a3797437e894fbc89bd54ad28c5c7cf3090c4c996a1cb7ae1b5ffa90fb1.json"
+    },
+    {
+      "backend": "webgl",
+      "name": "local-finish-v4.json",
+      "sha256": "004737c7bb5f6736d31d160f5c34d15a87fe1bb39957f51c9257d91555c29b72",
+      "bytes": 28011966,
+      "archive": "portable/004737c7bb5f6736d31d160f5c34d15a87fe1bb39957f51c9257d91555c29b72.json"
+    },
+    {
+      "backend": "webgl",
+      "name": "reopened-v5.json",
+      "sha256": "e07743db341596653b420450771a3c83b7f320527ed6ff1fdd96d493adfe208e",
+      "bytes": 28065962,
+      "archive": "portable/e07743db341596653b420450771a3c83b7f320527ed6ff1fdd96d493adfe208e.json"
+    },
+    {
+      "backend": "webgl",
+      "name": "rerolled-v5.json",
+      "sha256": "9e5a41d407fe21fb4722417d7bc343e76348f6ab3a0301ac115283a93a38a2ab",
+      "bytes": 28065960,
+      "archive": "portable/9e5a41d407fe21fb4722417d7bc343e76348f6ab3a0301ac115283a93a38a2ab.json"
+    }
+  ]
+}

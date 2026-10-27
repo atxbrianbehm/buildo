@@ -1,0 +1,9 @@
+
+ RUN  v4.1.9 C:/Users/behmb/Documents/Cascade Projects/buildo
+
+
+ Test Files  2 passed (2)
+      Tests  24 passed (24)
+   Start at  01:38:32
+   Duration  100.54s (transform 1.17s, setup 253ms, import 1.79s, tests 98.24s, environment 1.73s)
+

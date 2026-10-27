@@ -1,0 +1,22 @@
+# R3.P6 — verified selected-window width controls
+
+Select a window in the continuous workspace, enter a width in metres and Apply, or Restore original. The control uses the existing source/revision-bound transaction and authoritative original aperture. Dirty global drafts, invalid inputs, stale owners and pending/cancelled work are handled without replacing the accepted scene.
+
+All five checks pass: **1,291 tests / 95 files**, TypeScript, lint, build and E2E; focused App/Hall coverage **87 / two files**. Source: `b12852e6a08ab631586c2c807bb43a840ea741a7376cfe2d494b555c4f7b7cee`. Six existing paths change and 247 other sources remain literal. No commit or push was made.
+
+- [Checkpoint](source-check-and-app-checkpoint.json) — `444f1718aeec00740bc6bd6a39b6f5d2e57c021f8b5116684f05815a8683563d`
+- [Required checks](raw/required-checks-final-03.json)
+- [Source review](raw/source-review-03.json) and [root review notes](raw/review-notes-03.md)
+- [Rendered review](raw/rendered-review-02.json)
+- [Actual width workflow](raw/app-proof-02/p6-window-width-workflow.json) and [protected baseline workflow](raw/app-workflow-03.json)
+- [Desktop narrowed window](raw/app-proof-02/p6-desktop-narrowed.png), [compact edited](raw/app-proof-02/p6-compact-edited.png), [fresh-page Open](raw/app-proof-02/p6-compact-reopened.png) and [restored](raw/app-proof-02/p6-compact-restored.png)
+
+The actual App proves select → 1.35 to 0.6 to 0.975 m → Save → fresh-page explicit portable Open → Restore to 1.35 m. Complete reopened IR/gallery/source and pinned inputs match, restored IR/gallery equal the original, and all five material channels plus full metadata remain exact. Submitted native frame/glass transforms match IR and the expected binder ratio; unselected transforms remain exact. Counters begin after readiness: edits/Open do not interpret, generate or write completed cache; restoring the empty list writes one compatible completed packet while retaining prior rows.
+
+The App binds its async model to fixture/source reference, hash, revision, document and address. Original dimensions are reconstructed from pinned inputs, not rendered Float32 transforms. Pending locks precede controller preflight, stale completions cannot replace newer drafts and dirty global edits cannot be silently consumed. AssemblyHall reports only its current attached window and restores authority on viewer rollback.
+
+The first preflight passed TypeScript and all 87 focused tests. Its E2E passed the protected old workflow and selected/narrowed/increased stages, then failed at the fresh page because Playwright's implicit browser.newPage context allowed only one page. All six candidate sources were captured before a script-only repair created/closed an explicit shared context. The other 252 sources, including every UI/test path, remained exact. Candidate02 reran preflight and passed all 1,291 regression tests, but lint found an intentional eager effect reset and a test-helper this alias; diff review also found one blank EOF line. Its six source files were captured before the minimal cleanup. A justified one-line lint comment leaves emitted App JavaScript exact; receiver capture and EOF cleanup change only the test helper. Final03 reruns all checks and both browser workflows; the twelve inspected captures02 are inherited through recorded emitted-JavaScript identity, with no third PNG batch. Failed capture-freeze preparations and two exact-diff recorder preparation failures are retained separately; they changed no feature source.
+
+Root inspected the ten partial first-batch PNGs and all twelve final desktop/compact PNGs. No production UI correction was required. One detector pass found eight pre-existing CSS warnings and no new-inspector finding; exact UI pins permit inheriting it through the harness-only repair. The building remains visually busy and its human appearance/worth-keeping gate remains open.
+
+Automatic restart persistence is not implemented. Portable Save/Open is the verified durable path for width edits. Source-unavailable source-keyed completed views still require portable Open to continue. Four legacy portable canaries and their P5 codec roundtrips are inherited with protected codec/core. Next: separate IndexedDB acknowledgement preparation, then separate editable-source recovery. Edited-cache replay, undo, CompilerClient App wiring and representative performance remain later gates.

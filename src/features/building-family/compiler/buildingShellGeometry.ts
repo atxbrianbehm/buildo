@@ -1,0 +1,95 @@
+import type { FacadeBayScope } from "./facadeWallSubdivision";
+import { emptyBounds, expandBounds, type Bounds3, type PrimitiveGeometry, type Vec3 } from "./primitiveGeometry";
+
+export interface ConstructionFootprint { widthM: number; depthM: number; wallDepthM: number }
+export interface ConstructionBuilding extends ConstructionFootprint { heightM: number; floorTopsM: number[] }
+export interface ConstructionFacePose { cosine: number; sine: number; x: number; z: number; uvOffsetM: number }
+export function constructionFacePose(face: "front" | "right" | "rear" | "left", footprint: ConstructionFootprint): ConstructionFacePose {
+  const w = footprint.widthM, d = footprint.depthM;
+  return { front: { cosine: 1, sine: 0, x: 0, z: -d / 2, uvOffsetM: 0 }, right: { cosine: 0, sine: -1, x: w / 2, z: 0, uvOffsetM: (w + d) / 2 },
+    rear: { cosine: -1, sine: 0, x: 0, z: d / 2, uvOffsetM: w + d }, left: { cosine: 0, sine: 1, x: -w / 2, z: 0, uvOffsetM: (w + d) * 1.5 } }[face];
+}
+export function posedPoint(point: Vec3, pose?: ConstructionFacePose, normal = false): Vec3 {
+  if (!pose) return [...point];
+  return [pose.cosine * point[0] + pose.sine * point[2] + (normal ? 0 : pose.x), point[1], -pose.sine * point[0] + pose.cosine * point[2] + (normal ? 0 : pose.z)];
+}
+export function geometryBounds(positions: readonly number[]): Bounds3 {
+  let bounds = emptyBounds();
+  for (let i = 0; i < positions.length; i += 3) { const point = positions.slice(i, i + 3) as Vec3; bounds = expandBounds(bounds, { min: point, max: point }); }
+  return bounds;
+}
+export function poseGeometry(geometry: PrimitiveGeometry, pose?: ConstructionFacePose): PrimitiveGeometry {
+  if (!pose) return geometry;
+  const transform = (array: number[], normal: boolean) => array.flatMap((_, index) => index % 3 ? [] : posedPoint(array.slice(index, index + 3) as Vec3, pose, normal));
+  const positions = transform(geometry.positions, false);
+  return { ...geometry, positions, normals: transform(geometry.normals, true), bounds: geometryBounds(positions) };
+}
+export function posedBounds(bounds: Bounds3, pose?: ConstructionFacePose): Bounds3 {
+  if (!pose) return bounds;
+  const points: number[] = [];
+  for (const x of [bounds.min[0], bounds.max[0]]) for (const y of [bounds.min[1], bounds.max[1]]) for (const z of [bounds.min[2], bounds.max[2]]) points.push(...posedPoint([x, y, z], pose));
+  return geometryBounds(points);
+}
+export function poseMatrix(translation: Vec3, pose?: ConstructionFacePose): number[] {
+  if (!pose) return [1,0,0,0,0,1,0,0,0,0,1,0,...translation,1];
+  const [x, y, z] = posedPoint(translation, pose), c = pose?.cosine ?? 1, s = pose?.sine ?? 0;
+  return [c, 0, s === 0 ? 0 : -s, 0, 0, 1, 0, 0, s, 0, c, 0, x, y, z, 1];
+}
+function builder() {
+  const positions: number[] = [], normals: number[] = [], uvs: number[] = [], indices: number[] = [];
+  return { quad(vertices: [Vec3, Vec3, Vec3, Vec3], texture?: Array<[number, number]>) {
+    const [a, b, , d] = vertices, ab = b.map((v, i) => v - a[i]), ad = d.map((v, i) => v - a[i]);
+    const cross = [ab[1] * ad[2] - ab[2] * ad[1], ab[2] * ad[0] - ab[0] * ad[2], ab[0] * ad[1] - ab[1] * ad[0]], length = Math.hypot(...cross);
+    if (length < 1e-12) return;
+    const offset = positions.length / 3;
+    vertices.forEach((vertex, index) => { positions.push(...vertex); normals.push(...cross.map(v => v / length)); uvs.push(...(texture?.[index] ?? [vertex[0], vertex[1]])); });
+    indices.push(offset, offset + 1, offset + 2, offset, offset + 2, offset + 3);
+  }, finish(): PrimitiveGeometry { return { positions, normals, uvs, indices, bounds: geometryBounds(positions) }; } };
+}
+/** One continuous facade solid with real reveals; interior cell caps never reach the renderer. */
+export function constructionFacadeSolid(scopes: FacadeBayScope[]): PrimitiveGeometry {
+  if (!scopes.length) throw new Error("A facade solid needs wall scopes.");
+  const left = Math.min(...scopes.map(s => s.originM[0])), right = Math.max(...scopes.map(s => s.originM[0] + s.sizeM[0]));
+  const bottom = Math.min(...scopes.map(s => s.originM[1])), top = Math.max(...scopes.map(s => s.originM[1] + s.sizeM[1])), depth = scopes[0].sizeM[2];
+  if (scopes.some(scope => scope.sizeM[2] !== depth)) throw new Error("A continuous facade needs one wall depth.");
+  const holes = scopes.flatMap(scope => scope.opening ? [{ x0: scope.opening.centerAlongM - scope.opening.widthM / 2, x1: scope.opening.centerAlongM + scope.opening.widthM / 2,
+    y0: scope.opening.centerYM - scope.opening.heightM / 2, y1: scope.opening.centerYM + scope.opening.heightM / 2 }] : []);
+  const snap = (v: number) => Math.round(v * 1e9) / 1e9;
+  const coordinates = (values: number[]) => [...new Set(values.map(snap))].sort((a, b) => a - b);
+  const xs = coordinates([left, right, ...scopes.flatMap(s => [s.originM[0], s.originM[0] + s.sizeM[0]]), ...holes.flatMap(h => [h.x0, h.x1])]);
+  const ys = coordinates([bottom, top, ...scopes.flatMap(s => [s.originM[1], s.originM[1] + s.sizeM[1]]), ...holes.flatMap(h => [h.y0, h.y1])]);
+  if (xs.length * ys.length > 100000) throw new Error("Facade wall grid exceeds its supported budget.");
+  const solid = (x: number, y: number) => x >= 0 && x < xs.length - 1 && y >= 0 && y < ys.length - 1 && (() => {
+    const cx = (xs[x] + xs[x + 1]) / 2, cy = (ys[y] + ys[y + 1]) / 2;
+    return scopes.some(s => cx >= s.originM[0] && cx <= s.originM[0] + s.sizeM[0] && cy >= s.originM[1] && cy <= s.originM[1] + s.sizeM[1]) &&
+      !holes.some(h => cx > h.x0 && cx < h.x1 && cy > h.y0 && cy < h.y1);
+  })();
+  const result = builder();
+  for (let x = 0; x < xs.length - 1; x++) for (let y = 0; y < ys.length - 1; y++) if (solid(x, y)) {
+    const a = xs[x], b = xs[x + 1], c = ys[y], d = ys[y + 1];
+    result.quad([[a,c,0],[b,c,0],[b,d,0],[a,d,0]]); result.quad([[b,c,-depth],[a,c,-depth],[a,d,-depth],[b,d,-depth]]);
+    if (!solid(x-1,y)) result.quad([[a,c,-depth],[a,c,0],[a,d,0],[a,d,-depth]]);
+    if (!solid(x+1,y)) result.quad([[b,c,0],[b,c,-depth],[b,d,-depth],[b,d,0]]);
+    if (!solid(x,y-1)) result.quad([[a,c,-depth],[b,c,-depth],[b,c,0],[a,c,0]]);
+    if (!solid(x,y+1)) result.quad([[a,d,0],[b,d,0],[b,d,-depth],[a,d,-depth]]);
+  }
+  return result.finish();
+}
+/** Closed rectangular sweep: shared corner coordinates form real mitres, with no segment end caps. */
+export function constructionProfileRing(widthM: number, depthM: number, points: Array<{ y: number; offset: number }>): PrimitiveGeometry {
+  if (points.length < 3 || points.some(p => widthM / 2 + p.offset <= 0 || depthM / 2 + p.offset <= 0)) throw new Error("Profile ring exceeds its footprint.");
+  let profileDistance=0;
+  const result = builder(), corner = (p: { y: number; offset: number }, index: number): Vec3 =>
+    [[-1,-1],[1,-1],[1,1],[-1,1]][index].map((sign, axis) => sign * ((axis === 0 ? widthM : depthM) / 2 + p.offset)).reduce<Vec3>((v, value, axis) => { v[axis === 0 ? 0 : 2] = value; return v; }, [0,p.y,0]);
+  for (let edge = 0; edge < points.length; edge++) {
+    const edgeLength=Math.hypot(points[(edge+1)%points.length].y-points[edge].y,points[(edge+1)%points.length].offset-points[edge].offset);
+    for (let side = 0; side < 4; side++) {
+    const p = points[edge], q = points[(edge + 1) % points.length], next = (side + 1) % 4;
+    const start = [0,widthM,widthM+depthM,2*widthM+depthM][side], run = side % 2 ? depthM : widthM;
+    const startP=start+2*p.offset*side,startQ=start+2*q.offset*side;
+    result.quad([corner(p,side),corner(q,side),corner(q,next),corner(p,next)],[[startP,profileDistance],[startQ,profileDistance+edgeLength],[startQ+run+2*q.offset,profileDistance+edgeLength],[startP+run+2*p.offset,profileDistance]]);
+    }
+    profileDistance+=edgeLength;
+  }
+  return result.finish();
+}

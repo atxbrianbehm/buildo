@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "human-review-decision",
+  "milestone": "C5",
+  "decision": "accepted",
+  "recordedAtUtc": "2026-10-18T05:14:42.357579+00:00",
+  "userStatement": "Approved. We need more of everything but it's moving in a good direction finally.",
+  "reviewedPacket": "docs/reviews/2026-10-17-c5-p3/verification.json",
+  "reviewedPacketSha256": "1a1e6925b562e58627cc4ddf9fe74311ddb25cdabd46dbb9f53b96f6aa20ce8f",
+  "reviewedInventorySha256": "443dc56d03548d7c7ce269daa8295be11fd5a3f86f1efe86588f9d32a627e14f",
+  "sourcePinsVerified": 60,
+  "scope": "Accept the bounded C5 single-building generation/edit/lock/finish/reference-snapshot/offline workflow. Continue sequential bounded development from this baseline.",
+  "doesNotEstablish": [
+    "Live UTDG architectural evidence",
+    "Family/block or representative-machine performance acceptance",
+    "Release, external publication, commits/pushes, paid providers or installation authorization"
+  ]
+}

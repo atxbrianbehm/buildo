@@ -1,6 +1,8 @@
 import { late19cApartmentKit } from "../art-kit";
 import {
+  evaluateArtKitPeriodMaterialScale,
   gltfHintsForChannels,
+  isPeriodMaterialScale,
   mapSelectedFamilyToArtKitMaterialId,
   resolveArtKitMaterialSet,
   tilePhysicalSizeM
@@ -20,7 +22,7 @@ describe("artKitMaterialSet", () => {
     const brick = set.bindings.find((binding) => binding.materialRoleId === "brick");
     expect(brick).toMatchObject({
       atlasSlotId: "wall.primary",
-      metersPerTile: 1.2,
+      metersPerTile: 0.96,
       proceduralSource: "running-bond-brick"
     });
     expect(brick?.gltfHints).toEqual({
@@ -45,7 +47,15 @@ describe("artKitMaterialSet", () => {
   });
 
   it("builds square tile physical sizes from metersPerTile", () => {
-    expect(tilePhysicalSizeM(1.2)).toEqual({ width: 1.2, height: 1.2 });
+    expect(tilePhysicalSizeM(0.96)).toEqual({ width: 0.96, height: 0.96 });
     expect(gltfHintsForChannels(["baseColor", "opacity"]).alphaMode).toBe("BLEND");
+  });
+
+  it("accepts late-19c period material scales for the kit (V5)", () => {
+    expect(isPeriodMaterialScale("brick", 0.96)).toBe(true);
+    expect(isPeriodMaterialScale("brick", 1.5)).toBe(false);
+    const evaluation = evaluateArtKitPeriodMaterialScale(late19cApartmentKit);
+    expect(evaluation.failCount).toBe(0);
+    expect(evaluation.passCount).toBe(late19cApartmentKit.materials.length);
   });
 });

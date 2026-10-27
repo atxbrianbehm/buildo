@@ -1,0 +1,137 @@
+{
+  "schemaVersion": "0.1.0",
+  "name": "two-storey",
+  "floors": 2,
+  "bays": 3,
+  "windowCount": 23,
+  "wallMeshes": 4,
+  "doorParts": 5,
+  "roofParts": 3,
+  "prototypeCount": 3,
+  "bounds": {
+    "min": [
+      -4.74,
+      0,
+      -4.44
+    ],
+    "max": [
+      4.74,
+      8.645000000000001,
+      4.44
+    ]
+  },
+  "graphHash": "f5e1b48ff76b3808f3165233b3083af6d0dd667045340ec2c5d3f1c9bcd1ea1e",
+  "sourceHash": "76b46703106dd968c4f586b5e1dbcb179b0034a27fcf4c03367635fbd7531b77",
+  "resolutionHash": "dcd1b130e6c815ec44fa231be02cd35f9dc1c2aa181f55bc73799c3fd51e9724",
+  "meshes": [
+    {
+      "id": "building/c5-p1-proof/node/wall/facade/wall",
+      "positions": "124c9f5249de61ed611e5cc8726fc1f797a816503a1df24a487210a4fbf7feaa",
+      "normals": "fde38c46f8433e077c39443db527c7ad9ebbf2c3e40c9ca56224d888d52a3f6f",
+      "uvs": "f5c710a5f6baa8fdbb6f5f6fa043722bef9b690a94125863f9180fa891e43ac7",
+      "indices": "ec1eaeae032ca782771e3c831035c52e0d6560d5f297276a30b7236680b9e333"
+    },
+    {
+      "id": "building/c5-p1-proof/node/wall/facade/right/wall",
+      "positions": "52fb7851322197bf38fa4ef8dbf8bf8d642ac192c2a57f9725749d65bb68bfa1",
+      "normals": "186b09455696ce7464c1691d92ca066a0f0997a087e68bf33378cc296744d141",
+      "uvs": "e2b74d64256fc4a24759b7fd0bcd7d11f49016f178560a34b1b1de9ba779efc2",
+      "indices": "735986be709cc66fc89fd34794af4c30a5f9cddc7151065da46857e74246f9c2"
+    },
+    {
+      "id": "building/c5-p1-proof/node/wall/facade/rear/wall",
+      "positions": "2182737961debde05debaa949b9ba30318ecc7dec3e91a0e2245946386fd0ad3",
+      "normals": "a442e5949c66f9ad3fc4812850b31f08af8ad3b343de2f278cb0894850a2205b",
+      "uvs": "e02100134b7fbac576ece300bfcc61f35b7a99df06a26078b10dfee0433fcb92",
+      "indices": "735986be709cc66fc89fd34794af4c30a5f9cddc7151065da46857e74246f9c2"
+    },
+    {
+      "id": "building/c5-p1-proof/node/wall/facade/left/wall",
+      "positions": "3a829cd3681e6a977c2b6561ea15b6520f5449a9f8ca070722a769bfb91d3d88",
+      "normals": "689134978b4ac7f68e2cc30b10f864a013e040a243c31e97c79912945473c772",
+      "uvs": "995a014b874e0e81451c9d7655cc1460229aa60b937cb99f44f87682b7b946b3",
+      "indices": "735986be709cc66fc89fd34794af4c30a5f9cddc7151065da46857e74246f9c2"
+    },
+    {
+      "id": "building/c5-p1-proof/node/door/facade/floor/0/bay/1/frame",
+      "positions": "18c804605c34dd13041ba95d244f781bea9d44e019805eaf89b40ce66310e948",
+      "normals": "df132821be958e92a491f6673a908811ba3ede3c8c20385804ce03217fb688d7",
+      "uvs": "1c353b618b2910300afe4ce2fa6b90743bae3b7eacaa2bafbd6ed2b6f8aa1074",
+      "indices": "822fdc845a1b35400ff2848922e720f9d590f70b077b91efd00879ab4b56e892"
+    },
+    {
+      "id": "building/c5-p1-proof/node/door/facade/floor/0/bay/1/leaf",
+      "positions": "8bbfaa2859fcc2c484142b403a13681a98c9cd0615cb5489ceb331c69d91cc30",
+      "normals": "2f20b38f91c61294e3391714fceaafafd59726f488db73bd482303c1c0d58f21",
+      "uvs": "207366bb5d6a1054f4686ed9605e312f039d0305a5a72ada6b63f52d006a2faf",
+      "indices": "b89265d5467b903ed204bacba252dbfa2757b91b62554f6f24f24c2d62f49345"
+    },
+    {
+      "id": "building/c5-p1-proof/node/door/facade/floor/0/bay/1/hardware",
+      "positions": "90c7f844841295aa9cd17fa3630e36bd14975baaeead1f2d7612d980d8e94416",
+      "normals": "359c158d78f83bf743ce113f3f8095726332fa0935d246d3eb122f78db759c82",
+      "uvs": "5ddd6c608950151f4c48929f82f91375b6257deff552b2b32710714c2461acc6",
+      "indices": "be43b66eb4d66666254d66bc8754d10bc8964746739d3b9fcbaee9a3cb4b4821"
+    },
+    {
+      "id": "building/c5-p1-proof/node/door/facade/floor/0/bay/1/glass",
+      "positions": "44cf6284dab218e286a910c37f7ac83dde1622f315fb05f313796ceb726935ec",
+      "normals": "288379c4a62a59ae50cbf0c075d36673039de531a112f94e65b2dda6afddad69",
+      "uvs": "b466f6a908d5d66c7734f854133b2f5c75cabf4492ce4dad6c903505dbd018c7",
+      "indices": "6a6aca884dea3fc67883037c147c94d5d53561ac7a32c7076340eb92c1f60196"
+    },
+    {
+      "id": "building/c5-p1-proof/node/door/facade/floor/0/bay/1/trim",
+      "positions": "558f95c985d99339c5d03f29d6dbeaafa32ba61cfe15fdb495d069ac1636569d",
+      "normals": "288379c4a62a59ae50cbf0c075d36673039de531a112f94e65b2dda6afddad69",
+      "uvs": "1e1115f0fa07c8d9a06d9f485140ac6507072b2c5380f391c2c5897458dc0ccd",
+      "indices": "6a6aca884dea3fc67883037c147c94d5d53561ac7a32c7076340eb92c1f60196"
+    },
+    {
+      "id": "building/c5-p1-proof/node/bands/building/band.4.3",
+      "positions": "fecc35fc6acaf701fafc52eab3ac55425f91c209a8d59d545a9d33ab7c67800c",
+      "normals": "82f43d2aab57057ffa5bc8a80aae980416e2d362903ab33648d27e8144e986f4",
+      "uvs": "21883a2e38c2a423526fb0bbea878f6dd80a00bcfe270135e4aee1d7c2d01503",
+      "indices": "6d0cdbe81fd0b6b8bdef05c0fe8479fca4d11b2ceccd70e7879307c5808152c8"
+    },
+    {
+      "id": "building/c5-p1-proof/node/roof/building/roof",
+      "positions": "61401cf5c11f3f0dd455e6c40e7099b40942f590401f7eeb18ca3d8b6ba8cd8b",
+      "normals": "89a9a95b44c77196264754c2ab39094139ddcc3c6e09d2d479dff65a69d32d79",
+      "uvs": "5ec7d9685dc1cf6b06e9c4b30b69a82aa2c0d815812ea9dcb271278f94654304",
+      "indices": "6a6aca884dea3fc67883037c147c94d5d53561ac7a32c7076340eb92c1f60196"
+    },
+    {
+      "id": "building/c5-p1-proof/node/roof/building/parapet",
+      "positions": "a2391ad136241bc1f9e75e5567dc57071ca1feade22cdbf5fee7086ea4e8780b",
+      "normals": "9b35c9d595251e1a5cb19a97e1d742bd939cdc93681f72bfe3d0f319c59d97f8",
+      "uvs": "b5c308ef69ebffc5e0e5a5ae2f0b47b284ba44de0395650729f6f4e1933bf314",
+      "indices": "6b0f2ff9530db7af28f14f99efbf18472d2711785a92f77d6e23ca2364fa80f5"
+    },
+    {
+      "id": "building/c5-p1-proof/node/roof/building/cornice",
+      "positions": "095f48814b1ce09b474dc3c1ac943874746f63981ef1f22f44ba4469b82a84b2",
+      "normals": "b0b144cdf4819c41c5dd7bc515bd0661e983f4385d54ec86f7a6d483e245f913",
+      "uvs": "39b8931e740e6d40b451329a18602053a5fb16f0aa598cf6a2266a72ac336f1a",
+      "indices": "7b621609f82bf7f64a63bfb9ca1a31fc49c8784077d21e8e2ae79924174cf07d"
+    }
+  ],
+  "instances": [
+    {
+      "id": "construction.window.construction.prototype.frame.ff6fede30e847a512587",
+      "count": 23,
+      "transforms": "d2cec42c60cd1dda7f0bbce40f87225f7c4cd82338fa98cc76525f7a15115535"
+    },
+    {
+      "id": "construction.window.construction.prototype.glass.ff6fede30e847a512587",
+      "count": 23,
+      "transforms": "d2cec42c60cd1dda7f0bbce40f87225f7c4cd82338fa98cc76525f7a15115535"
+    },
+    {
+      "id": "construction.window.construction.prototype.trim.ff6fede30e847a512587",
+      "count": 23,
+      "transforms": "d2cec42c60cd1dda7f0bbce40f87225f7c4cd82338fa98cc76525f7a15115535"
+    }
+  ],
+  "portableReplay": true
+}

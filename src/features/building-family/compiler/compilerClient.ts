@@ -1,7 +1,11 @@
 import type { RuntimeBuildingIR } from "../contracts/runtimeBuildingIR";
-import type { CompileBuildingInput } from "./buildingCompiler";
+import { readWindowWidthCompileOptions, type CompileBuildingInput } from "./buildingCompiler";
 import {
   CompilerWorkerResponseSchema,
+  CompilerWorkerCompileRequestSchema,
+  CompilerWorkerWindowWidthBatchCompileRequestSchema,
+  type CompilerWorkerCompileRequest,
+  type CompilerWorkerWindowWidthBatchCompileRequest,
   type CompilerWorkerRequest,
   type CompilerWorkerResponse,
   type CompilerWorkerProgressResponse
@@ -44,9 +48,10 @@ function defaultRequestId(): string {
   return `compile-${nextCompilerRequestId.toString(36)}`;
 }
 
-function compilerClientError(message: string, name: string): Error {
+function compilerClientError(message: string, name: string, code?: string): Error {
   const error = new Error(message);
   error.name = name;
+  if (code !== undefined) Object.assign(error, { code });
   return error;
 }
 
@@ -63,7 +68,38 @@ export class CompilerClient {
   }
 
   compile(input: CompileBuildingInput, options: CompilerClientCompileOptions = {}): Promise<RuntimeBuildingIR> {
-    const requestId = options.requestId ?? this.createRequestId();
+    const { requestId: requestedId, signal, onProgress } = options;
+    let request: CompilerWorkerCompileRequest | CompilerWorkerWindowWidthBatchCompileRequest;
+    try {
+      const widthOptions = readWindowWidthCompileOptions(input);
+      for (const field of ["facadePlan", "moduleInstances"] as const) {
+        const descriptor = Object.getOwnPropertyDescriptor(input, field);
+        if (descriptor ? !("value" in descriptor) || descriptor.value !== undefined : field in input) {
+          throw compilerClientError(`Compiler client cannot transport custom ${field}.`, "CompilerClientUnsupportedInputError", "building.compiler.unsupportedInput");
+        }
+      }
+      const owned = structuredClone({ ...input, ...widthOptions });
+      if (owned.windowWidthBatch === undefined) {
+        request = CompilerWorkerCompileRequestSchema.parse({
+          type: "compile", requestId: requestedId ?? this.createRequestId(),
+          spec: owned.spec, graph: owned.graph, catalog: owned.catalog,
+          ...(owned.buildingId === undefined ? {} : { buildingId: owned.buildingId }),
+          ...(owned.detailLevel === undefined ? {} : { detailLevel: owned.detailLevel }),
+          ...(owned.fidelityMode === undefined ? {} : { fidelityMode: owned.fidelityMode }),
+          ...(owned.windowWidthOverrides === undefined ? {} : { windowWidthOverrides: owned.windowWidthOverrides })
+        });
+      } else {
+        request = CompilerWorkerWindowWidthBatchCompileRequestSchema.parse({
+          type: "compile-window-width-batch", requestId: requestedId ?? this.createRequestId(),
+          spec: owned.spec, graph: owned.graph, catalog: owned.catalog,
+          ...(owned.buildingId === undefined ? {} : { buildingId: owned.buildingId }),
+          ...(owned.detailLevel === undefined ? {} : { detailLevel: owned.detailLevel }),
+          ...(owned.fidelityMode === undefined ? {} : { fidelityMode: owned.fidelityMode }),
+          windowWidthBatch: owned.windowWidthBatch
+        });
+      }
+    } catch (error) { return Promise.reject(error); }
+    const requestId = request.requestId;
 
     if (this.activeRequest) {
       const previous = this.activeRequest;
@@ -77,7 +113,7 @@ export class CompilerClient {
       );
     }
 
-    if (options.signal?.aborted) {
+    if (signal?.aborted) {
       return Promise.reject(compilerClientError(`Compiler request ${requestId} was aborted.`, "CompilerRequestAbortError"));
     }
 
@@ -86,11 +122,11 @@ export class CompilerClient {
         requestId,
         resolve,
         reject,
-        onProgress: options.onProgress,
-        signal: options.signal
+        onProgress,
+        signal
       };
 
-      if (options.signal) {
+      if (signal) {
         activeRequest.abortListener = () => {
           if (this.activeRequest?.requestId !== requestId) {
             return;
@@ -99,17 +135,15 @@ export class CompilerClient {
           this.endpoint.postMessage({ type: "cancel", requestId });
           reject(compilerClientError(`Compiler request ${requestId} was aborted.`, "CompilerRequestAbortError"));
         };
-        options.signal.addEventListener("abort", activeRequest.abortListener, { once: true });
+        signal.addEventListener("abort", activeRequest.abortListener, { once: true });
       }
 
       this.activeRequest = activeRequest;
-      this.endpoint.postMessage({
-        type: "compile",
-        requestId,
-        spec: input.spec,
-        graph: input.graph,
-        catalog: input.catalog
-      });
+      try { this.endpoint.postMessage(request); }
+      catch (error) {
+        if (this.activeRequest === activeRequest) this.cleanupActiveRequest();
+        reject(error);
+      }
     });
 
     return promise;
@@ -145,7 +179,7 @@ export class CompilerClient {
       return;
     }
 
-    activeRequest.reject(compilerClientError(response.error.message, response.error.name ?? "CompilerWorkerError"));
+    activeRequest.reject(compilerClientError(response.error.message, response.error.name ?? "CompilerWorkerError", response.error.code));
   }
 
   private cleanupActiveRequest(): void {

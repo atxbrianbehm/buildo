@@ -1,0 +1,16 @@
+Port 5173 is in use, trying another one...
+12:35:31 AM [vite] (client) [optimizer] bundling dependencies...
+{"api":"webgpu","state":"default-C4-retained"}
+{"api":"webgpu","state":"legacy-C5-open"}
+{"api":"webgpu","state":"restrained-masonry"}
+{"api":"webgpu","state":"deep-reveals"}
+{"api":"webgpu","state":"projecting-cornice"}
+{"api":"webgpu","state":"authored-cornice"}
+{"api":"webgpu","state":"recipe-change-with-edits"}
+{"api":"webgpu","state":"undo-recipe-change"}
+{"api":"webgpu","state":"redo-recipe-change"}
+{"api":"webgpu","state":"final-recipe-source"}
+{"api":"webgpu","state":"opened-v5"}
+{"api":"webgpu","state":"room-return"}
+{"api":"webgpu","state":"cold-recovered-v5"}
+{"api":"webgpu","draws":13,"captures":17,"errors":[]}

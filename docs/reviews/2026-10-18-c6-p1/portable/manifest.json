@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "0.1.0",
+  "files": [
+    {
+      "api": "webgpu",
+      "original": "restrained-v5.json",
+      "path": "portable/cf3d888c80ad4841094fc637b7885d5e4bb9b1751353b1f7c3a3ba8a3a7f9805.json",
+      "sha256": "cf3d888c80ad4841094fc637b7885d5e4bb9b1751353b1f7c3a3ba8a3a7f9805"
+    },
+    {
+      "api": "webgpu",
+      "original": "deep-v5.json",
+      "path": "portable/2d6b06d4eb2cdb88b540005967adac03d2ff1f66a3f33d357df4aa76e481a411.json",
+      "sha256": "2d6b06d4eb2cdb88b540005967adac03d2ff1f66a3f33d357df4aa76e481a411"
+    },
+    {
+      "api": "webgpu",
+      "original": "cornice-v5.json",
+      "path": "portable/54843de2a524d9d2e7093389e52d2f7aa52717136d1f3940e88fe7ae104a8560.json",
+      "sha256": "54843de2a524d9d2e7093389e52d2f7aa52717136d1f3940e88fe7ae104a8560"
+    },
+    {
+      "api": "webgpu",
+      "original": "authored-cornice-v5.json",
+      "path": "portable/90413be0dc322c6eda8d7daa71eef1a25b02e364f85d3619900325586295711a.json",
+      "sha256": "90413be0dc322c6eda8d7daa71eef1a25b02e364f85d3619900325586295711a"
+    },
+    {
+      "api": "webgpu",
+      "original": "deep-authored-v5.json",
+      "path": "portable/6805f019e7efe3e6aa1c04f60c19a903460ee07dc874930320e6ecd64f3e8ebe.json",
+      "sha256": "6805f019e7efe3e6aa1c04f60c19a903460ee07dc874930320e6ecd64f3e8ebe"
+    },
+    {
+      "api": "webgpu",
+      "original": "finished-v5.json",
+      "path": "portable/1decf14546ef70c190e41022fc37ddb2dac345d7d98aebe97d520be3cdd4c487.json",
+      "sha256": "1decf14546ef70c190e41022fc37ddb2dac345d7d98aebe97d520be3cdd4c487"
+    },
+    {
+      "api": "webgpu",
+      "original": "reopened-v5.json",
+      "path": "portable/1decf14546ef70c190e41022fc37ddb2dac345d7d98aebe97d520be3cdd4c487.json",
+      "sha256": "1decf14546ef70c190e41022fc37ddb2dac345d7d98aebe97d520be3cdd4c487"
+    },
+    {
+      "api": "webgpu",
+      "original": "cold-v5.json",
+      "path": "portable/1decf14546ef70c190e41022fc37ddb2dac345d7d98aebe97d520be3cdd4c487.json",
+      "sha256": "1decf14546ef70c190e41022fc37ddb2dac345d7d98aebe97d520be3cdd4c487"
+    },
+    {
+      "api": "webgl",
+      "original": "restrained-v5.json",
+      "path": "portable/cf3d888c80ad4841094fc637b7885d5e4bb9b1751353b1f7c3a3ba8a3a7f9805.json",
+      "sha256": "cf3d888c80ad4841094fc637b7885d5e4bb9b1751353b1f7c3a3ba8a3a7f9805"
+    },
+    {
+      "api": "webgl",
+      "original": "deep-v5.json",
+      "path": "portable/2d6b06d4eb2cdb88b540005967adac03d2ff1f66a3f33d357df4aa76e481a411.json",
+      "sha256": "2d6b06d4eb2cdb88b540005967adac03d2ff1f66a3f33d357df4aa76e481a411"
+    },
+    {
+      "api": "webgl",
+      "original": "cornice-v5.json",
+      "path": "portable/54843de2a524d9d2e7093389e52d2f7aa52717136d1f3940e88fe7ae104a8560.json",
+      "sha256": "54843de2a524d9d2e7093389e52d2f7aa52717136d1f3940e88fe7ae104a8560"
+    },
+    {
+      "api": "webgl",
+      "original": "authored-cornice-v5.json",
+      "path": "portable/90413be0dc322c6eda8d7daa71eef1a25b02e364f85d3619900325586295711a.json",
+      "sha256": "90413be0dc322c6eda8d7daa71eef1a25b02e364f85d3619900325586295711a"
+    },
+    {
+      "api": "webgl",
+      "original": "deep-authored-v5.json",
+      "path": "portable/6805f019e7efe3e6aa1c04f60c19a903460ee07dc874930320e6ecd64f3e8ebe.json",
+      "sha256": "6805f019e7efe3e6aa1c04f60c19a903460ee07dc874930320e6ecd64f3e8ebe"
+    },
+    {
+      "api": "webgl",
+      "original": "finished-v5.json",
+      "path": "portable/1decf14546ef70c190e41022fc37ddb2dac345d7d98aebe97d520be3cdd4c487.json",
+      "sha256": "1decf14546ef70c190e41022fc37ddb2dac345d7d98aebe97d520be3cdd4c487"
+    },
+    {
+      "api": "webgl",
+      "original": "reopened-v5.json",
+      "path": "portable/1decf14546ef70c190e41022fc37ddb2dac345d7d98aebe97d520be3cdd4c487.json",
+      "sha256": "1decf14546ef70c190e41022fc37ddb2dac345d7d98aebe97d520be3cdd4c487"
+    },
+    {
+      "api": "webgl",
+      "original": "cold-v5.json",
+      "path": "portable/1decf14546ef70c190e41022fc37ddb2dac345d7d98aebe97d520be3cdd4c487.json",
+      "sha256": "1decf14546ef70c190e41022fc37ddb2dac345d7d98aebe97d520be3cdd4c487"
+    }
+  ]
+}

@@ -63,13 +63,13 @@ describe("AtlasPlanner", () => {
     const roof = plan.manifest.slots.find((slot) => slot.id === "roof.primary");
     const wallSource = plan.materialSources.find((source) => source.sourceId === "source.wall.primary");
 
-    expect(wall?.metersPerTile).toBe(1.2);
+    expect(wall?.metersPerTile).toBe(0.96);
     expect(wall?.artKitMaterialRoleId).toBe("brick");
     expect(wall?.proceduralSource).toBe("running-bond-brick");
-    expect(wall?.physicalSizeM).toEqual({ width: 1.2, height: 1.2 });
-    expect(roof?.metersPerTile).toBe(2);
-    expect(roof?.physicalSizeM).toEqual({ width: 2, height: 2 });
-    expect(wallSource?.metersPerTile).toBe(1.2);
+    expect(wall?.physicalSizeM).toEqual({ width: 0.96, height: 0.96 });
+    expect(roof?.metersPerTile).toBe(1.5);
+    expect(roof?.physicalSizeM).toEqual({ width: 1.5, height: 1.5 });
+    expect(wallSource?.metersPerTile).toBe(0.96);
     expect(wallSource?.proceduralSource).toBe("running-bond-brick");
   });
 

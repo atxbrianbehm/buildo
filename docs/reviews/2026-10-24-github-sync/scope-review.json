@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "0.1.0",
+  "defaultWhitespaceFindings": "Existing final blank lines only; preserved to keep reviewed source bytes.",
+  "filesWithExistingFinalBlankLine": 21,
+  "otherWhitespaceFindings": 0,
+  "manifestFilesVerified": 667,
+  "scopedWhitespaceCheckExitCode": 0
+}

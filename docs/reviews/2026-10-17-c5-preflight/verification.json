@@ -1,0 +1,143 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "c5-generation-utdg-preflight",
+  "status": "preparation-complete-awaiting-c4-human-decision",
+  "recordedAtUtc": "2026-10-18T03:20:51.613079+00:00",
+  "previousGoalTurn": "progress: recorded dynamic generation and UTDG requirements in plan and integration map",
+  "gitHead": "4c0fedeacfc9b4bed0c0000096d7d1ea605d23b9",
+  "productionChanges": [],
+  "sourcePins": [
+    {
+      "file": "src/features/building-family/utdg/textureDescriptionContracts.ts",
+      "sha256": "8b58c6d68d4d723ef0d523fc86e69b83fb804a752d5b74ad1bcaaef12d6a274d",
+      "snapshot": "source/src/features/building-family/utdg/textureDescriptionContracts.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/utdgResearchBrief.test.ts",
+      "sha256": "04b868f8f25be33d2f89dad828b4f97348fca0e8a1b71de46891ca511672e4b5",
+      "snapshot": "source/src/features/building-family/tests/utdgResearchBrief.test.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/psg/psgBuildingIntentAdapter.ts",
+      "sha256": "e36a7627de0842b5ef30342477632b95fef796bf8c9a75f451e6ab60d9068338",
+      "snapshot": "source/src/features/building-family/psg/psgBuildingIntentAdapter.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/psgBuildingIntentAdapter.test.ts",
+      "sha256": "6f1f3c1ffba580c7d83e30e62402a90ab334c438067a745c6ead2a380d4bd5f8",
+      "snapshot": "source/src/features/building-family/tests/psgBuildingIntentAdapter.test.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/core/seedTree.ts",
+      "sha256": "ab5fbb5a70d13cb7de44577e6cad0a187bc73e9b7b80a268f4f606f64d9f37c4",
+      "snapshot": "source/src/features/building-family/core/seedTree.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/seedTree.test.ts",
+      "sha256": "7388fbcf658cde8c815f51e4b4562f9b6cef24dba3865a284d2ba3c7ae17d161",
+      "snapshot": "source/src/features/building-family/tests/seedTree.test.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/contracts/buildingIntent.ts",
+      "sha256": "f69c230a96e40dbca5f4680adf8b32532e8b70c03cc00a7ac16cb835c4335a83",
+      "snapshot": "source/src/features/building-family/contracts/buildingIntent.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/contracts/shared.ts",
+      "sha256": "a274949f0282bcf916ed7a6cd71ab2ba44bb2e8fc6a2d9c12f320c34e4b0b50e",
+      "snapshot": "source/src/features/building-family/contracts/shared.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/contracts/historicalStylePack.ts",
+      "sha256": "5b001291235fda3e2a936797eab159857990c791e6ee9b35d65087d0abaceaba",
+      "snapshot": "source/src/features/building-family/contracts/historicalStylePack.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/contracts/bayConstructionGraph.ts",
+      "sha256": "60a597bf53c5f0c663bed802a611134803585f149654042a89a7201cf3b1de77",
+      "snapshot": "source/src/features/building-family/contracts/bayConstructionGraph.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/state/bayConstructionProject.ts",
+      "sha256": "8d9eb6474e4cf4b3d8183c541b5286bed3a8c8ba2a390ee090c9f2202e461b4d",
+      "snapshot": "source/src/features/building-family/state/bayConstructionProject.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/state/buildingSourceFile.ts",
+      "sha256": "28be641ec3375d12681ef2fa832b6b73d79787d37bbf1d245324e1d3f41557b4",
+      "snapshot": "source/src/features/building-family/state/buildingSourceFile.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/ui/BayConstructionWorkbench.tsx",
+      "sha256": "b904396d8e02b2c61e14b0d99e2db799f76866e6928624027f4bcd40304acd7d",
+      "snapshot": "source/src/features/building-family/ui/BayConstructionWorkbench.tsx.txt"
+    },
+    {
+      "file": "src/features/building-family/ui/bayConstructionFixture.ts",
+      "sha256": "4a4ec45c102882c19c202204ca269610517e8a8d6d4910e24ab9942c55e69764",
+      "snapshot": "source/src/features/building-family/ui/bayConstructionFixture.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/buildingConstruction.test.ts",
+      "sha256": "8a7b2aa3f45e672d640d88581b6f656837f4e0e95cc0bd9799007bb675b1d7ad",
+      "snapshot": "source/src/features/building-family/tests/buildingConstruction.test.ts.txt"
+    },
+    {
+      "file": "docs/research/utdg-late19c-brief.md",
+      "sha256": "74ec481bcec44e1708bb2fca9de4376f77ee2ab2c7481cbe78f86ab5fc004fbc",
+      "snapshot": "source/docs/research/utdg-late19c-brief.md.txt"
+    },
+    {
+      "file": "docs/research/utdg-late19c-v0.1.json",
+      "sha256": "ca0d4b81562b594f91cb2a914d08dfbd3b92dd5c75d2bbfb8e1c087cb516e0a9",
+      "snapshot": "source/docs/research/utdg-late19c-v0.1.json.txt"
+    }
+  ],
+  "currentC4": {
+    "verification": "docs/reviews/2026-10-17-c4/verification.json",
+    "sha256": "1884a975f976705b40ad27b944fec0bddb15323bcca61f826aa1d6fe12a1f680",
+    "currentSourcePinsVerified": 48,
+    "archiveFilesVerified": 285,
+    "recordedFiveChecksPass": true,
+    "newFullRegressionRun": false,
+    "humanAppearance": "pending"
+  },
+  "focusedCheck": {
+    "command": "node node_modules/vitest/vitest.mjs run src/features/building-family/tests/utdgResearchBrief.test.ts src/features/building-family/tests/psgBuildingIntentAdapter.test.ts src/features/building-family/tests/seedTree.test.ts src/features/building-family/tests/buildingConstruction.test.ts --maxWorkers=2",
+    "exitCode": 0,
+    "tests": 18,
+    "files": 4,
+    "log": "checks/focused-existing-seams.log",
+    "sha256": "145fbde0a078f30d7501058504fd63ee4c3eda016854a536a514c971136da217"
+  },
+  "findings": [
+    {
+      "id": "generation-bridge",
+      "current": "Fresh construction initializes fixed recipe without evaluated intent or seed inputs",
+      "required": "Same executed graph generated from admitted seeded recipe inputs and retained artist choices"
+    },
+    {
+      "id": "provenance-authority",
+      "current": "Saved material-source intent belongs to legacy base fixture; authored construction graph is separate",
+      "required": "Actual generation lineage without a second writable structural state"
+    },
+    {
+      "id": "utdg-consumer",
+      "current": "Only local module exports and research brief tests call injector",
+      "required": "Pinned role and physical-scale references consumed by actual material planning; unknown architectural coverage visible"
+    }
+  ],
+  "nextScope": "Versioned generation/reference source boundary after C4 human appearance decision; separate resolution, material-consumer and workbench-continuity packets follow",
+  "plan": {
+    "file": "docs/plans/building-authoring-revival.md",
+    "beforeSha256": "1a1b247cd5f4b82c54704d9488806150495b564295392494a0df0811ae5a8ec3",
+    "sha256": "1f0f78ae9e707c75fb5a74b579e068103bd27834f018a66bafed9f1089262b36"
+  },
+  "humanGate": {
+    "name": "C4 whole-building appearance",
+    "decisionRequested": true,
+    "reviewGallery": "https://app.notion.com/p/3fdb77d6cd4f812a9f88f1316beb9c25",
+    "positiveFeedbackNotAutomaticallyAccepted": true
+  },
+  "preparationAttempt": "Initial documentation insertion stopped before plan writes because byte-decoded CRLF did not match LF anchor; normal text decoding corrected the helper."
+}

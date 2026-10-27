@@ -2,6 +2,8 @@ import { buildComponentCatalog, type ComponentCatalog } from "../components/comp
 import { buildBuildingGraph } from "../compiler/buildingGraphBuilder";
 import { compileBuilding } from "../compiler/buildingCompiler";
 import { buildComponentGallery, type ComponentGallery } from "../compiler/componentGalleryBuilder";
+import { buildFacadeSplitPlan, type FacadeSplitPlan } from "../compiler/facadeSplitPlan";
+import { late19cApartmentKit, planFacadeModules } from "../art-kit";
 import type { BuildingGraph } from "../contracts/buildingGraph";
 import type { BuildingFamilySpec } from "../contracts/buildingFamilySpec";
 import type { RuntimeBuildingIR } from "../contracts/runtimeBuildingIR";
@@ -11,6 +13,7 @@ import {
 } from "../core/buildingSeedVariation";
 import { hashCanonicalJson } from "../core/contentHash";
 import { normalizeBuildingSpec } from "../core/specNormalizer";
+import { buildWindowFrameRecipe, buildWindowGlassRecipe } from "../components/frameBuilder";
 import { createAtlasDebugExport, type AtlasDebugExport } from "../materials/atlasDebugExport";
 import { packAtlas, type PackedAtlas } from "../materials/atlasPacker";
 import { planAtlas } from "../materials/atlasPlanner";
@@ -42,6 +45,11 @@ import {
 } from "../state/remoteMaterialApplicationCoordinator";
 import type { BuildingPromptControls } from "../state/buildingStore";
 import { parseCompletedFamilyPersistencePacket } from "../state/completedFamilyPersistence";
+import {
+  captureBuildingSourceControls, captureBuildingSourceSnapshot, createBuildingSourceSnapshot,
+  resolveBuildingSourceSnapshot, type BuildingSourceSnapshot
+} from "../state/buildingSourceFile";
+import { canonicalJson } from "../core/canonicalJson";
 import buildingFixture from "../psg/fixtures/late19cCommercialPrompt.psg.json";
 import stylePack from "../style-packs/late-19c-commercial-demo.json";
 import { evaluatePsg } from "../../prompt-spaghetti/core/evaluatePsg";
@@ -155,6 +163,7 @@ export interface AssemblyHallRemoteMaterialApplication {
 export interface AssemblyHallFixture {
   schemaVersion: "0.1.0";
   prompt: string;
+  sourceSnapshot?: BuildingSourceSnapshot;
   fidelityMode: BuildingPromptControls["fidelityMode"];
   promptTrace: AssemblyHallPromptTrace;
   spec: BuildingFamilySpec;
@@ -180,6 +189,8 @@ export interface ReusableAssemblyHallArtifacts {
 }
 
 export interface CreateAssemblyHallFixtureInput {
+  sourceSnapshot?: BuildingSourceSnapshot;
+  sourceIdentity?: { documentId: string; revision: number };
   runId?: string;
   signal?: AbortSignal;
   promptControls?: BuildingPromptControls;
@@ -368,44 +379,114 @@ function routeRunId(inputRunId: string | undefined, spec: BuildingFamilySpec): s
   return inputRunId ?? `assembly-hall-fixture:${spec.familyId}`;
 }
 
+/** Reconstruct unedited aperture authority from captured source, never rendered float buffers. */
+export async function buildAssemblyHallSourceWindowSplit(input: {
+  sourceSnapshot: unknown; catalog: ComponentCatalog;
+}): Promise<FacadeSplitPlan> {
+  const source = captureBuildingSourceSnapshot(input.sourceSnapshot);
+  const catalog = structuredClone(input.catalog);
+  const { spec } = await resolveBuildingSourceSnapshot(source);
+  const wall = catalog.recipes.find(recipe => recipe.role === "wall");
+  if (!wall) throw Object.assign(new Error("The accepted catalog has no wall recipe."), { code: "building.sourceFileInvalid" });
+  const facadePlan = source.compilation.fidelityMode === "kit"
+    ? planFacadeModules({ spec, kit: late19cApartmentKit })
+    : undefined;
+  return buildFacadeSplitPlan({
+    spec, wallDepthM: Math.max(0.02, wall.dimensionsM.depth), facadePlan,
+    kit: facadePlan ? late19cApartmentKit : undefined, defaultOpeningMode: "front-only"
+  });
+}
+
 export async function createAssemblyHallFixture(
   input: CreateAssemblyHallFixtureInput = {}
 ): Promise<AssemblyHallFixture> {
-  const controls = input.promptControls ?? defaultFixturePromptControls;
+  const suppliedSource = input.sourceSnapshot ? captureBuildingSourceSnapshot(input.sourceSnapshot) : undefined;
+  const controls = suppliedSource
+    ? captureBuildingSourceControls(input.promptControls ?? suppliedSource.controlsView)
+    : structuredClone(input.promptControls ?? defaultFixturePromptControls);
+  const sourceIdentity = { documentId: input.sourceIdentity?.documentId ?? "assembly-hall-window", revision: input.sourceIdentity?.revision ?? 0 };
+  const reusableArtifacts = input.reusableArtifacts ? { ...input.reusableArtifacts } : undefined;
   const fallbackAbortController = input.signal ? undefined : new AbortController();
   const signal = input.signal ?? fallbackAbortController!.signal;
-  const evaluation = evaluatePsg(parsePsgDocument(buildingFixture), { seed: "psg-seed" });
+  const explicitWindowFamily = controls.windowFamily;
+  let spec: AssemblyHallFixture["spec"];
+  let promptTrace: AssemblyHallPromptTrace;
+  let sourceSnapshot: BuildingSourceSnapshot | undefined;
   throwIfAborted(signal);
-  const promptResult = await new LocalRulePromptInterpreter().interpret({ prompt: controls.prompt });
-  const adapted = adaptPsgEvaluationToBuildingIntent({
-    prompt: controls.prompt,
-    seeds: controls.seeds,
-    evaluation,
-    locks: controls.lockedComponentKeys.map((componentKey) => ({
-      semanticPath: `component/${componentKey}`,
-      scope: "building",
-      lockedValue: {
-        componentKey
-      },
-      reason: "Component Forge local lock"
-    })),
-    promptOverrides: {
-      ...promptResult.overrides,
-      stylePackId: controls.stylePackId,
-      floorCount: controls.floorCount,
-      bayCount: controls.bayCount,
-      roofType: controls.roofType,
-      trimDensity: controls.trimDensity,
-      windowFamily: controls.windowFamily,
-      corniceFamily: controls.corniceFamily
+  if (suppliedSource) {
+    if (canonicalJson(controls) !== canonicalJson(suppliedSource.controlsView) || !reusableArtifacts?.packedAtlas || !reusableArtifacts.debugExport) {
+      throw Object.assign(new Error("Opening source requires its exact controls view and saved material artifacts."), { code: "building.sourceFileInvalid" });
     }
-  });
-  const spec = (await normalizeBuildingSpec(adapted.intent, stylePack)).spec;
-  const promptTrace = promptTraceFor({ adapted, controls, evaluation, promptResult, spec });
+    const resolved = await resolveBuildingSourceSnapshot(suppliedSource);
+    spec = resolved.spec;
+    sourceSnapshot = resolved.sourceSnapshot;
+    promptTrace = {
+      schemaVersion: "0.1.0", interpreterProvider: "local-rule", psgPresetId: controls.psgPresetId,
+      stylePackId: spec.stylePackId, traceId: sourceSnapshot.intent.psg.traceId, psgOutputs: [],
+      evaluatedVariables: Object.entries(sourceSnapshot.intent.psg.evaluatedVariables)
+        .filter((entry): entry is [string, string | number | boolean | null] => entry[1] === null || ["string", "number", "boolean"].includes(typeof entry[1]))
+        .map(([name, value]) => ({ name, value })).sort((left, right) => left.name.localeCompare(right.name)),
+      interpreterOverrides: [],
+      requestedControls: [
+        { name: "floorCount", value: controls.floorCount }, { name: "bayCount", value: controls.bayCount },
+        { name: "windowFamily", value: controls.windowFamily }, { name: "detailLevel", value: controls.detailLevel },
+        { name: "fidelityMode", value: controls.fidelityMode }
+      ],
+      psgTrace: [],
+      diagnostics: [{ code: "building.sourceOpened", severity: "info", message: "Compiled captured source " + sourceSnapshot.document.documentId + " revision " + sourceSnapshot.document.revision + "; PSG and prompt interpretation were not re-executed." }, ...spec.diagnostics.map(({ code, message, severity }) => ({ code, message, severity }))]
+    };
+  } else {
+    const evaluation = evaluatePsg(parsePsgDocument(buildingFixture), { seed: "psg-seed" });
+    const promptResult = await new LocalRulePromptInterpreter().interpret({ prompt: controls.prompt });
+    const adapted = adaptPsgEvaluationToBuildingIntent({
+      prompt: controls.prompt, seeds: controls.seeds, evaluation,
+      locks: controls.lockedComponentKeys.map((componentKey) => ({
+        semanticPath: "component/" + componentKey, scope: "building", lockedValue: { componentKey }, reason: "Component Forge local lock"
+      })),
+      promptOverrides: {
+        ...promptResult.overrides, stylePackId: controls.stylePackId, floorCount: controls.floorCount,
+        bayCount: controls.bayCount, roofType: controls.roofType, trimDensity: controls.trimDensity,
+        windowFamily: controls.windowFamily, corniceFamily: controls.corniceFamily
+      }
+    });
+    if (explicitWindowFamily === undefined) {
+      // Preserve the historical untyped absent-choice boundary without inventing a saved source.
+      spec = (await normalizeBuildingSpec(adapted.intent, stylePack)).spec;
+    } else {
+      try {
+        const resolved = await createBuildingSourceSnapshot({ ...sourceIdentity, controls, intent: adapted.intent, stylePack });
+        spec = resolved.spec;
+        sourceSnapshot = resolved.sourceSnapshot;
+      } catch (error) {
+        throw Object.assign(error instanceof Error ? error : new Error("Cannot resolve explicit window family: " + explicitWindowFamily), { code: "building.documentResolutionRejected" });
+      }
+    }
+    promptTrace = promptTraceFor({ adapted, controls, evaluation, promptResult, spec });
+  }
   throwIfAborted(signal);
   const fidelityMode = controls.fidelityMode ?? "kit";
   const atlasPlan = await planAtlas(spec, { widthPx: 128, heightPx: 128, paddingPx: 4 });
-  const catalog = input.reusableArtifacts?.catalog ?? (await buildComponentCatalog(spec, atlasPlan.manifest));
+  const catalogManifest = explicitWindowFamily === undefined
+    ? atlasPlan.manifest
+    : reusableArtifacts?.packedAtlas?.manifest ?? atlasPlan.manifest;
+  let reusedCatalog = reusableArtifacts?.catalog;
+  if (explicitWindowFamily !== undefined && reusedCatalog) {
+    const expectedWindowFrame = buildWindowFrameRecipe(spec);
+    const expectedWindowGlass = buildWindowGlassRecipe(spec);
+    const reusedWindowFrame = reusedCatalog.recipes.find((recipe) => recipe.id === expectedWindowFrame.id);
+    const reusedWindowGlass = reusedCatalog.recipes.find((recipe) => recipe.id === expectedWindowGlass.id);
+    // Preserve established structural reuse; check the selected window's recipe lineage only.
+    const compatibleWindowCatalog =
+      reusedCatalog.atlasId === catalogManifest.atlasId &&
+      reusedWindowFrame?.kind === expectedWindowFrame.kind &&
+      reusedWindowFrame.role === expectedWindowFrame.role &&
+      reusedWindowFrame.profileRecipeId === expectedWindowFrame.profileRecipeId &&
+      reusedWindowFrame.subcomponentRecipeIds?.includes(expectedWindowGlass.id) === true &&
+      reusedWindowGlass?.kind === expectedWindowGlass.kind &&
+      reusedWindowGlass.role === expectedWindowGlass.role;
+    if (!compatibleWindowCatalog) reusedCatalog = undefined;
+  }
+  const catalog = reusedCatalog ?? (await buildComponentCatalog(spec, catalogManifest));
   const graph = await buildBuildingGraph(spec, catalog, { fidelityMode });
   const ir = await compileBuilding({
     spec,
@@ -413,10 +494,12 @@ export async function createAssemblyHallFixture(
     graph,
     buildingId: await buildingIdFor(spec, controls),
     detailLevel: controls.detailLevel ?? "high",
-    fidelityMode
+    fidelityMode,
+    ...(sourceSnapshot?.schemaVersion === "0.4.0" ? { windowWidthOverrides: sourceSnapshot.windowWidthOverrides } : {}),
+    ...(sourceSnapshot?.schemaVersion === "0.5.0" ? { windowWidthBatch: sourceSnapshot.windowWidthBatch } : {})
   });
   let generatedMaterialSourceCount = 0;
-  let packedAtlas = input.reusableArtifacts?.packedAtlas;
+  let packedAtlas = reusableArtifacts?.packedAtlas;
   let remoteMaterialApplication: AssemblyHallRemoteMaterialApplication | undefined;
   if (!packedAtlas) {
     const materialRequests = atlasPlan.materialSources.map(
@@ -458,7 +541,7 @@ export async function createAssemblyHallFixture(
       };
     }
   }
-  const debugExport = input.reusableArtifacts?.debugExport ?? (await createAtlasDebugExport(packedAtlas));
+  const debugExport = reusableArtifacts?.debugExport ?? (await createAtlasDebugExport(packedAtlas));
   const componentGallery = await buildComponentGallery({ catalog, ir });
   const variantStress = await createVariantStressSummary({
     catalog,
@@ -486,6 +569,7 @@ export async function createAssemblyHallFixture(
   return {
     schemaVersion: "0.1.0",
     prompt: controls.prompt,
+    ...(sourceSnapshot ? { sourceSnapshot } : {}),
     fidelityMode,
     promptTrace,
     spec,
@@ -521,8 +605,42 @@ export async function createAssemblyHallFixture(
   };
 }
 
+export class CompletedFamilyReplayProfileError extends Error {
+  readonly code = "building.completedReplayProfileUnresolved";
+
+  constructor(message: string) {
+    super(message);
+    this.name = "CompletedFamilyReplayProfileError";
+  }
+}
+
 export async function restoreAssemblyHallFixtureFromCompletedFamilyPacket(input: unknown): Promise<AssemblyHallFixture> {
-  const packet = parseCompletedFamilyPersistencePacket(input);
+  // Own the validated packet, including every typed buffer, before the first await.
+  const packet = structuredClone(parseCompletedFamilyPersistencePacket(input));
+  const fidelityMode = packet.fidelityMode;
+  if (fidelityMode === undefined) {
+    throw new CompletedFamilyReplayProfileError("This saved building is missing its original building mode. The saved copy has been retained.");
+  }
+  // These legacy graph receipts admit a detail profile; they are not compiler-content identities.
+  const [highHash, lowHash] = await Promise.all([
+    hashCanonicalJson(packet.artifacts.graph),
+    hashCanonicalJson({ graph: packet.artifacts.graph, detailLevel: "low" })
+  ]);
+  const matches: Array<"high" | "low"> = [];
+  if (packet.artifacts.runtimeIr.sourceGraphHash === highHash) matches.push("high");
+  if (packet.artifacts.runtimeIr.sourceGraphHash === lowHash) matches.push("low");
+  if (matches.length !== 1) {
+    throw new CompletedFamilyReplayProfileError("This saved building's detail settings could not be verified. The saved copy has been retained.");
+  }
+  const ir = await compileBuilding({
+    spec: packet.artifacts.spec,
+    catalog: packet.artifacts.componentCatalog,
+    graph: packet.artifacts.graph,
+    buildingId: packet.artifacts.runtimeIr.buildingId,
+    detailLevel: matches[0]!,
+    fidelityMode
+  });
+  const componentGallery = await buildComponentGallery({ catalog: packet.artifacts.componentCatalog, ir });
   const packedAtlas: PackedAtlas = {
     schemaVersion: "0.1.0",
     atlasId: packet.artifacts.atlasManifest.atlasId,
@@ -539,41 +657,47 @@ export async function restoreAssemblyHallFixtureFromCompletedFamilyPacket(input:
     debugExport: packet.artifacts.debugExport,
     backendSupport
   });
-  const buildingRuntime = familyRuntime.createOrReplaceBuilding({
-    catalog: packet.artifacts.componentCatalog,
-    componentGallery: packet.artifacts.componentGallery,
-    ir: packet.artifacts.runtimeIr
-  });
-
-  return {
-    schemaVersion: "0.1.0",
-    prompt: packet.prompt ?? "Restored completed family",
-    fidelityMode: packet.fidelityMode ?? "kit",
-    promptTrace: packet.provenance.promptTrace,
-    spec: packet.artifacts.spec,
-    catalog: packet.artifacts.componentCatalog,
-    graph: packet.artifacts.graph,
-    ir: packet.artifacts.runtimeIr,
-    packedAtlas,
-    debugExport: packet.artifacts.debugExport,
-    componentGallery: packet.artifacts.componentGallery,
-    variantStress: packet.provenance.variantStress,
-    remoteMaterialApplication: packet.provenance.remoteMaterialApplication,
-    backendSupport,
-    familyRuntime,
-    buildingRuntime,
-    metrics: {
-      activeBackend: "pending",
-      preferredBackend: backendSupport.preferredBackend,
-      atlasContentHash: packedAtlas.contentHash,
-      atlasChannelCount: packet.artifacts.debugExport.channels.length,
-      buildingCount: familyRuntime.metrics.buildingCount,
-      componentCount: packet.artifacts.componentGallery.entries.length,
-      drawCallCount: familyRuntime.metrics.drawCallCount,
-      instanceCount: familyRuntime.metrics.instanceCount,
-      triangleCount: familyRuntime.metrics.triangleCount,
-      textureCount: familyRuntime.metrics.textureCount
-    },
-    provenanceEntryCount: packet.provenance.provenanceEntryCount
-  };
+  let transferred = false;
+  try {
+    const buildingRuntime = familyRuntime.createOrReplaceBuilding({
+      catalog: packet.artifacts.componentCatalog,
+      componentGallery,
+      ir
+    });
+    const fixture: AssemblyHallFixture = {
+      schemaVersion: "0.1.0",
+      prompt: packet.prompt ?? "Restored completed family",
+      fidelityMode,
+      promptTrace: packet.provenance.promptTrace,
+      spec: packet.artifacts.spec,
+      catalog: packet.artifacts.componentCatalog,
+      graph: packet.artifacts.graph,
+      ir,
+      packedAtlas,
+      debugExport: packet.artifacts.debugExport,
+      componentGallery,
+      variantStress: packet.provenance.variantStress,
+      remoteMaterialApplication: packet.provenance.remoteMaterialApplication,
+      backendSupport,
+      familyRuntime,
+      buildingRuntime,
+      metrics: {
+        activeBackend: "pending",
+        preferredBackend: backendSupport.preferredBackend,
+        atlasContentHash: packedAtlas.contentHash,
+        atlasChannelCount: packet.artifacts.debugExport.channels.length,
+        buildingCount: familyRuntime.metrics.buildingCount,
+        componentCount: componentGallery.entries.length,
+        drawCallCount: familyRuntime.metrics.drawCallCount,
+        instanceCount: familyRuntime.metrics.instanceCount,
+        triangleCount: familyRuntime.metrics.triangleCount,
+        textureCount: familyRuntime.metrics.textureCount
+      },
+      provenanceEntryCount: packet.provenance.provenanceEntryCount
+    };
+    transferred = true;
+    return fixture;
+  } finally {
+    if (!transferred) familyRuntime.dispose();
+  }
 }

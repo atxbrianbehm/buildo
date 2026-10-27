@@ -1,0 +1,54 @@
+import { BayConstructionGraphSchema, type BayConstructionGraph, type BayConstructionNode } from "../contracts/bayConstructionGraph";
+import type { BuildingSurfaceComposition } from "../contracts/surfaceComposition";
+import type { BayConstructionTrace } from "./evaluateBayConstruction";
+
+export function constructionSurfaceAt(graph: BayConstructionGraph, nodeId = graph.outputNodeId): BuildingSurfaceComposition | undefined {
+  const node = graph.nodes.find(node => node.id === nodeId);
+  if (node?.type === "SetSurface") return node.bypassed ? undefined : structuredClone(node.composition);
+  if (node?.type === "Output" && node.inputs.length === 1) return constructionSurfaceAt(graph, node.inputs[0].nodeId);
+  return undefined;
+}
+/** Material-only introduction retains C1's exact mesh geometry and semantic addresses. */
+export function legacySurfaceProjection(graph: BayConstructionGraph, rootId = graph.outputNodeId): BayConstructionGraph | undefined {
+  if (!["0.3.0", "0.4.0"].includes(graph.schemaVersion)) return undefined;
+  const nodes = new Map(graph.nodes.map(node => [node.id, node])), included = new Set<string>();
+  const inputs: Array<{ nodeId: string; socket: "geometry" }> = []; let compatible = true;
+  function include(id: string) {
+    const node = nodes.get(id)!;
+    if (!["FacadeScope", "PlaceOpening", "EmitWall", "AssembleWindow"].includes(node.type) || (node.type === "PlaceOpening" && node.bypassed)) { compatible = false; return; }
+    if (included.has(id)) return;
+    included.add(id); if ("input" in node) include(node.input.nodeId);
+  }
+  const collected = new Set<string>();
+  function collect(id: string) {
+    if (collected.has(id)) throw new Error("Geometry contributions cannot be joined more than once.");
+    collected.add(id);
+    const node = nodes.get(id)!;
+    if (node.type === "Output" || node.type === "JoinGeometry") { for (const link of node.inputs) collect(link.nodeId); }
+    else if (node.type === "SetSurface") collect(node.input.nodeId);
+    else if (node.type === "EmitWall" || node.type === "AssembleWindow") { if (!node.bypassed) { inputs.push({ nodeId: id, socket: "geometry" }); include(id); } }
+    else compatible = false;
+  }
+  collect(rootId);
+  if (!compatible || !inputs.length) return undefined;
+  return BayConstructionGraphSchema.parse({ schemaVersion: "0.1.0", kind: "bay-construction", documentId: graph.documentId,
+    outputNodeId: graph.outputNodeId, nodes: [...graph.nodes.filter(node => included.has(node.id)).map(node => Object.fromEntries(Object.entries(node).filter(([key]) => key !== "bypassed"))),
+      { id: graph.outputNodeId, type: "Output", inputs }] });
+}
+export function constructionSurfaceTrace(graph: BayConstructionGraph, full: BayConstructionTrace[], selected: BayConstructionTrace[], previewNodeId?: string): BayConstructionTrace[] {
+  const nodes = new Map(graph.nodes.map(node => [node.id, node]));
+  const original = new Map([...full, ...selected.filter(trace => trace.nodeId !== graph.outputNodeId)].map(trace => [trace.nodeId, trace]));
+  const result: BayConstructionTrace[] = [], visited = new Map<string, BayConstructionTrace>();
+  const references = (node: BayConstructionNode) => "inputs" in node ? node.inputs : "input" in node ? [node.input] : [];
+  function visit(id: string): BayConstructionTrace {
+    const previous = visited.get(id); if (previous) return previous;
+    const node = nodes.get(id)!, children = references(node).map(link => visit(link.nodeId));
+    const boxes = children.map(child => child.bounds), join = node.type === "JoinGeometry" || node.type === "SetSurface" || node.type === "Output";
+    const trace = original.get(id) ?? { nodeId: id, type: node.type, output: "geometry" as const, openingCount: 0,
+      meshCount: join ? children.reduce((sum, child) => sum + child.meshCount, 0) : 0,
+      bounds: join && boxes.length ? { min: [0, 1, 2].map(axis => Math.min(...boxes.map(box => box.min[axis]))) as [number, number, number],
+        max: [0, 1, 2].map(axis => Math.max(...boxes.map(box => box.max[axis]))) as [number, number, number] } : { min: [0, 0, 0] as [number, number, number], max: [0, 0, 0] as [number, number, number] } };
+    visited.set(id, trace); result.push(trace); return trace;
+  }
+  visit(graph.outputNodeId); if (previewNodeId) visit(previewNodeId); return result;
+}

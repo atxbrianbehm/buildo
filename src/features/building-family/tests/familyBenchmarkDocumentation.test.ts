@@ -57,5 +57,6 @@ describe("family benchmark documentation", () => {
       benchmark?.familyRuntime.dispose();
       fixture.familyRuntime.dispose();
     }
-  });
+  // The report contract mounts 100 physically tiled scenes, rather than measuring real-time speed.
+  }, 45_000);
 });

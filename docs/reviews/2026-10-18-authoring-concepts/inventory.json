@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "0.1.0",
+  "files": [
+    {
+      "path": "elevation-studio.png",
+      "bytes": 1710443,
+      "sha256": "d8cb825c3416fd5efb8abc4c12e26807a2eed2800f7ac0fb7bc589ee3b2c9e24"
+    },
+    {
+      "path": "grouped-inspector.png",
+      "bytes": 1588306,
+      "sha256": "8a29e1bdc8904771bb4dad1330f23652ab4b6f62aabcb0c3885fca792dfdbd4a"
+    },
+    {
+      "path": "notion-gallery-proof.json",
+      "bytes": 17175,
+      "sha256": "13368c385a2b67183eab575e9c6a4dbdc58361365df144f6becc236863cb9c80"
+    },
+    {
+      "path": "prompts-and-images.json",
+      "bytes": 9722,
+      "sha256": "aa93cfa1f52364f5d14465d74335e30e484dac881b0d3690e895d4ee808ca628"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3834,
+      "sha256": "8ec5f5d2a35511971a076d26f8d65c397b87d1f29a22bf4e0a3289408578746b"
+    },
+    {
+      "path": "revival-plan-snapshot.md.txt",
+      "bytes": 287536,
+      "sha256": "18a1beeadcce242491d7e109f265e817422542723dafc30f52049b08845122e3"
+    },
+    {
+      "path": "select-and-shape.png",
+      "bytes": 1545536,
+      "sha256": "fd7064661c6960331609861db662953990c1292e0d4cb87fc7563cccaeb03805"
+    },
+    {
+      "path": "verification.json",
+      "bytes": 1755,
+      "sha256": "24c6804f5d57d54825084ef799adddf7fce625ab86df953cc041cea4fb2cf33d"
+    }
+  ]
+}

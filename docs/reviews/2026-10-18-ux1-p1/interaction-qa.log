@@ -1,0 +1,18 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+  assert(await input.evaluate(e=>e===document.activeElement))
+
+    at file:///C:/Users/behmb/Documents/Cascade%20Projects/buildo/test-results/ux1-p1-2026-10-18/interaction-qa.mjs:4:76 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.14.1

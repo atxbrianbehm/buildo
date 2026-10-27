@@ -1,0 +1,93 @@
+[
+  {
+    "name": "grouped-desktop",
+    "filename": "buildo-ux1-p1-grouped-desktop.png",
+    "response": {
+      "file_upload_id": "3fdb77d6-cd4f-8158-9d0b-00b2deaa2664",
+      "filename": "buildo-ux1-p1-grouped-desktop.png",
+      "content_type": "image/png",
+      "content_length": 484973,
+      "status": "uploaded",
+      "markdown_source": "file-upload://3fdb77d6-cd4f-8158-9d0b-00b2deaa2664",
+      "suggested_markdown": "<image src=\"file-upload://3fdb77d6-cd4f-8158-9d0b-00b2deaa2664\"></image>"
+    }
+  },
+  {
+    "name": "shared-recess-close",
+    "filename": "buildo-ux1-p1-shared-recess-close.png",
+    "response": {
+      "file_upload_id": "3fdb77d6-cd4f-8123-98cc-00b209bd1bac",
+      "filename": "buildo-ux1-p1-shared-recess-close.png",
+      "content_type": "image/png",
+      "content_length": 441652,
+      "status": "uploaded",
+      "markdown_source": "file-upload://3fdb77d6-cd4f-8123-98cc-00b209bd1bac",
+      "suggested_markdown": "<image src=\"file-upload://3fdb77d6-cd4f-8123-98cc-00b209bd1bac\"></image>"
+    }
+  },
+  {
+    "name": "local-finish",
+    "filename": "buildo-ux1-p1-local-finish.png",
+    "response": {
+      "file_upload_id": "3fdb77d6-cd4f-817d-b99a-00b22ddd1888",
+      "filename": "buildo-ux1-p1-local-finish.png",
+      "content_type": "image/png",
+      "content_length": 426348,
+      "status": "uploaded",
+      "markdown_source": "file-upload://3fdb77d6-cd4f-817d-b99a-00b22ddd1888",
+      "suggested_markdown": "<image src=\"file-upload://3fdb77d6-cd4f-817d-b99a-00b22ddd1888\"></image>"
+    }
+  },
+  {
+    "name": "advanced-graph",
+    "filename": "buildo-ux1-p1-advanced-graph.png",
+    "response": {
+      "file_upload_id": "3fdb77d6-cd4f-811d-a5ce-00b274749ed4",
+      "filename": "buildo-ux1-p1-advanced-graph.png",
+      "content_type": "image/png",
+      "content_length": 492185,
+      "status": "uploaded",
+      "markdown_source": "file-upload://3fdb77d6-cd4f-811d-a5ce-00b274749ed4",
+      "suggested_markdown": "<image src=\"file-upload://3fdb77d6-cd4f-811d-a5ce-00b274749ed4\"></image>"
+    }
+  },
+  {
+    "name": "custom-topology-boundary",
+    "filename": "buildo-ux1-p1-custom-topology-boundary.png",
+    "response": {
+      "file_upload_id": "3fdb77d6-cd4f-8125-9e49-00b2f176f794",
+      "filename": "buildo-ux1-p1-custom-topology-boundary.png",
+      "content_type": "image/png",
+      "content_length": 487317,
+      "status": "uploaded",
+      "markdown_source": "file-upload://3fdb77d6-cd4f-8125-9e49-00b2f176f794",
+      "suggested_markdown": "<image src=\"file-upload://3fdb77d6-cd4f-8125-9e49-00b2f176f794\"></image>"
+    }
+  },
+  {
+    "name": "grouped-compact",
+    "filename": "buildo-ux1-p1-grouped-compact.png",
+    "response": {
+      "file_upload_id": "3fdb77d6-cd4f-81cd-9737-00b2080754f6",
+      "filename": "buildo-ux1-p1-grouped-compact.png",
+      "content_type": "image/png",
+      "content_length": 223183,
+      "status": "uploaded",
+      "markdown_source": "file-upload://3fdb77d6-cd4f-81cd-9737-00b2080754f6",
+      "suggested_markdown": "<image src=\"file-upload://3fdb77d6-cd4f-81cd-9737-00b2080754f6\"></image>"
+    }
+  },
+  {
+    "name": "cold-recovered",
+    "filename": "buildo-ux1-p1-cold-recovered.png",
+    "response": {
+      "file_upload_id": "3fdb77d6-cd4f-81d7-9b16-00b258e198ea",
+      "filename": "buildo-ux1-p1-cold-recovered.png",
+      "content_type": "image/png",
+      "content_length": 430743,
+      "status": "uploaded",
+      "markdown_source": "file-upload://3fdb77d6-cd4f-81d7-9b16-00b258e198ea",
+      "suggested_markdown": "<image src=\"file-upload://3fdb77d6-cd4f-81d7-9b16-00b258e198ea\"></image>"
+    }
+  }
+]

@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "artist-authoring-evaluation",
+  "evaluatedAtUtc": "2026-10-18T06:03:35.720994+00:00",
+  "sourcePins": [
+    {
+      "file": "src/features/building-family/ui/ConstructionNodePanel.tsx",
+      "sha256": "c46efe996f7eb72e800a9d6ebc09d7986754b43761c1deb40ed8a13e47920af8"
+    },
+    {
+      "file": "src/features/building-family/ui/BayConstructionWorkbench.tsx",
+      "sha256": "09722f2c58813b0146397c90eb00de836f036fa2494180dc11f4205fb159673c"
+    },
+    {
+      "file": "src/features/building-family/ui/ConstructionGenerationPanel.tsx",
+      "sha256": "45de5ff63eefadf24c8f272a4e0e852e4bf12db17140fd3f769b26884c2247b8"
+    },
+    {
+      "file": "src/features/building-family/ui/ConstructionSurfacePanel.tsx",
+      "sha256": "c1433f5acae5d52d68b83ee505f6f9be1acb47bbcff56b923d9dcfa5a37c1fdc"
+    },
+    {
+      "file": "src/features/building-family/renderer-three/constructionFrameSelection.ts",
+      "sha256": "2cba32c7a5fc46bf42db9d5e0a3fd632ee45e6826e77b5167770edcf79aed005"
+    },
+    {
+      "file": "src/features/building-family/contracts/bayConstructionGraph.ts",
+      "sha256": "60a597bf53c5f0c663bed802a611134803585f149654042a89a7201cf3b1de77"
+    },
+    {
+      "file": "src/features/building-family/state/constructionGenerationState.ts",
+      "sha256": "4edf24b645115f1379ed842a77c8d3903816ebfbfddeeac35fda15d249cccd24"
+    },
+    {
+      "file": "src/features/building-family/compiler/evaluateConstruction.ts",
+      "sha256": "abcbe38a85a2ea1f0234042f949099e1aec4ea55619aa9caa24c78940dac300f"
+    }
+  ],
+  "unchangedC6SourcePins": 62,
+  "coreProbes": 7,
+  "productionCodeChanged": false,
+  "newVisualEvidence": true,
+  "browserBlocker": null,
+  "assessment": "Single-agent code/compiler and actual App task walkthrough; not an independent review or observed human usability study.",
+  "next": "Compare recipe-inspector and selection-stack approaches with actual artists before committing to a broad authoring-model change.",
+  "browserFallbackAuthorization": "User: Use existing Chromium workflow",
+  "liveWalkthrough": {
+    "steps": 8,
+    "actions": 17,
+    "backend": "webgpu",
+    "errors": [],
+    "humanParticipants": 0,
+    "receipt": "live/receipt.json",
+    "screenshotsIndividuallyInspected": true
+  },
+  "serversStopped": true,
+  "notion": {
+    "url": "https://app.notion.com/p/3fdb77d6cd4f812a9f88f1316beb9c25",
+    "proof": "notion-gallery-proof.json",
+    "newImages": 8,
+    "priorImagesRetained": 77,
+    "totalImages": 85,
+    "parentBuildoPageUnresolved": true
+  }
+}

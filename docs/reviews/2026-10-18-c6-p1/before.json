@@ -1,0 +1,315 @@
+{
+  "schemaVersion": "0.1.0",
+  "sourcePins": [
+    {
+      "file": "src/app/App.css",
+      "sha256": "3676a93fac54c85cd1dfe51912bc1bef7197999bec9c588ad60a24c8942010e7",
+      "snapshot": "source/src/app/App.css.txt"
+    },
+    {
+      "file": "src/app/App.tsx",
+      "sha256": "9e963bacf37a73c8c7b54d02f530b66e4fab6d90b76cf66f4bddfacca14bc0e2",
+      "snapshot": "source/src/app/App.tsx.txt"
+    },
+    {
+      "file": "src/features/building-family/contracts/bayConstructionGraph.ts",
+      "sha256": "60a597bf53c5f0c663bed802a611134803585f149654042a89a7201cf3b1de77",
+      "snapshot": "source/src/features/building-family/contracts/bayConstructionGraph.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/compiler/evaluateBayConstruction.ts",
+      "sha256": "b9e3adc96af50d28b4bb1bd98a82ab290967e23f5b2a4426fbe3096fef24ed6d",
+      "snapshot": "source/src/features/building-family/compiler/evaluateBayConstruction.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/compiler/bayWindowGeometry.ts",
+      "sha256": "e09992f62d5b8919ed1c2cd2215f18df71fe9cdc2a9fec7587bfc5b1d07bc443",
+      "snapshot": "source/src/features/building-family/compiler/bayWindowGeometry.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/compiler/evaluateConstruction.ts",
+      "sha256": "abcbe38a85a2ea1f0234042f949099e1aec4ea55619aa9caa24c78940dac300f",
+      "snapshot": "source/src/features/building-family/compiler/evaluateConstruction.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/compiler/evaluateFacadeConstruction.ts",
+      "sha256": "b4847bbd9153e217e551b7db600804c558fc6ce712c1ec7ad5e4bd6184119bab",
+      "snapshot": "source/src/features/building-family/compiler/evaluateFacadeConstruction.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/compiler/bayConstruction.worker.ts",
+      "sha256": "11756a085021e9d53e3b6ff11cd380c58dbe908b863ef428b1dc01f44d28dec1",
+      "snapshot": "source/src/features/building-family/compiler/bayConstruction.worker.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/compiler/bayConstructionWorkerProtocol.ts",
+      "sha256": "9458259ada71b67a3535c11514b0e1e38b32c02f40a5854997c743b7b7de0e6d",
+      "snapshot": "source/src/features/building-family/compiler/bayConstructionWorkerProtocol.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/compiler/bayConstructionClient.ts",
+      "sha256": "33f8db72c7bde47cdb41ac6790099e8fc4448e52ad2cfd0cf7b6f52826d8dce7",
+      "snapshot": "source/src/features/building-family/compiler/bayConstructionClient.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/state/bayConstructionProject.ts",
+      "sha256": "4d1f76c494815fa14240f68c9409922a1a1c67f1c505bb4248a3aac14666b7ca",
+      "snapshot": "source/src/features/building-family/state/bayConstructionProject.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/ui/BayConstructionWorkbench.tsx",
+      "sha256": "7a52e39656dba48fc1c2fe96143cd144acb8710af959664e6f4ec799e72c30a1",
+      "snapshot": "source/src/features/building-family/ui/BayConstructionWorkbench.tsx.txt"
+    },
+    {
+      "file": "src/features/building-family/ui/ConstructionNodePanel.tsx",
+      "sha256": "c46efe996f7eb72e800a9d6ebc09d7986754b43761c1deb40ed8a13e47920af8",
+      "snapshot": "source/src/features/building-family/ui/ConstructionNodePanel.tsx.txt"
+    },
+    {
+      "file": "src/features/building-family/ui/bayConstructionFixture.ts",
+      "sha256": "3d9e66b790dc9c10b6cf54777f972b8d15c59db6127e836278edc716435305a5",
+      "snapshot": "source/src/features/building-family/ui/bayConstructionFixture.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/ui/AssemblyHall.tsx",
+      "sha256": "cc4c0c39423fbccf6ae5301a70b176951962767b863dc65d58027c8ee8cde3b3",
+      "snapshot": "source/src/features/building-family/ui/AssemblyHall.tsx.txt"
+    },
+    {
+      "file": "src/features/building-family/renderer-three/buildingSceneAdapter.ts",
+      "sha256": "f63eeea40accc2c14ffd94ff382b1474ad964ba9841065e9ea3cdb48ce3c89c9",
+      "snapshot": "source/src/features/building-family/renderer-three/buildingSceneAdapter.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/renderer-three/familyRuntime.ts",
+      "sha256": "3d19d6ce556ca64084ca583fe8cca2aa41f57d0232f9df7180035f8688f588a5",
+      "snapshot": "source/src/features/building-family/renderer-three/familyRuntime.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/renderer-three/assemblyRendererFactory.ts",
+      "sha256": "9d25c84743cfe20f407c4b0c8c01c337b50f8fd93c23a83a42c0bf7afc53b56f",
+      "snapshot": "source/src/features/building-family/renderer-three/assemblyRendererFactory.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/state/constructionHistory.ts",
+      "sha256": "e3cf999673ae1f4b0b72e6adc1de28eb36fc450f90532f2ea1388d0a5721859c",
+      "snapshot": "source/src/features/building-family/state/constructionHistory.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/state/constructionCheckpoint.ts",
+      "sha256": "316331801e9e1453d45f4240481b6b53b239e242f9e3a4871664dd06eb53ca4f",
+      "snapshot": "source/src/features/building-family/state/constructionCheckpoint.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/state/constructionCheckpointWriter.ts",
+      "sha256": "5b88fa7f1e817a4cbdf51e992db27a2323df580f798e38805ca03835fdd53e34",
+      "snapshot": "source/src/features/building-family/state/constructionCheckpointWriter.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/state/useConstructionWorkspace.ts",
+      "sha256": "299b07522898468fc0dc8cbb1eaa086cd287ef345d2b8c6b20e4f8687fd55d3d",
+      "snapshot": "source/src/features/building-family/state/useConstructionWorkspace.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/facadeConstruction.test.ts",
+      "sha256": "478ea3e2b99d0128d66bb86798b14daf223d859802addf89807e1d5ce79de5df",
+      "snapshot": "source/src/features/building-family/tests/facadeConstruction.test.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/ConstructionNodePanel.test.tsx",
+      "sha256": "219d9ebf1fc8f7a2f34f61b8371d7e6a78e69049edb2489993bdb61c4d90a1f3",
+      "snapshot": "source/src/features/building-family/tests/ConstructionNodePanel.test.tsx.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/bayConstructionWorkbench.test.tsx",
+      "sha256": "06c29699110bc347a62920f39263f13b118910b99748439e107efc648eb272ba",
+      "snapshot": "source/src/features/building-family/tests/bayConstructionWorkbench.test.tsx.txt"
+    },
+    {
+      "file": "eslint.config.js",
+      "sha256": "ebd72019a926815cc06067cdd066a14045811e5c784d7c0d47dd71830426d53f",
+      "snapshot": "source/eslint.config.js.txt"
+    },
+    {
+      "file": "src/app/App.test.tsx",
+      "sha256": "87de77799326ea869b1cffc09a6659a93f344cc0a8d9c20a5e729c18ce97947d",
+      "snapshot": "source/src/app/App.test.tsx.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionHistory.test.ts",
+      "sha256": "5e5dba8e342ed0cb799bc9178b5c1e22dff6b1e2a4059c6c15aa4e3013652e98",
+      "snapshot": "source/src/features/building-family/tests/constructionHistory.test.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionCheckpoint.test.ts",
+      "sha256": "e7ccd21accad4f1cb30f99432b6d16f85c28cbe47a96e4a8cfd5b5752ae38daf",
+      "snapshot": "source/src/features/building-family/tests/constructionCheckpoint.test.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/useConstructionWorkspace.test.tsx",
+      "sha256": "fdbb656126c67c4e432858fd1b7526799b6a1fa639b2281316ec825a03b06d52",
+      "snapshot": "source/src/features/building-family/tests/useConstructionWorkspace.test.tsx.txt"
+    },
+    {
+      "file": "src/features/building-family/renderer-three/wallAtlasGeometry.ts",
+      "sha256": "4224ddd6c63dcea3289a53fb73cb46430a111617a8dd9182153f95f36d854907",
+      "snapshot": "source/src/features/building-family/renderer-three/wallAtlasGeometry.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/renderer-three/buildingAtlasTextureFactory.ts",
+      "sha256": "6931aa769b52381635ec8387bd48e1bd843f9084df8bc40ca8e1b7f729d2dd31",
+      "snapshot": "source/src/features/building-family/renderer-three/buildingAtlasTextureFactory.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/contracts/surfaceComposition.ts",
+      "sha256": "8933635c2421b77b3768f161e8bd3785e227077cb7ee60a9ecec4d50982c4101",
+      "snapshot": "source/src/features/building-family/contracts/surfaceComposition.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/materials/composeSurfaceTile.ts",
+      "sha256": "7a976e53739d4999b65c6b36b1eafa5050de71853aece16b03b45ee118f2a5bb",
+      "snapshot": "source/src/features/building-family/materials/composeSurfaceTile.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/renderer-three/surfaceMaterialRuntime.ts",
+      "sha256": "f64b443e7dbbecd5657602431a4ccc145d660fec378b77630bf4bd0840e048fd",
+      "snapshot": "source/src/features/building-family/renderer-three/surfaceMaterialRuntime.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/core/constructionAppearance.ts",
+      "sha256": "048be34ded15b442b58360f9209b711b1a98ea728bb931fa13d54df6ebc53f73",
+      "snapshot": "source/src/features/building-family/core/constructionAppearance.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/contracts/surfaceBaseAppearance.ts",
+      "sha256": "14d4c46d32c67c55d06005aeeef7041bf08928a691a70a77920d18e72e53ed74",
+      "snapshot": "source/src/features/building-family/contracts/surfaceBaseAppearance.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/materials/surfaceBaseAppearance.ts",
+      "sha256": "040fa37d136c428101751e9669f4ec01eebac19ea84f84814304fc9aea7787a6",
+      "snapshot": "source/src/features/building-family/materials/surfaceBaseAppearance.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/surfaceBaseAppearance.test.ts",
+      "sha256": "5a0f38c8668ea256d5804efa65e7c4cef7efde9fab995c5328a2c185796c6034",
+      "snapshot": "source/src/features/building-family/tests/surfaceBaseAppearance.test.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionSurfaceRuntime.test.ts",
+      "sha256": "10d81dcd4f51eca05a61b5c1a8cc9cd5207b4607b26c1fe46a80354329c8fa99",
+      "snapshot": "source/src/features/building-family/tests/constructionSurfaceRuntime.test.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/core/constructionSurfaceAuthoring.ts",
+      "sha256": "a846be0d5bf9f3b3037d679d59a081e02fe4af590b71db7ff4fe12b5380985d6",
+      "snapshot": "source/src/features/building-family/core/constructionSurfaceAuthoring.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/compiler/constructionSurfaceProgram.ts",
+      "sha256": "efb667b97f0bc35f405553feb671ceff8767a569afe941dd25e3b042af6e7dfe",
+      "snapshot": "source/src/features/building-family/compiler/constructionSurfaceProgram.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/renderer-three/constructionFrameSelection.ts",
+      "sha256": "2cba32c7a5fc46bf42db9d5e0a3fd632ee45e6826e77b5167770edcf79aed005",
+      "snapshot": "source/src/features/building-family/renderer-three/constructionFrameSelection.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/ui/ConstructionSurfacePanel.tsx",
+      "sha256": "c1433f5acae5d52d68b83ee505f6f9be1acb47bbcff56b923d9dcfa5a37c1fdc",
+      "snapshot": "source/src/features/building-family/ui/ConstructionSurfacePanel.tsx.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionSurfaceProgram.test.ts",
+      "sha256": "82a1a02ad3fbec56d80bef0f214fd69db8008281c97d801118db62a69175db27",
+      "snapshot": "source/src/features/building-family/tests/constructionSurfaceProgram.test.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/compiler/buildingShellGeometry.ts",
+      "sha256": "d3e206bee5018885d9113f97927fd04506e5c0462e3baa85341bf85c0e4769f8",
+      "snapshot": "source/src/features/building-family/compiler/buildingShellGeometry.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/buildingConstruction.test.ts",
+      "sha256": "8a7b2aa3f45e672d640d88581b6f656837f4e0e95cc0bd9799007bb675b1d7ad",
+      "snapshot": "source/src/features/building-family/tests/buildingConstruction.test.ts.txt"
+    },
+    {
+      "file": "scripts/e2e-smoke.mjs",
+      "sha256": "db6d95ccdcd22b61b7afad9b44bba49c577a3e2b15d9dca5956ce785d7007665",
+      "snapshot": "source/scripts/e2e-smoke.mjs.txt"
+    },
+    {
+      "file": "src/features/building-family/contracts/constructionGeneration.ts",
+      "sha256": "306c6d48ea3746e1536d0e30365da811fbb39943ccb695ee8e57f380620af0f0",
+      "snapshot": "source/src/features/building-family/contracts/constructionGeneration.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/core/constructionGenerationSource.ts",
+      "sha256": "b00c4ca1ffbebe5339058dc073acb933f1ce67bd1e3f70918ae64ff460de353c",
+      "snapshot": "source/src/features/building-family/core/constructionGenerationSource.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionGenerationSource.test.ts",
+      "sha256": "4698dc6c0d73d680b1f0dab1e10967b600af81290550517497dd84c12d352d85",
+      "snapshot": "source/src/features/building-family/tests/constructionGenerationSource.test.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/core/constructionGenerationResolver.ts",
+      "sha256": "ab32c45952883d8d885efdec6eef8c4f9e3e5165385923b6c612e84f20c98a11",
+      "snapshot": "source/src/features/building-family/core/constructionGenerationResolver.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionGenerationResolver.test.ts",
+      "sha256": "3409d9aecd98bed44629374b490829be0ef204d2f25471c222c3ba22a49a928b",
+      "snapshot": "source/src/features/building-family/tests/constructionGenerationResolver.test.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/materials/constructionReferenceMaterials.ts",
+      "sha256": "17c11cacc0eada7d36771477912c0060c50d71295d014bc63240a2a360d8644a",
+      "snapshot": "source/src/features/building-family/materials/constructionReferenceMaterials.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionReferenceMaterials.test.ts",
+      "sha256": "ba761f8fee368b45222f0a45346fbafe04053b826ed9f1fb3247d55c88d05d35",
+      "snapshot": "source/src/features/building-family/tests/constructionReferenceMaterials.test.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/state/constructionGenerationState.ts",
+      "sha256": "6803f3e36630ff817ce397ebd20bb57f214df846ec8e46bc9cef4b7631e678ab",
+      "snapshot": "source/src/features/building-family/state/constructionGenerationState.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/ui/ConstructionGenerationPanel.tsx",
+      "sha256": "c3de929c620a17ccfff00e31a34bc0f07d665ba5911cad100bd15a71819b67aa",
+      "snapshot": "source/src/features/building-family/ui/ConstructionGenerationPanel.tsx.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionGenerationState.test.ts",
+      "sha256": "db461811119a42fa87bc5b0e9c047720c50e3b5825270837a46ec69cc1424609",
+      "snapshot": "source/src/features/building-family/tests/constructionGenerationState.test.ts.txt"
+    },
+    {
+      "file": "vitest.config.ts",
+      "sha256": "ef7cfb763835181b9f1f9e636c2f3bd911dc41a37ba334435da2625a0ee9f113",
+      "snapshot": "source/vitest.config.ts.txt"
+    },
+    {
+      "file": "docs/research/utdg-late19c-v0.1.json",
+      "sha256": "ca0d4b81562b594f91cb2a914d08dfbd3b92dd5c75d2bbfb8e1c087cb516e0a9",
+      "snapshot": "source/docs/research/utdg-late19c-v0.1.json.txt"
+    },
+    {
+      "file": "src/features/building-family/core/constructionRecipeCatalog.ts",
+      "sha256": "24c12715cd57940cfa54904144ece5bce9e73f8cfad2dfc9fcdc16095665e8ee",
+      "snapshot": "source/src/features/building-family/core/constructionRecipeCatalog.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionRecipeCatalog.test.ts",
+      "sha256": "92e44ac671c5b761b766d445f18d4e187a0fdcdf17393b2f702e1b0109d08d47",
+      "snapshot": "source/src/features/building-family/tests/constructionRecipeCatalog.test.ts.txt"
+    }
+  ]
+}

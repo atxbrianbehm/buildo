@@ -140,3 +140,94 @@ describe("invalidatedArtifactsFor", () => {
     expect(invalidatedArtifactsFor("floorCount")).toEqual(["spec", "graph", "geometry"]);
   });
 });
+
+
+describe("R2.P6 structural trim material reuse", () => {
+  it("keeps the complete trim-only impact chain structural while reusing material artifacts", () => {
+    const invalidation = computeBuildingInvalidation(baseline, { ...baseline, trimDensity: "restrained" });
+    expect(invalidation.changedControls).toEqual(["trimDensity"]);
+    expect(invalidation.materialGenerationRequired).toBe(false);
+    expect(invalidation.reusableArtifacts).toEqual({ materialSources: true, packedAtlas: true, componentCatalog: false });
+    expect(invalidation.stageImpacts).toEqual({
+      psgEvaluation: "none", normalizedSpec: "partial", atlasPlan: "partial",
+      materialSources: "none", packedAtlas: "none", componentCatalog: "trimOnly",
+      buildingGraph: "full", runtimeBuildingIr: "full", gpuScene: "full"
+    });
+    expect(invalidation.invalidatedStages).toEqual(["normalizedSpec", "atlasPlan", "componentCatalog", "buildingGraph", "runtimeBuildingIr", "gpuScene"]);
+    expect(invalidatedArtifactsFor("trimDensity")).toEqual(["spec", "componentCatalog", "graph", "geometry"]);
+  });
+
+  it("still regenerates materials when a material-seed change is merged with trim density", () => {
+    const invalidation = computeBuildingInvalidation(baseline, {
+      ...baseline, trimDensity: "restrained", seeds: { ...baseline.seeds, material: "p6-material-seed-positive" }
+    });
+    expect(invalidation.changedControls).toEqual(["materialSeed", "trimDensity"]);
+    expect(invalidation.materialGenerationRequired).toBe(true);
+    expect(invalidation.reusableArtifacts).toEqual({ materialSources: false, packedAtlas: false, componentCatalog: false });
+    expect(invalidation.stageImpacts).toEqual({
+      psgEvaluation: "none", normalizedSpec: "partial", atlasPlan: "partial",
+      materialSources: "full", packedAtlas: "full", componentCatalog: "trimOnly",
+      buildingGraph: "full", runtimeBuildingIr: "full", gpuScene: "full"
+    });
+  });
+});
+
+describe("R2.P8 roof catalog invalidation", () => {
+  it("refreshes the roof catalog and structural consumers while retaining accepted materials", () => {
+    const invalidation = computeBuildingInvalidation(baseline, { ...baseline, roofType: "gable" });
+    expect(invalidation.changedControls).toEqual(["roofType"]);
+    expect(invalidation.materialGenerationRequired).toBe(false);
+    expect(invalidation.reusableArtifacts).toEqual({ materialSources: true, packedAtlas: true, componentCatalog: false });
+    expect(invalidation.stageImpacts).toEqual({
+      psgEvaluation: "none", normalizedSpec: "partial", atlasPlan: "none",
+      materialSources: "none", packedAtlas: "none", componentCatalog: "full",
+      buildingGraph: "full", runtimeBuildingIr: "full", gpuScene: "full"
+    });
+    expect(invalidation.invalidatedStages).toEqual(["normalizedSpec", "componentCatalog", "buildingGraph", "runtimeBuildingIr", "gpuScene"]);
+  });
+
+  it("retains material regeneration when a material-seed change accompanies a roof change", () => {
+    const invalidation = computeBuildingInvalidation(baseline, {
+      ...baseline, roofType: "gable", seeds: { ...baseline.seeds, material: "p8-roof-material-positive" }
+    });
+    expect(invalidation.changedControls).toEqual(["materialSeed", "roofType"]);
+    expect(invalidation.materialGenerationRequired).toBe(true);
+    expect(invalidation.reusableArtifacts).toEqual({ materialSources: false, packedAtlas: false, componentCatalog: false });
+    expect(invalidation.stageImpacts).toMatchObject({
+      materialSources: "full", packedAtlas: "full", componentCatalog: "full",
+      buildingGraph: "full", runtimeBuildingIr: "full", gpuScene: "full"
+    });
+  });
+});
+
+
+describe("R2.P10 bay-dependent catalog invalidation", () => {
+  it.each([{ from: 6, to: 7 }, { from: 7, to: 6 }])("rebuilds width-dependent recipes for $from to $to bays without refreshing materials", ({ from, to }) => {
+    const previous = { ...baseline, bayCount: from };
+    const invalidation = computeBuildingInvalidation(previous, { ...previous, bayCount: to });
+    expect(invalidation.changedControls).toEqual(["bayCount"]);
+    expect(invalidation.materialGenerationRequired).toBe(false);
+    expect(invalidation.reusableArtifacts).toEqual({ materialSources: true, packedAtlas: true, componentCatalog: false });
+    expect(invalidation.stageImpacts).toEqual({
+      psgEvaluation: "none", normalizedSpec: "partial", atlasPlan: "none",
+      materialSources: "none", packedAtlas: "none", componentCatalog: "full",
+      buildingGraph: "full", runtimeBuildingIr: "full", gpuScene: "full"
+    });
+    expect(invalidation.invalidatedStages).toEqual(["normalizedSpec", "componentCatalog", "buildingGraph", "runtimeBuildingIr", "gpuScene"]);
+    expect(invalidatedArtifactsFor("bayCount")).toEqual(["spec", "componentCatalog", "graph", "geometry"]);
+  });
+
+  it("retains the material-generation path when bay count and material seed change together", () => {
+    const invalidation = computeBuildingInvalidation(baseline, {
+      ...baseline, bayCount: 6, seeds: { ...baseline.seeds, material: "p10-material-positive" }
+    });
+    expect(invalidation.changedControls).toEqual(["materialSeed", "bayCount"]);
+    expect(invalidation.materialGenerationRequired).toBe(true);
+    expect(invalidation.reusableArtifacts).toEqual({ materialSources: false, packedAtlas: false, componentCatalog: false });
+    expect(invalidation.stageImpacts).toEqual({
+      psgEvaluation: "none", normalizedSpec: "partial", atlasPlan: "none",
+      materialSources: "full", packedAtlas: "full", componentCatalog: "full",
+      buildingGraph: "full", runtimeBuildingIr: "full", gpuScene: "full"
+    });
+  });
+});

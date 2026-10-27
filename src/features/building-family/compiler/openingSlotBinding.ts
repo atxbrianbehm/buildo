@@ -5,10 +5,12 @@
  * from one FacadeSplitPlan opening slot — never from free-floating recipe size alone.
  *
  * Depth hierarchy (exterior → interior):
- *   wall outer face
- *     → frame (slightly proud of wall)
- *     → pocket recess into wall thickness
- *     → glass (deeper than frame sash; see openingGeometry glass z)
+ *   frame casing / lintel hood (local +Z = exterior normal)
+ *     → wall outer face and perimeter returns
+ *     → glass (local −Z = into wall)
+ *     → thin interior backing
+ *
+ * Instance matrices map local exterior (+Z) onto the facade outward normal.
  */
 
 import type { Diagnostic } from "../core/diagnostics";
@@ -27,20 +29,26 @@ export const FRAME_INSET_FROM_SLOT_M = 0.04;
  * Values are intentional constants — not magic numbers scattered in the compiler.
  */
 export const OPENING_DEPTH_HIERARCHY = {
-  /** Pocket thickness as a fraction of wall depth. */
-  pocketDepthOfWall: 0.72,
+  /** Minimum return depth as a fraction of wall depth. */
+  pocketDepthOfWall: 0.92,
   /** Pocket center distance from frame center along inward wall normal (× wall depth). */
-  pocketCenterInwardOfWall: 0.38,
+  pocketCenterInwardOfWall: 0.48,
   /** Outer reveal lip thickness (× wall depth). */
-  revealDepthOfWall: 0.18,
+  revealDepthOfWall: 0.12,
   /** Reveal center distance from frame along inward normal (× wall depth). */
-  revealCenterInwardOfWall: 0.1,
+  revealCenterInwardOfWall: 0.08,
+  /** Glass recess derives from the frame depth, never from pane thickness. */
+  glazingCenterInwardOfFrameDepth: 0.72,
+  defaultGlazingThicknessM: 0.02,
+  /** Separate the glass rear face and interior backing. */
+  backingClearanceM: 0.02,
+  backingDepthOfWall: 0.08,
   /** Pocket plane scale vs frame outer (window). */
-  pocketPadWindow: { width: 1.1, height: 1.08 },
+  pocketPadWindow: { width: 1.14, height: 1.12 },
   /** Pocket plane scale vs frame outer (door). */
-  pocketPadDoor: { width: 1.06, height: 1.04 },
+  pocketPadDoor: { width: 1.1, height: 1.08 },
   /** Reveal pad beyond pocket plane size (meters). */
-  revealPadM: 0.08
+  revealPadM: 0.12
 } as const;
 
 export interface OpeningSlotBindingInput {
@@ -50,6 +58,8 @@ export interface OpeningSlotBindingInput {
   recipeWidthM: number;
   recipeHeightM: number;
   recipeDepthM: number;
+  /** Actual paired pane thickness, independent of frame scale. */
+  glazingThicknessM?: number;
 }
 
 export interface BoundOpeningGeometry {
@@ -59,17 +69,33 @@ export interface BoundOpeningGeometry {
   frameCenterM: Vec3;
   /** Outer frame size after slot inset (width, height, depth). */
   frameOuterSizeM: Vec3;
-  /** Additive pocket mass center (into the wall). */
+  /** Envelope for perimeter returns; its center remains an empty aperture. */
   pocketCenterM: Vec3;
   pocketSizeM: Vec3;
   /** Outer reveal lip on the facade plane. */
   revealCenterM: Vec3;
   revealSizeM: Vec3;
+  /** Glass plane and opaque backing share the frame's inward depth authority. */
+  glazingCenterM: Vec3;
+  glazingThicknessM: number;
+  backingCenterM: Vec3;
+  backingSizeM: Vec3;
   /** Column-major TRS: scale recipe local geometry to frame outer, then translate. */
   transform: number[];
   scale: Vec3;
   /** Non-fatal notes (e.g. oversize recipe clamped to slot). */
   diagnostics: Diagnostic[];
+}
+
+/** Frame recipe local +Z is exterior; this position is inside its throat. */
+export function openingGlazingCenterZ(frameDepthM: number): number {
+  return -Math.max(0.05, frameDepthM) * OPENING_DEPTH_HIERARCHY.glazingCenterInwardOfFrameDepth;
+}
+
+export function openingPaneThicknessM(recipeDepthM?: number): number {
+  const thickness = recipeDepthM === undefined ? OPENING_DEPTH_HIERARCHY.defaultGlazingThicknessM : recipeDepthM;
+  if (!Number.isFinite(thickness) || thickness < 0) throw new Error("Opening pane thickness must be finite and nonnegative.");
+  return thickness;
 }
 
 function facadeInwardNormal(facade: WallFacadeName): Vec3 {
@@ -121,6 +147,39 @@ export function scaleTranslateMatrix(scale: Vec3, position: Vec3): number[] {
 }
 
 /**
+ * Opening instance matrix: recipe local +Z is the exterior normal; map it to the
+ * facade outward direction so glass/recess sit into the wall mass in world space.
+ *
+ * Column-major 4×4 (Three.js / InstancedMesh).
+ */
+export function openingInstanceMatrix(
+  scale: Vec3,
+  position: Vec3,
+  facade: WallFacadeName
+): number[] {
+  const sx = scale[0];
+  const sy = scale[1];
+  const sz = scale[2];
+  const [px, py, pz] = position;
+
+  switch (facade) {
+    case "front":
+      // Rotate 180 degrees around Y: proper handedness for native instancing.
+      return [-sx, 0, 0, 0, 0, sy, 0, 0, 0, 0, -sz, 0, px, py, pz, 1];
+    case "rear":
+      return [sx, 0, 0, 0, 0, sy, 0, 0, 0, 0, sz, 0, px, py, pz, 1];
+    case "left":
+      // Rotate -90 degrees: local X → +Z, local +Z → −X.
+      return [0, 0, sx, 0, 0, sy, 0, 0, -sz, 0, 0, 0, px, py, pz, 1];
+    case "right":
+      // Rotate +90 degrees: local X → −Z, local +Z → +X.
+      return [0, 0, -sx, 0, 0, sy, 0, 0, sz, 0, 0, 0, px, py, pz, 1];
+    default:
+      return scaleTranslateMatrix(scale, position);
+  }
+}
+
+/**
  * Bind one split opening slot to frame outer size, pocket AABB, and instance transform.
  * Oversize recipes are clamped to the slot (with inset); a warning diagnostic is emitted.
  */
@@ -152,7 +211,8 @@ export function bindOpeningToSlot(input: OpeningSlotBindingInput): BoundOpeningG
   // Frame fills the slot inset — not the raw recipe size (scale maps recipe → frame).
   const frameW = maxFrameW;
   const frameH = maxFrameH;
-  const frameD = Math.min(slotDepth, Math.max(recipeD, wallDepth * 0.45));
+  // Prefer a deep frame so scaled local geometry can show a real throat (V3).
+  const frameD = Math.max(recipeD, Math.min(Math.max(slotDepth, wallDepth * 0.85), wallDepth * 1.05));
   const frameCenterM: Vec3 = [...placement.centerM];
 
   const pad =
@@ -161,12 +221,21 @@ export function bindOpeningToSlot(input: OpeningSlotBindingInput): BoundOpeningG
       : OPENING_DEPTH_HIERARCHY.pocketPadWindow;
   const pocketAlong = frameW * pad.width;
   const pocketH = frameH * pad.height;
-  const pocketDepth = wallDepth * OPENING_DEPTH_HIERARCHY.pocketDepthOfWall;
   const inward = facadeInwardNormal(placement.facade);
+  const glazingDepth = -openingGlazingCenterZ(frameD);
+  const glazingThicknessM = openingPaneThicknessM(input.glazingThicknessM);
+  const glazingCenterM = offsetAlong(frameCenterM, inward, glazingDepth);
+  const backingDepth = Math.max(0.02, wallDepth * OPENING_DEPTH_HIERARCHY.backingDepthOfWall);
+  const backingExteriorDepth = Math.max(wallDepth,
+    glazingDepth + glazingThicknessM / 2 + OPENING_DEPTH_HIERARCHY.backingClearanceM);
+  const backingCenterM = offsetAlong(frameCenterM, inward, backingExteriorDepth + backingDepth / 2);
+  const pocketExteriorDepth = wallDepth *
+    (OPENING_DEPTH_HIERARCHY.pocketCenterInwardOfWall - OPENING_DEPTH_HIERARCHY.pocketDepthOfWall / 2);
+  const pocketDepth = Math.max(wallDepth * OPENING_DEPTH_HIERARCHY.pocketDepthOfWall, backingExteriorDepth - pocketExteriorDepth);
   const pocketCenterM = offsetAlong(
     frameCenterM,
     inward,
-    wallDepth * OPENING_DEPTH_HIERARCHY.pocketCenterInwardOfWall
+    pocketExteriorDepth + pocketDepth / 2
   );
   const revealCenterM = offsetAlong(
     frameCenterM,
@@ -183,9 +252,12 @@ export function bindOpeningToSlot(input: OpeningSlotBindingInput): BoundOpeningG
   const revealSizeM: Vec3 = isSide
     ? [revealDepth, pocketH + revealPad, pocketAlong + revealPad]
     : [pocketAlong + revealPad, pocketH + revealPad, revealDepth];
+  const backingSizeM: Vec3 = isSide
+    ? [backingDepth, frameH, frameW]
+    : [frameW, frameH, backingDepth];
 
   const scale: Vec3 = [frameW / recipeW, frameH / recipeH, frameD / recipeD];
-  const transform = scaleTranslateMatrix(scale, frameCenterM);
+  const transform = openingInstanceMatrix(scale, frameCenterM, placement.facade);
 
   return {
     kind: placement.kind,
@@ -196,6 +268,10 @@ export function bindOpeningToSlot(input: OpeningSlotBindingInput): BoundOpeningG
     pocketSizeM,
     revealCenterM,
     revealSizeM,
+    glazingCenterM,
+    glazingThicknessM,
+    backingCenterM,
+    backingSizeM,
     transform,
     scale,
     diagnostics
@@ -206,7 +282,7 @@ export function bindOpeningToSlot(input: OpeningSlotBindingInput): BoundOpeningG
 export function bindOpeningsFromSplitPlan(
   openings: FacadeSplitOpeningPlacement[],
   wallDepthM: number,
-  recipes: { window: { width: number; height: number; depth: number }; door: { width: number; height: number; depth: number } }
+  recipes: { window: { width: number; height: number; depth: number; glazingThicknessM?: number }; door: { width: number; height: number; depth: number; glazingThicknessM?: number } }
 ): BoundOpeningGeometry[] {
   return openings.map((placement) => {
     const recipe = placement.kind === "door" ? recipes.door : recipes.window;
@@ -215,7 +291,8 @@ export function bindOpeningsFromSplitPlan(
       wallDepthM,
       recipeWidthM: recipe.width,
       recipeHeightM: recipe.height,
-      recipeDepthM: recipe.depth
+      recipeDepthM: recipe.depth,
+      glazingThicknessM: recipe.glazingThicknessM
     });
   });
 }

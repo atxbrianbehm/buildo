@@ -19,6 +19,9 @@ import {
 
 export type WallFacadeName = "front" | "rear" | "left" | "right";
 
+/** Minimum horizontal masonry beside an opening, shared with validated local narrowing. */
+export const MIN_FACADE_PIER_WIDTH_M = 0.08;
+
 export interface OpeningSlot {
   widthM: number;
   heightM: number;
@@ -98,7 +101,8 @@ export function buildFacadeBayScopes(input: SubdivideFacadeWallsInput): FacadeBa
     const floorHeight = spec.massing.floorHeightsM[floor] ?? 3;
     const y0 = floorBaseY(spec, floor);
     const zone: "ground" | "body" = floor === 0 ? "ground" : "body";
-    const depth = wallDepthM + (floor === 0 ? Math.min(0.16, wallDepthM * 0.5) : 0);
+    // Ground wall slightly proud so commercial base mass reads thicker than body (V1).
+    const depth = wallDepthM + (floor === 0 ? Math.min(0.22, wallDepthM * 0.65) : 0);
 
     for (let bay = 0; bay < spec.facade.frontBayCount; bay += 1) {
       const x0 = -spec.massing.widthM / 2 + frontBayWidth * bay;
@@ -108,8 +112,11 @@ export function buildFacadeBayScopes(input: SubdivideFacadeWallsInput): FacadeBa
             ? -spec.massing.depthM / 2
             : spec.massing.depthM / 2 - depth;
         const openingSpec = openingMap.get(openingKey(facade, floor, bay));
-        const defaultOpenW = Math.min(frontBayWidth * 0.62, 1.6);
-        const defaultOpenH = Math.min(floorHeight * (zone === "ground" ? 0.58 : 0.48), 2.6);
+        const defaultOpenW = Math.min(frontBayWidth * (zone === "ground" ? 0.72 : 0.62), zone === "ground" ? 2.2 : 1.6);
+        const defaultOpenH = Math.min(
+          floorHeight * (zone === "ground" ? 0.62 : 0.48),
+          zone === "ground" ? 3.4 : 2.6
+        );
         const hasDefaultOpening =
           !strictOpenings &&
           (defaultOpeningMode === "front-only"
@@ -230,8 +237,8 @@ export function expandBayWallPrimitives(scope: FacadeBayScope): PrimitiveGeometr
   const alongSize = isSide ? sz : sx;
   const openAlong = open.centerAlongM;
   const openHalf = open.widthM / 2;
-  const leftWidth = Math.max(0.08, openAlong - openHalf - alongMin);
-  const rightWidth = Math.max(0.08, alongMin + alongSize - (openAlong + openHalf));
+  const leftWidth = Math.max(MIN_FACADE_PIER_WIDTH_M, openAlong - openHalf - alongMin);
+  const rightWidth = Math.max(MIN_FACADE_PIER_WIDTH_M, alongMin + alongSize - (openAlong + openHalf));
   const openBottom = open.centerYM - open.heightM / 2;
   const openTop = open.centerYM + open.heightM / 2;
   const sillHeight = Math.max(0.08, openBottom - oy);
@@ -272,13 +279,8 @@ export function expandBayWallPrimitives(scope: FacadeBayScope): PrimitiveGeometr
           })
         );
       }
-      // Inner reveal at glazing slot
-      primitives.push(
-        buildBoxPrimitive({
-          center: [openAlong, open.centerYM, oz + sz * 0.22],
-          size: [open.widthM + 0.1, open.heightM + 0.1, sz * 0.28]
-        })
-      );
+      // The full-depth piers and bands already form the masonry returns.
+      // Keep the glazing aperture empty; opening binding owns its frame/recess.
       return primitives;
     }
 
@@ -318,13 +320,8 @@ export function expandBayWallPrimitives(scope: FacadeBayScope): PrimitiveGeometr
         })
       );
     }
-    // Inner reveal thickness toward exterior (reads as punched wall).
-    primitives.push(
-      buildBoxPrimitive({
-        center: [openAlong, open.centerYM, oz + sz * 0.22],
-        size: [open.widthM + 0.1, open.heightM + 0.1, sz * 0.28]
-      })
-    );
+    // These four full-depth pieces supply the perimeter returns without a slab
+    // across the opening. Its frame/recess is derived separately from this slot.
   } else {
     // Side facade: along-axis is Z
     if (leftWidth > 0.05) {

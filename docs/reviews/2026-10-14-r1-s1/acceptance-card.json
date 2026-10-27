@@ -1,0 +1,5733 @@
+{
+  "schemaVersion": "0.1.0",
+  "packetKind": "buildo-r1-acceptance-card",
+  "packetId": "2026-10-14-r1-s1",
+  "createdAt": "2026-10-14T07:14:13.929Z",
+  "source": {
+    "commit": "4c0fedeacfc9b4bed0c0000096d7d1ea605d23b9",
+    "trackedDiffSha256": "3460f67a485583c813ca33012421cf0e055f653599a28d4f0adc6f71780ae597",
+    "dirtyPaths": [
+      "M README.md",
+      " M docs/ref/comparisons/2026-07-12-first-pass/ref-marx-grocery-buffalo-period-comparison.json",
+      " M scripts/capture-period-compare.mjs",
+      " M src/app/App.css",
+      " M src/features/building-family/compiler/buildingCompiler.ts",
+      " M src/features/building-family/compiler/facadeSplitPlan.ts",
+      " M src/features/building-family/core/buildingSeedVariation.ts",
+      " M src/features/building-family/core/specNormalizer.ts",
+      " M src/features/building-family/renderer-three/buildingAtlasTextureFactory.ts",
+      " M src/features/building-family/renderer-three/buildingSceneAdapter.ts",
+      " M src/features/building-family/renderer-three/resourceDisposal.ts",
+      " M src/features/building-family/tests/AssemblyHall.test.tsx",
+      " M src/features/building-family/tests/ComponentForge.test.tsx",
+      " M src/features/building-family/tests/PeriodReferenceLab.test.tsx",
+      " M src/features/building-family/tests/buildingAtlasTextureFactory.test.ts",
+      " M src/features/building-family/tests/buildingSceneAdapter.test.ts",
+      " M src/features/building-family/tests/buildingSeedVariation.test.ts",
+      " M src/features/building-family/tests/componentGalleryBuilder.test.ts",
+      " M src/features/building-family/tests/familyBenchmarkDocumentation.test.ts",
+      " M src/features/building-family/tests/familyBenchmarkScene.test.ts",
+      " M src/features/building-family/tests/resourceDisposal.test.ts",
+      " M src/features/building-family/tests/specNormalizer.test.ts",
+      "?? docs/plans/building-authoring-revival.md",
+      "?? docs/reviews/2026-10-13-r0/README.md",
+      "?? docs/reviews/2026-10-13-r0/assembly-hall-clay-canvas.png",
+      "?? docs/reviews/2026-10-13-r0/assembly-hall-textured-canvas.png",
+      "?? docs/reviews/2026-10-13-r0/assembly-hall-textured-desktop.png",
+      "?? docs/reviews/2026-10-13-r0/prompt-lab-desktop.png",
+      "?? docs/reviews/2026-10-13-r1-baseline/README.md",
+      "?? docs/reviews/2026-10-13-r1-baseline/acceptance-card.json",
+      "?? docs/reviews/2026-10-13-r1-baseline/building-webgl-clay-three-quarter-ordinary.png",
+      "?? docs/reviews/2026-10-13-r1-baseline/building-webgl-textured-three-quarter-ordinary.png",
+      "?? docs/reviews/2026-10-13-r1-baseline/building-webgpu-clay-front-ordinary.png",
+      "?? docs/reviews/2026-10-13-r1-baseline/building-webgpu-clay-front-raking.png",
+      "?? docs/reviews/2026-10-13-r1-baseline/building-webgpu-clay-rear-ordinary.png",
+      "?? docs/reviews/2026-10-13-r1-baseline/building-webgpu-clay-rear-raking.png",
+      "?? docs/reviews/2026-10-13-r1-baseline/building-webgpu-clay-right-ordinary.png",
+      "?? docs/reviews/2026-10-13-r1-baseline/building-webgpu-clay-right-raking.png",
+      "?? docs/reviews/2026-10-13-r1-baseline/building-webgpu-clay-three-quarter-ordinary.png",
+      "?? docs/reviews/2026-10-13-r1-baseline/building-webgpu-clay-three-quarter-raking.png",
+      "?? docs/reviews/2026-10-13-r1-baseline/building-webgpu-textured-front-ordinary.png",
+      "?? docs/reviews/2026-10-13-r1-baseline/building-webgpu-textured-front-raking.png",
+      "?? docs/reviews/2026-10-13-r1-baseline/building-webgpu-textured-rear-ordinary.png",
+      "?? docs/reviews/2026-10-13-r1-baseline/building-webgpu-textured-rear-raking.png",
+      "?? docs/reviews/2026-10-13-r1-baseline/building-webgpu-textured-right-ordinary.png",
+      "?? docs/reviews/2026-10-13-r1-baseline/building-webgpu-textured-right-raking.png",
+      "?? docs/reviews/2026-10-13-r1-baseline/building-webgpu-textured-three-quarter-ordinary.png",
+      "?? docs/reviews/2026-10-13-r1-baseline/building-webgpu-textured-three-quarter-raking.png",
+      "?? docs/reviews/2026-10-13-r1-baseline/sampling-report.json",
+      "?? docs/reviews/2026-10-13-r1-baseline/sampling-webgl-controlled.png",
+      "?? docs/reviews/2026-10-13-r1-baseline/sampling-webgl-procedural.png",
+      "?? docs/reviews/2026-10-13-r1-baseline/sampling-webgpu-controlled.png",
+      "?? docs/reviews/2026-10-13-r1-baseline/sampling-webgpu-procedural.png",
+      "?? docs/reviews/2026-10-13-revival/README.md",
+      "?? docs/reviews/2026-10-13-revival/assembly-hall-clay-canvas.png",
+      "?? docs/reviews/2026-10-13-revival/assembly-hall-textured-canvas.png",
+      "?? docs/reviews/2026-10-13-revival/assembly-hall-textured-desktop.png",
+      "?? docs/reviews/2026-10-13-revival/prompt-lab-desktop.png",
+      "?? scripts/capture-r1-baseline.mjs",
+      "?? scripts/diagnostics/r1-baseline-browser.mjs",
+      "?? scripts/diagnostics/r1-baseline.html",
+      "?? scripts/diagnostics/r1-building-capture.mjs",
+      "?? scripts/diagnostics/r1-material-sampling.mjs",
+      "?? src/features/building-family/qa/r1BaselineContracts.ts",
+      "?? src/features/building-family/renderer-three/wallAtlasGeometry.ts",
+      "?? src/features/building-family/tests/r1BaselineContracts.test.ts",
+      "?? src/features/building-family/tests/r1WallSamplingComparison.test.ts",
+      "?? src/features/building-family/tests/wallAtlasSampling.test.ts"
+    ],
+    "diagnosticFiles": [
+      {
+        "file": "scripts/capture-r1-baseline.mjs",
+        "sha256": "c51bd5140b4658feb5a717109f0428ed174d30be4f9a22998ef8e60930c2afa6"
+      },
+      {
+        "file": "scripts/diagnostics/r1-baseline.html",
+        "sha256": "723752f03b868c178d1b1d10745590d445973ab825947dc7621d14b112fd6b76"
+      },
+      {
+        "file": "scripts/diagnostics/r1-baseline-browser.mjs",
+        "sha256": "3fcff70c576a1f903c44d1a3628311e59dce06a3ee95e5fef59d4da3089fcbae"
+      },
+      {
+        "file": "scripts/diagnostics/r1-building-capture.mjs",
+        "sha256": "384484ea27f21693b0157c997d6e108c46db11048bc18edde8703a2e3ac47e28"
+      },
+      {
+        "file": "scripts/diagnostics/r1-material-sampling.mjs",
+        "sha256": "526eae545b4fe1b11bded93ba2c3c769433ffb1630bcf79f273d6e6f422fcc97"
+      },
+      {
+        "file": "src/features/building-family/qa/r1BaselineContracts.ts",
+        "sha256": "7ac25181852f2c4afe6323bbdd948ac239e879e45c29b5bca712736686ad5ddd"
+      },
+      {
+        "file": "src/features/building-family/renderer-three/buildingSceneAdapter.ts",
+        "sha256": "123ca3d63533dd6fc20fbc82d5dbaee1fec36641af540b0d7cdeef63dbd3564e"
+      },
+      {
+        "file": "src/features/building-family/renderer-three/wallAtlasGeometry.ts",
+        "sha256": "4224ddd6c63dcea3289a53fb73cb46430a111617a8dd9182153f95f36d854907"
+      }
+    ],
+    "replayCard": {
+      "file": "docs/reviews/2026-10-13-r1-baseline/acceptance-card.json",
+      "sha256": "bf13e5b57b76fd6e9f793c67bbe5bf1a08011126a58a9521f721e2805623d420"
+    },
+    "documentId": "buildo-demo-family"
+  },
+  "controls": {
+    "prompt": "four floors, 7 bays, brick, flat roof, ornate trim",
+    "psgPresetId": "late19cCommercialDemo",
+    "stylePackId": "late-19c-commercial-demo",
+    "seeds": {
+      "family": "family-seed",
+      "building": "building-seed",
+      "material": "material-seed",
+      "trim": "trim-seed"
+    },
+    "floorCount": 4,
+    "bayCount": 7,
+    "detailLevel": "high",
+    "fidelityMode": "kit",
+    "roofType": "flat",
+    "trimDensity": "ornate",
+    "windowFamily": "tall-arched",
+    "corniceFamily": "bracketed-metal",
+    "remoteMaterialEnabled": false,
+    "lockedComponentKeys": []
+  },
+  "resolvedSpec": {
+    "schemaVersion": "0.1.0",
+    "familyId": "family-86f9731664e70f71",
+    "sourceIntentHash": "921c041a2ae7ed7a7ce57bed2378291979487ddc84696e0da29f6243ad26afd5",
+    "stylePackId": "late-19c-commercial-demo",
+    "seeds": {
+      "family": "family-seed",
+      "building": "building-seed",
+      "material": "material-seed",
+      "trim": "trim-seed"
+    },
+    "massing": {
+      "widthM": 29.016,
+      "depthM": 15,
+      "floorCount": 4,
+      "floorHeightsM": [
+        5.6,
+        3.606,
+        3.606,
+        3.606
+      ],
+      "parapetHeightM": 1.287,
+      "roof": {
+        "type": "flat"
+      }
+    },
+    "facade": {
+      "frontBayCount": 7,
+      "sideBaySpacingM": 3.788,
+      "groundFloorRatio": 0.3411,
+      "corniceHeightM": 1.85,
+      "symmetry": 0.721
+    },
+    "selectedFamilies": {
+      "wall": "brick-red",
+      "roof": "flat-membrane",
+      "window": "tall-arched",
+      "door": "recessed-storefront",
+      "cornice": "bracketed-metal",
+      "trim": "pressed-metal",
+      "pilaster": "brick-pilaster",
+      "ornament": "shallow-floral-mask"
+    },
+    "materialParameters": {
+      "wallWeathering": 0.35,
+      "materialSeed": 608365906
+    },
+    "componentParameters": {
+      "trimDensity": "ornate",
+      "requestedBayCount": 7,
+      "requestedFloorCount": 4,
+      "windowJitterSeed": 1236939644,
+      "bayRhythmSeed": 2924203225,
+      "buildingBayDelta": 0,
+      "buildingDepthM": 15
+    },
+    "variationPolicy": {
+      "wall": "family",
+      "roof": "family",
+      "window": "building",
+      "door": "building",
+      "cornice": "family",
+      "trim": "family",
+      "pilaster": "building",
+      "ornament": "element"
+    },
+    "locks": [],
+    "diagnostics": []
+  },
+  "identity": {
+    "familyId": "family-86f9731664e70f71",
+    "buildingId": "family-86f9731664e70f71.building-8fb557b82f07",
+    "graphId": "graph-d4ac6fe906835696",
+    "sourceGraphHash": "16ce1c905df3290fd4a9c51926c2aab8f9109f0624aa831026610a5a11d71e53",
+    "catalogId": "catalog-bf60d45e1b7db640",
+    "atlasId": "atlas-1d48a26ed6a65eb6",
+    "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+  },
+  "references": [
+    {
+      "id": "marx-grocery-buffalo",
+      "role": "primary",
+      "file": "docs/ref/Former_John_Marx_Grocery_Store,_Buffalo,_New_York_-_20200821.jpg",
+      "sha256": "64cb05e4bd20a98833f2e5811b5e71a8c533a279486d8f0b0f9eadc6f7e00171",
+      "widthPx": 960,
+      "heightPx": 1280,
+      "cropPx": {
+        "x": 80,
+        "y": 145,
+        "width": 840,
+        "height": 945
+      },
+      "observation": "Three levels and four upper front bays. Use masonry, opening depth and crown hierarchy; the canonical four-floor seven-bay building is not a proportional replica."
+    },
+    {
+      "id": "vanderbilt-brooklyn",
+      "role": "secondary",
+      "file": "docs/ref/AN_EXAMPLE_OF_BROOKLYN_ARCHITECTURE_ON_VANDERBILT_AVENUE_IN_NEW_YORK_CITY._BROOKLYN_REMAINS_ONE_OF_AMERICA'S_BEST..._-_NARA_-_555902.jpg",
+      "sha256": "cf616403ef6be4f64680b797d13057e5d284d496e7b58b54ec7be2205512c61c",
+      "widthPx": 960,
+      "heightPx": 649,
+      "cropPx": {
+        "x": 270,
+        "y": 380,
+        "width": 405,
+        "height": 210
+      },
+      "observation": "Four levels including the contrasting red base. Use base/body distinction, without adopting all facade ornament."
+    }
+  ],
+  "materialAnchors": {
+    "brickCourseHeightM": 0.075,
+    "atlasManifest": {
+      "schemaVersion": "0.1.0",
+      "atlasId": "atlas-1d48a26ed6a65eb6",
+      "widthPx": 128,
+      "heightPx": 128,
+      "paddingPx": 4,
+      "channels": [
+        "baseColor",
+        "normal",
+        "orm",
+        "height",
+        "opacity"
+      ],
+      "slots": [
+        {
+          "id": "wall.primary",
+          "role": "wall",
+          "rectPx": {
+            "x": 4,
+            "y": 4,
+            "width": 27,
+            "height": 37
+          },
+          "uvMode": "repeat",
+          "periodicity": "xy",
+          "physicalSizeM": {
+            "width": 0.96,
+            "height": 0.96
+          },
+          "materialSourceId": "source.wall.primary",
+          "compatibilityTags": [
+            "masonry",
+            "facade"
+          ],
+          "generationPrompt": "brick-red, primary wall material, masonry, facade",
+          "seedPath": "atlas/slot/wall.primary/family-86f9731664e70f71",
+          "metersPerTile": 0.96,
+          "artKitMaterialRoleId": "brick",
+          "proceduralSource": "running-bond-brick"
+        },
+        {
+          "id": "wall.secondary",
+          "role": "wall",
+          "rectPx": {
+            "x": 35,
+            "y": 4,
+            "width": 27,
+            "height": 37
+          },
+          "uvMode": "repeat",
+          "periodicity": "xy",
+          "physicalSizeM": {
+            "width": 1.2,
+            "height": 1.2
+          },
+          "materialSourceId": "source.wall.secondary",
+          "compatibilityTags": [
+            "side",
+            "rear",
+            "masonry"
+          ],
+          "generationPrompt": "brick-red, secondary wall material, side, rear, masonry",
+          "seedPath": "atlas/slot/wall.secondary/family-86f9731664e70f71",
+          "metersPerTile": 1.2,
+          "artKitMaterialRoleId": "plaster",
+          "proceduralSource": "painted-stucco"
+        },
+        {
+          "id": "roof.primary",
+          "role": "roof",
+          "rectPx": {
+            "x": 66,
+            "y": 4,
+            "width": 27,
+            "height": 37
+          },
+          "uvMode": "repeat",
+          "periodicity": "xy",
+          "physicalSizeM": {
+            "width": 1.5,
+            "height": 1.5
+          },
+          "materialSourceId": "source.roof.primary",
+          "compatibilityTags": [
+            "roof"
+          ],
+          "generationPrompt": "flat-membrane, roof surface, roof",
+          "seedPath": "atlas/slot/roof.primary/family-86f9731664e70f71",
+          "metersPerTile": 1.5,
+          "artKitMaterialRoleId": "roof",
+          "proceduralSource": "roof-membrane"
+        },
+        {
+          "id": "glass.primary",
+          "role": "glass",
+          "rectPx": {
+            "x": 97,
+            "y": 4,
+            "width": 27,
+            "height": 37
+          },
+          "uvMode": "stretch",
+          "periodicity": "none",
+          "physicalSizeM": {
+            "width": 1.4,
+            "height": 2.4
+          },
+          "materialSourceId": "source.glass.primary",
+          "compatibilityTags": [
+            "window",
+            "glass"
+          ],
+          "generationPrompt": "tall-arched, slightly wavy glass, window, glass",
+          "seedPath": "atlas/slot/glass.primary/family-86f9731664e70f71",
+          "metersPerTile": 1,
+          "artKitMaterialRoleId": "glass",
+          "proceduralSource": "glass-tint"
+        },
+        {
+          "id": "frame.primary",
+          "role": "frame",
+          "rectPx": {
+            "x": 4,
+            "y": 45,
+            "width": 27,
+            "height": 37
+          },
+          "uvMode": "cap-repeat-cap",
+          "periodicity": "x",
+          "physicalSizeM": {
+            "width": 0.32,
+            "height": 0.32
+          },
+          "materialSourceId": "source.frame.primary",
+          "compatibilityTags": [
+            "window",
+            "frame"
+          ],
+          "generationPrompt": "tall-arched, painted frame, window, frame",
+          "seedPath": "atlas/slot/frame.primary/family-86f9731664e70f71",
+          "metersPerTile": 0.32,
+          "artKitMaterialRoleId": "painted-wood",
+          "proceduralSource": "painted-wood"
+        },
+        {
+          "id": "door.primary",
+          "role": "door",
+          "rectPx": {
+            "x": 35,
+            "y": 45,
+            "width": 27,
+            "height": 37
+          },
+          "uvMode": "stretch",
+          "periodicity": "none",
+          "physicalSizeM": {
+            "width": 2.2,
+            "height": 3.2
+          },
+          "materialSourceId": "source.door.primary",
+          "compatibilityTags": [
+            "door",
+            "storefront"
+          ],
+          "generationPrompt": "recessed-storefront, recessed storefront door, door, storefront",
+          "seedPath": "atlas/slot/door.primary/family-86f9731664e70f71",
+          "metersPerTile": 0.32,
+          "artKitMaterialRoleId": "painted-wood",
+          "proceduralSource": "painted-wood"
+        },
+        {
+          "id": "trim.horizontal.primary",
+          "role": "horizontalTrim",
+          "rectPx": {
+            "x": 66,
+            "y": 45,
+            "width": 27,
+            "height": 37
+          },
+          "uvMode": "cap-repeat-cap",
+          "periodicity": "x",
+          "physicalSizeM": {
+            "width": 0.64,
+            "height": 0.64
+          },
+          "materialSourceId": "source.trim.horizontal.primary",
+          "profileRecipeId": "profile.trim.pressed-metal.horizontal-primary",
+          "compatibilityTags": [
+            "trim",
+            "belt-course"
+          ],
+          "generationPrompt": "pressed-metal, horizontal trim, trim, belt-course",
+          "seedPath": "atlas/slot/trim.horizontal.primary/family-86f9731664e70f71",
+          "metersPerTile": 0.64,
+          "artKitMaterialRoleId": "trim-stone",
+          "proceduralSource": "carved-stone-trim"
+        },
+        {
+          "id": "trim.horizontal.secondary",
+          "role": "horizontalTrim",
+          "rectPx": {
+            "x": 97,
+            "y": 45,
+            "width": 27,
+            "height": 37
+          },
+          "uvMode": "cap-repeat-cap",
+          "periodicity": "x",
+          "physicalSizeM": {
+            "width": 0.2,
+            "height": 0.2
+          },
+          "materialSourceId": "source.trim.horizontal.secondary",
+          "profileRecipeId": "profile.trim.pressed-metal.horizontal-secondary",
+          "compatibilityTags": [
+            "trim",
+            "sill",
+            "lintel"
+          ],
+          "generationPrompt": "pressed-metal, secondary horizontal trim, trim, sill, lintel",
+          "seedPath": "atlas/slot/trim.horizontal.secondary/family-86f9731664e70f71",
+          "metersPerTile": 0.2,
+          "artKitMaterialRoleId": "painted-metal",
+          "proceduralSource": "painted-metal"
+        },
+        {
+          "id": "trim.vertical.primary",
+          "role": "verticalTrim",
+          "rectPx": {
+            "x": 4,
+            "y": 86,
+            "width": 27,
+            "height": 37
+          },
+          "uvMode": "cap-repeat-cap",
+          "periodicity": "x",
+          "physicalSizeM": {
+            "width": 0.2,
+            "height": 0.2
+          },
+          "materialSourceId": "source.trim.vertical.primary",
+          "profileRecipeId": "profile.trim.pressed-metal.vertical-primary",
+          "compatibilityTags": [
+            "trim",
+            "pilaster"
+          ],
+          "generationPrompt": "pressed-metal, vertical trim, trim, pilaster",
+          "seedPath": "atlas/slot/trim.vertical.primary/family-86f9731664e70f71",
+          "metersPerTile": 0.2,
+          "artKitMaterialRoleId": "painted-metal",
+          "proceduralSource": "painted-metal"
+        },
+        {
+          "id": "cornice.primary",
+          "role": "horizontalTrim",
+          "rectPx": {
+            "x": 35,
+            "y": 86,
+            "width": 27,
+            "height": 37
+          },
+          "uvMode": "cap-repeat-cap",
+          "periodicity": "x",
+          "physicalSizeM": {
+            "width": 0.2,
+            "height": 0.2
+          },
+          "materialSourceId": "source.cornice.primary",
+          "profileRecipeId": "profile.cornice.bracketed-metal.primary",
+          "compatibilityTags": [
+            "cornice",
+            "profile"
+          ],
+          "generationPrompt": "bracketed-metal, primary cornice, cornice, profile",
+          "seedPath": "atlas/slot/cornice.primary/family-86f9731664e70f71",
+          "metersPerTile": 0.2,
+          "artKitMaterialRoleId": "painted-metal",
+          "proceduralSource": "painted-metal"
+        },
+        {
+          "id": "ornament.primary",
+          "role": "ornament",
+          "rectPx": {
+            "x": 66,
+            "y": 86,
+            "width": 27,
+            "height": 37
+          },
+          "uvMode": "nine-slice",
+          "periodicity": "none",
+          "physicalSizeM": {
+            "width": 1.2,
+            "height": 1.2
+          },
+          "materialSourceId": "source.ornament.primary",
+          "compatibilityTags": [
+            "ornament",
+            "mask"
+          ],
+          "generationPrompt": "shallow-floral-mask, shallow ornament mask, ornament, mask",
+          "seedPath": "atlas/slot/ornament.primary/family-86f9731664e70f71",
+          "metersPerTile": 0.8,
+          "artKitMaterialRoleId": "grime",
+          "proceduralSource": "grime-weathering-mask"
+        },
+        {
+          "id": "utility.mask",
+          "role": "ornament",
+          "rectPx": {
+            "x": 97,
+            "y": 86,
+            "width": 27,
+            "height": 37
+          },
+          "uvMode": "stretch",
+          "periodicity": "none",
+          "physicalSizeM": {
+            "width": 1,
+            "height": 1
+          },
+          "materialSourceId": "source.utility.mask",
+          "compatibilityTags": [
+            "utility",
+            "mask"
+          ],
+          "generationPrompt": "shallow-floral-mask, utility mask, utility, mask",
+          "seedPath": "atlas/slot/utility.mask/family-86f9731664e70f71",
+          "metersPerTile": 0.8,
+          "artKitMaterialRoleId": "grime",
+          "proceduralSource": "grime-weathering-mask"
+        }
+      ]
+    }
+  },
+  "freeze": {
+    "bounds": {
+      "min": [
+        -14.848500370979309,
+        0,
+        -9.161105155944824
+      ],
+      "max": [
+        14.848500370979309,
+        17.924999237060547,
+        7.840499997138977
+      ],
+      "center": [
+        0,
+        8.962499618530273,
+        -0.6603025794029236
+      ],
+      "size": [
+        29.697000741958618,
+        17.924999237060547,
+        17.0016051530838
+      ]
+    },
+    "views": [
+      {
+        "name": "front",
+        "position": [
+          0,
+          8.962499618530273,
+          -46.34812466004199
+        ],
+        "target": [
+          0,
+          8.962499618530273,
+          -0.6603025794029236
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "fov": 42,
+        "near": 0.1,
+        "far": 296.9700074195862
+      },
+      {
+        "name": "three-quarter",
+        "position": [
+          21.68732552404083,
+          16.848799809090576,
+          -40.09180353220443
+        ],
+        "target": [
+          0,
+          8.962499618530273,
+          -0.6603025794029236
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "fov": 42,
+        "near": 0.1,
+        "far": 296.9700074195862
+      },
+      {
+        "name": "right",
+        "position": [
+          45.687822080639066,
+          8.962499618530273,
+          -0.6603025794029236
+        ],
+        "target": [
+          0,
+          8.962499618530273,
+          -0.6603025794029236
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "fov": 42,
+        "near": 0.1,
+        "far": 296.9700074195862
+      },
+      {
+        "name": "rear",
+        "position": [
+          0,
+          8.962499618530273,
+          45.02751950123614
+        ],
+        "target": [
+          0,
+          8.962499618530273,
+          -0.6603025794029236
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "fov": 42,
+        "near": 0.1,
+        "far": 296.9700074195862
+      }
+    ],
+    "lights": [
+      {
+        "name": "front/ordinary",
+        "key": {
+          "position": [
+            22.050023050904276,
+            44.83230789363384,
+            25.398815571665764
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            1,
+            0.8962693533719567,
+            0.6724431569510133
+          ],
+          "intensity": 4.2
+        },
+        "fill": {
+          "position": [
+            -26.059118151068688,
+            28.79592749297619,
+            -14.69213542997837
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            0.6104955708001716,
+            0.775822218312646,
+            0.8713671191959567
+          ],
+          "intensity": 0.72
+        }
+      },
+      {
+        "name": "front/raking",
+        "key": {
+          "position": [
+            46.737462629259376,
+            20.293257221677017,
+            -7.813995838983441
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            1,
+            0.8962693533719567,
+            0.6724431569510133
+          ],
+          "intensity": 4.2
+        },
+        "fill": {
+          "position": [
+            -25.705604446092657,
+            15.047215497984638,
+            3.2742287133663615
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            0.6104955708001716,
+            0.775822218312646,
+            0.8713671191959567
+          ],
+          "intensity": 0.72
+        }
+      },
+      {
+        "name": "three-quarter/ordinary",
+        "key": {
+          "position": [
+            22.050023050904276,
+            44.83230789363384,
+            25.398815571665764
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            1,
+            0.8962693533719567,
+            0.6724431569510133
+          ],
+          "intensity": 4.2
+        },
+        "fill": {
+          "position": [
+            -26.059118151068688,
+            28.79592749297619,
+            -14.69213542997837
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            0.6104955708001716,
+            0.775822218312646,
+            0.8713671191959567
+          ],
+          "intensity": 0.72
+        }
+      },
+      {
+        "name": "three-quarter/raking",
+        "key": {
+          "position": [
+            46.737462629259376,
+            20.293257221677017,
+            -7.813995838983441
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            1,
+            0.8962693533719567,
+            0.6724431569510133
+          ],
+          "intensity": 4.2
+        },
+        "fill": {
+          "position": [
+            -25.705604446092657,
+            15.047215497984638,
+            3.2742287133663615
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            0.6104955708001716,
+            0.775822218312646,
+            0.8713671191959567
+          ],
+          "intensity": 0.72
+        }
+      },
+      {
+        "name": "right/ordinary",
+        "key": {
+          "position": [
+            22.050023050904276,
+            44.83230789363384,
+            25.398815571665764
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            1,
+            0.8962693533719567,
+            0.6724431569510133
+          ],
+          "intensity": 4.2
+        },
+        "fill": {
+          "position": [
+            -26.059118151068688,
+            28.79592749297619,
+            -14.69213542997837
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            0.6104955708001716,
+            0.775822218312646,
+            0.8713671191959567
+          ],
+          "intensity": 0.72
+        }
+      },
+      {
+        "name": "right/raking",
+        "key": {
+          "position": [
+            7.153693259580518,
+            20.293257221677017,
+            46.07716004985645
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            1,
+            0.8962693533719567,
+            0.6724431569510133
+          ],
+          "intensity": 4.2
+        },
+        "fill": {
+          "position": [
+            -3.934531292769285,
+            15.047215497984638,
+            -26.36590702549558
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            0.6104955708001716,
+            0.775822218312646,
+            0.8713671191959567
+          ],
+          "intensity": 0.72
+        }
+      },
+      {
+        "name": "rear/ordinary",
+        "key": {
+          "position": [
+            22.050023050904276,
+            44.83230789363384,
+            25.398815571665764
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            1,
+            0.8962693533719567,
+            0.6724431569510133
+          ],
+          "intensity": 4.2
+        },
+        "fill": {
+          "position": [
+            -26.059118151068688,
+            28.79592749297619,
+            -14.69213542997837
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            0.6104955708001716,
+            0.775822218312646,
+            0.8713671191959567
+          ],
+          "intensity": 0.72
+        }
+      },
+      {
+        "name": "rear/raking",
+        "key": {
+          "position": [
+            -46.737462629259376,
+            20.293257221677017,
+            6.493390680177594
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            1,
+            0.8962693533719567,
+            0.6724431569510133
+          ],
+          "intensity": 4.2
+        },
+        "fill": {
+          "position": [
+            25.705604446092657,
+            15.047215497984638,
+            -4.594833872172209
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            0.6104955708001716,
+            0.775822218312646,
+            0.8713671191959567
+          ],
+          "intensity": 0.72
+        }
+      }
+    ]
+  },
+  "captures": [
+    {
+      "screenshot": {
+        "file": "building-webgpu-textured-front-ordinary.png",
+        "sha256": "413502253d2a7d95b8c9a5f22c9e600fe81472df31bc1e5956c3c59bbb8e12a5",
+        "widthPx": 1280,
+        "heightPx": 800
+      },
+      "snapshot": {
+        "viewName": "front",
+        "lightingName": "ordinary",
+        "frameCount": 4,
+        "camera": {
+          "type": "PerspectiveCamera",
+          "isPerspectiveCamera": true,
+          "position": [
+            0,
+            8.962499618530273,
+            -46.34812466004199
+          ],
+          "target": [
+            0,
+            8.962499618530273,
+            -0.6603025794029236
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "fov": 42,
+          "near": 0.1,
+          "far": 296.9700074195862,
+          "aspect": 1.6,
+          "projectionMatrix": [
+            1.628180665433626,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0006736955401405,
+            -1,
+            0,
+            0,
+            -0.20006736955401405,
+            0
+          ],
+          "matrixWorld": [
+            -1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            -1,
+            0,
+            0,
+            8.962499618530273,
+            -46.34812466004199,
+            1
+          ],
+          "matrixWorldInverse": [
+            -1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            -1,
+            0,
+            0,
+            -8.962499618530273,
+            -46.34812466004199,
+            1
+          ]
+        },
+        "key": {
+          "position": [
+            22.050023050904276,
+            44.83230789363384,
+            25.398815571665764
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            1,
+            0.8962693533719567,
+            0.6724431569510133
+          ],
+          "intensity": 4.2
+        },
+        "fill": {
+          "position": [
+            -26.059118151068688,
+            28.79592749297619,
+            -14.69213542997837
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            0.6104955708001716,
+            0.775822218312646,
+            0.8713671191959567
+          ],
+          "intensity": 0.72
+        },
+        "materials": [
+          {
+            "batchId": "instances.door",
+            "materialName": "building-atlas.door.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "door.primary",
+            "atlasSlotId": "door.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "instances.door.glass",
+            "materialName": "building-atlas.glass.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": "glass.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "instances.window",
+            "materialName": "building-atlas.frame.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "frame.primary",
+            "atlasSlotId": "frame.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "instances.window.glass",
+            "materialName": "building-atlas.glass.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": "glass.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.base-plinth",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.belt-course",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.corner-quoins",
+            "materialName": "building-atlas.trim.vertical.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": "trim.vertical.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.cornice",
+            "materialName": "building-atlas.cornice.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "cornice.primary",
+            "atlasSlotId": "cornice.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.opening-pockets",
+            "materialName": "building-atlas.wall.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": "wall.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.roof",
+            "materialName": "building-atlas.roof.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "roof.primary",
+            "atlasSlotId": "roof.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.roof-cap",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.spandrels",
+            "materialName": "building-atlas.wall.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": "wall.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.storefront-hierarchy",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.vertical-pilasters",
+            "materialName": "building-atlas.trim.vertical.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": "trim.vertical.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.wall-panels",
+            "materialName": "building-atlas.wall.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": "wall.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          }
+        ],
+        "canvas": {
+          "width": 1280,
+          "height": 800,
+          "cssWidth": 1280,
+          "cssHeight": 800,
+          "devicePixelRatio": 1,
+          "backend": "webgpu",
+          "presentationMode": "textured",
+          "revealThroughStage": "roof"
+        },
+        "actualBackend": "webgpu",
+        "fallbackReason": null
+      }
+    },
+    {
+      "screenshot": {
+        "file": "building-webgpu-textured-front-raking.png",
+        "sha256": "a76a8e138b928d8c29fed4070162c37f2cc41b3d0ae5bbb37881ff625fcc7177",
+        "widthPx": 1280,
+        "heightPx": 800
+      },
+      "snapshot": {
+        "viewName": "front",
+        "lightingName": "raking",
+        "frameCount": 5,
+        "camera": {
+          "type": "PerspectiveCamera",
+          "isPerspectiveCamera": true,
+          "position": [
+            0,
+            8.962499618530273,
+            -46.34812466004199
+          ],
+          "target": [
+            0,
+            8.962499618530273,
+            -0.6603025794029236
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "fov": 42,
+          "near": 0.1,
+          "far": 296.9700074195862,
+          "aspect": 1.6,
+          "projectionMatrix": [
+            1.628180665433626,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0006736955401405,
+            -1,
+            0,
+            0,
+            -0.20006736955401405,
+            0
+          ],
+          "matrixWorld": [
+            -1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            -1,
+            0,
+            0,
+            8.962499618530273,
+            -46.34812466004199,
+            1
+          ],
+          "matrixWorldInverse": [
+            -1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            -1,
+            0,
+            0,
+            -8.962499618530273,
+            -46.34812466004199,
+            1
+          ]
+        },
+        "key": {
+          "position": [
+            46.737462629259376,
+            20.293257221677017,
+            -7.813995838983441
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            1,
+            0.8962693533719567,
+            0.6724431569510133
+          ],
+          "intensity": 4.2
+        },
+        "fill": {
+          "position": [
+            -25.705604446092657,
+            15.047215497984638,
+            3.2742287133663615
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            0.6104955708001716,
+            0.775822218312646,
+            0.8713671191959567
+          ],
+          "intensity": 0.72
+        },
+        "materials": [
+          {
+            "batchId": "instances.door",
+            "materialName": "building-atlas.door.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "door.primary",
+            "atlasSlotId": "door.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "instances.door.glass",
+            "materialName": "building-atlas.glass.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": "glass.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "instances.window",
+            "materialName": "building-atlas.frame.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "frame.primary",
+            "atlasSlotId": "frame.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "instances.window.glass",
+            "materialName": "building-atlas.glass.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": "glass.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.base-plinth",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.belt-course",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.corner-quoins",
+            "materialName": "building-atlas.trim.vertical.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": "trim.vertical.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.cornice",
+            "materialName": "building-atlas.cornice.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "cornice.primary",
+            "atlasSlotId": "cornice.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.opening-pockets",
+            "materialName": "building-atlas.wall.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": "wall.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.roof",
+            "materialName": "building-atlas.roof.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "roof.primary",
+            "atlasSlotId": "roof.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.roof-cap",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.spandrels",
+            "materialName": "building-atlas.wall.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": "wall.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.storefront-hierarchy",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.vertical-pilasters",
+            "materialName": "building-atlas.trim.vertical.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": "trim.vertical.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.wall-panels",
+            "materialName": "building-atlas.wall.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": "wall.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          }
+        ],
+        "canvas": {
+          "width": 1280,
+          "height": 800,
+          "cssWidth": 1280,
+          "cssHeight": 800,
+          "devicePixelRatio": 1,
+          "backend": "webgpu",
+          "presentationMode": "textured",
+          "revealThroughStage": "roof"
+        },
+        "actualBackend": "webgpu",
+        "fallbackReason": null
+      }
+    },
+    {
+      "screenshot": {
+        "file": "building-webgpu-textured-three-quarter-ordinary.png",
+        "sha256": "a9eecdd092b258336cc8b4a50e38ef44ea50c5af4a58b75a267633600e94c19e",
+        "widthPx": 1280,
+        "heightPx": 800
+      },
+      "snapshot": {
+        "viewName": "three-quarter",
+        "lightingName": "ordinary",
+        "frameCount": 6,
+        "camera": {
+          "type": "PerspectiveCamera",
+          "isPerspectiveCamera": true,
+          "position": [
+            21.68732552404083,
+            16.848799809090576,
+            -40.09180353220443
+          ],
+          "target": [
+            0,
+            8.962499618530273,
+            -0.6603025794029236
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "fov": 42,
+          "near": 0.1,
+          "far": 296.9700074195862,
+          "aspect": 1.6,
+          "projectionMatrix": [
+            1.628180665433626,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0006736955401405,
+            -1,
+            0,
+            0,
+            -0.20006736955401405,
+            0
+          ],
+          "matrixWorld": [
+            -0.8762159086766468,
+            6.938893903907228e-18,
+            -0.4819187497721559,
+            0,
+            -0.08318531624148662,
+            0.9849897673139664,
+            0.15124602952997565,
+            0,
+            0.47468503720231336,
+            0.17261274080084124,
+            -0.863063704004206,
+            0,
+            21.68732552404083,
+            16.848799809090576,
+            -40.09180353220443,
+            1
+          ],
+          "matrixWorldInverse": [
+            -0.876215908676647,
+            -0.08318531624148663,
+            0.47468503720231364,
+            0,
+            1.387778780781446e-17,
+            0.9849897673139663,
+            0.17261274080084124,
+            0,
+            -0.48191874977215604,
+            0.15124602952997565,
+            -0.8630637040042062,
+            0,
+            -0.3182121935371939,
+            -8.728102270384552,
+            -47.804746894163095,
+            1
+          ]
+        },
+        "key": {
+          "position": [
+            22.050023050904276,
+            44.83230789363384,
+            25.398815571665764
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            1,
+            0.8962693533719567,
+            0.6724431569510133
+          ],
+          "intensity": 4.2
+        },
+        "fill": {
+          "position": [
+            -26.059118151068688,
+            28.79592749297619,
+            -14.69213542997837
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            0.6104955708001716,
+            0.775822218312646,
+            0.8713671191959567
+          ],
+          "intensity": 0.72
+        },
+        "materials": [
+          {
+            "batchId": "instances.door",
+            "materialName": "building-atlas.door.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "door.primary",
+            "atlasSlotId": "door.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "instances.door.glass",
+            "materialName": "building-atlas.glass.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": "glass.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "instances.window",
+            "materialName": "building-atlas.frame.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "frame.primary",
+            "atlasSlotId": "frame.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "instances.window.glass",
+            "materialName": "building-atlas.glass.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": "glass.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.base-plinth",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.belt-course",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.corner-quoins",
+            "materialName": "building-atlas.trim.vertical.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": "trim.vertical.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.cornice",
+            "materialName": "building-atlas.cornice.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "cornice.primary",
+            "atlasSlotId": "cornice.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.opening-pockets",
+            "materialName": "building-atlas.wall.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": "wall.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.roof",
+            "materialName": "building-atlas.roof.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "roof.primary",
+            "atlasSlotId": "roof.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.roof-cap",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.spandrels",
+            "materialName": "building-atlas.wall.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": "wall.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.storefront-hierarchy",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.vertical-pilasters",
+            "materialName": "building-atlas.trim.vertical.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": "trim.vertical.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.wall-panels",
+            "materialName": "building-atlas.wall.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": "wall.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          }
+        ],
+        "canvas": {
+          "width": 1280,
+          "height": 800,
+          "cssWidth": 1280,
+          "cssHeight": 800,
+          "devicePixelRatio": 1,
+          "backend": "webgpu",
+          "presentationMode": "textured",
+          "revealThroughStage": "roof"
+        },
+        "actualBackend": "webgpu",
+        "fallbackReason": null
+      }
+    },
+    {
+      "screenshot": {
+        "file": "building-webgpu-textured-three-quarter-raking.png",
+        "sha256": "14978c5b3d68c1914b4f16a33098793fa4982b10b3277340d17ace04d622c76b",
+        "widthPx": 1280,
+        "heightPx": 800
+      },
+      "snapshot": {
+        "viewName": "three-quarter",
+        "lightingName": "raking",
+        "frameCount": 7,
+        "camera": {
+          "type": "PerspectiveCamera",
+          "isPerspectiveCamera": true,
+          "position": [
+            21.68732552404083,
+            16.848799809090576,
+            -40.09180353220443
+          ],
+          "target": [
+            0,
+            8.962499618530273,
+            -0.6603025794029236
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "fov": 42,
+          "near": 0.1,
+          "far": 296.9700074195862,
+          "aspect": 1.6,
+          "projectionMatrix": [
+            1.628180665433626,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0006736955401405,
+            -1,
+            0,
+            0,
+            -0.20006736955401405,
+            0
+          ],
+          "matrixWorld": [
+            -0.8762159086766468,
+            6.938893903907228e-18,
+            -0.4819187497721559,
+            0,
+            -0.08318531624148662,
+            0.9849897673139664,
+            0.15124602952997565,
+            0,
+            0.47468503720231336,
+            0.17261274080084124,
+            -0.863063704004206,
+            0,
+            21.68732552404083,
+            16.848799809090576,
+            -40.09180353220443,
+            1
+          ],
+          "matrixWorldInverse": [
+            -0.876215908676647,
+            -0.08318531624148663,
+            0.47468503720231364,
+            0,
+            1.387778780781446e-17,
+            0.9849897673139663,
+            0.17261274080084124,
+            0,
+            -0.48191874977215604,
+            0.15124602952997565,
+            -0.8630637040042062,
+            0,
+            -0.3182121935371939,
+            -8.728102270384552,
+            -47.804746894163095,
+            1
+          ]
+        },
+        "key": {
+          "position": [
+            46.737462629259376,
+            20.293257221677017,
+            -7.813995838983441
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            1,
+            0.8962693533719567,
+            0.6724431569510133
+          ],
+          "intensity": 4.2
+        },
+        "fill": {
+          "position": [
+            -25.705604446092657,
+            15.047215497984638,
+            3.2742287133663615
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            0.6104955708001716,
+            0.775822218312646,
+            0.8713671191959567
+          ],
+          "intensity": 0.72
+        },
+        "materials": [
+          {
+            "batchId": "instances.door",
+            "materialName": "building-atlas.door.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "door.primary",
+            "atlasSlotId": "door.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "instances.door.glass",
+            "materialName": "building-atlas.glass.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": "glass.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "instances.window",
+            "materialName": "building-atlas.frame.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "frame.primary",
+            "atlasSlotId": "frame.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "instances.window.glass",
+            "materialName": "building-atlas.glass.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": "glass.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.base-plinth",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.belt-course",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.corner-quoins",
+            "materialName": "building-atlas.trim.vertical.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": "trim.vertical.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.cornice",
+            "materialName": "building-atlas.cornice.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "cornice.primary",
+            "atlasSlotId": "cornice.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.opening-pockets",
+            "materialName": "building-atlas.wall.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": "wall.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.roof",
+            "materialName": "building-atlas.roof.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "roof.primary",
+            "atlasSlotId": "roof.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.roof-cap",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.spandrels",
+            "materialName": "building-atlas.wall.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": "wall.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.storefront-hierarchy",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.vertical-pilasters",
+            "materialName": "building-atlas.trim.vertical.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": "trim.vertical.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.wall-panels",
+            "materialName": "building-atlas.wall.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": "wall.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          }
+        ],
+        "canvas": {
+          "width": 1280,
+          "height": 800,
+          "cssWidth": 1280,
+          "cssHeight": 800,
+          "devicePixelRatio": 1,
+          "backend": "webgpu",
+          "presentationMode": "textured",
+          "revealThroughStage": "roof"
+        },
+        "actualBackend": "webgpu",
+        "fallbackReason": null
+      }
+    },
+    {
+      "screenshot": {
+        "file": "building-webgpu-textured-right-ordinary.png",
+        "sha256": "ad0af9e7fa0a07fbba3369b8ce797bae63c4042ecb5c9f75a24a0d1efb1920e4",
+        "widthPx": 1280,
+        "heightPx": 800
+      },
+      "snapshot": {
+        "viewName": "right",
+        "lightingName": "ordinary",
+        "frameCount": 8,
+        "camera": {
+          "type": "PerspectiveCamera",
+          "isPerspectiveCamera": true,
+          "position": [
+            45.687822080639066,
+            8.962499618530273,
+            -0.6603025794029236
+          ],
+          "target": [
+            0,
+            8.962499618530273,
+            -0.6603025794029236
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "fov": 42,
+          "near": 0.1,
+          "far": 296.9700074195862,
+          "aspect": 1.6,
+          "projectionMatrix": [
+            1.628180665433626,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0006736955401405,
+            -1,
+            0,
+            0,
+            -0.20006736955401405,
+            0
+          ],
+          "matrixWorld": [
+            2.220446049250313e-16,
+            0,
+            -1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            1,
+            0,
+            2.220446049250313e-16,
+            0,
+            45.687822080639066,
+            8.962499618530273,
+            -0.6603025794029236,
+            1
+          ],
+          "matrixWorldInverse": [
+            2.220446049250313e-16,
+            0,
+            1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -1,
+            0,
+            2.220446049250313e-16,
+            0,
+            -0.6603025794029337,
+            -8.962499618530273,
+            -45.687822080639066,
+            1
+          ]
+        },
+        "key": {
+          "position": [
+            22.050023050904276,
+            44.83230789363384,
+            25.398815571665764
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            1,
+            0.8962693533719567,
+            0.6724431569510133
+          ],
+          "intensity": 4.2
+        },
+        "fill": {
+          "position": [
+            -26.059118151068688,
+            28.79592749297619,
+            -14.69213542997837
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            0.6104955708001716,
+            0.775822218312646,
+            0.8713671191959567
+          ],
+          "intensity": 0.72
+        },
+        "materials": [
+          {
+            "batchId": "instances.door",
+            "materialName": "building-atlas.door.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "door.primary",
+            "atlasSlotId": "door.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "instances.door.glass",
+            "materialName": "building-atlas.glass.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": "glass.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "instances.window",
+            "materialName": "building-atlas.frame.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "frame.primary",
+            "atlasSlotId": "frame.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "instances.window.glass",
+            "materialName": "building-atlas.glass.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": "glass.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.base-plinth",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.belt-course",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.corner-quoins",
+            "materialName": "building-atlas.trim.vertical.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": "trim.vertical.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.cornice",
+            "materialName": "building-atlas.cornice.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "cornice.primary",
+            "atlasSlotId": "cornice.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.opening-pockets",
+            "materialName": "building-atlas.wall.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": "wall.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.roof",
+            "materialName": "building-atlas.roof.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "roof.primary",
+            "atlasSlotId": "roof.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.roof-cap",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.spandrels",
+            "materialName": "building-atlas.wall.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": "wall.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.storefront-hierarchy",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.vertical-pilasters",
+            "materialName": "building-atlas.trim.vertical.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": "trim.vertical.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.wall-panels",
+            "materialName": "building-atlas.wall.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": "wall.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          }
+        ],
+        "canvas": {
+          "width": 1280,
+          "height": 800,
+          "cssWidth": 1280,
+          "cssHeight": 800,
+          "devicePixelRatio": 1,
+          "backend": "webgpu",
+          "presentationMode": "textured",
+          "revealThroughStage": "roof"
+        },
+        "actualBackend": "webgpu",
+        "fallbackReason": null
+      }
+    },
+    {
+      "screenshot": {
+        "file": "building-webgpu-textured-right-raking.png",
+        "sha256": "24707a7ab736369c1a15be8dafeab2c9739eb089aa5b205c30e3b784b46f0653",
+        "widthPx": 1280,
+        "heightPx": 800
+      },
+      "snapshot": {
+        "viewName": "right",
+        "lightingName": "raking",
+        "frameCount": 9,
+        "camera": {
+          "type": "PerspectiveCamera",
+          "isPerspectiveCamera": true,
+          "position": [
+            45.687822080639066,
+            8.962499618530273,
+            -0.6603025794029236
+          ],
+          "target": [
+            0,
+            8.962499618530273,
+            -0.6603025794029236
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "fov": 42,
+          "near": 0.1,
+          "far": 296.9700074195862,
+          "aspect": 1.6,
+          "projectionMatrix": [
+            1.628180665433626,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0006736955401405,
+            -1,
+            0,
+            0,
+            -0.20006736955401405,
+            0
+          ],
+          "matrixWorld": [
+            2.220446049250313e-16,
+            0,
+            -1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            1,
+            0,
+            2.220446049250313e-16,
+            0,
+            45.687822080639066,
+            8.962499618530273,
+            -0.6603025794029236,
+            1
+          ],
+          "matrixWorldInverse": [
+            2.220446049250313e-16,
+            0,
+            1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -1,
+            0,
+            2.220446049250313e-16,
+            0,
+            -0.6603025794029337,
+            -8.962499618530273,
+            -45.687822080639066,
+            1
+          ]
+        },
+        "key": {
+          "position": [
+            7.153693259580518,
+            20.293257221677017,
+            46.07716004985645
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            1,
+            0.8962693533719567,
+            0.6724431569510133
+          ],
+          "intensity": 4.2
+        },
+        "fill": {
+          "position": [
+            -3.934531292769285,
+            15.047215497984638,
+            -26.36590702549558
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            0.6104955708001716,
+            0.775822218312646,
+            0.8713671191959567
+          ],
+          "intensity": 0.72
+        },
+        "materials": [
+          {
+            "batchId": "instances.door",
+            "materialName": "building-atlas.door.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "door.primary",
+            "atlasSlotId": "door.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "instances.door.glass",
+            "materialName": "building-atlas.glass.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": "glass.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "instances.window",
+            "materialName": "building-atlas.frame.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "frame.primary",
+            "atlasSlotId": "frame.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "instances.window.glass",
+            "materialName": "building-atlas.glass.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": "glass.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.base-plinth",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.belt-course",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.corner-quoins",
+            "materialName": "building-atlas.trim.vertical.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": "trim.vertical.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.cornice",
+            "materialName": "building-atlas.cornice.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "cornice.primary",
+            "atlasSlotId": "cornice.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.opening-pockets",
+            "materialName": "building-atlas.wall.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": "wall.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.roof",
+            "materialName": "building-atlas.roof.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "roof.primary",
+            "atlasSlotId": "roof.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.roof-cap",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.spandrels",
+            "materialName": "building-atlas.wall.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": "wall.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.storefront-hierarchy",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.vertical-pilasters",
+            "materialName": "building-atlas.trim.vertical.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": "trim.vertical.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.wall-panels",
+            "materialName": "building-atlas.wall.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": "wall.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          }
+        ],
+        "canvas": {
+          "width": 1280,
+          "height": 800,
+          "cssWidth": 1280,
+          "cssHeight": 800,
+          "devicePixelRatio": 1,
+          "backend": "webgpu",
+          "presentationMode": "textured",
+          "revealThroughStage": "roof"
+        },
+        "actualBackend": "webgpu",
+        "fallbackReason": null
+      }
+    },
+    {
+      "screenshot": {
+        "file": "building-webgpu-textured-rear-ordinary.png",
+        "sha256": "82b9e7f36dce8c372e5d967098ea1b6718618b857c2963241839a1bbeaeac9d7",
+        "widthPx": 1280,
+        "heightPx": 800
+      },
+      "snapshot": {
+        "viewName": "rear",
+        "lightingName": "ordinary",
+        "frameCount": 10,
+        "camera": {
+          "type": "PerspectiveCamera",
+          "isPerspectiveCamera": true,
+          "position": [
+            0,
+            8.962499618530273,
+            45.02751950123614
+          ],
+          "target": [
+            0,
+            8.962499618530273,
+            -0.6603025794029236
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "fov": 42,
+          "near": 0.1,
+          "far": 296.9700074195862,
+          "aspect": 1.6,
+          "projectionMatrix": [
+            1.628180665433626,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0006736955401405,
+            -1,
+            0,
+            0,
+            -0.20006736955401405,
+            0
+          ],
+          "matrixWorld": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            8.962499618530273,
+            45.02751950123614,
+            1
+          ],
+          "matrixWorldInverse": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -8.962499618530273,
+            -45.02751950123614,
+            1
+          ]
+        },
+        "key": {
+          "position": [
+            22.050023050904276,
+            44.83230789363384,
+            25.398815571665764
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            1,
+            0.8962693533719567,
+            0.6724431569510133
+          ],
+          "intensity": 4.2
+        },
+        "fill": {
+          "position": [
+            -26.059118151068688,
+            28.79592749297619,
+            -14.69213542997837
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            0.6104955708001716,
+            0.775822218312646,
+            0.8713671191959567
+          ],
+          "intensity": 0.72
+        },
+        "materials": [
+          {
+            "batchId": "instances.door",
+            "materialName": "building-atlas.door.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "door.primary",
+            "atlasSlotId": "door.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "instances.door.glass",
+            "materialName": "building-atlas.glass.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": "glass.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "instances.window",
+            "materialName": "building-atlas.frame.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "frame.primary",
+            "atlasSlotId": "frame.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "instances.window.glass",
+            "materialName": "building-atlas.glass.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": "glass.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.base-plinth",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.belt-course",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.corner-quoins",
+            "materialName": "building-atlas.trim.vertical.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": "trim.vertical.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.cornice",
+            "materialName": "building-atlas.cornice.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "cornice.primary",
+            "atlasSlotId": "cornice.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.opening-pockets",
+            "materialName": "building-atlas.wall.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": "wall.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.roof",
+            "materialName": "building-atlas.roof.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "roof.primary",
+            "atlasSlotId": "roof.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.roof-cap",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.spandrels",
+            "materialName": "building-atlas.wall.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": "wall.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.storefront-hierarchy",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.vertical-pilasters",
+            "materialName": "building-atlas.trim.vertical.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": "trim.vertical.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.wall-panels",
+            "materialName": "building-atlas.wall.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": "wall.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          }
+        ],
+        "canvas": {
+          "width": 1280,
+          "height": 800,
+          "cssWidth": 1280,
+          "cssHeight": 800,
+          "devicePixelRatio": 1,
+          "backend": "webgpu",
+          "presentationMode": "textured",
+          "revealThroughStage": "roof"
+        },
+        "actualBackend": "webgpu",
+        "fallbackReason": null
+      }
+    },
+    {
+      "screenshot": {
+        "file": "building-webgpu-textured-rear-raking.png",
+        "sha256": "af32056b09d2a4df1a59aa5f802563056d493ac14e42ef99c1408f64eae1cf14",
+        "widthPx": 1280,
+        "heightPx": 800
+      },
+      "snapshot": {
+        "viewName": "rear",
+        "lightingName": "raking",
+        "frameCount": 11,
+        "camera": {
+          "type": "PerspectiveCamera",
+          "isPerspectiveCamera": true,
+          "position": [
+            0,
+            8.962499618530273,
+            45.02751950123614
+          ],
+          "target": [
+            0,
+            8.962499618530273,
+            -0.6603025794029236
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "fov": 42,
+          "near": 0.1,
+          "far": 296.9700074195862,
+          "aspect": 1.6,
+          "projectionMatrix": [
+            1.628180665433626,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0006736955401405,
+            -1,
+            0,
+            0,
+            -0.20006736955401405,
+            0
+          ],
+          "matrixWorld": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            8.962499618530273,
+            45.02751950123614,
+            1
+          ],
+          "matrixWorldInverse": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -8.962499618530273,
+            -45.02751950123614,
+            1
+          ]
+        },
+        "key": {
+          "position": [
+            -46.737462629259376,
+            20.293257221677017,
+            6.493390680177594
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            1,
+            0.8962693533719567,
+            0.6724431569510133
+          ],
+          "intensity": 4.2
+        },
+        "fill": {
+          "position": [
+            25.705604446092657,
+            15.047215497984638,
+            -4.594833872172209
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            0.6104955708001716,
+            0.775822218312646,
+            0.8713671191959567
+          ],
+          "intensity": 0.72
+        },
+        "materials": [
+          {
+            "batchId": "instances.door",
+            "materialName": "building-atlas.door.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "door.primary",
+            "atlasSlotId": "door.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "instances.door.glass",
+            "materialName": "building-atlas.glass.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": "glass.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "instances.window",
+            "materialName": "building-atlas.frame.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "frame.primary",
+            "atlasSlotId": "frame.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "instances.window.glass",
+            "materialName": "building-atlas.glass.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": "glass.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.base-plinth",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.belt-course",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.corner-quoins",
+            "materialName": "building-atlas.trim.vertical.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": "trim.vertical.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.cornice",
+            "materialName": "building-atlas.cornice.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "cornice.primary",
+            "atlasSlotId": "cornice.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.opening-pockets",
+            "materialName": "building-atlas.wall.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": "wall.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.roof",
+            "materialName": "building-atlas.roof.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "roof.primary",
+            "atlasSlotId": "roof.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.roof-cap",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.spandrels",
+            "materialName": "building-atlas.wall.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": "wall.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.storefront-hierarchy",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.vertical-pilasters",
+            "materialName": "building-atlas.trim.vertical.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": "trim.vertical.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.wall-panels",
+            "materialName": "building-atlas.wall.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": "wall.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          }
+        ],
+        "canvas": {
+          "width": 1280,
+          "height": 800,
+          "cssWidth": 1280,
+          "cssHeight": 800,
+          "devicePixelRatio": 1,
+          "backend": "webgpu",
+          "presentationMode": "textured",
+          "revealThroughStage": "roof"
+        },
+        "actualBackend": "webgpu",
+        "fallbackReason": null
+      }
+    },
+    {
+      "screenshot": {
+        "file": "building-webgpu-clay-front-ordinary.png",
+        "sha256": "2fb30b2be379285b26b4d0a0c1c31bbc99ef02c06fc15b260337f56f221abde4",
+        "widthPx": 1280,
+        "heightPx": 800
+      },
+      "snapshot": {
+        "viewName": "front",
+        "lightingName": "ordinary",
+        "frameCount": 13,
+        "camera": {
+          "type": "PerspectiveCamera",
+          "isPerspectiveCamera": true,
+          "position": [
+            0,
+            8.962499618530273,
+            -46.34812466004199
+          ],
+          "target": [
+            0,
+            8.962499618530273,
+            -0.6603025794029236
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "fov": 42,
+          "near": 0.1,
+          "far": 296.9700074195862,
+          "aspect": 1.6,
+          "projectionMatrix": [
+            1.628180665433626,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0006736955401405,
+            -1,
+            0,
+            0,
+            -0.20006736955401405,
+            0
+          ],
+          "matrixWorld": [
+            -1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            -1,
+            0,
+            0,
+            8.962499618530273,
+            -46.34812466004199,
+            1
+          ],
+          "matrixWorldInverse": [
+            -1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            -1,
+            0,
+            0,
+            -8.962499618530273,
+            -46.34812466004199,
+            1
+          ]
+        },
+        "key": {
+          "position": [
+            22.050023050904276,
+            44.83230789363384,
+            25.398815571665764
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            1,
+            0.8962693533719567,
+            0.6724431569510133
+          ],
+          "intensity": 4.2
+        },
+        "fill": {
+          "position": [
+            -26.059118151068688,
+            28.79592749297619,
+            -14.69213542997837
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            0.6104955708001716,
+            0.775822218312646,
+            0.8713671191959567
+          ],
+          "intensity": 0.72
+        },
+        "materials": [
+          {
+            "batchId": "instances.door",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "door.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "instances.door.glass",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "instances.window",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "frame.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "instances.window.glass",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.base-plinth",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.belt-course",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.corner-quoins",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.cornice",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "cornice.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.opening-pockets",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.roof",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "roof.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.roof-cap",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.spandrels",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.storefront-hierarchy",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.vertical-pilasters",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.wall-panels",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          }
+        ],
+        "canvas": {
+          "width": 1280,
+          "height": 800,
+          "cssWidth": 1280,
+          "cssHeight": 800,
+          "devicePixelRatio": 1,
+          "backend": "webgpu",
+          "presentationMode": "clay",
+          "revealThroughStage": "roof"
+        },
+        "actualBackend": "webgpu",
+        "fallbackReason": null
+      }
+    },
+    {
+      "screenshot": {
+        "file": "building-webgpu-clay-front-raking.png",
+        "sha256": "7a23e0cd74e34e5e00e123f91f909109e4f71bd409f318aa8938b8191c76d2af",
+        "widthPx": 1280,
+        "heightPx": 800
+      },
+      "snapshot": {
+        "viewName": "front",
+        "lightingName": "raking",
+        "frameCount": 14,
+        "camera": {
+          "type": "PerspectiveCamera",
+          "isPerspectiveCamera": true,
+          "position": [
+            0,
+            8.962499618530273,
+            -46.34812466004199
+          ],
+          "target": [
+            0,
+            8.962499618530273,
+            -0.6603025794029236
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "fov": 42,
+          "near": 0.1,
+          "far": 296.9700074195862,
+          "aspect": 1.6,
+          "projectionMatrix": [
+            1.628180665433626,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0006736955401405,
+            -1,
+            0,
+            0,
+            -0.20006736955401405,
+            0
+          ],
+          "matrixWorld": [
+            -1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            -1,
+            0,
+            0,
+            8.962499618530273,
+            -46.34812466004199,
+            1
+          ],
+          "matrixWorldInverse": [
+            -1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            -1,
+            0,
+            0,
+            -8.962499618530273,
+            -46.34812466004199,
+            1
+          ]
+        },
+        "key": {
+          "position": [
+            46.737462629259376,
+            20.293257221677017,
+            -7.813995838983441
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            1,
+            0.8962693533719567,
+            0.6724431569510133
+          ],
+          "intensity": 4.2
+        },
+        "fill": {
+          "position": [
+            -25.705604446092657,
+            15.047215497984638,
+            3.2742287133663615
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            0.6104955708001716,
+            0.775822218312646,
+            0.8713671191959567
+          ],
+          "intensity": 0.72
+        },
+        "materials": [
+          {
+            "batchId": "instances.door",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "door.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "instances.door.glass",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "instances.window",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "frame.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "instances.window.glass",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.base-plinth",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.belt-course",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.corner-quoins",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.cornice",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "cornice.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.opening-pockets",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.roof",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "roof.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.roof-cap",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.spandrels",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.storefront-hierarchy",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.vertical-pilasters",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.wall-panels",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          }
+        ],
+        "canvas": {
+          "width": 1280,
+          "height": 800,
+          "cssWidth": 1280,
+          "cssHeight": 800,
+          "devicePixelRatio": 1,
+          "backend": "webgpu",
+          "presentationMode": "clay",
+          "revealThroughStage": "roof"
+        },
+        "actualBackend": "webgpu",
+        "fallbackReason": null
+      }
+    },
+    {
+      "screenshot": {
+        "file": "building-webgpu-clay-three-quarter-ordinary.png",
+        "sha256": "6700d6061b264d89003dab2e60a1c9447cfff2bfb8ed8156aaa6627b1a668412",
+        "widthPx": 1280,
+        "heightPx": 800
+      },
+      "snapshot": {
+        "viewName": "three-quarter",
+        "lightingName": "ordinary",
+        "frameCount": 15,
+        "camera": {
+          "type": "PerspectiveCamera",
+          "isPerspectiveCamera": true,
+          "position": [
+            21.68732552404083,
+            16.848799809090576,
+            -40.09180353220443
+          ],
+          "target": [
+            0,
+            8.962499618530273,
+            -0.6603025794029236
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "fov": 42,
+          "near": 0.1,
+          "far": 296.9700074195862,
+          "aspect": 1.6,
+          "projectionMatrix": [
+            1.628180665433626,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0006736955401405,
+            -1,
+            0,
+            0,
+            -0.20006736955401405,
+            0
+          ],
+          "matrixWorld": [
+            -0.8762159086766468,
+            6.938893903907228e-18,
+            -0.4819187497721559,
+            0,
+            -0.08318531624148662,
+            0.9849897673139664,
+            0.15124602952997565,
+            0,
+            0.47468503720231336,
+            0.17261274080084124,
+            -0.863063704004206,
+            0,
+            21.68732552404083,
+            16.848799809090576,
+            -40.09180353220443,
+            1
+          ],
+          "matrixWorldInverse": [
+            -0.876215908676647,
+            -0.08318531624148663,
+            0.47468503720231364,
+            0,
+            1.387778780781446e-17,
+            0.9849897673139663,
+            0.17261274080084124,
+            0,
+            -0.48191874977215604,
+            0.15124602952997565,
+            -0.8630637040042062,
+            0,
+            -0.3182121935371939,
+            -8.728102270384552,
+            -47.804746894163095,
+            1
+          ]
+        },
+        "key": {
+          "position": [
+            22.050023050904276,
+            44.83230789363384,
+            25.398815571665764
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            1,
+            0.8962693533719567,
+            0.6724431569510133
+          ],
+          "intensity": 4.2
+        },
+        "fill": {
+          "position": [
+            -26.059118151068688,
+            28.79592749297619,
+            -14.69213542997837
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            0.6104955708001716,
+            0.775822218312646,
+            0.8713671191959567
+          ],
+          "intensity": 0.72
+        },
+        "materials": [
+          {
+            "batchId": "instances.door",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "door.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "instances.door.glass",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "instances.window",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "frame.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "instances.window.glass",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.base-plinth",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.belt-course",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.corner-quoins",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.cornice",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "cornice.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.opening-pockets",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.roof",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "roof.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.roof-cap",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.spandrels",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.storefront-hierarchy",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.vertical-pilasters",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.wall-panels",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          }
+        ],
+        "canvas": {
+          "width": 1280,
+          "height": 800,
+          "cssWidth": 1280,
+          "cssHeight": 800,
+          "devicePixelRatio": 1,
+          "backend": "webgpu",
+          "presentationMode": "clay",
+          "revealThroughStage": "roof"
+        },
+        "actualBackend": "webgpu",
+        "fallbackReason": null
+      }
+    },
+    {
+      "screenshot": {
+        "file": "building-webgpu-clay-three-quarter-raking.png",
+        "sha256": "0e7b20bc878e7163328085cfa54252007ef8180e14d0bac90d3eddd380b639ac",
+        "widthPx": 1280,
+        "heightPx": 800
+      },
+      "snapshot": {
+        "viewName": "three-quarter",
+        "lightingName": "raking",
+        "frameCount": 16,
+        "camera": {
+          "type": "PerspectiveCamera",
+          "isPerspectiveCamera": true,
+          "position": [
+            21.68732552404083,
+            16.848799809090576,
+            -40.09180353220443
+          ],
+          "target": [
+            0,
+            8.962499618530273,
+            -0.6603025794029236
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "fov": 42,
+          "near": 0.1,
+          "far": 296.9700074195862,
+          "aspect": 1.6,
+          "projectionMatrix": [
+            1.628180665433626,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0006736955401405,
+            -1,
+            0,
+            0,
+            -0.20006736955401405,
+            0
+          ],
+          "matrixWorld": [
+            -0.8762159086766468,
+            6.938893903907228e-18,
+            -0.4819187497721559,
+            0,
+            -0.08318531624148662,
+            0.9849897673139664,
+            0.15124602952997565,
+            0,
+            0.47468503720231336,
+            0.17261274080084124,
+            -0.863063704004206,
+            0,
+            21.68732552404083,
+            16.848799809090576,
+            -40.09180353220443,
+            1
+          ],
+          "matrixWorldInverse": [
+            -0.876215908676647,
+            -0.08318531624148663,
+            0.47468503720231364,
+            0,
+            1.387778780781446e-17,
+            0.9849897673139663,
+            0.17261274080084124,
+            0,
+            -0.48191874977215604,
+            0.15124602952997565,
+            -0.8630637040042062,
+            0,
+            -0.3182121935371939,
+            -8.728102270384552,
+            -47.804746894163095,
+            1
+          ]
+        },
+        "key": {
+          "position": [
+            46.737462629259376,
+            20.293257221677017,
+            -7.813995838983441
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            1,
+            0.8962693533719567,
+            0.6724431569510133
+          ],
+          "intensity": 4.2
+        },
+        "fill": {
+          "position": [
+            -25.705604446092657,
+            15.047215497984638,
+            3.2742287133663615
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            0.6104955708001716,
+            0.775822218312646,
+            0.8713671191959567
+          ],
+          "intensity": 0.72
+        },
+        "materials": [
+          {
+            "batchId": "instances.door",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "door.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "instances.door.glass",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "instances.window",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "frame.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "instances.window.glass",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.base-plinth",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.belt-course",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.corner-quoins",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.cornice",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "cornice.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.opening-pockets",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.roof",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "roof.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.roof-cap",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.spandrels",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.storefront-hierarchy",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.vertical-pilasters",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.wall-panels",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          }
+        ],
+        "canvas": {
+          "width": 1280,
+          "height": 800,
+          "cssWidth": 1280,
+          "cssHeight": 800,
+          "devicePixelRatio": 1,
+          "backend": "webgpu",
+          "presentationMode": "clay",
+          "revealThroughStage": "roof"
+        },
+        "actualBackend": "webgpu",
+        "fallbackReason": null
+      }
+    },
+    {
+      "screenshot": {
+        "file": "building-webgpu-clay-right-ordinary.png",
+        "sha256": "4bba4973514f64e9b61596bfa8c39cc43b4ac3f8316dfbbb3d5f4bfd18c7f9be",
+        "widthPx": 1280,
+        "heightPx": 800
+      },
+      "snapshot": {
+        "viewName": "right",
+        "lightingName": "ordinary",
+        "frameCount": 17,
+        "camera": {
+          "type": "PerspectiveCamera",
+          "isPerspectiveCamera": true,
+          "position": [
+            45.687822080639066,
+            8.962499618530273,
+            -0.6603025794029236
+          ],
+          "target": [
+            0,
+            8.962499618530273,
+            -0.6603025794029236
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "fov": 42,
+          "near": 0.1,
+          "far": 296.9700074195862,
+          "aspect": 1.6,
+          "projectionMatrix": [
+            1.628180665433626,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0006736955401405,
+            -1,
+            0,
+            0,
+            -0.20006736955401405,
+            0
+          ],
+          "matrixWorld": [
+            2.220446049250313e-16,
+            0,
+            -1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            1,
+            0,
+            2.220446049250313e-16,
+            0,
+            45.687822080639066,
+            8.962499618530273,
+            -0.6603025794029236,
+            1
+          ],
+          "matrixWorldInverse": [
+            2.220446049250313e-16,
+            0,
+            1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -1,
+            0,
+            2.220446049250313e-16,
+            0,
+            -0.6603025794029337,
+            -8.962499618530273,
+            -45.687822080639066,
+            1
+          ]
+        },
+        "key": {
+          "position": [
+            22.050023050904276,
+            44.83230789363384,
+            25.398815571665764
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            1,
+            0.8962693533719567,
+            0.6724431569510133
+          ],
+          "intensity": 4.2
+        },
+        "fill": {
+          "position": [
+            -26.059118151068688,
+            28.79592749297619,
+            -14.69213542997837
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            0.6104955708001716,
+            0.775822218312646,
+            0.8713671191959567
+          ],
+          "intensity": 0.72
+        },
+        "materials": [
+          {
+            "batchId": "instances.door",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "door.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "instances.door.glass",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "instances.window",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "frame.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "instances.window.glass",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.base-plinth",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.belt-course",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.corner-quoins",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.cornice",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "cornice.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.opening-pockets",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.roof",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "roof.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.roof-cap",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.spandrels",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.storefront-hierarchy",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.vertical-pilasters",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.wall-panels",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          }
+        ],
+        "canvas": {
+          "width": 1280,
+          "height": 800,
+          "cssWidth": 1280,
+          "cssHeight": 800,
+          "devicePixelRatio": 1,
+          "backend": "webgpu",
+          "presentationMode": "clay",
+          "revealThroughStage": "roof"
+        },
+        "actualBackend": "webgpu",
+        "fallbackReason": null
+      }
+    },
+    {
+      "screenshot": {
+        "file": "building-webgpu-clay-right-raking.png",
+        "sha256": "bb6a89b715b40f90fd407c7f00f539ce4cce5e36515b55eaf05aba439e46c54d",
+        "widthPx": 1280,
+        "heightPx": 800
+      },
+      "snapshot": {
+        "viewName": "right",
+        "lightingName": "raking",
+        "frameCount": 18,
+        "camera": {
+          "type": "PerspectiveCamera",
+          "isPerspectiveCamera": true,
+          "position": [
+            45.687822080639066,
+            8.962499618530273,
+            -0.6603025794029236
+          ],
+          "target": [
+            0,
+            8.962499618530273,
+            -0.6603025794029236
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "fov": 42,
+          "near": 0.1,
+          "far": 296.9700074195862,
+          "aspect": 1.6,
+          "projectionMatrix": [
+            1.628180665433626,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0006736955401405,
+            -1,
+            0,
+            0,
+            -0.20006736955401405,
+            0
+          ],
+          "matrixWorld": [
+            2.220446049250313e-16,
+            0,
+            -1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            1,
+            0,
+            2.220446049250313e-16,
+            0,
+            45.687822080639066,
+            8.962499618530273,
+            -0.6603025794029236,
+            1
+          ],
+          "matrixWorldInverse": [
+            2.220446049250313e-16,
+            0,
+            1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -1,
+            0,
+            2.220446049250313e-16,
+            0,
+            -0.6603025794029337,
+            -8.962499618530273,
+            -45.687822080639066,
+            1
+          ]
+        },
+        "key": {
+          "position": [
+            7.153693259580518,
+            20.293257221677017,
+            46.07716004985645
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            1,
+            0.8962693533719567,
+            0.6724431569510133
+          ],
+          "intensity": 4.2
+        },
+        "fill": {
+          "position": [
+            -3.934531292769285,
+            15.047215497984638,
+            -26.36590702549558
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            0.6104955708001716,
+            0.775822218312646,
+            0.8713671191959567
+          ],
+          "intensity": 0.72
+        },
+        "materials": [
+          {
+            "batchId": "instances.door",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "door.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "instances.door.glass",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "instances.window",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "frame.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "instances.window.glass",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.base-plinth",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.belt-course",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.corner-quoins",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.cornice",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "cornice.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.opening-pockets",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.roof",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "roof.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.roof-cap",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.spandrels",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.storefront-hierarchy",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.vertical-pilasters",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.wall-panels",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          }
+        ],
+        "canvas": {
+          "width": 1280,
+          "height": 800,
+          "cssWidth": 1280,
+          "cssHeight": 800,
+          "devicePixelRatio": 1,
+          "backend": "webgpu",
+          "presentationMode": "clay",
+          "revealThroughStage": "roof"
+        },
+        "actualBackend": "webgpu",
+        "fallbackReason": null
+      }
+    },
+    {
+      "screenshot": {
+        "file": "building-webgpu-clay-rear-ordinary.png",
+        "sha256": "e4bf59749d83a6068adc0d60f3107905e8db2119dee5264d0cfb7ad1f3c3af1a",
+        "widthPx": 1280,
+        "heightPx": 800
+      },
+      "snapshot": {
+        "viewName": "rear",
+        "lightingName": "ordinary",
+        "frameCount": 19,
+        "camera": {
+          "type": "PerspectiveCamera",
+          "isPerspectiveCamera": true,
+          "position": [
+            0,
+            8.962499618530273,
+            45.02751950123614
+          ],
+          "target": [
+            0,
+            8.962499618530273,
+            -0.6603025794029236
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "fov": 42,
+          "near": 0.1,
+          "far": 296.9700074195862,
+          "aspect": 1.6,
+          "projectionMatrix": [
+            1.628180665433626,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0006736955401405,
+            -1,
+            0,
+            0,
+            -0.20006736955401405,
+            0
+          ],
+          "matrixWorld": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            8.962499618530273,
+            45.02751950123614,
+            1
+          ],
+          "matrixWorldInverse": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -8.962499618530273,
+            -45.02751950123614,
+            1
+          ]
+        },
+        "key": {
+          "position": [
+            22.050023050904276,
+            44.83230789363384,
+            25.398815571665764
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            1,
+            0.8962693533719567,
+            0.6724431569510133
+          ],
+          "intensity": 4.2
+        },
+        "fill": {
+          "position": [
+            -26.059118151068688,
+            28.79592749297619,
+            -14.69213542997837
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            0.6104955708001716,
+            0.775822218312646,
+            0.8713671191959567
+          ],
+          "intensity": 0.72
+        },
+        "materials": [
+          {
+            "batchId": "instances.door",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "door.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "instances.door.glass",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "instances.window",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "frame.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "instances.window.glass",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.base-plinth",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.belt-course",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.corner-quoins",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.cornice",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "cornice.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.opening-pockets",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.roof",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "roof.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.roof-cap",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.spandrels",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.storefront-hierarchy",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.vertical-pilasters",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.wall-panels",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          }
+        ],
+        "canvas": {
+          "width": 1280,
+          "height": 800,
+          "cssWidth": 1280,
+          "cssHeight": 800,
+          "devicePixelRatio": 1,
+          "backend": "webgpu",
+          "presentationMode": "clay",
+          "revealThroughStage": "roof"
+        },
+        "actualBackend": "webgpu",
+        "fallbackReason": null
+      }
+    },
+    {
+      "screenshot": {
+        "file": "building-webgpu-clay-rear-raking.png",
+        "sha256": "b698d875e84c7ba78200a42ddbdc9d391fa9fd5a35ec22df741c8eb12a141963",
+        "widthPx": 1280,
+        "heightPx": 800
+      },
+      "snapshot": {
+        "viewName": "rear",
+        "lightingName": "raking",
+        "frameCount": 20,
+        "camera": {
+          "type": "PerspectiveCamera",
+          "isPerspectiveCamera": true,
+          "position": [
+            0,
+            8.962499618530273,
+            45.02751950123614
+          ],
+          "target": [
+            0,
+            8.962499618530273,
+            -0.6603025794029236
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "fov": 42,
+          "near": 0.1,
+          "far": 296.9700074195862,
+          "aspect": 1.6,
+          "projectionMatrix": [
+            1.628180665433626,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0006736955401405,
+            -1,
+            0,
+            0,
+            -0.20006736955401405,
+            0
+          ],
+          "matrixWorld": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            8.962499618530273,
+            45.02751950123614,
+            1
+          ],
+          "matrixWorldInverse": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -8.962499618530273,
+            -45.02751950123614,
+            1
+          ]
+        },
+        "key": {
+          "position": [
+            -46.737462629259376,
+            20.293257221677017,
+            6.493390680177594
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            1,
+            0.8962693533719567,
+            0.6724431569510133
+          ],
+          "intensity": 4.2
+        },
+        "fill": {
+          "position": [
+            25.705604446092657,
+            15.047215497984638,
+            -4.594833872172209
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            0.6104955708001716,
+            0.775822218312646,
+            0.8713671191959567
+          ],
+          "intensity": 0.72
+        },
+        "materials": [
+          {
+            "batchId": "instances.door",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "door.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "instances.door.glass",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "instances.window",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "frame.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "instances.window.glass",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.base-plinth",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.belt-course",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.corner-quoins",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.cornice",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "cornice.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.opening-pockets",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.roof",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "roof.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.roof-cap",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.spandrels",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.storefront-hierarchy",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.vertical-pilasters",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.wall-panels",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          }
+        ],
+        "canvas": {
+          "width": 1280,
+          "height": 800,
+          "cssWidth": 1280,
+          "cssHeight": 800,
+          "devicePixelRatio": 1,
+          "backend": "webgpu",
+          "presentationMode": "clay",
+          "revealThroughStage": "roof"
+        },
+        "actualBackend": "webgpu",
+        "fallbackReason": null
+      }
+    },
+    {
+      "screenshot": {
+        "file": "building-webgl-textured-three-quarter-ordinary.png",
+        "sha256": "a6f8ac0d19907bf9758eb0885ef0b2b62af385c5e4e77112d072c6dc13e66d90",
+        "widthPx": 1280,
+        "heightPx": 800
+      },
+      "snapshot": {
+        "viewName": "three-quarter",
+        "lightingName": "ordinary",
+        "frameCount": 4,
+        "camera": {
+          "type": "PerspectiveCamera",
+          "isPerspectiveCamera": true,
+          "position": [
+            21.68732552404083,
+            16.848799809090576,
+            -40.09180353220443
+          ],
+          "target": [
+            0,
+            8.962499618530273,
+            -0.6603025794029236
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "fov": 42,
+          "near": 0.1,
+          "far": 296.9700074195862,
+          "aspect": 1.6,
+          "projectionMatrix": [
+            1.628180665433626,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0006736955401405,
+            -1,
+            0,
+            0,
+            -0.20006736955401405,
+            0
+          ],
+          "matrixWorld": [
+            -0.8762159086766468,
+            6.938893903907228e-18,
+            -0.4819187497721559,
+            0,
+            -0.08318531624148662,
+            0.9849897673139664,
+            0.15124602952997565,
+            0,
+            0.47468503720231336,
+            0.17261274080084124,
+            -0.863063704004206,
+            0,
+            21.68732552404083,
+            16.848799809090576,
+            -40.09180353220443,
+            1
+          ],
+          "matrixWorldInverse": [
+            -0.876215908676647,
+            -0.08318531624148663,
+            0.47468503720231364,
+            0,
+            1.387778780781446e-17,
+            0.9849897673139663,
+            0.17261274080084124,
+            0,
+            -0.48191874977215604,
+            0.15124602952997565,
+            -0.8630637040042062,
+            0,
+            -0.3182121935371939,
+            -8.728102270384552,
+            -47.804746894163095,
+            1
+          ]
+        },
+        "key": {
+          "position": [
+            22.050023050904276,
+            44.83230789363384,
+            25.398815571665764
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            1,
+            0.8962693533719567,
+            0.6724431569510133
+          ],
+          "intensity": 4.2
+        },
+        "fill": {
+          "position": [
+            -26.059118151068688,
+            28.79592749297619,
+            -14.69213542997837
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            0.6104955708001716,
+            0.775822218312646,
+            0.8713671191959567
+          ],
+          "intensity": 0.72
+        },
+        "materials": [
+          {
+            "batchId": "instances.door",
+            "materialName": "building-atlas.door.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "door.primary",
+            "atlasSlotId": "door.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "instances.door.glass",
+            "materialName": "building-atlas.glass.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": "glass.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "instances.window",
+            "materialName": "building-atlas.frame.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "frame.primary",
+            "atlasSlotId": "frame.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "instances.window.glass",
+            "materialName": "building-atlas.glass.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": "glass.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.base-plinth",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.belt-course",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.corner-quoins",
+            "materialName": "building-atlas.trim.vertical.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": "trim.vertical.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.cornice",
+            "materialName": "building-atlas.cornice.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "cornice.primary",
+            "atlasSlotId": "cornice.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.opening-pockets",
+            "materialName": "building-atlas.wall.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": "wall.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.roof",
+            "materialName": "building-atlas.roof.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "roof.primary",
+            "atlasSlotId": "roof.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.roof-cap",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.spandrels",
+            "materialName": "building-atlas.wall.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": "wall.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.storefront-hierarchy",
+            "materialName": "building-atlas.trim.horizontal.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": "trim.horizontal.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.vertical-pilasters",
+            "materialName": "building-atlas.trim.vertical.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": "trim.vertical.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          },
+          {
+            "batchId": "mesh.wall-panels",
+            "materialName": "building-atlas.wall.primary",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": "wall.primary",
+            "atlasContentHash": "70f83ce0f5ecebf970cb26b014e446212f522e81d2dc99e33c2afbf18680853e"
+          }
+        ],
+        "canvas": {
+          "width": 1280,
+          "height": 800,
+          "cssWidth": 1280,
+          "cssHeight": 800,
+          "devicePixelRatio": 1,
+          "backend": "webgl",
+          "presentationMode": "textured",
+          "revealThroughStage": "roof"
+        },
+        "actualBackend": "webgl",
+        "fallbackReason": null
+      }
+    },
+    {
+      "screenshot": {
+        "file": "building-webgl-clay-three-quarter-ordinary.png",
+        "sha256": "64736594ad047d3c3b1784fc034d167c552dd7e0cda1f26218d48d05d7e4d50c",
+        "widthPx": 1280,
+        "heightPx": 800
+      },
+      "snapshot": {
+        "viewName": "three-quarter",
+        "lightingName": "ordinary",
+        "frameCount": 6,
+        "camera": {
+          "type": "PerspectiveCamera",
+          "isPerspectiveCamera": true,
+          "position": [
+            21.68732552404083,
+            16.848799809090576,
+            -40.09180353220443
+          ],
+          "target": [
+            0,
+            8.962499618530273,
+            -0.6603025794029236
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "fov": 42,
+          "near": 0.1,
+          "far": 296.9700074195862,
+          "aspect": 1.6,
+          "projectionMatrix": [
+            1.628180665433626,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0006736955401405,
+            -1,
+            0,
+            0,
+            -0.20006736955401405,
+            0
+          ],
+          "matrixWorld": [
+            -0.8762159086766468,
+            6.938893903907228e-18,
+            -0.4819187497721559,
+            0,
+            -0.08318531624148662,
+            0.9849897673139664,
+            0.15124602952997565,
+            0,
+            0.47468503720231336,
+            0.17261274080084124,
+            -0.863063704004206,
+            0,
+            21.68732552404083,
+            16.848799809090576,
+            -40.09180353220443,
+            1
+          ],
+          "matrixWorldInverse": [
+            -0.876215908676647,
+            -0.08318531624148663,
+            0.47468503720231364,
+            0,
+            1.387778780781446e-17,
+            0.9849897673139663,
+            0.17261274080084124,
+            0,
+            -0.48191874977215604,
+            0.15124602952997565,
+            -0.8630637040042062,
+            0,
+            -0.3182121935371939,
+            -8.728102270384552,
+            -47.804746894163095,
+            1
+          ]
+        },
+        "key": {
+          "position": [
+            22.050023050904276,
+            44.83230789363384,
+            25.398815571665764
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            1,
+            0.8962693533719567,
+            0.6724431569510133
+          ],
+          "intensity": 4.2
+        },
+        "fill": {
+          "position": [
+            -26.059118151068688,
+            28.79592749297619,
+            -14.69213542997837
+          ],
+          "target": [
+            0,
+            10.754999542236328,
+            -0.6603025794029236
+          ],
+          "color": [
+            0.6104955708001716,
+            0.775822218312646,
+            0.8713671191959567
+          ],
+          "intensity": 0.72
+        },
+        "materials": [
+          {
+            "batchId": "instances.door",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "door.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "instances.door.glass",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "instances.window",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "frame.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "instances.window.glass",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "glass.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.base-plinth",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.belt-course",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.corner-quoins",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.cornice",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "cornice.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.opening-pockets",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.roof",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "roof.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.roof-cap",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.spandrels",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.storefront-hierarchy",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.horizontal.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.vertical-pilasters",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "trim.vertical.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          },
+          {
+            "batchId": "mesh.wall-panels",
+            "materialName": "assembly-hall.clay-inspection",
+            "materialType": "MeshStandardMaterial",
+            "materialSlotId": "wall.primary",
+            "atlasSlotId": null,
+            "atlasContentHash": null
+          }
+        ],
+        "canvas": {
+          "width": 1280,
+          "height": 800,
+          "cssWidth": 1280,
+          "cssHeight": 800,
+          "devicePixelRatio": 1,
+          "backend": "webgl",
+          "presentationMode": "clay",
+          "revealThroughStage": "roof"
+        },
+        "actualBackend": "webgl",
+        "fallbackReason": null
+      }
+    }
+  ],
+  "criteria": [
+    {
+      "id": "massing-base",
+      "label": "Massing and base",
+      "criterion": "Base, body and crown read immediately; commercial base differs from upper floors; roof does not bury the crown and shadows support the form.",
+      "review": "pending"
+    },
+    {
+      "id": "facade-rhythm",
+      "label": "Facade rhythm",
+      "criterion": "Openings align and piers read as masonry; hierarchy avoids an equally heavy grid. Raking light reveals no clipping or misaligned joins.",
+      "review": "pending"
+    },
+    {
+      "id": "opening-depth",
+      "label": "Opening depth and glazing",
+      "criterion": "Returns, frames and glass remain separate; glazing differs visibly from solid trim, and all facade glass faces outward correctly.",
+      "review": "pending"
+    },
+    {
+      "id": "trim-restraint",
+      "label": "Trim layering and restraint",
+      "criterion": "A dominant crown has subordinate belts and window trim; ledges do not overwhelm the wall. Layers cast coherent shadows without floating or flicker.",
+      "review": "pending"
+    },
+    {
+      "id": "material-scale",
+      "label": "Material scale and roles",
+      "criterion": "Wall brick courses use the existing 75 mm anchor; role/channel orientation is correct. One- and four-metre swatches have equal physical density, without sampling neighbouring slots.",
+      "review": "pending"
+    },
+    {
+      "id": "side-rear",
+      "label": "Side and rear coherence",
+      "criterion": "Simpler elevations, corner and cornice returns and ground contact form competent generated architecture. No fidelity claim is made for reference elevations not shown.",
+      "review": "pending"
+    }
+  ],
+  "humanReview": "pending",
+  "scopeNote": "R1 wall sampling repair comparison. The original controls, cameras, lights, graph and material atlas are replayed; renderer geometry may change. Other architectural criteria and human visual acceptance remain pending.",
+  "pageErrors": []
+}

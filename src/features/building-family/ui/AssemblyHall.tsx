@@ -1,7 +1,8 @@
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   AmbientLight,
   Box3,
+  Box3Helper,
   Color,
   DataTexture,
   DirectionalLight,
@@ -12,10 +13,12 @@ import {
   PerspectiveCamera,
   PlaneGeometry,
   RGBAFormat,
+  Raycaster,
   Scene,
   Spherical,
   SRGBColorSpace,
   UnsignedByteType,
+  Vector2,
   Vector3,
   type Object3D
 } from "three";
@@ -29,7 +32,11 @@ import {
   type AssemblyRendererBackend,
   type AssemblyRendererFactory
 } from "../renderer-three/assemblyRendererFactory";
-import type { RendererBackendSupport } from "../renderer-three/buildingSceneAdapter";
+import {
+  resolveWindowSelectionFromIntersections,
+  resolveWindowSelectionFromSemanticPath,
+  type RendererBackendSupport
+} from "../renderer-three/buildingSceneAdapter";
 import {
   createFamilyBenchmarkDocumentation,
   type FamilyBenchmarkDocumentation,
@@ -52,12 +59,46 @@ import {
 } from "../performance/familyOrbitBenchmarkScene";
 import { createVisualQaPacket, type VisualQaPacket } from "../qa/visualQaPacket";
 import type { AssemblyHallFixture } from "./assemblyHallFixture";
+import { resolveConstructionFrameFromIntersections, resolveConstructionFrameFromPath } from "../renderer-three/constructionFrameSelection";
+
+import type { BuildingFixtureViewerPreparer, PreparedBuildingFixtureView } from "../state/buildingRunController";
+
+export interface AssemblyHallWindowSelection {
+  fixture: AssemblyHallFixture;
+  semanticPath: string;
+}
 
 export interface AssemblyHallProps {
   fixture: AssemblyHallFixture;
+  workspace?: boolean;
+  title?: string;
+  description?: string;
+  showFamilyTools?: boolean;
+  lighting?: "building" | "bay" | "construction";
+  framing?: "building" | "facade";
+  onWindowSelectionChange?: (selection: AssemblyHallWindowSelection | null) => void;
+  constructionFrameSelection?: boolean;
+  conciseFallback?: boolean;
+  acquireFixtureViewerLease?: (fixture: AssemblyHallFixture) => () => void;
+  registerFixtureViewer?: (preparer: BuildingFixtureViewerPreparer) => () => void;
   rendererFactory?: AssemblyRendererFactory;
   benchmarkSceneFactory?: typeof createFamilyBenchmarkScene;
   orbitBenchmarkSceneFactory?: typeof createFamilyOrbitBenchmarkScene;
+}
+
+function AssemblyHallDiagnostics({ workspace, label, children }: {
+  workspace: boolean;
+  label: string;
+  children: ReactNode;
+}) {
+  if (!workspace) return <>{children}</>;
+
+  return (
+    <details className="assembly-hall__diagnostics">
+      <summary>{label}</summary>
+      <div className="assembly-hall__diagnostics-content">{children}</div>
+    </details>
+  );
 }
 
 const selectionStageOrder: AssemblyStage[] = ["massing", "facade", "openings", "trim", "roof"];
@@ -336,16 +377,20 @@ function sceneBounds(root: Object3D): { center: Vector3; size: Vector3; maxDimen
   };
 }
 
+const originalTexturedMaterials = new WeakMap<Mesh, MeshStandardMaterial>();
+
 function applyPresentationMode(
   fixture: AssemblyHallFixture,
   clayMaterial: MeshStandardMaterial,
   presentationMode: AssemblyPresentationMode
 ): void {
   for (const renderable of fixture.buildingRuntime.renderables) {
+    const textured = originalTexturedMaterials.get(renderable) ?? renderable.material;
+    originalTexturedMaterials.set(renderable, textured);
     renderable.material =
       presentationMode === "clay"
         ? clayMaterial
-        : fixture.buildingRuntime.materialRegistry.getMaterial(renderable.userData.materialSlotId);
+        : textured;
   }
 }
 
@@ -361,44 +406,49 @@ function createSolidPresentationTexture(
   return texture;
 }
 
-function prepareScene(root: Object3D): PreparedAssemblyScene {
+function prepareScene(root: Object3D, lighting: "building" | "bay" | "construction" = "building"): PreparedAssemblyScene {
+  const bay = lighting !== "building", construction = lighting === "construction";
   const scene = new Scene();
   scene.background = new Color("#dfe5df");
-  scene.add(new AmbientLight("#f4f0e4", 0.38));
-  scene.add(new HemisphereLight("#f5f7f2", "#5f695f", 1.45));
+  scene.add(new AmbientLight("#f4f0e4", bay ? 0.12 : 0.38));
+  scene.add(new HemisphereLight("#f5f7f2", "#5f695f", bay ? 0.75 : 1.45));
 
   const { center, size, maxDimension } = sceneBounds(root);
   const orbitTarget = new Vector3(center.x, center.y + size.y * 0.1, center.z);
-  const lightRadius = Math.max(18, maxDimension * 1.35);
+  const lightRadius = bay ? Math.max(6, maxDimension * 2) : Math.max(18, maxDimension * 1.35);
   const defaultKeyLightOffset = new Vector3(
     lightRadius * 0.55,
     lightRadius * 0.85,
-    lightRadius * 0.65
+    lightRadius * (bay ? -0.65 : 0.65)
   );
   const defaultFillLightOffset = new Vector3(
     -lightRadius * 0.65,
     lightRadius * 0.45,
-    -lightRadius * 0.35
+    lightRadius * (bay ? 0.35 : -0.35)
   );
 
-  const keyLight = new DirectionalLight("#fff3d6", 4.2);
+  const keyLight = new DirectionalLight(bay ? "#fff9ef" : "#fff3d6", bay ? 2.8 : 4.2);
   keyLight.name = "assembly-hall.key-light";
   keyLight.position.copy(orbitTarget).add(defaultKeyLightOffset);
   keyLight.target.position.copy(orbitTarget);
   keyLight.castShadow = true;
-  keyLight.shadow.mapSize.set(2048, 2048);
-  const shadowExtent = Math.max(24, maxDimension * 1.6);
+  keyLight.shadow.mapSize.set(construction ? 4096 : 2048, construction ? 4096 : 2048);
+  const shadowExtent = bay ? Math.max(4, maxDimension * 1.05) : Math.max(24, maxDimension * 1.6);
   keyLight.shadow.camera.left = -shadowExtent;
   keyLight.shadow.camera.right = shadowExtent;
   keyLight.shadow.camera.top = shadowExtent;
   keyLight.shadow.camera.bottom = -shadowExtent;
-  keyLight.shadow.camera.near = 0.5;
-  keyLight.shadow.camera.far = Math.max(90, maxDimension * 6);
-  keyLight.shadow.bias = -0.00015;
+  keyLight.shadow.camera.near = bay ? 0.1 : 0.5;
+  keyLight.shadow.camera.far = bay ? Math.max(24, lightRadius * 3) : Math.max(90, maxDimension * 6);
+  keyLight.shadow.bias = bay ? -0.00003 : -0.00015;
+  if (bay) {
+    keyLight.shadow.normalBias = 0.001;
+    keyLight.shadow.camera.updateProjectionMatrix();
+  }
   scene.add(keyLight);
   scene.add(keyLight.target);
 
-  const fillLight = new DirectionalLight("#cde4f0", 0.72);
+  const fillLight = new DirectionalLight("#cde4f0", bay ? 0.35 : 0.72);
   fillLight.name = "assembly-hall.fill-light";
   fillLight.position.copy(orbitTarget).add(defaultFillLightOffset);
   fillLight.target.position.copy(orbitTarget);
@@ -410,7 +460,7 @@ function prepareScene(root: Object3D): PreparedAssemblyScene {
     if (!renderable.isMesh) {
       return;
     }
-    renderable.castShadow = true;
+    renderable.castShadow = renderable.userData.opaqueShadowCaster !== false;
     renderable.receiveShadow = true;
   });
 
@@ -475,16 +525,19 @@ function prepareScene(root: Object3D): PreparedAssemblyScene {
     defaultFillLightOffset: defaultFillLightOffset.clone(),
     maxDimension,
     dispose: () => {
-      if (disposed) {
-        return;
-      }
+      if (disposed) return;
       disposed = true;
-      groundGeometry.dispose();
-      groundMaterial.dispose();
-      clayMaterial.dispose();
-      for (const texture of Object.values(clayTextures)) {
-        texture.dispose();
+      const errors: unknown[] = [];
+      const disposers = [
+        () => groundGeometry.dispose(),
+        () => groundMaterial.dispose(),
+        () => clayMaterial.dispose(),
+        ...Object.values(clayTextures).map((texture) => () => texture.dispose())
+      ];
+      for (const dispose of disposers) {
+        try { dispose(); } catch (error: unknown) { errors.push(error); }
       }
+      if (errors.length) throw errors[0];
     }
   };
 }
@@ -518,15 +571,39 @@ function stageRevealSummaries(fixture: AssemblyHallFixture, revealThroughStage: 
 }
 
 export function AssemblyHall({
-  fixture,
+  fixture: requestedFixture,
+  workspace = false,
+  title = "Assembly Hall",
+  description,
+  showFamilyTools = true,
+  lighting = "building",
+  framing = "building",
+  onWindowSelectionChange,
+  constructionFrameSelection = false,
+  conciseFallback = false,
+  acquireFixtureViewerLease,
+  registerFixtureViewer,
   rendererFactory = createAssemblyRenderer,
   benchmarkSceneFactory = createFamilyBenchmarkScene,
   orbitBenchmarkSceneFactory = createFamilyOrbitBenchmarkScene
 }: AssemblyHallProps) {
+  const [fixture, setDisplayedFixture] = useState(requestedFixture);
+  const requestedFixtureRef = useRef(requestedFixture);
+  const windowSelectionChangeRef = useRef(onWindowSelectionChange);
+  const constructionFrameSelectionRef = useRef(constructionFrameSelection);
+  const reportedWindowSelectionRef = useRef<AssemblyHallWindowSelection | null>(null);
+  const viewerSessionRef = useRef<{
+    syncFixture(next: AssemblyHallFixture): void;
+    selectSemanticPath(path: string): void;
+    focusSelection(): void;
+    refreshSelection(): void;
+  } | null>(null);
   const selectionId = useId();
   const revealId = useId();
   const presentationId = useId();
   const mountRef = useRef<HTMLDivElement | null>(null);
+  const workspaceRef = useRef(workspace);
+  const framingRef = useRef(framing);
   const renderFrameRef = useRef<(() => void) | null>(null);
   const resetCameraRef = useRef<(() => void) | null>(null);
   const sceneRef = useRef<Scene | null>(null);
@@ -565,9 +642,12 @@ export function AssemblyHall({
     () => stageRevealSummaries(fixture, revealThroughStage),
     [fixture, revealThroughStage]
   );
-  const [selectedSemanticPath, setSelectedSemanticPath] = useState("");
-  const selectedOption =
-    selectionOptions.find((option) => option.semanticPath === selectedSemanticPath) ?? selectionOptions[0];
+  const [selectedSemanticPath, setSelectedSemanticPath] = useState<string | null>(null);
+  const selectedSemanticPathRef = useRef<string | null>(null);
+  const [selectedWindowLabel, setSelectedWindowLabel] = useState<string | null>(null);
+  const selectedOption = selectedSemanticPath === null
+    ? selectionOptions[0]
+    : selectionOptions.find((option) => option.semanticPath === selectedSemanticPath);
   const activeBenchmarkState = benchmarkState.fixture === fixture ? benchmarkState : null;
   const benchmarkStatus = activeBenchmarkState?.status ?? "idle";
   const benchmarkReport = activeBenchmarkState?.report ?? null;
@@ -628,6 +708,7 @@ export function AssemblyHall({
   );
 
   useEffect(() => {
+    mountedRef.current = true;
     return () => {
       mountedRef.current = false;
       benchmarkRunIdRef.current += 1;
@@ -650,8 +731,17 @@ export function AssemblyHall({
   }, [fixture]);
 
   useEffect(() => {
+    workspaceRef.current = workspace;
+    renderFrameRef.current?.();
+  }, [workspace]);
+
+  useEffect(() => { windowSelectionChangeRef.current = onWindowSelectionChange; }, [onWindowSelectionChange]);
+  useEffect(() => { constructionFrameSelectionRef.current = constructionFrameSelection; viewerSessionRef.current?.refreshSelection(); }, [constructionFrameSelection]);
+
+  useEffect(() => {
     revealThroughStageRef.current = revealThroughStage;
     applyStageReveal(fixture, revealThroughStage);
+    viewerSessionRef.current?.refreshSelection();
     renderFrameRef.current?.();
   }, [fixture, revealThroughStage]);
 
@@ -678,7 +768,9 @@ export function AssemblyHall({
     });
 
     let benchmark: FamilyBenchmarkScene | undefined;
+    let releaseLease: (() => void) | undefined;
     try {
+      releaseLease = acquireFixtureViewerLease?.(benchmarkFixture);
       benchmark = await benchmarkSceneFactory({
         fixture: benchmarkFixture,
         signal: benchmarkAbortController.signal
@@ -720,7 +812,11 @@ export function AssemblyHall({
       if (benchmarkAbortRef.current === benchmarkAbortController) {
         benchmarkAbortRef.current = null;
       }
-      benchmark?.familyRuntime.dispose();
+      try {
+        benchmark?.familyRuntime.dispose();
+      } finally {
+        releaseLease?.();
+      }
     }
   };
 
@@ -739,7 +835,9 @@ export function AssemblyHall({
     });
 
     let orbitBenchmark: FamilyOrbitBenchmarkScene | undefined;
+    let releaseLease: (() => void) | undefined;
     try {
+      releaseLease = acquireFixtureViewerLease?.(benchmarkFixture);
       orbitBenchmark = await orbitBenchmarkSceneFactory({
         fixture: benchmarkFixture,
         rendererFactory,
@@ -784,376 +882,709 @@ export function AssemblyHall({
       if (orbitBenchmarkAbortRef.current === orbitBenchmarkAbortController) {
         orbitBenchmarkAbortRef.current = null;
       }
-      orbitBenchmark?.familyRuntime.dispose();
+      try {
+        orbitBenchmark?.familyRuntime.dispose();
+      } finally {
+        releaseLease?.();
+      }
     }
   };
 
   useEffect(() => {
     const mount = mountRef.current;
-    if (!mount) {
-      return undefined;
-    }
-
-    let renderer: AssemblyRenderer | null = null;
-    let orbitControls: OrbitControls | null = null;
-    let resizeObserver: ResizeObserver | null = null;
-    let animationFrame = 0;
-    let scene: Scene | null = null;
-    let camera: PerspectiveCamera | null = null;
-    let preparedScene: PreparedAssemblyScene | null = null;
-    let cancelled = false;
-    let needsRender = true;
-    let pointerActive = false;
-    let loopScheduled = false;
-    let lightDragging = false;
-    let lightDragLastX = 0;
-    let lightDragLastY = 0;
-    const lightSpherical = new Spherical();
-    const lightOffset = new Vector3();
-
-    const renderFrame = () => {
-      if (!renderer || !scene || !camera) {
-        return;
-      }
-      const width = Math.max(360, Math.round(mount.clientWidth || 920));
-      const height = Math.max(320, Math.round(mount.clientHeight || 520));
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-      renderer.setSize(width, height, false);
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-      renderer.render(scene, camera);
-      renderer.domElement.dataset.rendered = "true";
-      renderer.domElement.dataset.orbitControls = "true";
-      renderer.domElement.dataset.lightOrbit = "true";
-      renderer.domElement.dataset.revealThroughStage = revealThroughStageRef.current;
-      renderer.domElement.dataset.presentationMode = presentationModeRef.current;
+    if (!mount) return undefined;
+    type Viewer = {
+      fixture: AssemblyHallFixture;
+      readonly ready: Promise<PreparedBuildingFixtureView>;
+      selectSemanticPath(path: string | null): void;
+      focusSelection(): void;
+      viewState(): { position: number[]; target: number[]; minDistance: number } | undefined;
+      refreshSelection(): void;
+      attach(): void;
+      detach(): void;
+      discard(): void;
+      dispose(): void;
     };
-    renderFrameRef.current = renderFrame;
+    let disposed = false;
+    let activeViewer: Viewer | null = null;
+    let stagedViewer: Viewer | null = null;
+    let unregisterViewer: (() => void) | undefined;
+    let localGeneration = 0;
+    const viewers = new Set<Viewer>();
+    const abortError = () => new DOMException("Assembly Hall viewer preparation was cancelled", "AbortError");
+    const createViewer = (
+      viewerFixture: AssemblyHallFixture,
+      signal: AbortSignal | undefined,
+      expectedActive: Viewer | null
+    ): Viewer => {
+      let previousViewer: Viewer | null = null;
+      let committed = false;
+      let finalized = false;
+      let discarded = false;
+      let viewerBackend: AssemblyRendererBackend | null = null;
+      let viewerFallbackReason: string | null = null;
+      let renderer: AssemblyRenderer | null = null;
+      let orbitControls: OrbitControls | null = null;
+      let resizeObserver: ResizeObserver | null = null;
+      let animationFrame = 0;
+      let scene: Scene | null = null;
+      let camera: PerspectiveCamera | null = null;
+      let preparedScene: PreparedAssemblyScene | null = null;
+      let cancelled = false;
+      let viewCleaned = false;
+      let factorySettled = false;
+      let leaseReleased = false;
+      let releaseLease: (() => void) | undefined;
+      let needsRender = true;
+      let pointerActive = false;
+      let loopScheduled = false;
+      let lightDragging = false;
+      let lightDragLastX = 0;
+      let lightDragLastY = 0;
+      const lightSpherical = new Spherical();
+      const lightOffset = new Vector3();
+      const raycaster = new Raycaster();
+      const pointer = new Vector2();
+      const selectionPointers = new Set<number>();
+      let clickCandidate: { pointerId: number; x: number; y: number; maxDistanceSq: number } | null = null;
+      let selectionHelper: Box3Helper | null = null;
+      let selectionPath: string | null = null;
+      let selectionAttached = false;
 
-    const scheduleFrame = () => {
-      if (cancelled || loopScheduled) {
-        return;
-      }
-      loopScheduled = true;
-      animationFrame = requestAnimationFrame(() => {
-        loopScheduled = false;
-        if (cancelled) {
+      let workspaceFittedAspect = 0;
+      const fitWorkspaceCamera = (focusBounds?: Box3) => {
+        if (!workspaceRef.current || !camera || !preparedScene) return;
+        const bounds = focusBounds ?? new Box3().setFromObject(viewerFixture.buildingRuntime.root);
+        if (bounds.isEmpty()) return;
+        const center = bounds.getCenter(new Vector3());
+        const target = orbitControls?.target ?? preparedScene.orbitTarget;
+        const radius = bounds.getSize(new Vector3()).length() * 0.5 + center.distanceTo(target);
+        const halfFov = Math.atan(Math.tan(camera.getEffectiveFOV() * Math.PI / 360) * Math.min(1, camera.aspect));
+        let distance = radius / Math.sin(halfFov) * 1.08;
+        const direction = camera.position.clone().sub(target).normalize();
+        if (direction.lengthSq() === 0) direction.copy(preparedScene.defaultCameraPosition).sub(preparedScene.orbitTarget).normalize();
+        if (framingRef.current === "facade") {
+          const right = new Vector3().crossVectors(camera.up, direction).normalize();
+          const up = new Vector3().crossVectors(direction, right).normalize();
+          const tanY = Math.tan(camera.getEffectiveFOV() * Math.PI / 360), tanX = tanY * camera.aspect;
+          distance = 0.1;
+          for (const x of [bounds.min.x, bounds.max.x]) for (const y of [bounds.min.y, bounds.max.y]) for (const z of [bounds.min.z, bounds.max.z]) {
+            const delta = new Vector3(x, y, z).sub(target);
+            distance = Math.max(distance, delta.dot(direction) + 1.12 * Math.max(Math.abs(delta.dot(right)) / tanX, Math.abs(delta.dot(up)) / tanY));
+          }
+        }
+        camera.far = Math.max(camera.far, distance + radius * 2);
+        if (orbitControls) orbitControls.maxDistance = Math.max(orbitControls.maxDistance, distance * 1.25);
+        camera.position.copy(target).addScaledVector(direction, distance);
+        camera.lookAt(target);
+        camera.updateMatrixWorld();
+        orbitControls?.update();
+      };
+
+      const renderFrame = () => {
+        if (cancelled || !renderer || !scene || !camera) {
           return;
         }
-        let dampingMoved = false;
-        if (orbitControls) {
-          dampingMoved = orbitControls.update();
+        const width = Math.max(workspaceRef.current ? 1 : 360, Math.round(mount.clientWidth || 920));
+        const height = Math.max(320, Math.round(mount.clientHeight || 520));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        renderer.setSize(width, height, false);
+        camera.aspect = width / height;
+        if (workspaceRef.current && workspaceFittedAspect !== camera.aspect) {
+          fitWorkspaceCamera();
+          workspaceFittedAspect = camera.aspect;
         }
-        if (needsRender || dampingMoved) {
-          needsRender = false;
-          renderFrame();
-        }
-        if (pointerActive || lightDragging || dampingMoved) {
-          scheduleFrame();
-        }
-      });
-    };
+        camera.updateProjectionMatrix();
+        renderer.render(scene, camera);
+        renderer.domElement.dataset.rendered = "true";
+        renderer.domElement.dataset.orbitControls = "true";
+        renderer.domElement.dataset.lightOrbit = "true";
+        renderer.domElement.dataset.revealThroughStage = revealThroughStageRef.current;
+        renderer.domElement.dataset.presentationMode = presentationModeRef.current;
+      };
 
-    const requestRender = () => {
-      needsRender = true;
-      scheduleFrame();
-    };
-
-    const applyKeyLightSpherical = (prepared: PreparedAssemblyScene) => {
-      lightOffset.setFromSpherical(lightSpherical);
-      prepared.keyLight.position.copy(prepared.orbitTarget).add(lightOffset);
-      prepared.keyLight.target.position.copy(prepared.orbitTarget);
-      prepared.keyLight.target.updateMatrixWorld();
-      // Keep fill roughly opposite so clay form stays readable.
-      prepared.fillLight.position
-        .copy(prepared.orbitTarget)
-        .addScaledVector(lightOffset, -0.55)
-        .setY(prepared.orbitTarget.y + Math.abs(lightOffset.y) * 0.45);
-      prepared.fillLight.target.position.copy(prepared.orbitTarget);
-      prepared.fillLight.target.updateMatrixWorld();
-    };
-
-    const resetCamera = () => {
-      if (!camera || !preparedScene || !orbitControls) {
-        return;
-      }
-      camera.position.copy(preparedScene.defaultCameraPosition);
-      orbitControls.target.copy(preparedScene.orbitTarget);
-      orbitControls.update();
-      preparedScene.keyLight.position.copy(preparedScene.orbitTarget).add(preparedScene.defaultKeyLightOffset);
-      preparedScene.fillLight.position.copy(preparedScene.orbitTarget).add(preparedScene.defaultFillLightOffset);
-      preparedScene.keyLight.target.position.copy(preparedScene.orbitTarget);
-      preparedScene.fillLight.target.position.copy(preparedScene.orbitTarget);
-      preparedScene.keyLight.target.updateMatrixWorld();
-      preparedScene.fillLight.target.updateMatrixWorld();
-      lightOffset.copy(preparedScene.defaultKeyLightOffset);
-      lightSpherical.setFromVector3(lightOffset);
-      requestRender();
-    };
-    resetCameraRef.current = resetCamera;
-
-    // OrbitControls maps Shift+left-drag to pan ("truck"). Intercept in the capture
-    // phase and stop the event so the camera never moves while lighting the model.
-    const onLightPointerDown = (event: PointerEvent) => {
-      if (!preparedScene || !orbitControls || event.button !== 0 || !event.shiftKey) {
-        return;
-      }
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      lightDragging = true;
-      lightDragLastX = event.clientX;
-      lightDragLastY = event.clientY;
-      lightOffset.copy(preparedScene.keyLight.position).sub(preparedScene.orbitTarget);
-      lightSpherical.setFromVector3(lightOffset);
-      orbitControls.enabled = false;
-      orbitControls.enableRotate = false;
-      orbitControls.enablePan = false;
-      orbitControls.enableZoom = false;
-      pointerActive = true;
-      const target = event.currentTarget as HTMLElement;
-      target.setPointerCapture(event.pointerId);
-      scheduleFrame();
-    };
-
-    const onLightPointerMove = (event: PointerEvent) => {
-      if (!lightDragging || !preparedScene) {
-        return;
-      }
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      const dx = event.clientX - lightDragLastX;
-      const dy = event.clientY - lightDragLastY;
-      lightDragLastX = event.clientX;
-      lightDragLastY = event.clientY;
-      lightSpherical.theta -= dx * 0.01;
-      lightSpherical.phi = Math.min(
-        Math.PI * 0.48,
-        Math.max(0.12, lightSpherical.phi + dy * 0.01)
-      );
-      applyKeyLightSpherical(preparedScene);
-      requestRender();
-    };
-
-    const endLightDrag = (event: PointerEvent) => {
-      if (!lightDragging) {
-        return;
-      }
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      lightDragging = false;
-      pointerActive = false;
-      if (orbitControls) {
-        orbitControls.enabled = true;
-        orbitControls.enableRotate = true;
-        orbitControls.enablePan = true;
-        orbitControls.enableZoom = true;
-      }
-      try {
-        (event.currentTarget as HTMLElement).releasePointerCapture(event.pointerId);
-      } catch {
-        // Capture may already be released.
-      }
-      scheduleFrame();
-    };
-
-    const activateRenderer = async () => {
-      try {
-        const prepared = prepareScene(fixture.familyRuntime.root);
-        preparedScene = prepared;
-        scene = prepared.scene;
-        camera = prepared.camera;
-        sceneRef.current = prepared.scene;
-        clayMaterialRef.current = prepared.clayMaterial;
-        applyPresentationMode(fixture, prepared.clayMaterial, presentationModeRef.current);
-        lightOffset.copy(prepared.defaultKeyLightOffset);
-        lightSpherical.setFromVector3(lightOffset);
-        const activation = await rendererFactory({ backendSupport: fixture.backendSupport });
-        if (cancelled) {
-          prepared.scene.remove(fixture.familyRuntime.root);
-          prepared.dispose();
-          activation.renderer.dispose();
+      const scheduleFrame = () => {
+        if (cancelled || activeViewer !== viewer || loopScheduled) {
           return;
         }
-
-        renderer = activation.renderer;
-        setActiveBackend(activation.activeBackend);
-        setBackendFallbackReason(activation.fallbackReason ?? null);
-        renderer.domElement.dataset.rendererBackend = activation.activeBackend;
-        if (activation.fallbackReason) {
-          renderer.domElement.dataset.rendererFallback = activation.fallbackReason;
-        }
-        renderer.domElement.setAttribute("aria-label", "Assembly Hall Three.js canvas");
-        renderer.domElement.className = "assembly-hall__canvas";
-        mount.appendChild(renderer.domElement);
-
-        const controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.08;
-        controls.enablePan = true;
-        controls.screenSpacePanning = true;
-        controls.minDistance = Math.max(1, prepared.maxDimension * 0.35);
-        controls.maxDistance = prepared.maxDimension * 4.5;
-        controls.maxPolarAngle = Math.PI * 0.495;
-        controls.target.copy(prepared.orbitTarget);
-        controls.addEventListener("start", () => {
-          if (lightDragging) {
+        loopScheduled = true;
+        animationFrame = requestAnimationFrame(() => {
+          loopScheduled = false;
+          if (cancelled) {
             return;
           }
-          pointerActive = true;
-          scheduleFrame();
-        });
-        controls.addEventListener("end", () => {
-          if (lightDragging) {
-            return;
+          let dampingMoved = false;
+          if (orbitControls) {
+            dampingMoved = orbitControls.update();
           }
-          pointerActive = false;
-          scheduleFrame();
+          if (needsRender || dampingMoved) {
+            needsRender = false;
+            renderFrame();
+          }
+          if (pointerActive || lightDragging || dampingMoved) {
+            scheduleFrame();
+          }
         });
-        controls.addEventListener("change", () => {
-          requestRender();
-        });
-        controls.update();
-        orbitControls = controls;
+      };
 
-        // Capture phase so we beat OrbitControls (which treats Shift+LMB as pan).
-        renderer.domElement.addEventListener("pointerdown", onLightPointerDown, true);
-        renderer.domElement.addEventListener("pointermove", onLightPointerMove, true);
-        renderer.domElement.addEventListener("pointerup", endLightDrag, true);
-        renderer.domElement.addEventListener("pointercancel", endLightDrag, true);
-
-        // Paint once immediately so first frame does not wait on rAF (tests + first paint).
-        needsRender = false;
-        renderFrame();
+      const requestRender = () => {
+        needsRender = true;
         scheduleFrame();
+      };
 
-        if ("ResizeObserver" in window) {
-          resizeObserver = new ResizeObserver(() => {
+      const ownsSelection = () => !disposed && !cancelled && !viewCleaned && activeViewer === viewer &&
+        renderer?.domElement.isConnected === true && renderer.domElement.parentElement === mount;
+
+      const selectSemanticPath = (path: string | null) => {
+        if (!ownsSelection() || !preparedScene) return;
+        selectionPath = path && !viewerFixture.buildingRuntime.semanticLookup.has(path) ? "" : path;
+        const selected = selectionPath
+          ? constructionFrameSelectionRef.current ? resolveConstructionFrameFromPath(viewerFixture.buildingRuntime, selectionPath)
+            : resolveWindowSelectionFromSemanticPath(viewerFixture.buildingRuntime, viewerFixture.catalog, selectionPath)
+          : undefined;
+        if (selected) {
+          if (constructionFrameSelectionRef.current) selectionPath = selected.semanticPath;
+          if (!selectionHelper) {
+            selectionHelper = new Box3Helper(selected.bounds.clone(), "#f4c24f");
+            selectionHelper.name = "assembly-hall.window-selection";
+            selectionHelper.frustumCulled = false;
+            selectionHelper.renderOrder = 1;
+            for (const material of Array.isArray(selectionHelper.material) ? selectionHelper.material : [selectionHelper.material]) {
+              material.depthTest = false;
+              material.depthWrite = false;
+            }
+            preparedScene.scene.add(selectionHelper);
+          }
+          selectionHelper.box.copy(selected.bounds);
+          selectionHelper.visible = true;
+          selectionHelper.userData = {
+            rendererBoundary: "building-family-selection",
+            semanticPath: selected.semanticPath,
+            instanceIndex: selected.instanceIndex,
+            ...(selected.elementIndex === undefined ? {} : { elementIndex: selected.elementIndex }),
+            selectionObjectUuid: selected.object.uuid
+          };
+          setSelectedWindowLabel(constructionFrameSelectionRef.current ? "Selected frame" : `Selected window #${selected.elementIndex ?? selected.instanceIndex}`);
+        } else {
+          if (selectionHelper) selectionHelper.visible = false;
+          setSelectedWindowLabel(null);
+        }
+        selectedSemanticPathRef.current = selectionPath;
+        setSelectedSemanticPath(selectionPath);
+        const nextSelection = selected ? { fixture: viewerFixture, semanticPath: selected.semanticPath } : null;
+        const reported = reportedWindowSelectionRef.current;
+        if (reported?.fixture !== nextSelection?.fixture || reported?.semanticPath !== nextSelection?.semanticPath) {
+          reportedWindowSelectionRef.current = nextSelection;
+          windowSelectionChangeRef.current?.(nextSelection);
+        }
+        requestRender();
+      };
+
+      const focusSelection = () => {
+        if(!ownsSelection()||!selectionPath||!orbitControls||!camera)return;
+        const selected=resolveConstructionFrameFromPath(viewerFixture.buildingRuntime,selectionPath);if(!selected)return;
+        const direction=camera.position.clone().sub(orbitControls.target),center=selected.bounds.getCenter(new Vector3());
+        orbitControls.target.copy(center);camera.position.copy(center).add(direction);
+        orbitControls.minDistance=Math.max(.1,selected.bounds.getSize(new Vector3()).length()*.25);
+        fitWorkspaceCamera(selected.bounds);requestRender();
+      };
+
+      const rejectSelectionGesture = (event: PointerEvent) => {
+        selectionPointers.delete(event.pointerId);
+        clickCandidate = null;
+      };
+      const unmodifiedPointer = (event: PointerEvent) =>
+        !event.shiftKey && !event.altKey && !event.ctrlKey && !event.metaKey && event.isPrimary !== false;
+      const observeSelectionMove = (event: PointerEvent) => {
+        if (!clickCandidate || clickCandidate.pointerId !== event.pointerId) return;
+        if (!ownsSelection() || !unmodifiedPointer(event) || event.buttons !== 1 || selectionPointers.size !== 1) {
+          clickCandidate = null;
+          return;
+        }
+        for (const sample of [...(event.getCoalescedEvents?.() ?? []), event]) {
+          clickCandidate.maxDistanceSq = Math.max(clickCandidate.maxDistanceSq,
+            (sample.clientX - clickCandidate.x) ** 2 + (sample.clientY - clickCandidate.y) ** 2);
+        }
+      };
+      const onSelectionPointerDown = (event: PointerEvent) => {
+        if (!ownsSelection()) return;
+        selectionPointers.add(event.pointerId);
+        if (selectionPointers.size !== 1 || event.button !== 0 || event.buttons !== 1 || !unmodifiedPointer(event)) {
+          clickCandidate = null;
+          return;
+        }
+        clickCandidate = { pointerId: event.pointerId, x: event.clientX, y: event.clientY, maxDistanceSq: 0 };
+      };
+      const onSelectionPointerUp = (event: PointerEvent) => {
+        const candidate = clickCandidate;
+        clickCandidate = null;
+        const singlePointer = selectionPointers.size === 1 && selectionPointers.has(event.pointerId);
+        selectionPointers.delete(event.pointerId);
+        if (!candidate || candidate.pointerId !== event.pointerId || !singlePointer || !ownsSelection() ||
+            !camera || !renderer || lightDragging || event.button !== 0 || event.buttons !== 0 || !unmodifiedPointer(event)) return;
+        const maxDistanceSq = Math.max(candidate.maxDistanceSq,
+          (event.clientX - candidate.x) ** 2 + (event.clientY - candidate.y) ** 2);
+        if (maxDistanceSq > 16) return;
+        const rect = renderer.domElement.getBoundingClientRect();
+        if (rect.width <= 0 || rect.height <= 0 || event.clientX < rect.left || event.clientX > rect.right ||
+            event.clientY < rect.top || event.clientY > rect.bottom) return;
+        pointer.set((event.clientX - rect.left) / rect.width * 2 - 1,
+          -(event.clientY - rect.top) / rect.height * 2 + 1);
+        camera.updateMatrixWorld();
+        viewerFixture.buildingRuntime.root.updateMatrixWorld(true);
+        raycaster.setFromCamera(pointer, camera);
+        const hits = raycaster.intersectObjects(viewerFixture.buildingRuntime.renderables, true);
+        const selected = constructionFrameSelectionRef.current ? resolveConstructionFrameFromIntersections(viewerFixture.buildingRuntime, hits)
+          : resolveWindowSelectionFromIntersections(viewerFixture.buildingRuntime, viewerFixture.catalog, hits);
+        selectSemanticPath(selected?.semanticPath ?? "");
+      };
+      const selectionListeners = [
+        ["pointerdown", onSelectionPointerDown],
+        ["pointermove", observeSelectionMove],
+        ["pointerup", onSelectionPointerUp],
+        ["pointercancel", rejectSelectionGesture],
+        ["lostpointercapture", rejectSelectionGesture]
+      ] as const;
+
+      const applyKeyLightSpherical = (prepared: PreparedAssemblyScene) => {
+        lightOffset.setFromSpherical(lightSpherical);
+        prepared.keyLight.position.copy(prepared.orbitTarget).add(lightOffset);
+        prepared.keyLight.target.position.copy(prepared.orbitTarget);
+        prepared.keyLight.target.updateMatrixWorld();
+        // Keep fill roughly opposite so clay form stays readable.
+        prepared.fillLight.position
+          .copy(prepared.orbitTarget)
+          .addScaledVector(lightOffset, -0.55)
+          .setY(prepared.orbitTarget.y + Math.abs(lightOffset.y) * 0.45);
+        prepared.fillLight.target.position.copy(prepared.orbitTarget);
+        prepared.fillLight.target.updateMatrixWorld();
+      };
+
+      const resetCamera = () => {
+        if (!camera || !preparedScene || !orbitControls) {
+          return;
+        }
+        orbitControls.minDistance=Math.max(1,preparedScene.maxDimension*.35);
+        camera.position.copy(preparedScene.defaultCameraPosition);
+        orbitControls.target.copy(preparedScene.orbitTarget);
+        fitWorkspaceCamera();
+        orbitControls.update();
+        preparedScene.keyLight.position.copy(preparedScene.orbitTarget).add(preparedScene.defaultKeyLightOffset);
+        preparedScene.fillLight.position.copy(preparedScene.orbitTarget).add(preparedScene.defaultFillLightOffset);
+        preparedScene.keyLight.target.position.copy(preparedScene.orbitTarget);
+        preparedScene.fillLight.target.position.copy(preparedScene.orbitTarget);
+        preparedScene.keyLight.target.updateMatrixWorld();
+        preparedScene.fillLight.target.updateMatrixWorld();
+        lightOffset.copy(preparedScene.defaultKeyLightOffset);
+        lightSpherical.setFromVector3(lightOffset);
+        requestRender();
+      };
+
+      // OrbitControls maps Shift+left-drag to pan ("truck"). Intercept in the capture
+      // phase and stop the event so the camera never moves while lighting the model.
+      const onLightPointerDown = (event: PointerEvent) => {
+        if (!preparedScene || !orbitControls || event.button !== 0 || !event.shiftKey) {
+          return;
+        }
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        lightDragging = true;
+        lightDragLastX = event.clientX;
+        lightDragLastY = event.clientY;
+        lightOffset.copy(preparedScene.keyLight.position).sub(preparedScene.orbitTarget);
+        lightSpherical.setFromVector3(lightOffset);
+        orbitControls.enabled = false;
+        orbitControls.enableRotate = false;
+        orbitControls.enablePan = false;
+        orbitControls.enableZoom = false;
+        pointerActive = true;
+        const target = event.currentTarget as HTMLElement;
+        target.setPointerCapture(event.pointerId);
+        scheduleFrame();
+      };
+
+      const onLightPointerMove = (event: PointerEvent) => {
+        if (!lightDragging || !preparedScene) {
+          return;
+        }
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        const dx = event.clientX - lightDragLastX;
+        const dy = event.clientY - lightDragLastY;
+        lightDragLastX = event.clientX;
+        lightDragLastY = event.clientY;
+        lightSpherical.theta -= dx * 0.01;
+        lightSpherical.phi = Math.min(
+          Math.PI * 0.48,
+          Math.max(0.12, lightSpherical.phi + dy * 0.01)
+        );
+        applyKeyLightSpherical(preparedScene);
+        requestRender();
+      };
+
+      const endLightDrag = (event: PointerEvent) => {
+        if (!lightDragging) {
+          return;
+        }
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        lightDragging = false;
+        pointerActive = false;
+        if (orbitControls) {
+          orbitControls.enabled = true;
+          orbitControls.enableRotate = true;
+          orbitControls.enablePan = true;
+          orbitControls.enableZoom = true;
+        }
+        try {
+          (event.currentTarget as HTMLElement).releasePointerCapture(event.pointerId);
+        } catch {
+          // Capture may already be released.
+        }
+        scheduleFrame();
+      };
+
+      const releaseIfReady = () => {
+        if (viewCleaned && factorySettled && !leaseReleased) {
+          leaseReleased = true;
+          releaseLease?.();
+        }
+      };
+
+      const cleanupView = () => {
+        if (viewCleaned) return;
+        viewCleaned = true;
+        const errors: unknown[] = [];
+        const attempt = (action: () => void) => {
+          try { action(); } catch (error: unknown) { errors.push(error); }
+        };
+        attempt(() => cancelAnimationFrame(animationFrame));
+        loopScheduled = false;
+        attempt(() => resizeObserver?.disconnect());
+        if (renderer) {
+          for (const [type, listener] of selectionListeners) {
+            attempt(() => renderer?.domElement.removeEventListener(type, listener, true));
+          }
+          attempt(() => {
+            renderer?.domElement.removeEventListener("pointerdown", onLightPointerDown, true);
+            renderer?.domElement.removeEventListener("pointermove", onLightPointerMove, true);
+            renderer?.domElement.removeEventListener("pointerup", endLightDrag, true);
+            renderer?.domElement.removeEventListener("pointercancel", endLightDrag, true);
+          });
+        }
+        selectionPointers.clear();
+        clickCandidate = null;
+        if (selectionHelper) {
+          const helper = selectionHelper;
+          selectionHelper = null;
+          attempt(() => helper.removeFromParent());
+          attempt(() => helper.geometry.dispose());
+          for (const material of Array.isArray(helper.material) ? helper.material : [helper.material]) {
+            attempt(() => material.dispose());
+          }
+        }
+        attempt(() => orbitControls?.dispose());
+        orbitControls = null;
+        if (resetCameraRef.current === resetCamera) resetCameraRef.current = null;
+        if (preparedScene) {
+          const prepared = preparedScene;
+          attempt(() => applyPresentationMode(viewerFixture, prepared.clayMaterial, "textured"));
+          attempt(() => prepared.scene.remove(viewerFixture.familyRuntime.root));
+          attempt(() => prepared.dispose());
+        }
+        attempt(() => renderer?.domElement.remove());
+        attempt(() => renderer?.dispose());
+        if (sceneRef.current === scene) {
+          sceneRef.current = null;
+          clayMaterialRef.current = null;
+        }
+        if (renderFrameRef.current === renderFrame) renderFrameRef.current = null;
+        attempt(releaseIfReady);
+        if (errors.length) throw errors[0];
+      };
+      const attach = () => {
+        if (cancelled || disposed || !renderer || !preparedScene || !viewerBackend) throw abortError();
+        mount.appendChild(renderer.domElement);
+        if (cancelled || disposed) {
+          renderer.domElement.remove();
+          throw abortError();
+        }
+        if(constructionFrameSelectionRef.current && previousViewer && JSON.stringify(previousViewer.fixture.ir.bounds)===JSON.stringify(viewerFixture.ir.bounds)) {
+          const state=previousViewer.viewState();
+          if(state&&camera&&orbitControls){camera.position.fromArray(state.position);orbitControls.target.fromArray(state.target);orbitControls.minDistance=state.minDistance;orbitControls.update();camera.updateMatrixWorld();}
+        }
+        sceneRef.current = preparedScene.scene;
+        clayMaterialRef.current = preparedScene.clayMaterial;
+        renderFrameRef.current = renderFrame;
+        resetCameraRef.current = resetCamera;
+        setDisplayedFixture(viewerFixture);
+        setActiveBackend(viewerBackend);
+        setBackendFallbackReason(viewerFallbackReason);
+        setRenderError(null);
+        if (!selectionAttached) {
+          selectionPath = selectedSemanticPathRef.current;
+          selectionAttached = true;
+        }
+        selectSemanticPath(selectionPath);
+        needsRender = true;
+        scheduleFrame();
+      };
+      const detach = () => {
+        selectionPointers.clear();
+        clickCandidate = null;
+        cancelAnimationFrame(animationFrame);
+        loopScheduled = false;
+        renderer?.domElement.remove();
+      };
+      const disposeViewer = () => {
+        if (cancelled) return;
+        cancelled = true;
+        try {
+          cleanupView();
+        } finally {
+          signal?.removeEventListener("abort", onAbort);
+          viewers.delete(viewer);
+          if (stagedViewer === viewer) stagedViewer = null;
+        }
+      };
+      const discard = () => {
+        if (discarded || finalized) return;
+        discarded = true;
+        if (committed && !disposed && activeViewer === viewer) {
+          activeViewer = previousViewer;
+          detach();
+          previousViewer?.attach();
+        }
+        disposeViewer();
+      };
+      const onAbort = () => {
+        try {
+          discard();
+        } catch {
+          // Cleanup attempted every owned resource; event listeners must not report its error globally.
+        }
+      };
+
+      const finalizeOld = () => {
+        if (finalized || discarded) return;
+        if (!committed) throw new Error("Cannot finalize an uncommitted Assembly Hall viewer");
+        finalized = true;
+        signal?.removeEventListener("abort", onAbort);
+        if (stagedViewer === viewer) stagedViewer = null;
+        const previous = previousViewer;
+        previousViewer = null;
+        previous?.dispose();
+      };
+      const commitViewer = () => {
+        if (discarded || cancelled || disposed || signal?.aborted) throw abortError();
+        if (committed) return finalizeOld;
+        if (activeViewer !== expectedActive) throw abortError();
+        previousViewer = activeViewer;
+        committed = true;
+        try {
+          activeViewer = viewer;
+          attach();
+          if (discarded || cancelled || disposed || signal?.aborted || activeViewer !== viewer) throw abortError();
+          previousViewer?.detach();
+          if (discarded || cancelled || disposed || signal?.aborted || activeViewer !== viewer) throw abortError();
+        } catch (error: unknown) {
+          detach();
+          if (!disposed && activeViewer === viewer) {
+            activeViewer = previousViewer;
+            previousViewer?.attach();
+          }
+          committed = false;
+          throw error;
+        }
+        return finalizeOld;
+      };
+      const activateRenderer = async (): Promise<PreparedBuildingFixtureView> => {
+        try {
+          if (cancelled || disposed || signal?.aborted) throw abortError();
+          releaseLease = acquireFixtureViewerLease?.(viewerFixture);
+          const prepared = prepareScene(viewerFixture.familyRuntime.root, lighting);
+          preparedScene = prepared;
+          scene = prepared.scene;
+          camera = prepared.camera;
+          applyPresentationMode(viewerFixture, prepared.clayMaterial, presentationModeRef.current);
+          lightOffset.copy(prepared.defaultKeyLightOffset);
+          lightSpherical.setFromVector3(lightOffset);
+          const activation = await rendererFactory({ backendSupport: viewerFixture.backendSupport });
+          if (cancelled || disposed || signal?.aborted) {
+            activation.renderer.dispose();
+            throw abortError();
+          }
+
+          renderer = activation.renderer;
+          viewerBackend = activation.activeBackend;
+          viewerFallbackReason = activation.fallbackReason ?? null;
+          renderer.domElement.dataset.rendererBackend = activation.activeBackend;
+          if (activation.fallbackReason) {
+            renderer.domElement.dataset.rendererFallback = activation.fallbackReason;
+          }
+          renderer.domElement.setAttribute("aria-label", "Assembly Hall Three.js canvas");
+          renderer.domElement.className = "assembly-hall__canvas";
+
+          const controls = new OrbitControls(camera, renderer.domElement);
+          controls.enableDamping = true;
+          controls.dampingFactor = 0.08;
+          controls.enablePan = true;
+          controls.screenSpacePanning = true;
+          controls.minDistance = Math.max(1, prepared.maxDimension * 0.35);
+          controls.maxDistance = prepared.maxDimension * 4.5;
+          controls.maxPolarAngle = Math.PI * 0.495;
+          controls.target.copy(prepared.orbitTarget);
+          controls.addEventListener("start", () => {
+            if (lightDragging) {
+              return;
+            }
+            pointerActive = true;
+            scheduleFrame();
+          });
+          controls.addEventListener("end", () => {
+            if (lightDragging) {
+              return;
+            }
+            pointerActive = false;
+            scheduleFrame();
+          });
+          controls.addEventListener("change", () => {
             requestRender();
           });
-          resizeObserver.observe(mount);
+          controls.update();
+          orbitControls = controls;
+
+          // Capture phase so we beat OrbitControls (which treats Shift+LMB as pan).
+          for (const [type, listener] of selectionListeners) {
+            renderer.domElement.addEventListener(type, listener, true);
+          }
+          renderer.domElement.addEventListener("pointerdown", onLightPointerDown, true);
+          renderer.domElement.addEventListener("pointermove", onLightPointerMove, true);
+          renderer.domElement.addEventListener("pointerup", endLightDrag, true);
+          renderer.domElement.addEventListener("pointercancel", endLightDrag, true);
+
+          applyStageReveal(viewerFixture, revealThroughStageRef.current);
+          applyPresentationMode(viewerFixture, prepared.clayMaterial, presentationModeRef.current);
+          // Submit the candidate privately before exposing its canvas or retiring the active view.
+          needsRender = false;
+          renderFrame();
+          scheduleFrame();
+
+          if ("ResizeObserver" in window) {
+            resizeObserver = new ResizeObserver(() => {
+              requestRender();
+            });
+            resizeObserver.observe(mount);
+          }
+          return { commit: commitViewer, discard };
+        } catch (error: unknown) {
+          discard();
+          throw error;
+        } finally {
+          factorySettled = true;
+          releaseIfReady();
         }
+      };
+
+      const viewer: Viewer = {
+        fixture: viewerFixture,
+        get ready() { return ready; },
+        selectSemanticPath,
+        focusSelection,
+        viewState:()=>camera&&orbitControls?{position:camera.position.toArray(),target:orbitControls.target.toArray(),minDistance:orbitControls.minDistance}:undefined,
+        refreshSelection: () => selectSemanticPath(selectionPath),
+        attach,
+        detach,
+        discard,
+        dispose: disposeViewer
+      };
+      viewers.add(viewer);
+      signal?.addEventListener("abort", onAbort, { once: true });
+      const ready = activateRenderer();
+      return viewer;
+    };
+    const prepareViewer: BuildingFixtureViewerPreparer = async (nextFixture, { signal }) => {
+      if (disposed || !activeViewer || signal.aborted) throw abortError();
+      localGeneration += 1;
+      stagedViewer?.discard();
+      const candidate = createViewer(nextFixture, signal, activeViewer);
+      stagedViewer = candidate;
+      try {
+        return await candidate.ready;
       } catch (error: unknown) {
-        const message = error instanceof Error ? error.message : "Unable to initialize Assembly Hall renderer";
-        if (!cancelled) {
-          setRenderError(message);
-        }
+        candidate.discard();
+        throw error;
       }
     };
-
-    void activateRenderer();
-
+    const registerReadyViewer = () => {
+      if (!unregisterViewer && registerFixtureViewer && activeViewer && !disposed) {
+        unregisterViewer = registerFixtureViewer(prepareViewer);
+      }
+    };
+    const session = {
+      selectSemanticPath(path: string) {
+        if (disposed) return;
+        selectedSemanticPathRef.current = path;
+        setSelectedSemanticPath(path);
+        if (activeViewer) activeViewer.selectSemanticPath(path);
+        else setSelectedWindowLabel(null);
+      },
+      focusSelection() { activeViewer?.focusSelection(); },
+      refreshSelection() { activeViewer?.refreshSelection(); },
+      syncFixture(nextFixture: AssemblyHallFixture) {
+        if (disposed || activeViewer?.fixture === nextFixture || stagedViewer?.fixture === nextFixture) return;
+        const generation = ++localGeneration;
+        stagedViewer?.discard();
+        const candidate = createViewer(nextFixture, undefined, activeViewer);
+        stagedViewer = candidate;
+        void candidate.ready.then((prepared) => {
+          if (disposed || generation !== localGeneration || requestedFixtureRef.current !== nextFixture) {
+            prepared.discard();
+            return;
+          }
+          try {
+            const finalize = prepared.commit();
+            registerReadyViewer();
+            finalize();
+          } catch (error: unknown) {
+            prepared.discard();
+            throw error;
+          }
+        }).catch((error: unknown) => {
+          candidate.discard();
+          if (!disposed && generation === localGeneration && requestedFixtureRef.current === nextFixture) {
+            setRenderError(error instanceof Error ? error.message : "Unable to initialize Assembly Hall renderer");
+          }
+        });
+      }
+    };
+    viewerSessionRef.current = session;
+    session.syncFixture(requestedFixtureRef.current);
     return () => {
-      cancelled = true;
-      cancelAnimationFrame(animationFrame);
-      loopScheduled = false;
-      resizeObserver?.disconnect();
-      if (renderer?.domElement) {
-        renderer.domElement.removeEventListener("pointerdown", onLightPointerDown, true);
-        renderer.domElement.removeEventListener("pointermove", onLightPointerMove, true);
-        renderer.domElement.removeEventListener("pointerup", endLightDrag, true);
-        renderer.domElement.removeEventListener("pointercancel", endLightDrag, true);
+      const errors: unknown[] = [];
+      try { activeViewer?.selectSemanticPath(""); } catch (error: unknown) { errors.push(error); }
+      disposed = true;
+      localGeneration += 1;
+      try { unregisterViewer?.(); } catch (error: unknown) { errors.push(error); }
+      unregisterViewer = undefined;
+      activeViewer = null;
+      stagedViewer = null;
+      for (const viewer of [...viewers]) {
+        try { viewer.dispose(); } catch (error: unknown) { errors.push(error); }
       }
-      orbitControls?.dispose();
-      orbitControls = null;
-      resetCameraRef.current = null;
-      if (clayMaterialRef.current) {
-        applyPresentationMode(fixture, clayMaterialRef.current, "textured");
-      }
-      scene?.remove(fixture.familyRuntime.root);
-      preparedScene?.dispose();
-      renderer?.domElement.remove();
-      renderer?.dispose();
-      if (sceneRef.current === scene) {
-        sceneRef.current = null;
-        clayMaterialRef.current = null;
-      }
-      if (renderFrameRef.current === renderFrame) {
-        renderFrameRef.current = null;
-      }
+      if (viewerSessionRef.current === session) viewerSessionRef.current = null;
+      if (errors.length) throw errors[0];
     };
-  }, [fixture, rendererFactory]);
+  }, [rendererFactory, acquireFixtureViewerLease, registerFixtureViewer, lighting]);
 
-  return (
-    <section className="assembly-hall" aria-labelledby="assembly-hall-heading">
-      <div className="assembly-hall__intro">
-        <p className="project-label">Assembly Hall</p>
-        <h2 id="assembly-hall-heading">Assembly Hall</h2>
-        <p>{fixture.prompt}</p>
-      </div>
+  useEffect(() => { framingRef.current = framing; resetCameraRef.current?.(); }, [framing]);
+  useEffect(() => {
+    requestedFixtureRef.current = requestedFixture;
+    viewerSessionRef.current?.syncFixture(requestedFixture);
+  }, [requestedFixture]);
 
-      <div className="assembly-hall__stage">
-        <div
-          className="assembly-hall__viewport"
-          ref={mountRef}
-          role="application"
-          aria-label="Interactive generated building viewer"
-          aria-roledescription="3D building viewer"
-        >
-          <div className="assembly-hall__viewport-chrome">
-            <p className="assembly-hall__viewport-hint">
-              Drag to orbit · Shift-drag light · scroll zoom · right-drag pan
-            </p>
-            <button
-              type="button"
-              className="assembly-hall__reset-camera"
-              onClick={() => resetCameraRef.current?.()}
-            >
-              Reset view
-            </button>
-          </div>
-          {renderError ? (
-            <p className="assembly-hall__render-error" role="status">
-              Renderer fallback: {renderError}
-            </p>
-          ) : backendFallbackReason ? (
-            <p className="assembly-hall__render-error" role="status">
-              Renderer fallback: {backendFallbackReason}
-            </p>
-          ) : null}
-        </div>
-
-        <div className="assembly-hall__data-grid">
-          <section className="assembly-hall__reveal" aria-labelledby="assembly-stage-reveal-heading">
-            <div className="assembly-hall__reveal-header">
-              <h3 id="assembly-stage-reveal-heading">Stage Reveal</h3>
-              <label htmlFor={presentationId}>Presentation mode</label>
-              <select
-                id={presentationId}
-                aria-label="Presentation mode"
-                value={presentationMode}
-                onChange={(event) => setPresentationMode(event.currentTarget.value as AssemblyPresentationMode)}
-              >
-                <option value="textured">Textured</option>
-                <option value="clay">Clay inspection</option>
-              </select>
-              <label htmlFor={revealId}>Reveal through stage</label>
-              <select
-                id={revealId}
-                aria-label="Reveal through stage"
-                value={revealThroughStage}
-                onChange={(event) => setRevealThroughStage(event.currentTarget.value as AssemblyStage)}
-              >
-                {selectionStageOrder.map((stage) => (
-                  <option key={stage} value={stage}>
-                    {stageLabel(stage)}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <ol className="assembly-hall__stage-visibility" aria-label="Assembly stage visibility">
-              {revealSummaries.map((summary) => (
-                <li data-visible={summary.visible ? "true" : "false"} key={summary.stage}>
-                  <span>{summary.stage}</span>
-                  <small>{summary.visible ? "visible" : "hidden"}</small>
-                  <em>
-                    {formatNumber(summary.objectCount)} objects / {formatNumber(summary.semanticPathCount)} paths
-                  </em>
-                </li>
-              ))}
-            </ol>
-          </section>
-
+  const rendererDiagnostics = (
+          <AssemblyHallDiagnostics workspace={workspace} label="Renderer diagnostics">
           <dl className="assembly-hall__metrics" aria-label="Assembly Hall renderer metrics">
             <div>
               <dt>Backend</dt>
@@ -1290,14 +1721,63 @@ export function AssemblyHall({
             </table>
           </section>
 
+          </AssemblyHallDiagnostics>
+  );
+
+  const viewControls = (
+        <div className="assembly-hall__data-grid">
+          <section className="assembly-hall__reveal" aria-labelledby="assembly-stage-reveal-heading">
+            <div className="assembly-hall__reveal-header">
+              <h3 id="assembly-stage-reveal-heading">Stage Reveal</h3>
+              <label htmlFor={presentationId}>Presentation mode</label>
+              <select
+                id={presentationId}
+                aria-label="Presentation mode"
+                value={presentationMode}
+                onChange={(event) => setPresentationMode(event.currentTarget.value as AssemblyPresentationMode)}
+              >
+                <option value="textured">Textured</option>
+                <option value="clay">Clay inspection</option>
+              </select>
+              <label htmlFor={revealId}>Reveal through stage</label>
+              <select
+                id={revealId}
+                aria-label="Reveal through stage"
+                value={revealThroughStage}
+                onChange={(event) => setRevealThroughStage(event.currentTarget.value as AssemblyStage)}
+              >
+                {selectionStageOrder.map((stage) => (
+                  <option key={stage} value={stage}>
+                    {stageLabel(stage)}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <ol className="assembly-hall__stage-visibility" aria-label="Assembly stage visibility">
+              {revealSummaries.map((summary) => (
+                <li data-visible={summary.visible ? "true" : "false"} key={summary.stage}>
+                  <span>{summary.stage}</span>
+                  <small>{summary.visible ? "visible" : "hidden"}</small>
+                  <em>
+                    {formatNumber(summary.objectCount)} objects / {formatNumber(summary.semanticPathCount)} paths
+                  </em>
+                </li>
+              ))}
+            </ol>
+          </section>
+
+          {showFamilyTools && !workspace ? rendererDiagnostics : null}
+
           <section className="assembly-hall__selection" aria-labelledby="assembly-hall-selection-heading">
             <h3 id="assembly-hall-selection-heading">Semantic Selection</h3>
             <label htmlFor={selectionId}>Semantic element</label>
             <select
               id={selectionId}
               value={selectedOption?.semanticPath ?? ""}
-              onChange={(event) => setSelectedSemanticPath(event.target.value)}
+              onChange={(event) => viewerSessionRef.current?.selectSemanticPath(event.target.value)}
             >
+              <option value="">No selection</option>
               {selectionOptions.map((option) => (
                 <option key={option.semanticPath} value={option.semanticPath}>
                   {selectionOptionLabel(option)}
@@ -1336,8 +1816,61 @@ export function AssemblyHall({
               </dl>
             ) : null}
           </section>
+          {showFamilyTools && workspace ? rendererDiagnostics : null}
+        </div>
+  );
+
+  return (
+    <section className={workspace ? "assembly-hall assembly-hall--workspace" : "assembly-hall"} aria-labelledby="assembly-hall-heading">
+      <div className="assembly-hall__intro">
+        {!workspace ? <p className="project-label">Assembly Hall</p> : null}
+        <h2 id="assembly-hall-heading">{title}</h2>
+        {description ? <p>{description}</p> : <p>{workspace
+          ? `${fixture.spec.massing.floorCount} floors · ${fixture.spec.facade.frontBayCount} bays · ${fixture.spec.massing.roof.type === "gable" ? "Gable" : "Flat"} roof`
+          : fixture.prompt}</p>}
+      </div>
+
+      <div className="assembly-hall__stage">
+        <div
+          className="assembly-hall__viewport"
+          ref={mountRef}
+          role="application"
+          aria-label="Interactive generated building viewer"
+          aria-roledescription="3D building viewer"
+        >
+          <div className="assembly-hall__viewport-chrome">
+            <p className="assembly-hall__viewport-hint">
+              Drag to orbit · Shift-drag light · scroll zoom · right-drag pan
+            </p>
+            {showFamilyTools ? <p className="assembly-hall__viewport-hint" aria-label="Window selection" aria-live="polite">
+              {selectedWindowLabel ?? "No window selected"}
+            </p> : null}
+            {constructionFrameSelection ? <button type="button" className="assembly-hall__reset-camera" disabled={!selectedWindowLabel}
+              onClick={()=>viewerSessionRef.current?.focusSelection()}>Focus frame</button> : null}
+            <button
+              type="button"
+              className="assembly-hall__reset-camera"
+              onClick={() => resetCameraRef.current?.()}
+            >
+              Reset view
+            </button>
+          </div>
+          {renderError ? (
+            <p className="assembly-hall__render-error" role="status">
+              Renderer fallback: {renderError}
+            </p>
+          ) : backendFallbackReason ? (
+            <p className="assembly-hall__render-error" role="status">
+              {conciseFallback ? "Using the compatible WebGL preview." : `Renderer fallback: ${backendFallbackReason}`}
+            </p>
+          ) : null}
         </div>
 
+        <AssemblyHallDiagnostics workspace={workspace} label="View controls">
+          {viewControls}
+        </AssemblyHallDiagnostics>
+
+        {showFamilyTools ? <AssemblyHallDiagnostics workspace={workspace} label="Component gallery and family benchmarks">
         <table className="assembly-hall__gallery" aria-label="Component gallery summary">
           <caption>Component Gallery</caption>
           <thead>
@@ -1768,6 +2301,7 @@ export function AssemblyHall({
             <p className="assembly-hall__benchmark-message">Run both benchmark reports to create the profile packet</p>
           )}
         </section>
+        </AssemblyHallDiagnostics> : null}
       </div>
     </section>
   );

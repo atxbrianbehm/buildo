@@ -148,13 +148,26 @@ export function buildBoxPrimitive(input: BoxPrimitiveInput): PrimitiveGeometry {
   const uvs: number[] = [];
   const indices: number[] = [];
 
-  for (const face of faces) {
+  // UVs in meters along each face so atlas remap can apply physical tile scale (V5).
+  // Corner order: 0=origin, 1=+u, 2=+u+v, 3=+v for each face.
+  const faceUvSpans: Array<[number, number]> = [
+    [sx, sy], // +Z
+    [sx, sy], // -Z
+    [sz, sy], // +X
+    [sz, sy], // -X
+    [sx, sz], // +Y
+    [sx, sz] // -Y
+  ];
+
+  for (let faceIndex = 0; faceIndex < faces.length; faceIndex += 1) {
+    const face = faces[faceIndex]!;
+    const [spanU, spanV] = faceUvSpans[faceIndex]!;
     const vertexOffset = positions.length / 3;
     for (const corner of face.corners) {
       positions.push(corner[0], corner[1], corner[2]);
       normals.push(face.normal[0], face.normal[1], face.normal[2]);
     }
-    uvs.push(0, 0, 1, 0, 1, 1, 0, 1);
+    uvs.push(0, 0, spanU, 0, spanU, spanV, 0, spanV);
     indices.push(vertexOffset, vertexOffset + 1, vertexOffset + 2, vertexOffset, vertexOffset + 2, vertexOffset + 3);
   }
 

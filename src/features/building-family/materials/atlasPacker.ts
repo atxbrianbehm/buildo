@@ -2,11 +2,13 @@ import { AtlasManifestSchema, type AtlasManifest, type AtlasSlot } from "../cont
 import type { Diagnostic } from "../core/diagnostics";
 import { sha256Hex } from "../core/contentHash";
 import { canonicalJson } from "../core/canonicalJson";
-import type { AtlasPlan } from "./atlasPlanner";
+import type { AtlasMaterialSourcePlan, AtlasPlan } from "./atlasPlanner";
 import { validateAtlasPlan } from "./atlasPlanner";
 import { normalFromHeight } from "./normalFromHeight";
 import { blendPeriodicEdges } from "./periodicBlend";
 import type { MaterialSourceArtifact, PixelLayer } from "./providers/proceduralMaterialProvider";
+import { getProceduralMaterialRequestIdentity, hashMaterialSourceContent } from "./providers/proceduralMaterialProvider";
+import { PeriodicMasonryRasterDescriptorSchema, rasterizePeriodicMasonry } from "./periodicMasonryRaster";
 
 export interface PackedAtlasChannels {
   baseColor: PixelLayer;
@@ -130,7 +132,7 @@ function assertLayerDimensions(artifact: MaterialSourceArtifact, layer: PixelLay
   };
 }
 
-function sourceLayersFor(slot: AtlasSlot, artifact: MaterialSourceArtifact): {
+function sourceLayersFor(slot: AtlasSlot, artifact: MaterialSourceArtifact, sampled?: { baseColor: PixelLayer; height: PixelLayer }): {
   channels: PackedAtlasChannels;
   diagnostics: Diagnostic[];
 } {
@@ -145,8 +147,9 @@ function sourceLayersFor(slot: AtlasSlot, artifact: MaterialSourceArtifact): {
     }
   }
 
-  const baseColor = blendPeriodicEdges(artifact.layers.baseColor, slot.periodicity);
-  const height = blendPeriodicEdges(
+  const legacyBaseColor = blendPeriodicEdges(artifact.layers.baseColor, slot.periodicity);
+  const baseColor = sampled?.baseColor ?? legacyBaseColor;
+  const height = sampled?.height ?? blendPeriodicEdges(
     artifact.layers.height ?? solidSourceLayer(artifact.widthPx, artifact.heightPx, 128),
     slot.periodicity
   );
@@ -158,7 +161,7 @@ function sourceLayersFor(slot: AtlasSlot, artifact: MaterialSourceArtifact): {
     artifact.layers.metalness ?? solidSourceLayer(artifact.widthPx, artifact.heightPx, 0),
     slot.periodicity
   );
-  const opacity = blendPeriodicEdges(artifact.layers.opacity ?? opacityFromBaseColor(baseColor), slot.periodicity);
+  const opacity = blendPeriodicEdges(artifact.layers.opacity ?? opacityFromBaseColor(legacyBaseColor), slot.periodicity);
   const normal = normalFromHeight(height, {
     wrapX: slot.periodicity === "x" || slot.periodicity === "xy",
     wrapY: slot.periodicity === "xy"
@@ -174,6 +177,58 @@ function sourceLayersFor(slot: AtlasSlot, artifact: MaterialSourceArtifact): {
     },
     diagnostics
   };
+}
+
+function sameLayerBytes(actual: PixelLayer | undefined, expected: PixelLayer): boolean {
+  return Boolean(actual && actual.channels === "rgba8" && actual.widthPx === expected.widthPx &&
+    actual.heightPx === expected.heightPx && actual.data.length === expected.data.length &&
+    actual.data.every((value, index) => value === expected.data[index]));
+}
+
+async function periodicSourceLayersFor(
+  slot: AtlasSlot,
+  artifact: MaterialSourceArtifact,
+  sourcePlan: AtlasMaterialSourcePlan | undefined
+): Promise<{ baseColor: PixelLayer; height: PixelLayer } | undefined> {
+  if (artifact.rasterDescriptor === undefined) {
+    if (sourcePlan?.samplingProfile && artifact.providerId === "procedural") {
+      throw new Error("Selected procedural source is missing its periodic masonry raster descriptor.");
+    }
+    return undefined;
+  }
+  const descriptor = PeriodicMasonryRasterDescriptorSchema.parse(artifact.rasterDescriptor);
+  if (!sourcePlan?.samplingProfile || artifact.providerId !== "procedural" || artifact.provenance.providerId !== "procedural" ||
+    slot.id !== "wall.primary" || slot.materialSourceId !== artifact.sourceId || sourcePlan.sourceId !== artifact.sourceId ||
+    slot.role !== "wall" || slot.artKitMaterialRoleId !== "brick" || slot.proceduralSource !== "running-bond-brick" ||
+    slot.periodicity !== "xy" || slot.metersPerTile !== descriptor.samplingProfile.tileSizeM ||
+    slot.physicalSizeM.width !== descriptor.samplingProfile.tileSizeM || slot.physicalSizeM.height !== descriptor.samplingProfile.tileSizeM ||
+    canonicalJson(slot.physicalSizeM) !== canonicalJson(sourcePlan.physicalSizeM) ||
+    descriptor.seedPath !== artifact.provenance.seedPath || descriptor.seedPath !== sourcePlan.seedPath) {
+    throw new Error("Periodic masonry descriptor does not match primary wall source, slot, or provenance authority.");
+  }
+  for (const [name, layer] of Object.entries(artifact.layers)) {
+    if (layer && (layer.channels !== "rgba8" || !(layer.data instanceof Uint8ClampedArray) ||
+      layer.widthPx !== artifact.widthPx || layer.heightPx !== artifact.heightPx ||
+      layer.data.length !== artifact.widthPx * artifact.heightPx * 4)) {
+      throw new Error(`Periodic masonry source layer ${name} has invalid RGBA8 dimensions or bytes.`);
+    }
+  }
+  const identity = await getProceduralMaterialRequestIdentity({
+    ...sourcePlan, widthPx: artifact.widthPx, heightPx: artifact.heightPx
+  });
+  if (canonicalJson(identity.rasterDescriptor) !== canonicalJson(descriptor) ||
+    artifact.requestHash !== identity.requestHash || artifact.provenance.algorithm !== identity.algorithm ||
+    canonicalJson(artifact.provenance.promptVocabulary) !== canonicalJson(sourcePlan.promptVocabulary)) {
+    throw new Error("Periodic masonry descriptor is not bound to the declared procedural request/provenance.");
+  }
+  if (await hashMaterialSourceContent(artifact) !== artifact.contentHash) {
+    throw new Error("Periodic masonry content hash does not cover its descriptor and raw source layers.");
+  }
+  const sourceRaster = rasterizePeriodicMasonry(descriptor, artifact.widthPx, artifact.heightPx);
+  if (!sameLayerBytes(artifact.layers.baseColor, sourceRaster.baseColor) || !sameLayerBytes(artifact.layers.height, sourceRaster.height)) {
+    throw new Error("Periodic masonry source pixels do not match the declared area field.");
+  }
+  return rasterizePeriodicMasonry(descriptor, slot.rectPx.width, slot.rectPx.height);
 }
 
 function compositeLayer(target: PixelLayer, source: PixelLayer, rect: AtlasSlot["rectPx"]): void {
@@ -282,7 +337,8 @@ export async function packAtlas(plan: AtlasPlan, artifacts: MaterialSourceArtifa
       continue;
     }
 
-    const source = sourceLayersFor(slot, artifact);
+    const sampled = await periodicSourceLayersFor(slot, artifact, plan.materialSources.find((source) => source.sourceId === artifact.sourceId));
+    const source = sourceLayersFor(slot, artifact, sampled);
     diagnostics.push(...source.diagnostics);
     compositeSlot(channels, slot, source.channels, manifest.paddingPx);
     slotProvenance.push({
@@ -305,4 +361,9 @@ export async function packAtlas(plan: AtlasPlan, artifacts: MaterialSourceArtifa
     contentHash,
     diagnostics
   };
+}
+
+/** Hash the existing pack payload; callers validate/own inputs before using this utility. */
+export async function hashPackedAtlasContent(input: Pick<PackedAtlas, "channels" | "slotProvenance">): Promise<string> {
+  return sha256Hex(channelBytes(input.channels, input.slotProvenance));
 }

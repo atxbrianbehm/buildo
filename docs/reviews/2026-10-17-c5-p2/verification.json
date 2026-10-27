@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "c5-p2-reference-material-checkpoint",
+  "status": "engineering-complete",
+  "closedAtUtc": "2026-10-18T04:18:06.650794+00:00",
+  "sourcePins": [
+    {
+      "file": "src/features/building-family/materials/constructionReferenceMaterials.ts",
+      "sha256": "041266aacacf8eb97c4da958a4b17d211074a65002248de7baebfaf4196e5e09",
+      "snapshot": "source/src/features/building-family/materials/constructionReferenceMaterials.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionReferenceMaterials.test.ts",
+      "sha256": "ba761f8fee368b45222f0a45346fbafe04053b826ed9f1fb3247d55c88d05d35",
+      "snapshot": "source/src/features/building-family/tests/constructionReferenceMaterials.test.ts.txt"
+    }
+  ],
+  "inheritedSourcePinsVerified": 53,
+  "changedExistingImplementationPaths": [],
+  "checks": [
+    {
+      "log": "test-results\\c5-p2-2026-10-17\\focused-02.log",
+      "name": "focused",
+      "exitCode": 0
+    },
+    {
+      "log": "test-results\\c5-p2-2026-10-17\\typecheck-02.log",
+      "name": "typecheck",
+      "exitCode": 0
+    },
+    {
+      "log": "test-results\\c5-p2-2026-10-17\\lint-02.log",
+      "name": "lint",
+      "exitCode": 0
+    }
+  ],
+  "materialTests": 22,
+  "focusedTests": 93,
+  "focusedFiles": 5,
+  "proof": {
+    "portableReplay": true,
+    "exactMaterialReuseAcrossStructuralReroll": true,
+    "architectureCoverage": "unknown",
+    "unmappedSlots": [
+      "roof.primary",
+      "utility.mask"
+    ],
+    "channels": {
+      "baseColor": {
+        "width": 1024,
+        "height": 1024,
+        "sha256": "11990b738debb873db412d3d6adae1da16bc9089cc92019d3dbd725c7b442902"
+      },
+      "normal": {
+        "width": 1024,
+        "height": 1024,
+        "sha256": "495e787749de193ab52cfd7081acf59b9932fc9cab81386a2db385d19646576a"
+      },
+      "orm": {
+        "width": 1024,
+        "height": 1024,
+        "sha256": "374a013faebd82291e00cd80dd61cc4c50c4feb45333cb50141f4a69c6cf06ef"
+      },
+      "height": {
+        "width": 1024,
+        "height": 1024,
+        "sha256": "47b2b4ec0eca7d7d92b3d45303e0e74fea65b4b54b765076e4106d627c47e240"
+      },
+      "opacity": {
+        "width": 1024,
+        "height": 1024,
+        "sha256": "aa47d12095c672de10bf2faff360cfceffce4def8facf7a18bb72cc478e0a391"
+      }
+    }
+  },
+  "newNativeOrFullRegression": false,
+  "nextPacket": "C5.P3",
+  "workbenchIntegrationComplete": false
+}

@@ -86,6 +86,8 @@ describe("G7 alternate cornice profile", () => {
     expect(profileMaxProjectionM(late19cRestrainedCorniceProfile)).toBeLessThan(
       profileMaxProjectionM(late19cCorniceProfile)
     );
+    // V2: layered crown is a deep overhang, not a thin ribbon.
+    expect(profileMaxProjectionM(late19cCorniceProfile)).toBeGreaterThanOrEqual(1.0);
     expect(restrained.length).toBeLessThan(layered.length);
   });
 });

@@ -1,0 +1,527 @@
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { CubeTexture, DataTexture, DirectionalLight, LinearFilter, LinearMipmapLinearFilter, Vector3, type Camera, type Scene } from "three";
+import { vi } from "vitest";
+import { BayConstructionWorkbench, type BayConstructionSession } from "../ui/BayConstructionWorkbench";
+import { AssemblyHall } from "../ui/AssemblyHall";
+import { createAssemblyHallFixture, type AssemblyHallFixture } from "../ui/assemblyHallFixture";
+import * as fixtures from "../ui/bayConstructionFixture";
+import { defaultBuildingPromptControls } from "../state/buildingStore";
+import { createBayConstructionProject, readBayConstructionProject } from "../state/bayConstructionProject";
+import { createBayConstructionGraph, repeatBayAsFacade, createBuildingConstructionGraph } from "../contracts/bayConstructionGraph";
+import { BayConstructionWorkerRequestSchema } from "../compiler/bayConstructionWorkerProtocol";
+import { evaluateBayConstruction } from "../compiler/evaluateBayConstruction";
+import { evaluateConstruction } from "../compiler/evaluateConstruction";
+import { sha256Hex, hashCanonicalJson } from "../core/contentHash";
+import { createConstructionCheckpoint, readConstructionCheckpoint } from "../state/constructionCheckpoint";
+import { ProceduralMaterialProvider } from "../materials/providers/proceduralMaterialProvider";
+import type { AssemblyRendererActivation, AssemblyRendererFactory } from "../renderer-three/assemblyRendererFactory";
+
+class InlineWorker {
+  private closed = false;
+  private listeners = { message: new Set<(event: MessageEvent | ErrorEvent) => void>(), error: new Set<(event: MessageEvent | ErrorEvent) => void>() };
+  addEventListener(type: "message" | "error", listener: (event: MessageEvent | ErrorEvent) => void) { this.listeners[type].add(listener); }
+  removeEventListener(type: "message" | "error", listener: (event: MessageEvent | ErrorEvent) => void) { this.listeners[type].delete(listener); }
+  terminate() { this.closed = true; this.listeners.message.clear(); this.listeners.error.clear(); }
+  postMessage(input: unknown) {
+    const request = BayConstructionWorkerRequestSchema.parse(input);
+    const emit = (data: unknown) => { if (!this.closed) for (const listener of this.listeners.message) listener(new MessageEvent("message", { data })); };
+    void evaluateConstruction(request.graph, request.previewNodeId).then(result =>
+      emit({ schemaVersion: request.schemaVersion, type: "bay-result", requestId: request.requestId, result }),
+      error => emit({ schemaVersion: "0.1.0", type: "bay-error", requestId: request.requestId, message: String(error.message) }));
+  }
+}
+let base: AssemblyHallFixture, materials: fixtures.BayConstructionMaterials, sourceCalls: number;
+const provider = new ProceduralMaterialProvider(), generate = vi.spyOn(provider, "generate");
+const rendererState: { reject: boolean; records: Array<{ canvas: HTMLCanvasElement; scene?: Scene; camera?: Camera; dispose: ReturnType<typeof vi.fn> }> } = { reject: false, records: [] };
+const factory: AssemblyRendererFactory = async (): Promise<AssemblyRendererActivation> => {
+  if (rendererState.reject) { rendererState.reject = false; throw new Error("Candidate renderer rejected"); }
+  const canvas = document.createElement("canvas"), dispose = vi.fn();
+  const entry = { canvas, dispose, scene: undefined as Scene | undefined, camera: undefined as Camera | undefined };
+  rendererState.records.push(entry);
+  return { activeBackend: "webgl", renderer: { domElement: canvas, dispose,
+    render: (scene, camera) => { entry.scene = scene; entry.camera = camera; }, setPixelRatio: () => {},
+    setSize: (width, height) => { canvas.width = width; canvas.height = height; } } };
+};
+const pixelHashes = async (atlas: fixtures.BayConstructionMaterials["packedAtlas"]) =>
+  Object.fromEntries(await Promise.all(Object.entries(atlas.channels).map(async ([name, layer]) =>
+    [name, await sha256Hex(new Uint8Array(layer.data))])));
+const exactIR = (ir: unknown) => JSON.stringify(ir, (_key, value) => ArrayBuffer.isView(value)
+  ? { type: value.constructor.name, bytes: [...new Uint8Array(value.buffer, value.byteOffset, value.byteLength)] }
+  : value);
+
+beforeAll(async () => {
+  base = await createAssemblyHallFixture({ promptControls: structuredClone(defaultBuildingPromptControls) });
+  materials = await fixtures.createBayConstructionMaterials(base, new AbortController().signal, provider);
+  sourceCalls = generate.mock.calls.length;
+}, 120000);
+beforeEach(() => { vi.stubGlobal("Worker", InlineWorker); rendererState.reject = false; rendererState.records = []; });
+afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
+afterAll(() => { base?.familyRuntime.dispose(); generate.mockRestore(); });
+
+describe("construction material and project authority", () => {
+  it("allocates an adequate source budget and isolated, aligned mipmapped tiles without changing source or IR", async () => {
+    expect(materials.packedAtlas.manifest.widthPx).toBe(1024);
+    expect(generate.mock.calls.some(([request]) => request.widthPx === 256)).toBe(true);
+    const graph = createBayConstructionGraph(), evaluated = await evaluateBayConstruction(graph);
+    const originalIR = exactIR(evaluated.ir), originalPixels = await pixelHashes(materials.packedAtlas);
+    const fixture = fixtures.createBayConstructionFixture(base, evaluated, materials);
+    try {
+      const wall = fixture.familyRuntime.materialRegistry.getMaterial("wall.primary");
+      const textures = [wall.map!, wall.normalMap!, wall.roughnessMap!];
+      const slot = materials.packedAtlas.manifest.slots.find(slot => slot.id === "wall.primary")!;
+      for (const texture of textures) {
+        expect(texture).toBeInstanceOf(DataTexture);
+        expect(texture.magFilter).toBe(LinearFilter);
+        expect(texture.minFilter).toBe(LinearMipmapLinearFilter);
+        expect(texture.generateMipmaps).toBe(true);
+        expect(texture.repeat.x * slot.rectPx.width / 1024).toBeCloseTo(1);
+        expect(texture.repeat.y * slot.rectPx.height / 1024).toBeCloseTo(1);
+        expect(texture.offset.x).toBeCloseTo(-slot.rectPx.x / slot.rectPx.width);
+      }
+      const cropped = (wall.map as DataTexture).image.data as Uint8Array;
+      const raw = materials.packedAtlas.channels.baseColor;
+      const start = (slot.rectPx.y * raw.widthPx + slot.rectPx.x) * 4;
+      expect(cropped[3]).toBe(raw.data[start + 3]);
+      const intensity = (data: Uint8Array | Uint8ClampedArray, i: number) => data[i] * 0.2126 + data[i + 1] * 0.7152 + data[i + 2] * 0.0722;
+      const originalIntensity: number[] = [], displayIntensity: number[] = [];
+      for (let y = 0; y < slot.rectPx.height; y++) for (let x = 0; x < slot.rectPx.width; x++) {
+        originalIntensity.push(intensity(raw.data, ((slot.rectPx.y + y) * raw.widthPx + slot.rectPx.x + x) * 4));
+        displayIntensity.push(intensity(cropped, (y * slot.rectPx.width + x) * 4));
+      }
+      const range = (values: number[]) => values.reduce((max, value) => Math.max(max, value), -Infinity)
+        - values.reduce((min, value) => Math.min(min, value), Infinity);
+      expect(range(displayIntensity)).toBeLessThan(range(originalIntensity));
+      for (const channel of ["normal", "orm"] as const) {
+        const texture = channel === "normal" ? wall.normalMap : wall.roughnessMap;
+        const source = materials.packedAtlas.channels[channel];
+        expect([...((texture as DataTexture).image.data as Uint8Array).subarray(0, 4)]).toEqual([...source.data.subarray(start, start + 4)]);
+      }
+      const environment = fixture.familyRuntime.materialRegistry.getMaterial("glass.primary").envMap as CubeTexture;
+      expect(environment).toBeInstanceOf(CubeTexture);
+      expect(environment.images).toHaveLength(6);
+      expect(exactIR(evaluated.ir)).toBe(originalIR);
+      expect(await pixelHashes(materials.packedAtlas)).toEqual(originalPixels);
+      const disposals = [...textures, environment].map(texture => vi.spyOn(texture, "dispose"));
+      fixture.familyRuntime.dispose(); fixture.familyRuntime.dispose();
+      for (const dispose of disposals) expect(dispose).toHaveBeenCalledTimes(1);
+      expect(generate).toHaveBeenCalledTimes(sourceCalls);
+    } finally { fixture.familyRuntime.dispose(); }
+  }, 30000);
+
+  it("owns graph source before awaits and restores every saved material channel without generation", async () => {
+    const graph = createBayConstructionGraph();
+    const pending = createBayConstructionProject(graph, materials.file);
+    graph.nodes.find(node => node.type === "FacadeScope")!.parameters.widthM = 99;
+    const project = await pending, restored = await readBayConstructionProject(JSON.parse(JSON.stringify(project)));
+    expect(restored.project.graph.nodes.find(node => node.type === "FacadeScope")!.parameters.widthM).toBe(2.8);
+    expect(await pixelHashes(restored.materials.packedAtlas)).toEqual(await pixelHashes(materials.packedAtlas));
+    expect(generate).toHaveBeenCalledTimes(sourceCalls);
+  }, 30000);
+
+  it("allocates detailed frame and roof sources only during new-building library initialization",async()=>{
+    const fresh=new ProceduralMaterialProvider(),calls=vi.spyOn(fresh,'generate');
+    try{const built=await fixtures.createBayConstructionMaterials(base,new AbortController().signal,fresh,'building');
+      for(const role of ['frame','roof','door','horizontalTrim']){const request=calls.mock.calls.find(([request])=>request.role===role)![0];expect(request.widthPx).toBe(256);expect(request.heightPx).toBe(256);}
+      expect(calls).toHaveBeenCalledTimes(12);expect(built.file.contentHash).not.toBe(materials.file.contentHash);
+    }finally{calls.mockRestore();}
+  },30000);
+
+  it("rejects changed graph source and independently validates nested material authority", async () => {
+    const project = await createBayConstructionProject(createBayConstructionGraph(), materials.file);
+    const altered = structuredClone(project);
+    altered.graph.nodes.find(node => node.type === "FacadeScope")!.parameters.widthM = 3.3;
+    await expect(readBayConstructionProject(altered)).rejects.toThrow("saved hash");
+    const payload = JSON.parse(JSON.stringify(project));
+    delete payload.contentHash;
+    payload.materialSource.contentHash = "0".repeat(64);
+    await expect(readBayConstructionProject({ ...payload, contentHash: await hashCanonicalJson(payload) })).rejects.toThrow("hash mismatch");
+  }, 30000);
+});
+
+describe("live construction controls and ownership", () => {
+  function mount(initialSession: BayConstructionSession = { graph: createBayConstructionGraph(), materials }) {
+    const onSessionChange = vi.fn<(session: BayConstructionSession) => void>();
+    const releaseBase = vi.fn(), acquireBaseLease = vi.fn(() => releaseBase);
+    const view = render(<BayConstructionWorkbench base={base} initialSession={initialSession}
+      acquireBaseLease={acquireBaseLease} onSessionChange={onSessionChange} onReturn={() => {}} rendererFactory={factory} />);
+    return { ...view, onSessionChange, releaseBase };
+  }
+  async function ready() { await waitFor(() => expect(screen.getByRole("button", { name: "Apply construction" })).toBeEnabled(), { timeout: 10000 }); }
+
+  it("undoes and redoes accepted construction, excludes previews and failures, and releases historical GPU owners", async () => {
+    const created = vi.spyOn(fixtures, "prepareBayConstructionFixture"), view = mount();
+    try {
+      await ready(); fireEvent.click(screen.getByRole("button", { name: "Repeat bay into facade" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(2), { timeout: 15000 }); await ready();
+      fireEvent.click(screen.getByRole("button", { name: "Select Split floors" }));
+      fireEvent.change(screen.getByLabelText("Floor count"), { target: { value: "2" } }); fireEvent.click(screen.getByRole("button", { name: "Apply construction" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(3), { timeout: 10000 }); await ready();
+      const root = view.container.querySelector<HTMLElement>(".construction-workspace")!;
+      expect(root.dataset.constructionUndo).toBe("2");
+      fireEvent.click(screen.getByRole("button", { name: "Preview selected" }));
+      await waitFor(() => expect(root.dataset.constructionPreview).toBe("floors"), { timeout: 10000 });
+      expect(root.dataset.constructionUndo).toBe("2"); expect(view.onSessionChange).toHaveBeenCalledTimes(3);
+      fireEvent.keyDown(root, { key: "z", ctrlKey: true });
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(4), { timeout: 10000 }); await ready();
+      expect(root.dataset.constructionPreview).toBe("output"); expect(root.dataset.constructionRedo).toBe("1");
+      expect(view.onSessionChange.mock.calls.at(-1)![0].graph.nodes.find(node => node.type === "SplitFloors")!.parameters.count).toBe(3);
+      fireEvent.keyDown(root, { key: "z", ctrlKey: true, shiftKey: true });
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(5), { timeout: 10000 }); await ready();
+      expect(view.onSessionChange.mock.calls.at(-1)![0].graph.nodes.find(node => node.type === "SplitFloors")!.parameters.count).toBe(2);
+      fireEvent.change(screen.getByLabelText("Floor count"), { target: { value: "" } }); fireEvent.click(screen.getByRole("button", { name: "Apply construction" }));
+      expect(await screen.findByRole("alert")).toHaveTextContent("finite value");
+      expect(root.dataset.constructionUndo).toBe("2"); expect(view.onSessionChange).toHaveBeenCalledTimes(5);
+      fireEvent.click(screen.getByRole("button", { name: "Revert draft" }));
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument(); expect(screen.getByLabelText("Floor count")).toHaveValue(2);
+      fireEvent.click(screen.getByRole("button", { name: "Undo construction" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(6), { timeout: 10000 }); await ready();
+      fireEvent.click(screen.getByRole("button", { name: "Select Facade scope" }));
+      fireEvent.change(screen.getByLabelText("Width (m)"), { target: { value: "12" } }); fireEvent.click(screen.getByRole("button", { name: "Apply construction" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(7), { timeout: 10000 }); await ready();
+      expect(root.dataset.constructionRedo).toBe("0"); expect(screen.getByRole("button", { name: "Redo construction" })).toBeDisabled();
+      expect(view.onSessionChange.mock.calls.at(-1)![0].materials).toBe(materials); expect(generate).toHaveBeenCalledTimes(sourceCalls);
+    } finally {
+      view.unmount();
+      for (const result of created.mock.results) expect((await result.value as fixtures.BayConstructionFixture).familyRuntime.disposed).toBe(true);
+      created.mockRestore();
+    }
+    for (const record of rendererState.records) expect(record.dispose).toHaveBeenCalledTimes(1);
+  }, 60000);
+
+  it("resumes the same source history after leaving the workbench and starts fresh history on Open", async () => {
+    const first = mount(); await ready(); fireEvent.click(screen.getByRole("button", { name: "Repeat bay into facade" }));
+    await waitFor(() => expect(first.onSessionChange).toHaveBeenCalledTimes(2), { timeout: 15000 }); await ready();
+    const session = first.onSessionChange.mock.calls.at(-1)![0]; first.unmount();
+    const resumed = mount(session);
+    try {
+      await ready(); expect(screen.getByRole("button", { name: "Undo construction" })).toBeEnabled();
+      fireEvent.click(screen.getByRole("button", { name: "Undo construction" }));
+      await waitFor(() => expect(resumed.onSessionChange).toHaveBeenCalledTimes(2), { timeout: 10000 }); await ready();
+      expect(resumed.onSessionChange.mock.calls.at(-1)![0].graph.schemaVersion).toBe("0.1.0");
+      expect(screen.getByRole("button", { name: "Redo construction" })).toBeEnabled();
+      const project = await createBayConstructionProject(createBayConstructionGraph(), materials.file);
+      fireEvent.change(screen.getByLabelText("Open construction file"), { target: { files: [new File([JSON.stringify(project)], "construction.json", { type: "application/json" })] } });
+      await waitFor(() => expect(resumed.onSessionChange).toHaveBeenCalledTimes(3), { timeout: 10000 }); await ready();
+      expect(screen.getByRole("button", { name: "Undo construction" })).toBeDisabled(); expect(screen.getByRole("button", { name: "Redo construction" })).toBeDisabled();
+      expect(generate).toHaveBeenCalledTimes(sourceCalls);
+    } finally { resumed.unmount(); }
+  }, 60000);
+
+  it("repeats the accepted bay as actual instances, previews without publishing, edits counts and cleans up", async () => {
+    const created = vi.spyOn(fixtures, "prepareBayConstructionFixture"), view = mount();
+    try {
+      await ready(); fireEvent.click(screen.getByRole("button", { name: "Repeat bay into facade" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(2), { timeout: 15000 }); await ready();
+      const full = await created.mock.results.at(-1)!.value as fixtures.BayConstructionFixture;
+      expect(full.ir.instanceBatches.map(batch => batch.count)).toEqual([12, 12, 12]);
+      await waitFor(() => expect(rendererState.records.at(-1)?.camera).toBeDefined());
+      const camera = rendererState.records.at(-1)!.camera!, projected: Vector3[] = [];
+      for (const x of [full.ir.bounds.min[0], full.ir.bounds.max[0]]) for (const y of [full.ir.bounds.min[1], full.ir.bounds.max[1]]) for (const z of [full.ir.bounds.min[2], full.ir.bounds.max[2]]) {
+        const point = new Vector3(x, y, z).project(camera); projected.push(point);
+        expect(Math.abs(point.x)).toBeLessThan(1); expect(Math.abs(point.y)).toBeLessThan(1);
+      }
+      expect(Math.max(...projected.map(point => point.y)) - Math.min(...projected.map(point => point.y))).toBeGreaterThan(1.3);
+      for (const batch of full.ir.instanceBatches) {
+        const mesh = full.buildingRuntime.objectsByBatchId.get(batch.batchId)!;
+        expect(mesh.isInstancedMesh).toBe(true); expect(mesh.count).toBe(12);
+        expect([...mesh.instanceMatrix!.array]).toEqual([...batch.transforms!]);
+        const prototype = full.construction.prototypes!.find(value => value.batchId === batch.recipeId)!;
+        expect(mesh.castShadow).toBe(prototype.role !== "glass");
+        expect(mesh.receiveShadow).toBe(true);
+        expect([...mesh.geometry.getAttribute("position").array]).toEqual([...prototype.positions!]);
+        for (const entry of full.ir.semanticIndex.filter(value => value.batchId === batch.batchId)) {
+          const lookup = full.buildingRuntime.semanticLookup.get(entry.semanticPath)!;
+          expect(lookup.object).toBe(mesh);
+          expect(lookup.instanceIndex ?? lookup.elementIndex).toBe(entry.elementIndex);
+        }
+      }
+      const root = view.container.querySelector(".construction-workspace")!;
+      fireEvent.click(screen.getByRole("button", { name: "Select Split bays" }));
+      fireEvent.click(screen.getByRole("button", { name: "Preview selected" }));
+      await waitFor(() => expect(root.getAttribute("data-construction-preview")).toBe("bays"), { timeout: 10000 });
+      expect(view.onSessionChange).toHaveBeenCalledTimes(2); expect(full.familyRuntime.disposed).toBe(false);
+      fireEvent.click(screen.getByRole("button", { name: "Show construction" }));
+      await waitFor(() => expect(root.getAttribute("data-construction-preview")).toBe("output"), { timeout: 10000 });
+      expect(view.onSessionChange).toHaveBeenCalledTimes(2); expect(full.familyRuntime.disposed).toBe(false);
+      fireEvent.click(screen.getByRole("button", { name: "Select Split floors" }));
+      fireEvent.change(screen.getByLabelText("Floor count"), { target: { value: "2" } });
+      fireEvent.click(screen.getByRole("button", { name: "Apply construction" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(3), { timeout: 10000 }); await ready();
+      const edited = await created.mock.results.at(-1)!.value as fixtures.BayConstructionFixture;
+      expect(edited.ir.instanceBatches.map(batch => batch.count)).toEqual([8, 8, 8]);
+      expect(full.familyRuntime.disposed).toBe(true);
+      fireEvent.click(screen.getByRole("button", { name: "Select Roof cap" }));
+      fireEvent.click(screen.getByLabelText("Bypass selected node"));
+      fireEvent.click(screen.getByRole("button", { name: "Apply construction" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(4), { timeout: 10000 }); await ready();
+      expect((await created.mock.results.at(-1)!.value as fixtures.BayConstructionFixture).ir.meshBatches.some(batch => batch.role === "roof")).toBe(false);
+      expect(view.onSessionChange.mock.calls.at(-1)![0].materials).toBe(materials);
+      expect(generate).toHaveBeenCalledTimes(sourceCalls);
+    } finally { view.unmount(); created.mockRestore(); }
+    for (const record of rendererState.records) expect(record.dispose).toHaveBeenCalledTimes(1);
+  }, 40000);
+
+  it("authors ordered shared layers in the graph and preserves finish source through undo, redo and room restoration", async () => {
+    const view = mount();
+    try {
+      await ready();
+      fireEvent.click(screen.getByText("Surface finishes", { exact: false, selector: "summary" }));
+      expect(screen.getByRole("button", { name: "Add finish layer" })).toBeDisabled();
+      fireEvent.change(screen.getByLabelText("Finish target"), { target: { value: "all" } });
+      fireEvent.change(screen.getByLabelText("New finish strength"), { target: { value: "30" } });
+      fireEvent.click(screen.getByRole("button", { name: "Add finish layer" }));
+      expect(view.onSessionChange).toHaveBeenCalledTimes(1);
+      expect(screen.getByRole("button", { name: "Save construction" })).toBeDisabled();
+      fireEvent.click(screen.getByRole("button", { name: "Apply construction" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(2), { timeout: 15000 }); await ready();
+      const first = view.onSessionChange.mock.calls.at(-1)![0];
+      expect(first.graph.schemaVersion).toBe("0.3.0"); expect(first.graph.nodes.find(node => node.type === "SetSurface")!.composition.layers[0].opacity).toBe(0.3);
+      expect(view.container.querySelector(".construction-workspace")).toHaveAttribute("data-surface-layer-count", "1");
+      fireEvent.change(screen.getByLabelText("Finish source"), { target: { value: "trim.horizontal.primary" } });
+      fireEvent.click(screen.getByRole("button", { name: "Add finish layer" }));
+      fireEvent.click(screen.getByRole("button", { name: "Move finish 2 up" }));
+      fireEvent.click(screen.getByRole("button", { name: "Apply construction" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(3), { timeout: 15000 }); await ready();
+      const second = view.onSessionChange.mock.calls.at(-1)![0], comp = second.graph.nodes.find(node => node.type === "SetSurface")!.composition;
+      expect(comp.sources.find(source => source.id === comp.layers[0].sourceId)!.slotId).toBe("trim.horizontal.primary");
+      fireEvent.click(screen.getByRole("button", { name: "Undo construction" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(4), { timeout: 15000 }); await ready();
+      expect(view.onSessionChange.mock.calls.at(-1)![0].graph).toEqual(first.graph);
+      fireEvent.click(screen.getByRole("button", { name: "Redo construction" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(5), { timeout: 15000 }); await ready();
+      expect(view.onSessionChange.mock.calls.at(-1)![0].graph).toEqual(second.graph);
+      expect(generate).toHaveBeenCalledTimes(sourceCalls);
+    } finally { view.unmount(); }
+  }, 60000);
+
+  it("formats derived decimal fields without changing untouched source and can complete the retained facade",async()=>{
+    const graph=repeatBayAsFacade(createBayConstructionGraph()),view=mount({graph,materials});
+    try {
+      await ready();expect(screen.getByLabelText('Height (m)')).toHaveValue(11.4);
+      fireEvent.click(screen.getByRole('button',{name:'Apply construction'}));await ready();expect(view.onSessionChange).toHaveBeenCalledTimes(1);
+      fireEvent.click(screen.getByRole('button',{name:'Complete building'}));
+      await waitFor(()=>expect(view.onSessionChange).toHaveBeenCalledTimes(2),{timeout:15000});await ready();
+      expect(screen.getByRole('heading',{name:'Building construction'})).toBeInTheDocument();
+      expect(view.onSessionChange.mock.calls.at(-1)![0].materials).toBe(materials);
+      fireEvent.click(screen.getByRole('button',{name:'Undo construction'}));await waitFor(()=>expect(view.onSessionChange).toHaveBeenCalledTimes(3),{timeout:15000});await ready();
+      expect(view.onSessionChange.mock.calls.at(-1)![0].graph).toEqual(graph);
+    } finally {view.unmount();}
+  },45000);
+
+  it("focuses an actual selected frame and retains the view through a material-only graph publication",async()=>{
+    const view=mount();try{
+      await ready();await waitFor(()=>expect(rendererState.records.at(-1)?.camera).toBeDefined());
+      const before=rendererState.records.at(-1)!.camera!.position.clone();
+      fireEvent.change(screen.getByLabelText('Semantic element'),{target:{value:'building/authored-bay/node/window/glass'}});
+      await waitFor(()=>expect(screen.getByRole('button',{name:'Focus frame'})).toBeEnabled());
+      fireEvent.click(screen.getByRole('button',{name:'Focus frame'}));const focused=rendererState.records.at(-1)!.camera!.position.clone();expect(focused.distanceTo(before)).toBeGreaterThan(.1);
+      fireEvent.change(screen.getByLabelText('New finish strength'),{target:{value:'30'}});fireEvent.click(screen.getByRole('button',{name:'Add finish layer'}));fireEvent.click(screen.getByRole('button',{name:'Apply construction'}));
+      await waitFor(()=>expect(view.onSessionChange).toHaveBeenCalledTimes(2),{timeout:15000});await ready();await waitFor(()=>expect(rendererState.records.at(-1)?.camera?.position.distanceTo(focused)).toBeLessThan(1e-6));
+      expect(generate).toHaveBeenCalledTimes(sourceCalls);
+    }finally{view.unmount();}
+  },30000);
+
+  it("edits actual graph dimensions, keeps the material artifact owner, and releases views on close", async () => {
+    const view = mount();
+    await ready();
+    const first = view.container.querySelector(".construction-workspace")!.getAttribute("data-construction-hash");
+    const oldRenderer = rendererState.records[0];
+    fireEvent.change(screen.getByLabelText("Width (m)"), { target: { value: "3.2" } });
+    expect(screen.getByRole("button", { name: "Save construction" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "Apply construction" }));
+    await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(2), { timeout: 10000 });
+    const session = view.onSessionChange.mock.calls[1][0];
+    expect(session.graph.nodes.find(node => node.type === "FacadeScope")!.parameters.widthM).toBe(3.2);
+    expect(session.materials).toBe(materials);
+    expect(view.container.querySelector(".construction-workspace")!.getAttribute("data-construction-hash")).not.toBe(first);
+    expect(oldRenderer.dispose).toHaveBeenCalledTimes(1);
+    expect(generate).toHaveBeenCalledTimes(sourceCalls);
+    view.unmount();
+    expect(view.releaseBase).toHaveBeenCalledTimes(1);
+    expect(rendererState.records.at(-1)!.dispose).toHaveBeenCalledTimes(1);
+  }, 30000);
+
+  it("retains the accepted bay after an invalid edit and permits correction", async () => {
+    const view = mount();
+    await ready();
+    const hash = view.container.querySelector(".construction-workspace")!.getAttribute("data-construction-hash");
+    fireEvent.change(screen.getByLabelText("Width (m)"), { target: { value: "" } });
+    fireEvent.click(screen.getByRole("button", { name: "Apply construction" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("finite value");
+    expect(view.onSessionChange).toHaveBeenCalledTimes(1);
+    expect(view.container.querySelector(".construction-workspace")!.getAttribute("data-construction-hash")).toBe(hash);
+    fireEvent.change(screen.getByLabelText("Width (m)"), { target: { value: "3.1" } });
+    fireEvent.click(screen.getByRole("button", { name: "Apply construction" }));
+    await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(2), { timeout: 10000 });
+  }, 30000);
+
+  it("keeps the old canvas and source when candidate renderer preparation fails", async () => {
+    const created = vi.spyOn(fixtures, "prepareBayConstructionFixture");
+    const view = mount();
+    try {
+      await ready();
+      const currentCanvas = view.container.querySelector("canvas");
+      const hash = view.container.querySelector(".construction-workspace")!.getAttribute("data-construction-hash");
+      rendererState.reject = true;
+      fireEvent.change(screen.getByLabelText("Width (m)"), { target: { value: "3.4" } });
+      fireEvent.click(screen.getByRole("button", { name: "Apply construction" }));
+      expect(await screen.findByRole("alert")).toHaveTextContent("Candidate renderer rejected");
+      expect(view.container.querySelector("canvas")).toBe(currentCanvas);
+      expect(view.container.querySelector(".construction-workspace")!.getAttribute("data-construction-hash")).toBe(hash);
+      expect(view.onSessionChange).toHaveBeenCalledTimes(1);
+      const rejected = await created.mock.results.at(-1)!.value as fixtures.BayConstructionFixture;
+      expect(rejected.familyRuntime.disposed).toBe(true);
+    } finally { view.unmount(); created.mockRestore(); }
+  }, 30000);
+
+it("lights the visible facade from the front and updates the bay shadow projection", async () => {
+  const fixture = fixtures.createBayConstructionFixture(base, await evaluateBayConstruction(createBayConstructionGraph()), materials);
+  const view = render(<AssemblyHall fixture={fixture} workspace lighting="bay" showFamilyTools={false} rendererFactory={factory} />);
+  try {
+    await waitFor(() => expect(rendererState.records[0]?.scene).toBeDefined());
+    const key = rendererState.records[0].scene!.getObjectByName("assembly-hall.key-light") as DirectionalLight;
+    expect(key).toBeInstanceOf(DirectionalLight);
+    expect(key.position.z).toBeLessThan(key.target.position.z);
+    expect(key.shadow.camera.right).toBeLessThan(4.1);
+    expect(key.shadow.camera.projectionMatrix.elements[0]).toBeCloseTo(2 / (key.shadow.camera.right - key.shadow.camera.left));
+    expect(screen.queryByLabelText("Window selection")).not.toBeInTheDocument();
+  } finally { view.unmount(); fixture.familyRuntime.dispose(); }
+}, 30000);
+
+
+it("generates, edits, locks and rerolls through the actual workbench with saved lineage and exact material reuse", async () => {
+  const created = vi.spyOn(fixtures, "createReferenceConstructionMaterials"), prepared = vi.spyOn(fixtures, "prepareBayConstructionFixture");
+  const view = mount({ graph: createBuildingConstructionGraph(), materials });
+  try {
+    await ready();
+    fireEvent.change(screen.getByLabelText("Generated storeys"), { target: { value: "2" } });
+    fireEvent.change(screen.getByLabelText("Generated bays"), { target: { value: "3" } });
+    fireEvent.click(screen.getByRole("button", { name: "Generate building" }));
+    await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(2), { timeout: 30000 }); await ready();
+    const generated = view.onSessionChange.mock.calls.at(-1)![0];
+    expect(generated.generation!.source.intent.requested).toMatchObject({ floorCount: 2, bayCount: 3 });
+    expect((await prepared.mock.results.at(-1)!.value as fixtures.BayConstructionFixture).ir.instanceBatches[0].count).toBe(23);
+    expect(created).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByRole("button", { name: "Select Footprint" }));
+    fireEvent.change(screen.getByLabelText("Depth (m)", { exact: true }), { target: { value: "13" } });
+    fireEvent.click(screen.getByRole("button", { name: "Apply construction" }));
+    await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(3), { timeout: 15000 }); await ready();
+    fireEvent.click(screen.getByLabelText("Lock footprint"));
+    fireEvent.click(screen.getByRole("button", { name: "Reroll unlocked" }));
+    await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(4), { timeout: 15000 }); await ready();
+    const rerolled = view.onSessionChange.mock.calls.at(-1)![0];
+    expect(rerolled.graph.nodes.find(node => node.type === "Footprint")!.parameters.depthM).toBe(13);
+    expect(rerolled.materials).toBe(generated.materials); expect(created).toHaveBeenCalledTimes(1);
+    expect(rerolled.generation!.source.intent.seeds.building).not.toBe(generated.generation!.source.intent.seeds.building);
+    fireEvent.click(screen.getByRole("button", { name: "Undo construction" }));
+    await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(5), { timeout: 15000 }); await ready();
+    expect(view.onSessionChange.mock.calls.at(-1)![0].generation).toEqual(generated.generation);
+    fireEvent.click(screen.getByRole("button", { name: "Redo construction" }));
+    await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(6), { timeout: 15000 }); await ready();
+    expect(view.onSessionChange.mock.calls.at(-1)![0].generation).toEqual(rerolled.generation);
+    const saved = await createBayConstructionProject(rerolled.graph, rerolled.materials.file, rerolled.generation);
+    expect(saved.schemaVersion).toBe("0.5.0"); expect(saved.graph.schemaVersion).toBe("0.4.0");
+    const parsed = await readBayConstructionProject(JSON.parse(JSON.stringify(saved)));
+    expect(parsed.project.graph).toEqual(rerolled.graph); expect(parsed.project.generation).toEqual(rerolled.generation);
+    const checkpoint = await createConstructionCheckpoint("generated-workspace", rerolled.graph, rerolled.materials.file, rerolled.generation);
+    expect((await readConstructionCheckpoint(checkpoint)).project.generation).toEqual(rerolled.generation);
+    const forged = structuredClone(saved); forged.generation!.materialSourceHash = "0".repeat(64);
+    const { contentHash: oldHash, ...payload } = forged; expect(oldHash).toBe(saved.contentHash); forged.contentHash = await hashCanonicalJson(payload);
+    await expect(readBayConstructionProject(forged)).rejects.toThrow("does not match");
+    fireEvent.click(screen.getByText("Surface finishes", { exact: false, selector: "summary" }));
+    fireEvent.change(screen.getByLabelText("Finish target"), { target: { value: "all" } });
+    fireEvent.click(screen.getByRole("button", { name: "Add finish layer" }));
+    fireEvent.click(screen.getByRole("button", { name: "Apply construction" }));
+    await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(7), { timeout: 15000 }); await ready();
+    const finished = view.onSessionChange.mock.calls.at(-1)![0];
+    const finishedIR = (await prepared.mock.results.at(-1)!.value as fixtures.BayConstructionFixture).ir;
+    fireEvent.change(screen.getByLabelText("Material seed"), { target: { value: "new-material-seed" } });
+    fireEvent.click(screen.getByRole("button", { name: "Generate building" }));
+    await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(8), { timeout: 30000 }); await ready();
+    const materialChanged = view.onSessionChange.mock.calls.at(-1)![0];
+    expect(created).toHaveBeenCalledTimes(2); expect(screen.getByRole("button", { name: "Undo construction" })).toBeDisabled();
+    const newComposition = materialChanged.graph.nodes.find(node => node.type === "SetSurface")!.composition;
+    expect(newComposition.layers).toEqual(finished.graph.nodes.find(node => node.type === "SetSurface")!.composition.layers);
+    expect(newComposition.sources[0].atlasContentHash).toBe(materialChanged.materials.packedAtlas.contentHash);
+    const nextIR = (await prepared.mock.results.at(-1)!.value as fixtures.BayConstructionFixture).ir;
+    expect(exactIR(nextIR.meshBatches)).toBe(exactIR(finishedIR.meshBatches)); expect(exactIR(nextIR.instanceBatches)).toBe(exactIR(finishedIR.instanceBatches));
+    const withFinish = await createBayConstructionProject(materialChanged.graph, materialChanged.materials.file, materialChanged.generation);
+    expect((await readBayConstructionProject(JSON.parse(JSON.stringify(withFinish)))).project.generation).toEqual(materialChanged.generation);
+    rendererState.reject = true;
+    fireEvent.click(screen.getByRole("button", { name: "Reroll unlocked" }));
+    await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("Candidate renderer rejected"), { timeout: 15000 });
+    expect(view.onSessionChange).toHaveBeenCalledTimes(8); expect(created).toHaveBeenCalledTimes(2);
+    const accepted = await prepared.mock.results.at(-2)!.value as fixtures.BayConstructionFixture;
+    expect(accepted.familyRuntime.disposed).toBe(false);
+    expect((await prepared.mock.results.at(-1)!.value as fixtures.BayConstructionFixture).familyRuntime.disposed).toBe(true);
+  } finally { view.unmount(); created.mockRestore(); prepared.mockRestore(); }
+  for (const entry of rendererState.records) expect(entry.dispose).toHaveBeenCalledTimes(1);
+}, 120000);
+
+  it("abandons a pending material generation when the workbench owner leaves", async () => {
+    const original = fixtures.createReferenceConstructionMaterials;
+    let release!: () => void;
+    const gate = new Promise<void>(resolve => { release = resolve; });
+    const created = vi.spyOn(fixtures, "createReferenceConstructionMaterials").mockImplementation(async (...args) => {
+      await gate; return original(...args);
+    });
+    const prepared = vi.spyOn(fixtures, "prepareBayConstructionFixture");
+    const view = mount({ graph: createBuildingConstructionGraph(), materials });
+    try {
+      await ready(); fireEvent.click(screen.getByRole("button", { name: "Generate building" }));
+      await waitFor(() => expect(created).toHaveBeenCalledTimes(1), { timeout: 15000 });
+      const signal = created.mock.calls[0][2], pending = created.mock.results[0].value;
+      view.unmount(); expect(signal.aborted).toBe(true); release();
+      await expect(pending).rejects.toThrow("aborted");
+      expect(view.onSessionChange).toHaveBeenCalledTimes(1); expect(prepared).toHaveBeenCalledTimes(1);
+      expect((await prepared.mock.results[0].value as fixtures.BayConstructionFixture).familyRuntime.disposed).toBe(true);
+    } finally { release(); view.unmount(); created.mockRestore(); prepared.mockRestore(); }
+  }, 30000);
+
+  it("selects real construction recipes, reuses materials and restores recipe lineage with history and portable source", async () => {
+    const created = vi.spyOn(fixtures, "createReferenceConstructionMaterials"), prepared = vi.spyOn(fixtures, "prepareBayConstructionFixture");
+    const view = mount({ graph: createBuildingConstructionGraph(), materials });
+    try {
+      await ready(); fireEvent.click(screen.getByRole("button", { name: "Generate building" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(2), { timeout: 30000 }); await ready();
+      const baseline = view.onSessionChange.mock.calls.at(-1)![0];
+      const originalIR = (await prepared.mock.results.at(-1)!.value as fixtures.BayConstructionFixture).ir;
+      fireEvent.change(screen.getByLabelText("Construction recipe"), { target: { value: "deep-reveal-masonry" } });
+      fireEvent.click(screen.getByRole("button", { name: "Generate building" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(3), { timeout: 15000 }); await ready();
+      const deep = view.onSessionChange.mock.calls.at(-1)![0];
+      expect(deep.generation!.source.recipe.id).toBe("deep-reveal-masonry"); expect(deep.materials).toBe(baseline.materials);
+      expect(exactIR((await prepared.mock.results.at(-1)!.value as fixtures.BayConstructionFixture).ir.meshBatches)).not.toBe(exactIR(originalIR.meshBatches));
+      fireEvent.click(screen.getByRole("button", { name: "Select Footprint" }));
+      fireEvent.change(screen.getByLabelText("Depth (m)", { exact: true }), { target: { value: "13" } });
+      fireEvent.click(screen.getByRole("button", { name: "Apply construction" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(4), { timeout: 15000 }); await ready();
+      fireEvent.change(screen.getByLabelText("Construction recipe"), { target: { value: "projecting-cornice-masonry" } });
+      fireEvent.click(screen.getByRole("button", { name: "Generate building" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(5), { timeout: 15000 }); await ready();
+      const cornice = view.onSessionChange.mock.calls.at(-1)![0];
+      expect(cornice.graph.nodes.find(node => node.type === "Footprint")!.parameters.depthM).toBe(13);
+      expect(cornice.materials).toBe(baseline.materials); expect(created).toHaveBeenCalledTimes(1);
+      fireEvent.click(screen.getByRole("button", { name: "Undo construction" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(6), { timeout: 15000 }); await ready();
+      expect(screen.getByLabelText("Construction recipe")).toHaveValue("deep-reveal-masonry");
+      fireEvent.click(screen.getByRole("button", { name: "Redo construction" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(7), { timeout: 15000 }); await ready();
+      expect(screen.getByLabelText("Construction recipe")).toHaveValue("projecting-cornice-masonry");
+      const saved = await createBayConstructionProject(cornice.graph, cornice.materials.file, cornice.generation);
+      const parsed = await readBayConstructionProject(JSON.parse(JSON.stringify(saved)));
+      expect(parsed.project.generation).toEqual(cornice.generation);
+      const checkpoint = await createConstructionCheckpoint("recipe-workspace", cornice.graph, cornice.materials.file, cornice.generation);
+      expect((await readConstructionCheckpoint(checkpoint)).project.generation).toEqual(cornice.generation);
+      rendererState.reject = true;
+      fireEvent.change(screen.getByLabelText("Construction recipe"), { target: { value: "restrained-masonry-rectangular" } });
+      fireEvent.click(screen.getByRole("button", { name: "Generate building" }));
+      await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("Candidate renderer rejected"), { timeout: 15000 });
+      expect(view.onSessionChange).toHaveBeenCalledTimes(7); expect(created).toHaveBeenCalledTimes(1);
+      expect(view.container.querySelector(".construction-generation")).toHaveAttribute("data-generation-recipe", "projecting-cornice-masonry");
+      expect((await prepared.mock.results.at(-1)!.value as fixtures.BayConstructionFixture).familyRuntime.disposed).toBe(true);
+    } finally { view.unmount(); created.mockRestore(); prepared.mockRestore(); }
+    for (const entry of rendererState.records) expect(entry.dispose).toHaveBeenCalledTimes(1);
+  }, 120000);
+
+});

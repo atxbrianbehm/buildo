@@ -1,0 +1,847 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "c3-p1a-source-and-native-checkpoint",
+  "status": "engineering-complete",
+  "gitHead": "4c0fedeacfc9b4bed0c0000096d7d1ea605d23b9",
+  "acceptedCheckpoint": "docs/reviews/2026-10-17-c3-p0/verification.json",
+  "acceptedCheckpointSha256": "0c5ab5c46eaa7b693ffa3cc3e46a4b57d07da78f1ccbfe023563c0c7ea051d9b",
+  "checks": [
+    {
+      "name": "typecheck",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T00:42:23.6879651Z",
+      "finishedAt": "2026-10-18T00:42:34.0351136Z"
+    },
+    {
+      "name": "lint",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T00:42:34.0743643Z",
+      "finishedAt": "2026-10-18T00:42:48.3631994Z"
+    },
+    {
+      "name": "test",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T00:42:48.3675014Z",
+      "finishedAt": "2026-10-18T00:51:15.1974077Z"
+    },
+    {
+      "name": "build",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T00:51:15.1998197Z",
+      "finishedAt": "2026-10-18T00:51:26.0934699Z"
+    },
+    {
+      "name": "test:e2e",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T00:51:26.0954270Z",
+      "finishedAt": "2026-10-18T00:53:36.2551380Z"
+    }
+  ],
+  "unitTests": 1601,
+  "unitFiles": 114,
+  "focusedTests": 66,
+  "focusedFiles": 6,
+  "standardBrowserWorkflows": 8,
+  "sourceSnapshots": 40,
+  "changedExistingPaths": [
+    "src/features/building-family/ui/bayConstructionFixture.ts",
+    "src/features/building-family/contracts/surfaceComposition.ts",
+    "src/features/building-family/materials/composeSurfaceTile.ts",
+    "src/features/building-family/renderer-three/surfaceMaterialRuntime.ts"
+  ],
+  "newSourcePaths": [
+    "src/features/building-family/core/constructionAppearance.ts",
+    "src/features/building-family/contracts/surfaceBaseAppearance.ts",
+    "src/features/building-family/materials/surfaceBaseAppearance.ts",
+    "src/features/building-family/tests/surfaceBaseAppearance.test.ts",
+    "src/features/building-family/tests/constructionSurfaceRuntime.test.ts"
+  ],
+  "native": [
+    {
+      "api": "webgpu",
+      "surfaceCaptures": 14,
+      "appCaptures": 2,
+      "acceptedAppPixelsExact": true,
+      "geometrySha256": "2cb650254bc9ec3dd3f0f6c469d961f7dbb6d4b29a6fbfee4a02cc792d4b6a20",
+      "tinySelectedRegionMeanRgbDeltas": [
+        {
+          "view": "full",
+          "mean": 0.11419457735247208
+        },
+        {
+          "view": "close",
+          "mean": 0.12875967997261797
+        }
+      ]
+    },
+    {
+      "api": "webgl",
+      "surfaceCaptures": 14,
+      "appCaptures": 2,
+      "acceptedAppPixelsExact": true,
+      "geometrySha256": "2cb650254bc9ec3dd3f0f6c469d961f7dbb6d4b29a6fbfee4a02cc792d4b6a20",
+      "tinySelectedRegionMeanRgbDeltas": [
+        {
+          "view": "full",
+          "mean": 0.09388623072833599
+        },
+        {
+          "view": "close",
+          "mean": 0.13124495081051288
+        }
+      ]
+    }
+  ],
+  "baseArtifactSha256": "3e5406b1d9fc42b5d8c0efd956e402e0d3afa9cd24bd5ff253ffc85524ff936b",
+  "directlyReviewedImages": [
+    "native-03/webgpu/local-close.png",
+    "native-03/webgl/local-close.png",
+    "app-03-webgpu/accepted-app-desktop.png",
+    "app-03-webgl/accepted-app-desktop.png"
+  ],
+  "inheritedImageReview": [
+    {
+      "file": "native-03/webgpu/base-close.png",
+      "reviewedSource": "native-01/webgpu/base-close.png",
+      "byteIdentical": true
+    },
+    {
+      "file": "native-03/webgpu/tiny-close.png",
+      "reviewedSource": "native-01/webgpu/tiny-close.png",
+      "byteIdentical": true
+    },
+    {
+      "file": "native-03/webgpu/shared-full.png",
+      "reviewedSource": "native-01/webgpu/shared-full.png",
+      "byteIdentical": true
+    },
+    {
+      "file": "native-03/webgl/shared-full.png",
+      "reviewedSource": "native-01/webgl/shared-full.png",
+      "byteIdentical": true
+    }
+  ],
+  "preserved": [
+    {
+      "source": "src/app/App.css",
+      "file": "source/src/app/App.css.txt",
+      "sha256": "18a776a7261cbb36de3b9ba8208afb846188d624deedc076cdc760f4353ffa4c"
+    },
+    {
+      "source": "src/app/App.tsx",
+      "file": "source/src/app/App.tsx.txt",
+      "sha256": "bdcf4f29e869d5823933822ec4a732fedeb2779d8901352552571b7d80b4d809"
+    },
+    {
+      "source": "src/features/building-family/contracts/bayConstructionGraph.ts",
+      "file": "source/src/features/building-family/contracts/bayConstructionGraph.ts.txt",
+      "sha256": "480140b469f6bc9a680e9ef4cf7a8193eda76c0d7ad61559ce916a9efdf7b328"
+    },
+    {
+      "source": "src/features/building-family/compiler/evaluateBayConstruction.ts",
+      "file": "source/src/features/building-family/compiler/evaluateBayConstruction.ts.txt",
+      "sha256": "56c801a914402bad4157bc1d768b40ef862812e30be4b6571ce52663388343cd"
+    },
+    {
+      "source": "src/features/building-family/compiler/bayWindowGeometry.ts",
+      "file": "source/src/features/building-family/compiler/bayWindowGeometry.ts.txt",
+      "sha256": "e3646b1daf0b923be228a7dcabc28fcb0ad45d2aa0426cf74ac94a5d607faa6e"
+    },
+    {
+      "source": "src/features/building-family/compiler/evaluateConstruction.ts",
+      "file": "source/src/features/building-family/compiler/evaluateConstruction.ts.txt",
+      "sha256": "905cec750f734b823cccf7d9c9caf7746ea792a27038c2d13bad375d4a98170c"
+    },
+    {
+      "source": "src/features/building-family/compiler/evaluateFacadeConstruction.ts",
+      "file": "source/src/features/building-family/compiler/evaluateFacadeConstruction.ts.txt",
+      "sha256": "e9c1e7350116c3da24fca606378960862b23d0447a76ab3c1015c678965d6088"
+    },
+    {
+      "source": "src/features/building-family/compiler/bayConstruction.worker.ts",
+      "file": "source/src/features/building-family/compiler/bayConstruction.worker.ts.txt",
+      "sha256": "11756a085021e9d53e3b6ff11cd380c58dbe908b863ef428b1dc01f44d28dec1"
+    },
+    {
+      "source": "src/features/building-family/compiler/bayConstructionWorkerProtocol.ts",
+      "file": "source/src/features/building-family/compiler/bayConstructionWorkerProtocol.ts.txt",
+      "sha256": "22dc09057cf82e989e420a348cfa8dbc06b82ec22b1befd75e4d1a7d21380720"
+    },
+    {
+      "source": "src/features/building-family/compiler/bayConstructionClient.ts",
+      "file": "source/src/features/building-family/compiler/bayConstructionClient.ts.txt",
+      "sha256": "cc0dc7e8a767edec78656b775282e54e5bf9d6735aa210d081c5b6ac34e3db25"
+    },
+    {
+      "source": "src/features/building-family/state/bayConstructionProject.ts",
+      "file": "source/src/features/building-family/state/bayConstructionProject.ts.txt",
+      "sha256": "2eb365121255947e9cb683bffa4d079c2837f82b8dd67bf06fda87d31b1e0b5b"
+    },
+    {
+      "source": "src/features/building-family/ui/BayConstructionWorkbench.tsx",
+      "file": "source/src/features/building-family/ui/BayConstructionWorkbench.tsx.txt",
+      "sha256": "acac5590a63a6cd922c4fab0dd1a1efa4dc3a51a159bcee538d9827cafd57cb4"
+    },
+    {
+      "source": "src/features/building-family/ui/ConstructionNodePanel.tsx",
+      "file": "source/src/features/building-family/ui/ConstructionNodePanel.tsx.txt",
+      "sha256": "65e8b6f597370311189f02ba700167abcca6daba5aff7d8d010839189b9043a0"
+    },
+    {
+      "source": "src/features/building-family/ui/bayConstructionFixture.ts",
+      "file": "source/src/features/building-family/ui/bayConstructionFixture.ts.txt",
+      "sha256": "90c4ac4f8be635a6c3cb6f1baf63d106262c7b4ad93fabeb180d2e4778ed61cd"
+    },
+    {
+      "source": "src/features/building-family/ui/AssemblyHall.tsx",
+      "file": "source/src/features/building-family/ui/AssemblyHall.tsx.txt",
+      "sha256": "19303baea78dbc3487826c5766b76f0ca57c404f479961d77a1ebdbe7854316f"
+    },
+    {
+      "source": "src/features/building-family/renderer-three/buildingSceneAdapter.ts",
+      "file": "source/src/features/building-family/renderer-three/buildingSceneAdapter.ts.txt",
+      "sha256": "41f2e0aba3bc2af27010ba90eede113d2c4adbd985f2c1e05c857f249917df46"
+    },
+    {
+      "source": "src/features/building-family/renderer-three/familyRuntime.ts",
+      "file": "source/src/features/building-family/renderer-three/familyRuntime.ts.txt",
+      "sha256": "3d19d6ce556ca64084ca583fe8cca2aa41f57d0232f9df7180035f8688f588a5"
+    },
+    {
+      "source": "src/features/building-family/renderer-three/assemblyRendererFactory.ts",
+      "file": "source/src/features/building-family/renderer-three/assemblyRendererFactory.ts.txt",
+      "sha256": "9d25c84743cfe20f407c4b0c8c01c337b50f8fd93c23a83a42c0bf7afc53b56f"
+    },
+    {
+      "source": "src/features/building-family/tests/facadeConstruction.test.ts",
+      "file": "source/src/features/building-family/tests/facadeConstruction.test.ts.txt",
+      "sha256": "478ea3e2b99d0128d66bb86798b14daf223d859802addf89807e1d5ce79de5df"
+    },
+    {
+      "source": "src/features/building-family/tests/ConstructionNodePanel.test.tsx",
+      "file": "source/src/features/building-family/tests/ConstructionNodePanel.test.tsx.txt",
+      "sha256": "86fc517b06088c756d74c2fe78d1577c5ab76f6188b473364294e21fd1c9bc83"
+    },
+    {
+      "source": "src/features/building-family/tests/bayConstructionWorkbench.test.tsx",
+      "file": "source/src/features/building-family/tests/bayConstructionWorkbench.test.tsx.txt",
+      "sha256": "c583628fb5548bb94b68a06a9fbaa9ea016ad55e9e278b75f3c979c3bbaf38df"
+    },
+    {
+      "source": "eslint.config.js",
+      "file": "source/eslint.config.js.txt",
+      "sha256": "ebd72019a926815cc06067cdd066a14045811e5c784d7c0d47dd71830426d53f"
+    },
+    {
+      "source": "src/app/App.test.tsx",
+      "file": "source/src/app/App.test.tsx.txt",
+      "sha256": "3b34a4ad3b9d9b767cef502bd6b8f7e59172ddeb58103761eb6994bfa089323f"
+    },
+    {
+      "source": "src/features/building-family/state/constructionHistory.ts",
+      "file": "source/src/features/building-family/state/constructionHistory.ts.txt",
+      "sha256": "7474eef2301b55b0942da685d98eb41d78886bc44aee973de5a1c8b4d4d3a495"
+    },
+    {
+      "source": "src/features/building-family/state/constructionCheckpoint.ts",
+      "file": "source/src/features/building-family/state/constructionCheckpoint.ts.txt",
+      "sha256": "8c1c87c51778e8fcc5d4bf034f1cb4147b57367f192e21787b927893278e574d"
+    },
+    {
+      "source": "src/features/building-family/state/constructionCheckpointWriter.ts",
+      "file": "source/src/features/building-family/state/constructionCheckpointWriter.ts.txt",
+      "sha256": "4576c208815a34b014f21d8bbe173ea891a275db04346f12dbfde3c1a5359f56"
+    },
+    {
+      "source": "src/features/building-family/state/useConstructionWorkspace.ts",
+      "file": "source/src/features/building-family/state/useConstructionWorkspace.ts.txt",
+      "sha256": "06ea9e636502ea6af36912ad50ef2871bae1d0e8c9a333dfc050d86d7c50253a"
+    },
+    {
+      "source": "src/features/building-family/tests/constructionHistory.test.ts",
+      "file": "source/src/features/building-family/tests/constructionHistory.test.ts.txt",
+      "sha256": "5e5dba8e342ed0cb799bc9178b5c1e22dff6b1e2a4059c6c15aa4e3013652e98"
+    },
+    {
+      "source": "src/features/building-family/tests/constructionCheckpoint.test.ts",
+      "file": "source/src/features/building-family/tests/constructionCheckpoint.test.ts.txt",
+      "sha256": "e7ccd21accad4f1cb30f99432b6d16f85c28cbe47a96e4a8cfd5b5752ae38daf"
+    },
+    {
+      "source": "src/features/building-family/tests/useConstructionWorkspace.test.tsx",
+      "file": "source/src/features/building-family/tests/useConstructionWorkspace.test.tsx.txt",
+      "sha256": "fdbb656126c67c4e432858fd1b7526799b6a1fa639b2281316ec825a03b06d52"
+    },
+    {
+      "source": "src/features/building-family/renderer-three/wallAtlasGeometry.ts",
+      "file": "source/src/features/building-family/renderer-three/wallAtlasGeometry.ts.txt",
+      "sha256": "4224ddd6c63dcea3289a53fb73cb46430a111617a8dd9182153f95f36d854907"
+    },
+    {
+      "source": "src/features/building-family/renderer-three/buildingAtlasTextureFactory.ts",
+      "file": "source/src/features/building-family/renderer-three/buildingAtlasTextureFactory.ts.txt",
+      "sha256": "6931aa769b52381635ec8387bd48e1bd843f9084df8bc40ca8e1b7f729d2dd31"
+    },
+    {
+      "source": "src/features/building-family/contracts/surfaceComposition.ts",
+      "file": "source/src/features/building-family/contracts/surfaceComposition.ts.txt",
+      "sha256": "8933635c2421b77b3768f161e8bd3785e227077cb7ee60a9ecec4d50982c4101"
+    },
+    {
+      "source": "src/features/building-family/materials/composeSurfaceTile.ts",
+      "file": "source/src/features/building-family/materials/composeSurfaceTile.ts.txt",
+      "sha256": "7a976e53739d4999b65c6b36b1eafa5050de71853aece16b03b45ee118f2a5bb"
+    },
+    {
+      "source": "src/features/building-family/renderer-three/surfaceMaterialRuntime.ts",
+      "file": "source/src/features/building-family/renderer-three/surfaceMaterialRuntime.ts.txt",
+      "sha256": "f64b443e7dbbecd5657602431a4ccc145d660fec378b77630bf4bd0840e048fd"
+    },
+    {
+      "source": "src/features/building-family/core/constructionAppearance.ts",
+      "file": "source/src/features/building-family/core/constructionAppearance.ts.txt",
+      "sha256": "20edd760e569a04497552026d8637359baca1b7b274cab60988e37c7fbb2a77a"
+    },
+    {
+      "source": "src/features/building-family/contracts/surfaceBaseAppearance.ts",
+      "file": "source/src/features/building-family/contracts/surfaceBaseAppearance.ts.txt",
+      "sha256": "14d4c46d32c67c55d06005aeeef7041bf08928a691a70a77920d18e72e53ed74"
+    },
+    {
+      "source": "src/features/building-family/materials/surfaceBaseAppearance.ts",
+      "file": "source/src/features/building-family/materials/surfaceBaseAppearance.ts.txt",
+      "sha256": "040fa37d136c428101751e9669f4ec01eebac19ea84f84814304fc9aea7787a6"
+    },
+    {
+      "source": "src/features/building-family/tests/surfaceBaseAppearance.test.ts",
+      "file": "source/src/features/building-family/tests/surfaceBaseAppearance.test.ts.txt",
+      "sha256": "5a0f38c8668ea256d5804efa65e7c4cef7efde9fab995c5328a2c185796c6034"
+    },
+    {
+      "source": "src/features/building-family/tests/constructionSurfaceRuntime.test.ts",
+      "file": "source/src/features/building-family/tests/constructionSurfaceRuntime.test.ts.txt",
+      "sha256": "53896ad1d3c5a1448ab435157db14bb19fa6fff38262ffb9577f3885b5bd4c93"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/before/src/features/building-family/contracts/surfaceComposition.ts.txt",
+      "file": "before/src/features/building-family/contracts/surfaceComposition.ts.txt",
+      "sha256": "aa4ed0426037bd6414b6a27d77066160a338a2c625fdd219de90aa717569aedc"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/before/src/features/building-family/materials/composeSurfaceTile.ts.txt",
+      "file": "before/src/features/building-family/materials/composeSurfaceTile.ts.txt",
+      "sha256": "c913e6104f5492976ab2a15cb806fba47cf930f3f8279e13cd733211f36b2544"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/before/src/features/building-family/renderer-three/surfaceMaterialRuntime.ts.txt",
+      "file": "before/src/features/building-family/renderer-three/surfaceMaterialRuntime.ts.txt",
+      "sha256": "0c491ac611c4903b224b2583f8a1bbc8b32ef8924f9bd9cba7e62bf54a2c34b6"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/before.json",
+      "file": "before.json",
+      "sha256": "2068ec45c7719b2d0cd6bdd0979a3a0da88beb431af4bbaaba9afc6779ca2382"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/candidate-01.json",
+      "file": "candidate-01.json",
+      "sha256": "2d608af74ed14a2e976bae86667c1d7b57722b280f2807b0f76f9bc13c7262d0"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/candidate-02.json",
+      "file": "candidate-02.json",
+      "sha256": "ea0eca9ba0ec7e621e58d72aea2b42963b0d3017c050ca4ac12cb68a885026a8"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/candidate-03.json",
+      "file": "candidate-03.json",
+      "sha256": "ea0eca9ba0ec7e621e58d72aea2b42963b0d3017c050ca4ac12cb68a885026a8"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/required-checks-final-01.json",
+      "file": "required-checks-final-01.json",
+      "sha256": "293ddcca9ea01e29368520a9cf1bcb7e365891ddb449c3bf5e8341f1856ad09f"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/required-checks-final-02.json",
+      "file": "required-checks-final-02.json",
+      "sha256": "f3c74d20f5373597b957044eabef0b688e527bb9994e523195d3d06718afd271"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/typecheck-final-02.log",
+      "file": "typecheck-final-02.log",
+      "sha256": "1927639a5b89b1406e25b817bb2c8efb1e16fccc181e86591db136d628e7f5e6"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/lint-final-02.log",
+      "file": "lint-final-02.log",
+      "sha256": "a21c6d2dedb756f860b052cb2d84cd603fbbe38ee53e1ad76ab9c5803f028958"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/test-final-02.log",
+      "file": "test-final-02.log",
+      "sha256": "68a784d98042e04117e3635b122a592a88c6eb463782446d0b760df9db233cf5"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/build-final-02.log",
+      "file": "build-final-02.log",
+      "sha256": "fd6b45cd89386d73fc5e36a6735df592651064233be3b9f16fcd6de0b130baed"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/test-e2e-final-02.log",
+      "file": "test-e2e-final-02.log",
+      "sha256": "f01c6473a789efdc5b747cb95502ff011ef949afcab3b8f8e781e81fea45a79f"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/focus-04.log",
+      "file": "focus-04.log",
+      "sha256": "d4142458c158d1f78489c72777bfad4a9795868e586b1d00728217f693616e42"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/focus-05.log",
+      "file": "focus-05.log",
+      "sha256": "e81aade57d3a4e906f829285445d8959eb6b14bdc51f0923c95355adebdc9b98"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/focus-06.log",
+      "file": "focus-06.log",
+      "sha256": "f685d736718a6a83fd372b76be50fd9411fb1805d47c081376cdc9ce3044e7f4"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/review-candidate-01.md",
+      "file": "review-candidate-01.md",
+      "sha256": "bfbe47dee9e1d88172eee263459caf10e118b7cad23e36cec9d4872e48d3e9db"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-01.log",
+      "file": "native-01.log",
+      "sha256": "6911dc23f251847197ad1a33407d993183b76915e32de8e4f3f7e14bdac5b115"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-02.log",
+      "file": "native-02.log",
+      "sha256": "d6c455da54850ade11a8b0535db41a8214b24a2901381033983b10ba8ccc3651"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03.log",
+      "file": "native-03.log",
+      "sha256": "6911dc23f251847197ad1a33407d993183b76915e32de8e4f3f7e14bdac5b115"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/app-03-webgpu.log",
+      "file": "app-03-webgpu.log",
+      "sha256": "ba525e25ce94d7b34a50952c39c956e23cee91c8f502dcb79e6fa880292690d7"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/app-03-webgl.log",
+      "file": "app-03-webgl.log",
+      "sha256": "a4969211f7519df9cee51649f8d70537b81c6a732d83eb699a4fa7a3372510ee"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/close-p1a.mjs",
+      "file": "proof-source/close-p1a.mjs.txt",
+      "sha256": "e3df8477d0d61f39b54fcb23360f5f69433ab1cce0e6da4dba9f595eed095268"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/capture-surface.mjs",
+      "file": "proof-source/capture-surface.mjs.txt",
+      "sha256": "2bc0be9f36c4024e021c096962945ae1095b4a6941258f6f20c72d5a7251ce9c"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/surface-proof.mjs",
+      "file": "proof-source/surface-proof.mjs.txt",
+      "sha256": "813453fca51a9aca0872daed551d3e81020cd679176cb51c61b58910d2bb796b"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/surface-proof.html",
+      "file": "proof-source/surface-proof.html.txt",
+      "sha256": "a503f27e0127edf21e4fb5f871fcdd3b9dcd69d0162b8f8a71e38293b1855acd"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/proof-config.mjs",
+      "file": "proof-source/proof-config.mjs.txt",
+      "sha256": "4fd62f7407f43b79bca0f1704e9ca36e2e1384f1dab7eb675b1abe41ab120444"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/make-app-baseline.mjs",
+      "file": "proof-source/make-app-baseline.mjs.txt",
+      "sha256": "c3162cfcef64a13383b810c19eafb3dbfe00ed7f750a23f9a66f55315663d303"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/capture-app-baseline-03.mjs",
+      "file": "proof-source/capture-app-baseline-03.mjs.txt",
+      "sha256": "0799521530c2069010e8625167544250968f92319a37450bdbcd1c4227351839"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/surface-proof-attempt-02.mjs.txt",
+      "file": "proof-source/surface-proof-attempt-02.mjs.txt",
+      "sha256": "4ac2e228c07685ebd0fc87e2fc94e6f5586b98fe88f2c0afceb70936ebb1ec57"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/capture-surface-attempt-02.mjs.txt",
+      "file": "proof-source/capture-surface-attempt-02.mjs.txt",
+      "sha256": "a08e991e586a2511d9dcb8c8931767706f64b4cc3b421db3bcf0ff3dcc9ce396"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/base-close.png",
+      "file": "native-03/webgpu/base-close.png",
+      "sha256": "c324143cefbbd3d45c25688341d05f17d63dd30349eb521b9055a985197edda3"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/base-full.png",
+      "file": "native-03/webgpu/base-full.png",
+      "sha256": "d5ec27e59228490f4cf42d156ff405743e4bc5163ea090f76d6c3d1f7e8fbccc"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/cleared-close.png",
+      "file": "native-03/webgpu/cleared-close.png",
+      "sha256": "c324143cefbbd3d45c25688341d05f17d63dd30349eb521b9055a985197edda3"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/cleared-full.png",
+      "file": "native-03/webgpu/cleared-full.png",
+      "sha256": "d5ec27e59228490f4cf42d156ff405743e4bc5163ea090f76d6c3d1f7e8fbccc"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/empty-close.png",
+      "file": "native-03/webgpu/empty-close.png",
+      "sha256": "c324143cefbbd3d45c25688341d05f17d63dd30349eb521b9055a985197edda3"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/empty-full.png",
+      "file": "native-03/webgpu/empty-full.png",
+      "sha256": "d5ec27e59228490f4cf42d156ff405743e4bc5163ea090f76d6c3d1f7e8fbccc"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/local-close.png",
+      "file": "native-03/webgpu/local-close.png",
+      "sha256": "619e1413d1c03dd92d2331f7e2d38737defe760bd69bd0e5bc8c20aeef4c5939"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/local-full.png",
+      "file": "native-03/webgpu/local-full.png",
+      "sha256": "88c843dcea2a86a40e593ac625f51962204934c44bf8718d24290467d8862b3f"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/native-base-close.png",
+      "file": "native-03/webgpu/native-base-close.png",
+      "sha256": "34ffc9b4905e3004aa993437670b1c3cbb03cd0d17d3a8fb2a4b6af56bbdce67"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/native-base-full.png",
+      "file": "native-03/webgpu/native-base-full.png",
+      "sha256": "0c78769a15004fa9c0e12ce68421eb998dea9a2d517982158e883887258a8977"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/native-cleared-close.png",
+      "file": "native-03/webgpu/native-cleared-close.png",
+      "sha256": "34ffc9b4905e3004aa993437670b1c3cbb03cd0d17d3a8fb2a4b6af56bbdce67"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/native-cleared-full.png",
+      "file": "native-03/webgpu/native-cleared-full.png",
+      "sha256": "0c78769a15004fa9c0e12ce68421eb998dea9a2d517982158e883887258a8977"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/native-empty-close.png",
+      "file": "native-03/webgpu/native-empty-close.png",
+      "sha256": "34ffc9b4905e3004aa993437670b1c3cbb03cd0d17d3a8fb2a4b6af56bbdce67"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/native-empty-full.png",
+      "file": "native-03/webgpu/native-empty-full.png",
+      "sha256": "0c78769a15004fa9c0e12ce68421eb998dea9a2d517982158e883887258a8977"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/native-local-close.png",
+      "file": "native-03/webgpu/native-local-close.png",
+      "sha256": "5f81fcf40626de53a7e28b56df8df613f38fbcb69a59deef499db62fc8f7fbc9"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/native-local-full.png",
+      "file": "native-03/webgpu/native-local-full.png",
+      "sha256": "64fd8653fe38e5eb19ea19f6859070dc1475336d8da9cd3c4cb8d93ab689e102"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/native-shared-close.png",
+      "file": "native-03/webgpu/native-shared-close.png",
+      "sha256": "5f81fcf40626de53a7e28b56df8df613f38fbcb69a59deef499db62fc8f7fbc9"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/native-shared-full.png",
+      "file": "native-03/webgpu/native-shared-full.png",
+      "sha256": "f98c23af74fe613dc0e6e65fe6739fda851d162e15c6d0c715bf571cd0b362e5"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/native-tiny-close.png",
+      "file": "native-03/webgpu/native-tiny-close.png",
+      "sha256": "43533faf8e07eb107dcf16230739a3e24d0bed0e1c81c5664c0f5cd85b3c391d"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/native-tiny-full.png",
+      "file": "native-03/webgpu/native-tiny-full.png",
+      "sha256": "8d6c704836b40a8563583d82fcdf6678166ef1f0364bca6f217d057e211b4777"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/native-zero-close.png",
+      "file": "native-03/webgpu/native-zero-close.png",
+      "sha256": "34ffc9b4905e3004aa993437670b1c3cbb03cd0d17d3a8fb2a4b6af56bbdce67"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/native-zero-full.png",
+      "file": "native-03/webgpu/native-zero-full.png",
+      "sha256": "0c78769a15004fa9c0e12ce68421eb998dea9a2d517982158e883887258a8977"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/receipt.json",
+      "file": "native-03/webgpu/receipt.json",
+      "sha256": "d1f7d704aa682bea2d89245c87545a66c4028d2eac61eb7144066148d93d1302"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/shared-close.png",
+      "file": "native-03/webgpu/shared-close.png",
+      "sha256": "619e1413d1c03dd92d2331f7e2d38737defe760bd69bd0e5bc8c20aeef4c5939"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/shared-full.png",
+      "file": "native-03/webgpu/shared-full.png",
+      "sha256": "ecfc604e5d5c2994c836ea2a92d811b413603b965ffd428d49e0e8c56816c1ca"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/tiny-close.png",
+      "file": "native-03/webgpu/tiny-close.png",
+      "sha256": "e885303240422571a994188a7c78c754b4d91bfe81b61e5693ef704363ebe550"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/tiny-full.png",
+      "file": "native-03/webgpu/tiny-full.png",
+      "sha256": "1cbb4ed24f2b14e1df53dcb88786a1933c351e4e15bc88e4a8f806b8ff6b14ba"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/zero-close.png",
+      "file": "native-03/webgpu/zero-close.png",
+      "sha256": "c324143cefbbd3d45c25688341d05f17d63dd30349eb521b9055a985197edda3"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgpu/zero-full.png",
+      "file": "native-03/webgpu/zero-full.png",
+      "sha256": "d5ec27e59228490f4cf42d156ff405743e4bc5163ea090f76d6c3d1f7e8fbccc"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/base-close.png",
+      "file": "native-03/webgl/base-close.png",
+      "sha256": "61b7bdfb516aa24b48c658157833042a21f3daa4661c1378a38241e95b3ad650"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/base-full.png",
+      "file": "native-03/webgl/base-full.png",
+      "sha256": "73e62c2a67729308d926505f688feab257af9e7818a41ab9b0ac3861f5e99537"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/cleared-close.png",
+      "file": "native-03/webgl/cleared-close.png",
+      "sha256": "61b7bdfb516aa24b48c658157833042a21f3daa4661c1378a38241e95b3ad650"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/cleared-full.png",
+      "file": "native-03/webgl/cleared-full.png",
+      "sha256": "73e62c2a67729308d926505f688feab257af9e7818a41ab9b0ac3861f5e99537"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/empty-close.png",
+      "file": "native-03/webgl/empty-close.png",
+      "sha256": "61b7bdfb516aa24b48c658157833042a21f3daa4661c1378a38241e95b3ad650"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/empty-full.png",
+      "file": "native-03/webgl/empty-full.png",
+      "sha256": "73e62c2a67729308d926505f688feab257af9e7818a41ab9b0ac3861f5e99537"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/local-close.png",
+      "file": "native-03/webgl/local-close.png",
+      "sha256": "4b2507e31912f977ceb4af0a479d7201c49a0c640da286cbd3539b01322a8fba"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/local-full.png",
+      "file": "native-03/webgl/local-full.png",
+      "sha256": "40c535aba3c9a63b40b600a8abdfb15cadad9bf546a123a9a929a42786eb7934"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/native-base-close.png",
+      "file": "native-03/webgl/native-base-close.png",
+      "sha256": "310f454a715d93979f579fea45e47a3552b12d63261a50b4ac67453137a2ead0"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/native-base-full.png",
+      "file": "native-03/webgl/native-base-full.png",
+      "sha256": "0e2bc477cfd071f4775118cf6ad05d9bb821f44b3164cdecf9b4dce756d3c4d6"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/native-cleared-close.png",
+      "file": "native-03/webgl/native-cleared-close.png",
+      "sha256": "310f454a715d93979f579fea45e47a3552b12d63261a50b4ac67453137a2ead0"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/native-cleared-full.png",
+      "file": "native-03/webgl/native-cleared-full.png",
+      "sha256": "0e2bc477cfd071f4775118cf6ad05d9bb821f44b3164cdecf9b4dce756d3c4d6"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/native-empty-close.png",
+      "file": "native-03/webgl/native-empty-close.png",
+      "sha256": "310f454a715d93979f579fea45e47a3552b12d63261a50b4ac67453137a2ead0"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/native-empty-full.png",
+      "file": "native-03/webgl/native-empty-full.png",
+      "sha256": "0e2bc477cfd071f4775118cf6ad05d9bb821f44b3164cdecf9b4dce756d3c4d6"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/native-local-close.png",
+      "file": "native-03/webgl/native-local-close.png",
+      "sha256": "7e7e3719dfa6f3b93ba6656c587bc282d152148f7dd76b7433ec581d69d8b69d"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/native-local-full.png",
+      "file": "native-03/webgl/native-local-full.png",
+      "sha256": "5818961966ff47490ec72954cc645f2185e4ec81e2f9ca18e37e4515278b4564"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/native-shared-close.png",
+      "file": "native-03/webgl/native-shared-close.png",
+      "sha256": "7e7e3719dfa6f3b93ba6656c587bc282d152148f7dd76b7433ec581d69d8b69d"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/native-shared-full.png",
+      "file": "native-03/webgl/native-shared-full.png",
+      "sha256": "2034f01877ce789f5d6b1c47eeda373019208950c2b8e0ebd994c9babfa747a1"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/native-tiny-close.png",
+      "file": "native-03/webgl/native-tiny-close.png",
+      "sha256": "d5ad2fbdca841a3850b2a3cd491b81d69202645d1e3f85910e483cd5f9c453d2"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/native-tiny-full.png",
+      "file": "native-03/webgl/native-tiny-full.png",
+      "sha256": "905de497986214de3117f87259ad82880b5fee763dec96ca7ec10e98d911a313"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/native-zero-close.png",
+      "file": "native-03/webgl/native-zero-close.png",
+      "sha256": "310f454a715d93979f579fea45e47a3552b12d63261a50b4ac67453137a2ead0"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/native-zero-full.png",
+      "file": "native-03/webgl/native-zero-full.png",
+      "sha256": "0e2bc477cfd071f4775118cf6ad05d9bb821f44b3164cdecf9b4dce756d3c4d6"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/receipt.json",
+      "file": "native-03/webgl/receipt.json",
+      "sha256": "b856bdd980c1a339c9f12a9784521c797457b515c6b2549ef6e4756489161bce"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/shared-close.png",
+      "file": "native-03/webgl/shared-close.png",
+      "sha256": "4b2507e31912f977ceb4af0a479d7201c49a0c640da286cbd3539b01322a8fba"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/shared-full.png",
+      "file": "native-03/webgl/shared-full.png",
+      "sha256": "783d82d532b616a546631565c1117a968d34650cf04d5681cfb0a93fc2c8b1df"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/tiny-close.png",
+      "file": "native-03/webgl/tiny-close.png",
+      "sha256": "2a682ae6759613b388dfa6c2b94b39bb0ca6b0a6f9097611047a41e0a33bfc74"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/tiny-full.png",
+      "file": "native-03/webgl/tiny-full.png",
+      "sha256": "ec3a9b93d1a9b124b295e7e7fc331c8472f66a222a4e8e6a1627a236c4e9f7f2"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/zero-close.png",
+      "file": "native-03/webgl/zero-close.png",
+      "sha256": "61b7bdfb516aa24b48c658157833042a21f3daa4661c1378a38241e95b3ad650"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-03/webgl/zero-full.png",
+      "file": "native-03/webgl/zero-full.png",
+      "sha256": "73e62c2a67729308d926505f688feab257af9e7818a41ab9b0ac3861f5e99537"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/app-03-webgpu/accepted-app-desktop.png",
+      "file": "app-03-webgpu/accepted-app-desktop.png",
+      "sha256": "3f9ad50d37793ffd196c896c645f4c99325cc5f763398a616db3647a1d95e3d1"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/app-03-webgpu/accepted-app-native.png",
+      "file": "app-03-webgpu/accepted-app-native.png",
+      "sha256": "9f843eb852520d1abe545912ade1c5c76d0130c0b1ef3749d37c1e532bf39798"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/app-03-webgpu/native-accepted-app-native.png",
+      "file": "app-03-webgpu/native-accepted-app-native.png",
+      "sha256": "23f086a35f30010aad6bc4a99bfc841ca5a00d4f4de5f36b20fe2efb98dc5212"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/app-03-webgpu/receipt.json",
+      "file": "app-03-webgpu/receipt.json",
+      "sha256": "63ba0ef4d75aa9c9a96b8c74493820c7162b5a7a0a4d7747d884e95bfd870bf5"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/app-03-webgl/accepted-app-desktop.png",
+      "file": "app-03-webgl/accepted-app-desktop.png",
+      "sha256": "d7ba289550c5cde555b541365cfecdb61c471227eaee6af15a2c817eaeac0251"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/app-03-webgl/accepted-app-native.png",
+      "file": "app-03-webgl/accepted-app-native.png",
+      "sha256": "3bfaae7b2052b9186810101f93d314d4d2ce85f8d6cb903d34938aebba136a20"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/app-03-webgl/native-accepted-app-native.png",
+      "file": "app-03-webgl/native-accepted-app-native.png",
+      "sha256": "d62289d7e18ad3b63d01c8b0724658689ed67ff3918c86e7ff4e525235c80f82"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/app-03-webgl/receipt.json",
+      "file": "app-03-webgl/receipt.json",
+      "sha256": "dad68c4d04d32326486fc4fe70ad25dbd5ad69ba27f4acf7869d81a54b11ddde"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-02/webgl/failure.png",
+      "file": "attempts/native-02-webgl/failure.png",
+      "sha256": "180db2baac65a66d153659f1287f1a3a0609be7a26a306f356bb10427594b5ec"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/native-02/webgl/failure.txt",
+      "file": "attempts/native-02-webgl/failure.txt",
+      "sha256": "6f36fc50d894e7cd01c37d1710e36094de7c299a37612a32743aae4953a6dfa1"
+    },
+    {
+      "source": "docs/plans/building-authoring-revival.md",
+      "file": "plan-before.md",
+      "sha256": "904d655717b1739b84de59ef23edd3c65846c018522b4d39be387d1d6a0fcd98"
+    },
+    {
+      "source": "test-results/c3-p1a-2026-10-17/lint-after-archive.log",
+      "file": "lint-after-archive.log",
+      "sha256": "a21c6d2dedb756f860b052cb2d84cd603fbbe38ee53e1ad76ab9c5803f028958"
+    }
+  ],
+  "limitations": [
+    "No construction finish controls in this packet; C3.P1b integrates source editing, native selection, history and recovery.",
+    "Current geometry is still a front facade. Whole-building quality remains C4.",
+    "Legacy v1 compositor defaults remain unchanged; constant-base v2 is explicit.",
+    "Existing shadow-edge/vertical seams, raw floating-point field display and fallback banner remain."
+  ],
+  "postArchiveLint": {
+    "exitCode": 0,
+    "log": "lint-after-archive.log",
+    "evidence": "session 62564 completed; archive-lint=0"
+  }
+}

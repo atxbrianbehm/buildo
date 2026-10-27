@@ -1,0 +1,2287 @@
+{
+  "after": {
+    "atlasContentHash": "91bcbed07bf019b3494a49d572c6405aca07cfd053661bcdc5698eb35db52e81",
+    "channelDataHashes": {
+      "baseColor": "25737041540980f860c3b2b964b2fde21ac589ee6546159080a37794a61e32f9",
+      "height": "4bff8d8b664176e185993890bc3a36be861b6aab004c514841bf1dba3999dd16",
+      "normal": "21ce94750e1139790337476f333a0607094d046b178804ac70fbd43ac427d9ab",
+      "opacity": "b83972d67df3388b3cca6e06fe7717c1411cecf45c692bb49e8b116989ece4bc",
+      "orm": "5bad1e578b727846e1fd9157578ab993eba777d17a31c7015e343f05c78b310d"
+    },
+    "channelHashes": {
+      "baseColor": "f07add10e54bc7b4cbfe49bc7024aa3350f397eae0addd4502ab0b3fb7e611d7",
+      "height": "966e279ba443167f44ebe0c3f82ac2a58b4c8639dc80c554d3d1544beae659f1",
+      "normal": "9e810b1d6cab03dc92761279dcdd5b352ab790ccd54fb3cf071cc552442cb250",
+      "opacity": "0c621c24709cec200dd304950725bf62b6dd5657c3e0f38de86bebf8ecfb246b",
+      "orm": "20bf6fcdaddfdf6100342f9d9e3f0389ece9d467993cc3095349b41be11b28ee"
+    },
+    "packetKind": "buildo-r1-masonry-coverage-material-baseline",
+    "schemaVersion": "0.1.0",
+    "sourceHashes": [
+      {
+        "contentHash": "10cb054bfd9313aa9ae8e37eeb4bdfb58c194595804c922e50541d1d31e037ee",
+        "providerId": "procedural",
+        "requestHash": "92193df15bbfc1e4b2a63885039198c4176df18e3eb6f0c8c75b769ed9a10618",
+        "sourceId": "source.cornice.primary"
+      },
+      {
+        "contentHash": "79e9ad53fcc03cca7a6adfdb33495767a4fcdff08ea2bf2e40d5e83ba81fe1a8",
+        "providerId": "procedural",
+        "requestHash": "661212197a1264a592df7ce846f20261ff0281da382cbe0226c0d3eabba98351",
+        "sourceId": "source.door.primary"
+      },
+      {
+        "contentHash": "7a06889a3fc34bf4f40eeb0ef476a81853c11df6f676711e1efc90d6bf07aec0",
+        "providerId": "procedural",
+        "requestHash": "0dbad88ec78d4d985e62c98db227eab9ef75208b6012e2e7fd1f67ed37036b9d",
+        "sourceId": "source.frame.primary"
+      },
+      {
+        "contentHash": "386be192c5a79315e691526bd39859a4003f682e7c94ae41b583091859c96047",
+        "providerId": "procedural",
+        "requestHash": "d6dc4b1f198f857096f9eb4492c132aa1aff86b2b9b0f39038bb6e014fa6c57a",
+        "sourceId": "source.glass.primary"
+      },
+      {
+        "contentHash": "403b47f9b00241434412738ca5a767c24b1a519569eb7b059369f78e4423f598",
+        "providerId": "procedural",
+        "requestHash": "bff5d1bebde48e9ee853da2ee9e0d18b19b5dfa0568d43cae0e00f9c05ea91a3",
+        "sourceId": "source.ornament.primary"
+      },
+      {
+        "contentHash": "275823e48114ada21d258d65ef5a84fbf03e72f9f59695d7d38d3442a323ae20",
+        "providerId": "procedural",
+        "requestHash": "ceba1fb6d19f470336d764b0b6e5017dcd47233430e4ca2a0484533c7e895a16",
+        "sourceId": "source.roof.primary"
+      },
+      {
+        "contentHash": "342eb5c7167f4566fe0a68403093358c0136388910f13ee1856edea1ca28854d",
+        "providerId": "procedural",
+        "requestHash": "75fbd2115c9cee206dc76d745a3d1579d09f5e134110f44cf3c9d6cfb55ac5cf",
+        "sourceId": "source.trim.horizontal.primary"
+      },
+      {
+        "contentHash": "f97dc514093f4202d73b96a06dba15e0c254707077f01cd03b7054e6aa461ddf",
+        "providerId": "procedural",
+        "requestHash": "542705dd1c1c06429939f2bf16585b70ee417a62353324cb57a8cdf537c17c80",
+        "sourceId": "source.trim.horizontal.secondary"
+      },
+      {
+        "contentHash": "648ebb4e3474fdc8dbb535855896563ee75846954696896ad8b2f8faa36f0f59",
+        "providerId": "procedural",
+        "requestHash": "aa04c6d0cbea38e25db2ff70ccfd0997a58508c660b2719d0dbc60918815e458",
+        "sourceId": "source.trim.vertical.primary"
+      },
+      {
+        "contentHash": "1ab99bac5e6845a8df571748e7afa7a3b9c2a3a63c1cb84a9330df686c0bd585",
+        "providerId": "procedural",
+        "requestHash": "b97a364c82e89e4fa79e8be3cd507ac8e33fe292e7da4ee7e1c374e2e29548cb",
+        "sourceId": "source.utility.mask"
+      },
+      {
+        "contentHash": "94a80b2e23996459be463e868ed41580799f51024bab5150add7af1f49034859",
+        "providerId": "procedural",
+        "requestHash": "2165139dc83df3600b74655ac8b3bd880c7a7419058acc1df9ac14a26ff6dde1",
+        "sourceId": "source.wall.primary"
+      },
+      {
+        "contentHash": "986b45a1225f77e40a9cfb881e68bf7aeffeb0884ec1295e18367be417c372ae",
+        "providerId": "procedural",
+        "requestHash": "a7507d9fbd6e2f1d1f5ee2cac6f7c6b781b99506a69cb52313887fb344c7af75",
+        "sourceId": "source.wall.secondary"
+      }
+    ],
+    "sourceLayerHashes": [
+      {
+        "baseColor": "cd19b68815d372db1467b680123e8e2575126f8ccc9bb219672cbf4a1cfb5390",
+        "height": null,
+        "metalness": "7ff4f0eb4d3eda2771d44219f4ef82bb14becb52ad8d67a62e5dc03c38b381d7",
+        "opacity": null,
+        "provenanceHash": "b3c65e185b6dfbc1314495887af19b8001bba2e9fd9f98f88c160171310ec6e5",
+        "roughness": "299252ade7d4fe095ee29c50be966340fa77fcf8fe8aefe0a30079925b39f1e4",
+        "sourceId": "source.cornice.primary"
+      },
+      {
+        "baseColor": "518e5881ea1fdd4a0dfdd257fb66f1c7c495969e3f51e3ff6effe03afb698703",
+        "height": "3e9a55d74f25bd78b81d8ef5d058060d8e7f6a50a72690a373c2efaa5c9c1807",
+        "metalness": null,
+        "opacity": null,
+        "provenanceHash": "f113429df420aa0c23c2e4aae51eb73cf336e6a4cb16f899bf5011c0404c72a9",
+        "roughness": "f67306c8e18686d8c1cfd1636c43d0d7f310a7c922471e820bda4c74e4560630",
+        "sourceId": "source.door.primary"
+      },
+      {
+        "baseColor": "57ef5d2b4484acfd25c7ebbba2d9766e8ef373de40e51771c7f6ae415dcbaf0f",
+        "height": "b909800bb2b7c3b60ccd59b9403ae3eea38e92aa2bb636ddb22a9c86c3da614a",
+        "metalness": null,
+        "opacity": null,
+        "provenanceHash": "b5a235426da1b1210a0a641855fe2964e30ca43b2e9ed4424be017219b528fbb",
+        "roughness": "1ba58733db41cb8d0f4f533fa397c9a8424a4f35da38f2a2fa71070c78297d9b",
+        "sourceId": "source.frame.primary"
+      },
+      {
+        "baseColor": "a5d684891b8190003aa91ca9161d8e26db650574e9f5c2ef3ca3a7cf10e2d79c",
+        "height": null,
+        "metalness": null,
+        "opacity": "6480015e508666f23de80fa360256a3b23c20f17e5859da600520634babf98e3",
+        "provenanceHash": "d9353467f9ee08a5c510051e049507bcd544979930539b9d663594dbd92ed7c7",
+        "roughness": "991b52b70fe8a10e46aad5055d7b923a2ba6629e0d999c0278706c5d7547a1b2",
+        "sourceId": "source.glass.primary"
+      },
+      {
+        "baseColor": "55ada17dd6402800a97de6a5f3088e151ccb7348ff03e2976543c5253641b5ae",
+        "height": "a5eac5414ded35cdba966785d0518694cb9c5e72c314dba0503456c7d4547871",
+        "metalness": null,
+        "opacity": "af90e5a0406ac3ba70e62c54f38a9fc7e1e7cf2bae7c74b25e49011f7d46a5f5",
+        "provenanceHash": "bf9da58943e8052d8348c15a9036b881ddaa2912079ccad19aca0839f66a9e22",
+        "roughness": null,
+        "sourceId": "source.ornament.primary"
+      },
+      {
+        "baseColor": "81eca29990797d3f7a4f8090cb21a4392ceba5fd203fc6c1604ae21f9c72030d",
+        "height": "8e22b90d4d7f07c1aad47329afa181604ae55ded17a015674617083017b60d87",
+        "metalness": null,
+        "opacity": null,
+        "provenanceHash": "ac928e3babf20e89fb062cbf3ed7fb77530918d703bde431ef61717abcdf810a",
+        "roughness": "ab5ddfd1df92becd8f1ce0dc2b5026f610ea6928eb334345b2b6de00393c751a",
+        "sourceId": "source.roof.primary"
+      },
+      {
+        "baseColor": "6307b1125e17673e8264fe876829a0c8a7d3818ca083519e2c8ba7e8b41d69cd",
+        "height": null,
+        "metalness": "f419694bdd1b80e6dc15cd39f0b18f68b29e2306a98ad20edc14d0b6c5ed689c",
+        "opacity": null,
+        "provenanceHash": "286fb654ad9a450b8379e43f2868a3c8081525d13ef9ae25be1c8f7e0f2b729f",
+        "roughness": "b683fc0bfcc998ac7998e57eaa9a0c386881ee988f8c0310f28a16bc62488ebc",
+        "sourceId": "source.trim.horizontal.primary"
+      },
+      {
+        "baseColor": "77a0afd6bcd1596389d8446f88cdc98426be27bc4be2e82f6fa6ca761b2205f9",
+        "height": null,
+        "metalness": "0f3ecd405097cc9f9e6c2140351104979d72ef65585f8a63658f2663de5f8b6d",
+        "opacity": null,
+        "provenanceHash": "ec8d7cf141d1287988ca1b77e30e6cb19f4480b432d0c52c76cb229f0663ee73",
+        "roughness": "35067a005796ace6a96f6633ce986ffc1022a2f746c94863f90a157545fc6216",
+        "sourceId": "source.trim.horizontal.secondary"
+      },
+      {
+        "baseColor": "990cc06027dc34305be21bfb9e807643d5a653f37abae6169d69aa39ded5a3d3",
+        "height": null,
+        "metalness": "19765b53e2cd01ab12b45d9744865b8db999946c3023c721d92347b0a8e6e764",
+        "opacity": null,
+        "provenanceHash": "c01f3de66bd48bf7b1bc5e4b618ac8e45accd775104fa12d540ed3bd1bac7f4f",
+        "roughness": "b3746b6356e582dbe822ff1e3cb9d1c8c1c22eb5057368d9b345251cff330ccd",
+        "sourceId": "source.trim.vertical.primary"
+      },
+      {
+        "baseColor": "55ada17dd6402800a97de6a5f3088e151ccb7348ff03e2976543c5253641b5ae",
+        "height": "98218bd2cd49e8895267be284bba6bd23b474296d000029ac5e38026643abf6f",
+        "metalness": null,
+        "opacity": "7cece27a6ccaf8237b3ff694e0bc77584b323a73345244b780b8988af9b05720",
+        "provenanceHash": "d3a6fa8ea5cc9dbbe26bc5faee3c6551ce65301a2373f69e3f3b517cdc5bd90b",
+        "roughness": null,
+        "sourceId": "source.utility.mask"
+      },
+      {
+        "baseColor": "c4d8193645d232ceb76bbfd848782b500f2b43488194e22908fa93c9740fc894",
+        "height": "0286fec429a4f298f2416ffd0371742e052328447ad6ace5203c55a945ddfc0d",
+        "metalness": null,
+        "opacity": null,
+        "provenanceHash": "1a478a82a6aa0649e8d1ecfb9e610993a6be4a20de0873ab1487e096414a82c4",
+        "roughness": "5c456366ae573db99c42c67074f8ebc9404a0ea702a8ca7ca16de37b8f2ceb4b",
+        "sourceId": "source.wall.primary"
+      },
+      {
+        "baseColor": "f97645454ca5d8775f0afa9a658fa97d2e5eebdac1ca032a9c34225e6319b09e",
+        "height": "16dbb42c2c1d5fb28b18d16ef02165a8bee887ea0fdf9f997719aea74899c977",
+        "metalness": null,
+        "opacity": null,
+        "provenanceHash": "ec5a79fef29463d464583aacc848b1576f6b81c934a622e2a8259b0745622ea1",
+        "roughness": "fd72c1053292a3a8bf071d38b811a5b90ced0848d89cfa0ea6fc059136c97247",
+        "sourceId": "source.wall.secondary"
+      }
+    ]
+  },
+  "afterRequests": [
+    {
+      "artKitMaterialRoleId": "painted-metal",
+      "heightPx": 32,
+      "metersPerTile": 0.2,
+      "periodicity": "x",
+      "physicalSizeM": {
+        "height": 0.2,
+        "width": 0.2
+      },
+      "proceduralSource": "painted-metal",
+      "promptVocabulary": [
+        "bracketed-metal",
+        "primary cornice",
+        "painted-metal"
+      ],
+      "role": "horizontalTrim",
+      "seedPath": "atlas/source/cornice.primary/bracketed-metal",
+      "selectedFamily": "bracketed-metal",
+      "sourceId": "source.cornice.primary",
+      "widthPx": 32
+    },
+    {
+      "artKitMaterialRoleId": "painted-wood",
+      "heightPx": 32,
+      "metersPerTile": 0.32,
+      "periodicity": "none",
+      "physicalSizeM": {
+        "height": 3.2,
+        "width": 2.2
+      },
+      "proceduralSource": "painted-wood",
+      "promptVocabulary": [
+        "recessed-storefront",
+        "recessed storefront door",
+        "painted-wood"
+      ],
+      "role": "door",
+      "seedPath": "atlas/source/door.primary/recessed-storefront",
+      "selectedFamily": "recessed-storefront",
+      "sourceId": "source.door.primary",
+      "widthPx": 32
+    },
+    {
+      "artKitMaterialRoleId": "painted-wood",
+      "heightPx": 32,
+      "metersPerTile": 0.32,
+      "periodicity": "x",
+      "physicalSizeM": {
+        "height": 0.32,
+        "width": 0.32
+      },
+      "proceduralSource": "painted-wood",
+      "promptVocabulary": [
+        "tall-arched",
+        "painted frame",
+        "painted-wood"
+      ],
+      "role": "frame",
+      "seedPath": "atlas/source/frame.primary/tall-arched",
+      "selectedFamily": "tall-arched",
+      "sourceId": "source.frame.primary",
+      "widthPx": 32
+    },
+    {
+      "artKitMaterialRoleId": "glass",
+      "heightPx": 32,
+      "metersPerTile": 1,
+      "periodicity": "none",
+      "physicalSizeM": {
+        "height": 2.4,
+        "width": 1.4
+      },
+      "proceduralSource": "glass-tint",
+      "promptVocabulary": [
+        "tall-arched",
+        "slightly wavy glass",
+        "glass-tint"
+      ],
+      "role": "glass",
+      "seedPath": "atlas/source/glass.primary/tall-arched",
+      "selectedFamily": "tall-arched",
+      "sourceId": "source.glass.primary",
+      "widthPx": 32
+    },
+    {
+      "artKitMaterialRoleId": "grime",
+      "heightPx": 32,
+      "metersPerTile": 0.8,
+      "periodicity": "none",
+      "physicalSizeM": {
+        "height": 1.2,
+        "width": 1.2
+      },
+      "proceduralSource": "grime-weathering-mask",
+      "promptVocabulary": [
+        "shallow-floral-mask",
+        "shallow ornament mask",
+        "grime-weathering-mask"
+      ],
+      "role": "ornament",
+      "seedPath": "atlas/source/ornament.primary/shallow-floral-mask",
+      "selectedFamily": "shallow-floral-mask",
+      "sourceId": "source.ornament.primary",
+      "widthPx": 32
+    },
+    {
+      "artKitMaterialRoleId": "roof",
+      "heightPx": 32,
+      "metersPerTile": 1.5,
+      "periodicity": "xy",
+      "physicalSizeM": {
+        "height": 1.5,
+        "width": 1.5
+      },
+      "proceduralSource": "roof-membrane",
+      "promptVocabulary": [
+        "flat-membrane",
+        "roof surface",
+        "roof-membrane"
+      ],
+      "role": "roof",
+      "seedPath": "atlas/source/roof.primary/flat-membrane",
+      "selectedFamily": "flat-membrane",
+      "sourceId": "source.roof.primary",
+      "widthPx": 32
+    },
+    {
+      "artKitMaterialRoleId": "trim-stone",
+      "heightPx": 32,
+      "metersPerTile": 0.64,
+      "periodicity": "x",
+      "physicalSizeM": {
+        "height": 0.64,
+        "width": 0.64
+      },
+      "proceduralSource": "carved-stone-trim",
+      "promptVocabulary": [
+        "pressed-metal",
+        "horizontal trim",
+        "carved-stone-trim"
+      ],
+      "role": "horizontalTrim",
+      "seedPath": "atlas/source/trim.horizontal.primary/pressed-metal",
+      "selectedFamily": "pressed-metal",
+      "sourceId": "source.trim.horizontal.primary",
+      "widthPx": 32
+    },
+    {
+      "artKitMaterialRoleId": "painted-metal",
+      "heightPx": 32,
+      "metersPerTile": 0.2,
+      "periodicity": "x",
+      "physicalSizeM": {
+        "height": 0.2,
+        "width": 0.2
+      },
+      "proceduralSource": "painted-metal",
+      "promptVocabulary": [
+        "pressed-metal",
+        "secondary horizontal trim",
+        "painted-metal"
+      ],
+      "role": "horizontalTrim",
+      "seedPath": "atlas/source/trim.horizontal.secondary/pressed-metal",
+      "selectedFamily": "pressed-metal",
+      "sourceId": "source.trim.horizontal.secondary",
+      "widthPx": 32
+    },
+    {
+      "artKitMaterialRoleId": "painted-metal",
+      "heightPx": 32,
+      "metersPerTile": 0.2,
+      "periodicity": "x",
+      "physicalSizeM": {
+        "height": 0.2,
+        "width": 0.2
+      },
+      "proceduralSource": "painted-metal",
+      "promptVocabulary": [
+        "pressed-metal",
+        "vertical trim",
+        "painted-metal"
+      ],
+      "role": "verticalTrim",
+      "seedPath": "atlas/source/trim.vertical.primary/pressed-metal",
+      "selectedFamily": "pressed-metal",
+      "sourceId": "source.trim.vertical.primary",
+      "widthPx": 32
+    },
+    {
+      "artKitMaterialRoleId": "grime",
+      "heightPx": 32,
+      "metersPerTile": 0.8,
+      "periodicity": "none",
+      "physicalSizeM": {
+        "height": 1,
+        "width": 1
+      },
+      "proceduralSource": "grime-weathering-mask",
+      "promptVocabulary": [
+        "shallow-floral-mask",
+        "utility mask",
+        "grime-weathering-mask"
+      ],
+      "role": "ornament",
+      "seedPath": "atlas/source/utility.mask/shallow-floral-mask",
+      "selectedFamily": "shallow-floral-mask",
+      "sourceId": "source.utility.mask",
+      "widthPx": 32
+    },
+    {
+      "artKitMaterialRoleId": "brick",
+      "heightPx": 32,
+      "metersPerTile": 0.96,
+      "periodicity": "xy",
+      "physicalSizeM": {
+        "height": 0.96,
+        "width": 0.96
+      },
+      "proceduralSource": "running-bond-brick",
+      "promptVocabulary": [
+        "brick-red",
+        "primary wall material",
+        "running-bond-brick"
+      ],
+      "role": "wall",
+      "samplingProfile": {
+        "columnsPerCourse": 6,
+        "courseCount": 12,
+        "jointFractionOfCourse": 0.14,
+        "model": "primary-authored-wall-periodic-area-v2",
+        "schemaVersion": "0.1.0",
+        "tileSizeM": 0.96
+      },
+      "seedPath": "atlas/source/wall.primary/brick-red",
+      "selectedFamily": "brick-red",
+      "sourceId": "source.wall.primary",
+      "widthPx": 32
+    },
+    {
+      "artKitMaterialRoleId": "plaster",
+      "heightPx": 32,
+      "metersPerTile": 1.2,
+      "periodicity": "xy",
+      "physicalSizeM": {
+        "height": 1.2,
+        "width": 1.2
+      },
+      "proceduralSource": "painted-stucco",
+      "promptVocabulary": [
+        "brick-red",
+        "secondary wall material",
+        "painted-stucco"
+      ],
+      "role": "wall",
+      "seedPath": "atlas/source/wall.secondary/brick-red",
+      "selectedFamily": "brick-red",
+      "sourceId": "source.wall.secondary",
+      "widthPx": 32
+    }
+  ],
+  "baseline": {
+    "beforeCheckpoint": {
+      "file": "test-results/r1-s8-2026-10-14/before-source/material-byte-checkpoint.json",
+      "sha256": "59342dc99d9c119e953c88cda5fda955a54f19c3d7a4362791f28bda710a8e43"
+    },
+    "s6Card": {
+      "file": "docs/reviews/2026-10-14-r1-s6-verified/acceptance-card.json",
+      "sha256": "7a9b28fb747e06431c16437ade61639eb43fe326c1c0c66e68a3cd638b035f0f"
+    },
+    "s6Material": {
+      "file": "docs/reviews/2026-10-14-r1-s6-verified/material-baseline-delta.json",
+      "sha256": "c365b4419ab23b0050b621ffff9ddf096a83b9e198a1eb942ff1774a42c5e9a4"
+    },
+    "s6Sampling": {
+      "file": "docs/reviews/2026-10-14-r1-s6-verified/sampling-report.json",
+      "sha256": "3cfbb91aca772e6962e5feee1a6555d493e6386331a6b53c21ab5989956f2838"
+    },
+    "s7Report": {
+      "file": "docs/reviews/2026-10-14-r1-s7-verified/wall-seam-report.json",
+      "sha256": "9a23646cf31969792196d1fe48dd4ef3c017f83938f976fd1bcb6e1cb3075669"
+    },
+    "s7SourceProof": {
+      "file": "test-results/r1-s7-2026-10-14/final-01-proof/source-and-copy-checkpoint.json",
+      "sha256": "f431bd621adff3c3c4d384e1a0e94d72fb5355265958b1a5c3aff326b67b83be"
+    }
+  },
+  "before": {
+    "atlasContentHash": "1ad52cb4ac9efae1e2d66d6494858efc853a944adc29a9a43c1d4b4f70b86bfd",
+    "channelDataHashes": {
+      "baseColor": "c7cd8bf353053cb793352c557b5e0c02312d9498d323e8a2fea98fd9b88285f2",
+      "height": "e397478902d371e2092c152e8a9a61aa76d6b22ab1c2ed6b3a58ab426284a4a2",
+      "normal": "d6de301e7ee59230e70ea0eaf901be1f0b7bd11ec173f21a6a48caf33246a742",
+      "opacity": "b83972d67df3388b3cca6e06fe7717c1411cecf45c692bb49e8b116989ece4bc",
+      "orm": "5bad1e578b727846e1fd9157578ab993eba777d17a31c7015e343f05c78b310d"
+    },
+    "channelHashes": {
+      "baseColor": "30fb0294eb8bb119188fafb477cf8443c56fcb6caf5deccd1cb6637939773ad7",
+      "height": "06849f382d05284803d976b8f3457af985e8b20856357134d90f40a0a4df17ab",
+      "normal": "0f534fb1aa048d99d3632884187b7e15128b2dca9b47aa7fd6af9292063326c2",
+      "opacity": "0c621c24709cec200dd304950725bf62b6dd5657c3e0f38de86bebf8ecfb246b",
+      "orm": "20bf6fcdaddfdf6100342f9d9e3f0389ece9d467993cc3095349b41be11b28ee"
+    },
+    "packetKind": "buildo-r1-masonry-coverage-material-baseline",
+    "schemaVersion": "0.1.0",
+    "sourceHashes": [
+      {
+        "contentHash": "10cb054bfd9313aa9ae8e37eeb4bdfb58c194595804c922e50541d1d31e037ee",
+        "providerId": "procedural",
+        "requestHash": "92193df15bbfc1e4b2a63885039198c4176df18e3eb6f0c8c75b769ed9a10618",
+        "sourceId": "source.cornice.primary"
+      },
+      {
+        "contentHash": "79e9ad53fcc03cca7a6adfdb33495767a4fcdff08ea2bf2e40d5e83ba81fe1a8",
+        "providerId": "procedural",
+        "requestHash": "661212197a1264a592df7ce846f20261ff0281da382cbe0226c0d3eabba98351",
+        "sourceId": "source.door.primary"
+      },
+      {
+        "contentHash": "7a06889a3fc34bf4f40eeb0ef476a81853c11df6f676711e1efc90d6bf07aec0",
+        "providerId": "procedural",
+        "requestHash": "0dbad88ec78d4d985e62c98db227eab9ef75208b6012e2e7fd1f67ed37036b9d",
+        "sourceId": "source.frame.primary"
+      },
+      {
+        "contentHash": "386be192c5a79315e691526bd39859a4003f682e7c94ae41b583091859c96047",
+        "providerId": "procedural",
+        "requestHash": "d6dc4b1f198f857096f9eb4492c132aa1aff86b2b9b0f39038bb6e014fa6c57a",
+        "sourceId": "source.glass.primary"
+      },
+      {
+        "contentHash": "403b47f9b00241434412738ca5a767c24b1a519569eb7b059369f78e4423f598",
+        "providerId": "procedural",
+        "requestHash": "bff5d1bebde48e9ee853da2ee9e0d18b19b5dfa0568d43cae0e00f9c05ea91a3",
+        "sourceId": "source.ornament.primary"
+      },
+      {
+        "contentHash": "275823e48114ada21d258d65ef5a84fbf03e72f9f59695d7d38d3442a323ae20",
+        "providerId": "procedural",
+        "requestHash": "ceba1fb6d19f470336d764b0b6e5017dcd47233430e4ca2a0484533c7e895a16",
+        "sourceId": "source.roof.primary"
+      },
+      {
+        "contentHash": "342eb5c7167f4566fe0a68403093358c0136388910f13ee1856edea1ca28854d",
+        "providerId": "procedural",
+        "requestHash": "75fbd2115c9cee206dc76d745a3d1579d09f5e134110f44cf3c9d6cfb55ac5cf",
+        "sourceId": "source.trim.horizontal.primary"
+      },
+      {
+        "contentHash": "f97dc514093f4202d73b96a06dba15e0c254707077f01cd03b7054e6aa461ddf",
+        "providerId": "procedural",
+        "requestHash": "542705dd1c1c06429939f2bf16585b70ee417a62353324cb57a8cdf537c17c80",
+        "sourceId": "source.trim.horizontal.secondary"
+      },
+      {
+        "contentHash": "648ebb4e3474fdc8dbb535855896563ee75846954696896ad8b2f8faa36f0f59",
+        "providerId": "procedural",
+        "requestHash": "aa04c6d0cbea38e25db2ff70ccfd0997a58508c660b2719d0dbc60918815e458",
+        "sourceId": "source.trim.vertical.primary"
+      },
+      {
+        "contentHash": "1ab99bac5e6845a8df571748e7afa7a3b9c2a3a63c1cb84a9330df686c0bd585",
+        "providerId": "procedural",
+        "requestHash": "b97a364c82e89e4fa79e8be3cd507ac8e33fe292e7da4ee7e1c374e2e29548cb",
+        "sourceId": "source.utility.mask"
+      },
+      {
+        "contentHash": "ab206b69ff261d393ca5c1d325a9a919f374ac3f69365e824990054070098a18",
+        "providerId": "procedural",
+        "requestHash": "fe3c0040dee939d9713031bbaa6e8edbb84cbb7ccbd29f97c0b136f732a5c57a",
+        "sourceId": "source.wall.primary"
+      },
+      {
+        "contentHash": "986b45a1225f77e40a9cfb881e68bf7aeffeb0884ec1295e18367be417c372ae",
+        "providerId": "procedural",
+        "requestHash": "a7507d9fbd6e2f1d1f5ee2cac6f7c6b781b99506a69cb52313887fb344c7af75",
+        "sourceId": "source.wall.secondary"
+      }
+    ],
+    "sourceLayerHashes": [
+      {
+        "baseColor": "cd19b68815d372db1467b680123e8e2575126f8ccc9bb219672cbf4a1cfb5390",
+        "height": null,
+        "metalness": "7ff4f0eb4d3eda2771d44219f4ef82bb14becb52ad8d67a62e5dc03c38b381d7",
+        "opacity": null,
+        "provenanceHash": "b3c65e185b6dfbc1314495887af19b8001bba2e9fd9f98f88c160171310ec6e5",
+        "roughness": "299252ade7d4fe095ee29c50be966340fa77fcf8fe8aefe0a30079925b39f1e4",
+        "sourceId": "source.cornice.primary"
+      },
+      {
+        "baseColor": "518e5881ea1fdd4a0dfdd257fb66f1c7c495969e3f51e3ff6effe03afb698703",
+        "height": "3e9a55d74f25bd78b81d8ef5d058060d8e7f6a50a72690a373c2efaa5c9c1807",
+        "metalness": null,
+        "opacity": null,
+        "provenanceHash": "f113429df420aa0c23c2e4aae51eb73cf336e6a4cb16f899bf5011c0404c72a9",
+        "roughness": "f67306c8e18686d8c1cfd1636c43d0d7f310a7c922471e820bda4c74e4560630",
+        "sourceId": "source.door.primary"
+      },
+      {
+        "baseColor": "57ef5d2b4484acfd25c7ebbba2d9766e8ef373de40e51771c7f6ae415dcbaf0f",
+        "height": "b909800bb2b7c3b60ccd59b9403ae3eea38e92aa2bb636ddb22a9c86c3da614a",
+        "metalness": null,
+        "opacity": null,
+        "provenanceHash": "b5a235426da1b1210a0a641855fe2964e30ca43b2e9ed4424be017219b528fbb",
+        "roughness": "1ba58733db41cb8d0f4f533fa397c9a8424a4f35da38f2a2fa71070c78297d9b",
+        "sourceId": "source.frame.primary"
+      },
+      {
+        "baseColor": "a5d684891b8190003aa91ca9161d8e26db650574e9f5c2ef3ca3a7cf10e2d79c",
+        "height": null,
+        "metalness": null,
+        "opacity": "6480015e508666f23de80fa360256a3b23c20f17e5859da600520634babf98e3",
+        "provenanceHash": "d9353467f9ee08a5c510051e049507bcd544979930539b9d663594dbd92ed7c7",
+        "roughness": "991b52b70fe8a10e46aad5055d7b923a2ba6629e0d999c0278706c5d7547a1b2",
+        "sourceId": "source.glass.primary"
+      },
+      {
+        "baseColor": "55ada17dd6402800a97de6a5f3088e151ccb7348ff03e2976543c5253641b5ae",
+        "height": "a5eac5414ded35cdba966785d0518694cb9c5e72c314dba0503456c7d4547871",
+        "metalness": null,
+        "opacity": "af90e5a0406ac3ba70e62c54f38a9fc7e1e7cf2bae7c74b25e49011f7d46a5f5",
+        "provenanceHash": "bf9da58943e8052d8348c15a9036b881ddaa2912079ccad19aca0839f66a9e22",
+        "roughness": null,
+        "sourceId": "source.ornament.primary"
+      },
+      {
+        "baseColor": "81eca29990797d3f7a4f8090cb21a4392ceba5fd203fc6c1604ae21f9c72030d",
+        "height": "8e22b90d4d7f07c1aad47329afa181604ae55ded17a015674617083017b60d87",
+        "metalness": null,
+        "opacity": null,
+        "provenanceHash": "ac928e3babf20e89fb062cbf3ed7fb77530918d703bde431ef61717abcdf810a",
+        "roughness": "ab5ddfd1df92becd8f1ce0dc2b5026f610ea6928eb334345b2b6de00393c751a",
+        "sourceId": "source.roof.primary"
+      },
+      {
+        "baseColor": "6307b1125e17673e8264fe876829a0c8a7d3818ca083519e2c8ba7e8b41d69cd",
+        "height": null,
+        "metalness": "f419694bdd1b80e6dc15cd39f0b18f68b29e2306a98ad20edc14d0b6c5ed689c",
+        "opacity": null,
+        "provenanceHash": "286fb654ad9a450b8379e43f2868a3c8081525d13ef9ae25be1c8f7e0f2b729f",
+        "roughness": "b683fc0bfcc998ac7998e57eaa9a0c386881ee988f8c0310f28a16bc62488ebc",
+        "sourceId": "source.trim.horizontal.primary"
+      },
+      {
+        "baseColor": "77a0afd6bcd1596389d8446f88cdc98426be27bc4be2e82f6fa6ca761b2205f9",
+        "height": null,
+        "metalness": "0f3ecd405097cc9f9e6c2140351104979d72ef65585f8a63658f2663de5f8b6d",
+        "opacity": null,
+        "provenanceHash": "ec8d7cf141d1287988ca1b77e30e6cb19f4480b432d0c52c76cb229f0663ee73",
+        "roughness": "35067a005796ace6a96f6633ce986ffc1022a2f746c94863f90a157545fc6216",
+        "sourceId": "source.trim.horizontal.secondary"
+      },
+      {
+        "baseColor": "990cc06027dc34305be21bfb9e807643d5a653f37abae6169d69aa39ded5a3d3",
+        "height": null,
+        "metalness": "19765b53e2cd01ab12b45d9744865b8db999946c3023c721d92347b0a8e6e764",
+        "opacity": null,
+        "provenanceHash": "c01f3de66bd48bf7b1bc5e4b618ac8e45accd775104fa12d540ed3bd1bac7f4f",
+        "roughness": "b3746b6356e582dbe822ff1e3cb9d1c8c1c22eb5057368d9b345251cff330ccd",
+        "sourceId": "source.trim.vertical.primary"
+      },
+      {
+        "baseColor": "55ada17dd6402800a97de6a5f3088e151ccb7348ff03e2976543c5253641b5ae",
+        "height": "98218bd2cd49e8895267be284bba6bd23b474296d000029ac5e38026643abf6f",
+        "metalness": null,
+        "opacity": "7cece27a6ccaf8237b3ff694e0bc77584b323a73345244b780b8988af9b05720",
+        "provenanceHash": "d3a6fa8ea5cc9dbbe26bc5faee3c6551ce65301a2373f69e3f3b517cdc5bd90b",
+        "roughness": null,
+        "sourceId": "source.utility.mask"
+      },
+      {
+        "baseColor": "3d6db139436c8a6741e155971e13f22bc54c0bf6ab3f64bb38c899d4686a8b2b",
+        "height": "99170c4556e952d4476e7d84a59b6ee8ea1ef542da9cb7335ec94b8ef1cf5ec5",
+        "metalness": null,
+        "opacity": null,
+        "provenanceHash": "6938a903f29e9e63678010bde443ae23e0519e95ad33a0cefd6bb9c4e11fe019",
+        "roughness": "5c456366ae573db99c42c67074f8ebc9404a0ea702a8ca7ca16de37b8f2ceb4b",
+        "sourceId": "source.wall.primary"
+      },
+      {
+        "baseColor": "f97645454ca5d8775f0afa9a658fa97d2e5eebdac1ca032a9c34225e6319b09e",
+        "height": "16dbb42c2c1d5fb28b18d16ef02165a8bee887ea0fdf9f997719aea74899c977",
+        "metalness": null,
+        "opacity": null,
+        "provenanceHash": "ec5a79fef29463d464583aacc848b1576f6b81c934a622e2a8259b0745622ea1",
+        "roughness": "fd72c1053292a3a8bf071d38b811a5b90ced0848d89cfa0ea6fc059136c97247",
+        "sourceId": "source.wall.secondary"
+      }
+    ]
+  },
+  "beforeRequests": [
+    {
+      "artKitMaterialRoleId": "painted-metal",
+      "heightPx": 32,
+      "metersPerTile": 0.2,
+      "periodicity": "x",
+      "physicalSizeM": {
+        "height": 0.2,
+        "width": 0.2
+      },
+      "proceduralSource": "painted-metal",
+      "promptVocabulary": [
+        "bracketed-metal",
+        "primary cornice",
+        "painted-metal"
+      ],
+      "role": "horizontalTrim",
+      "seedPath": "atlas/source/cornice.primary/bracketed-metal",
+      "selectedFamily": "bracketed-metal",
+      "sourceId": "source.cornice.primary",
+      "widthPx": 32
+    },
+    {
+      "artKitMaterialRoleId": "painted-wood",
+      "heightPx": 32,
+      "metersPerTile": 0.32,
+      "periodicity": "none",
+      "physicalSizeM": {
+        "height": 3.2,
+        "width": 2.2
+      },
+      "proceduralSource": "painted-wood",
+      "promptVocabulary": [
+        "recessed-storefront",
+        "recessed storefront door",
+        "painted-wood"
+      ],
+      "role": "door",
+      "seedPath": "atlas/source/door.primary/recessed-storefront",
+      "selectedFamily": "recessed-storefront",
+      "sourceId": "source.door.primary",
+      "widthPx": 32
+    },
+    {
+      "artKitMaterialRoleId": "painted-wood",
+      "heightPx": 32,
+      "metersPerTile": 0.32,
+      "periodicity": "x",
+      "physicalSizeM": {
+        "height": 0.32,
+        "width": 0.32
+      },
+      "proceduralSource": "painted-wood",
+      "promptVocabulary": [
+        "tall-arched",
+        "painted frame",
+        "painted-wood"
+      ],
+      "role": "frame",
+      "seedPath": "atlas/source/frame.primary/tall-arched",
+      "selectedFamily": "tall-arched",
+      "sourceId": "source.frame.primary",
+      "widthPx": 32
+    },
+    {
+      "artKitMaterialRoleId": "glass",
+      "heightPx": 32,
+      "metersPerTile": 1,
+      "periodicity": "none",
+      "physicalSizeM": {
+        "height": 2.4,
+        "width": 1.4
+      },
+      "proceduralSource": "glass-tint",
+      "promptVocabulary": [
+        "tall-arched",
+        "slightly wavy glass",
+        "glass-tint"
+      ],
+      "role": "glass",
+      "seedPath": "atlas/source/glass.primary/tall-arched",
+      "selectedFamily": "tall-arched",
+      "sourceId": "source.glass.primary",
+      "widthPx": 32
+    },
+    {
+      "artKitMaterialRoleId": "grime",
+      "heightPx": 32,
+      "metersPerTile": 0.8,
+      "periodicity": "none",
+      "physicalSizeM": {
+        "height": 1.2,
+        "width": 1.2
+      },
+      "proceduralSource": "grime-weathering-mask",
+      "promptVocabulary": [
+        "shallow-floral-mask",
+        "shallow ornament mask",
+        "grime-weathering-mask"
+      ],
+      "role": "ornament",
+      "seedPath": "atlas/source/ornament.primary/shallow-floral-mask",
+      "selectedFamily": "shallow-floral-mask",
+      "sourceId": "source.ornament.primary",
+      "widthPx": 32
+    },
+    {
+      "artKitMaterialRoleId": "roof",
+      "heightPx": 32,
+      "metersPerTile": 1.5,
+      "periodicity": "xy",
+      "physicalSizeM": {
+        "height": 1.5,
+        "width": 1.5
+      },
+      "proceduralSource": "roof-membrane",
+      "promptVocabulary": [
+        "flat-membrane",
+        "roof surface",
+        "roof-membrane"
+      ],
+      "role": "roof",
+      "seedPath": "atlas/source/roof.primary/flat-membrane",
+      "selectedFamily": "flat-membrane",
+      "sourceId": "source.roof.primary",
+      "widthPx": 32
+    },
+    {
+      "artKitMaterialRoleId": "trim-stone",
+      "heightPx": 32,
+      "metersPerTile": 0.64,
+      "periodicity": "x",
+      "physicalSizeM": {
+        "height": 0.64,
+        "width": 0.64
+      },
+      "proceduralSource": "carved-stone-trim",
+      "promptVocabulary": [
+        "pressed-metal",
+        "horizontal trim",
+        "carved-stone-trim"
+      ],
+      "role": "horizontalTrim",
+      "seedPath": "atlas/source/trim.horizontal.primary/pressed-metal",
+      "selectedFamily": "pressed-metal",
+      "sourceId": "source.trim.horizontal.primary",
+      "widthPx": 32
+    },
+    {
+      "artKitMaterialRoleId": "painted-metal",
+      "heightPx": 32,
+      "metersPerTile": 0.2,
+      "periodicity": "x",
+      "physicalSizeM": {
+        "height": 0.2,
+        "width": 0.2
+      },
+      "proceduralSource": "painted-metal",
+      "promptVocabulary": [
+        "pressed-metal",
+        "secondary horizontal trim",
+        "painted-metal"
+      ],
+      "role": "horizontalTrim",
+      "seedPath": "atlas/source/trim.horizontal.secondary/pressed-metal",
+      "selectedFamily": "pressed-metal",
+      "sourceId": "source.trim.horizontal.secondary",
+      "widthPx": 32
+    },
+    {
+      "artKitMaterialRoleId": "painted-metal",
+      "heightPx": 32,
+      "metersPerTile": 0.2,
+      "periodicity": "x",
+      "physicalSizeM": {
+        "height": 0.2,
+        "width": 0.2
+      },
+      "proceduralSource": "painted-metal",
+      "promptVocabulary": [
+        "pressed-metal",
+        "vertical trim",
+        "painted-metal"
+      ],
+      "role": "verticalTrim",
+      "seedPath": "atlas/source/trim.vertical.primary/pressed-metal",
+      "selectedFamily": "pressed-metal",
+      "sourceId": "source.trim.vertical.primary",
+      "widthPx": 32
+    },
+    {
+      "artKitMaterialRoleId": "grime",
+      "heightPx": 32,
+      "metersPerTile": 0.8,
+      "periodicity": "none",
+      "physicalSizeM": {
+        "height": 1,
+        "width": 1
+      },
+      "proceduralSource": "grime-weathering-mask",
+      "promptVocabulary": [
+        "shallow-floral-mask",
+        "utility mask",
+        "grime-weathering-mask"
+      ],
+      "role": "ornament",
+      "seedPath": "atlas/source/utility.mask/shallow-floral-mask",
+      "selectedFamily": "shallow-floral-mask",
+      "sourceId": "source.utility.mask",
+      "widthPx": 32
+    },
+    {
+      "artKitMaterialRoleId": "brick",
+      "heightPx": 32,
+      "metersPerTile": 0.96,
+      "periodicity": "xy",
+      "physicalSizeM": {
+        "height": 0.96,
+        "width": 0.96
+      },
+      "proceduralSource": "running-bond-brick",
+      "promptVocabulary": [
+        "brick-red",
+        "primary wall material",
+        "running-bond-brick"
+      ],
+      "role": "wall",
+      "seedPath": "atlas/source/wall.primary/brick-red",
+      "selectedFamily": "brick-red",
+      "sourceId": "source.wall.primary",
+      "widthPx": 32
+    },
+    {
+      "artKitMaterialRoleId": "plaster",
+      "heightPx": 32,
+      "metersPerTile": 1.2,
+      "periodicity": "xy",
+      "physicalSizeM": {
+        "height": 1.2,
+        "width": 1.2
+      },
+      "proceduralSource": "painted-stucco",
+      "promptVocabulary": [
+        "brick-red",
+        "secondary wall material",
+        "painted-stucco"
+      ],
+      "role": "wall",
+      "seedPath": "atlas/source/wall.secondary/brick-red",
+      "selectedFamily": "brick-red",
+      "sourceId": "source.wall.secondary",
+      "widthPx": 32
+    }
+  ],
+  "controlledOrigins": [
+    {
+      "contentHash": "10cb054bfd9313aa9ae8e37eeb4bdfb58c194595804c922e50541d1d31e037ee",
+      "heightPx": 32,
+      "provenance": {
+        "algorithm": "procedural-v0.1-typed-rgba",
+        "promptVocabulary": [
+          "bracketed-metal",
+          "primary cornice",
+          "painted-metal"
+        ],
+        "providerId": "procedural",
+        "seedPath": "atlas/source/cornice.primary/bracketed-metal"
+      },
+      "providerId": "procedural",
+      "requestHash": "92193df15bbfc1e4b2a63885039198c4176df18e3eb6f0c8c75b769ed9a10618",
+      "sourceId": "source.cornice.primary",
+      "widthPx": 32
+    },
+    {
+      "contentHash": "79e9ad53fcc03cca7a6adfdb33495767a4fcdff08ea2bf2e40d5e83ba81fe1a8",
+      "heightPx": 32,
+      "provenance": {
+        "algorithm": "procedural-v0.1-typed-rgba",
+        "promptVocabulary": [
+          "recessed-storefront",
+          "recessed storefront door",
+          "painted-wood"
+        ],
+        "providerId": "procedural",
+        "seedPath": "atlas/source/door.primary/recessed-storefront"
+      },
+      "providerId": "procedural",
+      "requestHash": "661212197a1264a592df7ce846f20261ff0281da382cbe0226c0d3eabba98351",
+      "sourceId": "source.door.primary",
+      "widthPx": 32
+    },
+    {
+      "contentHash": "7a06889a3fc34bf4f40eeb0ef476a81853c11df6f676711e1efc90d6bf07aec0",
+      "heightPx": 32,
+      "provenance": {
+        "algorithm": "procedural-v0.1-typed-rgba",
+        "promptVocabulary": [
+          "tall-arched",
+          "painted frame",
+          "painted-wood"
+        ],
+        "providerId": "procedural",
+        "seedPath": "atlas/source/frame.primary/tall-arched"
+      },
+      "providerId": "procedural",
+      "requestHash": "0dbad88ec78d4d985e62c98db227eab9ef75208b6012e2e7fd1f67ed37036b9d",
+      "sourceId": "source.frame.primary",
+      "widthPx": 32
+    },
+    {
+      "contentHash": "386be192c5a79315e691526bd39859a4003f682e7c94ae41b583091859c96047",
+      "heightPx": 32,
+      "provenance": {
+        "algorithm": "procedural-v0.1-typed-rgba",
+        "promptVocabulary": [
+          "tall-arched",
+          "slightly wavy glass",
+          "glass-tint"
+        ],
+        "providerId": "procedural",
+        "seedPath": "atlas/source/glass.primary/tall-arched"
+      },
+      "providerId": "procedural",
+      "requestHash": "d6dc4b1f198f857096f9eb4492c132aa1aff86b2b9b0f39038bb6e014fa6c57a",
+      "sourceId": "source.glass.primary",
+      "widthPx": 32
+    },
+    {
+      "contentHash": "403b47f9b00241434412738ca5a767c24b1a519569eb7b059369f78e4423f598",
+      "heightPx": 32,
+      "provenance": {
+        "algorithm": "procedural-v0.1-typed-rgba",
+        "promptVocabulary": [
+          "shallow-floral-mask",
+          "shallow ornament mask",
+          "grime-weathering-mask"
+        ],
+        "providerId": "procedural",
+        "seedPath": "atlas/source/ornament.primary/shallow-floral-mask"
+      },
+      "providerId": "procedural",
+      "requestHash": "bff5d1bebde48e9ee853da2ee9e0d18b19b5dfa0568d43cae0e00f9c05ea91a3",
+      "sourceId": "source.ornament.primary",
+      "widthPx": 32
+    },
+    {
+      "contentHash": "275823e48114ada21d258d65ef5a84fbf03e72f9f59695d7d38d3442a323ae20",
+      "heightPx": 32,
+      "provenance": {
+        "algorithm": "procedural-v0.1-typed-rgba",
+        "promptVocabulary": [
+          "flat-membrane",
+          "roof surface",
+          "roof-membrane"
+        ],
+        "providerId": "procedural",
+        "seedPath": "atlas/source/roof.primary/flat-membrane"
+      },
+      "providerId": "procedural",
+      "requestHash": "ceba1fb6d19f470336d764b0b6e5017dcd47233430e4ca2a0484533c7e895a16",
+      "sourceId": "source.roof.primary",
+      "widthPx": 32
+    },
+    {
+      "contentHash": "342eb5c7167f4566fe0a68403093358c0136388910f13ee1856edea1ca28854d",
+      "heightPx": 32,
+      "provenance": {
+        "algorithm": "procedural-v0.1-typed-rgba",
+        "promptVocabulary": [
+          "pressed-metal",
+          "horizontal trim",
+          "carved-stone-trim"
+        ],
+        "providerId": "procedural",
+        "seedPath": "atlas/source/trim.horizontal.primary/pressed-metal"
+      },
+      "providerId": "procedural",
+      "requestHash": "75fbd2115c9cee206dc76d745a3d1579d09f5e134110f44cf3c9d6cfb55ac5cf",
+      "sourceId": "source.trim.horizontal.primary",
+      "widthPx": 32
+    },
+    {
+      "contentHash": "f97dc514093f4202d73b96a06dba15e0c254707077f01cd03b7054e6aa461ddf",
+      "heightPx": 32,
+      "provenance": {
+        "algorithm": "procedural-v0.1-typed-rgba",
+        "promptVocabulary": [
+          "pressed-metal",
+          "secondary horizontal trim",
+          "painted-metal"
+        ],
+        "providerId": "procedural",
+        "seedPath": "atlas/source/trim.horizontal.secondary/pressed-metal"
+      },
+      "providerId": "procedural",
+      "requestHash": "542705dd1c1c06429939f2bf16585b70ee417a62353324cb57a8cdf537c17c80",
+      "sourceId": "source.trim.horizontal.secondary",
+      "widthPx": 32
+    },
+    {
+      "contentHash": "648ebb4e3474fdc8dbb535855896563ee75846954696896ad8b2f8faa36f0f59",
+      "heightPx": 32,
+      "provenance": {
+        "algorithm": "procedural-v0.1-typed-rgba",
+        "promptVocabulary": [
+          "pressed-metal",
+          "vertical trim",
+          "painted-metal"
+        ],
+        "providerId": "procedural",
+        "seedPath": "atlas/source/trim.vertical.primary/pressed-metal"
+      },
+      "providerId": "procedural",
+      "requestHash": "aa04c6d0cbea38e25db2ff70ccfd0997a58508c660b2719d0dbc60918815e458",
+      "sourceId": "source.trim.vertical.primary",
+      "widthPx": 32
+    },
+    {
+      "contentHash": "1ab99bac5e6845a8df571748e7afa7a3b9c2a3a63c1cb84a9330df686c0bd585",
+      "heightPx": 32,
+      "provenance": {
+        "algorithm": "procedural-v0.1-typed-rgba",
+        "promptVocabulary": [
+          "shallow-floral-mask",
+          "utility mask",
+          "grime-weathering-mask"
+        ],
+        "providerId": "procedural",
+        "seedPath": "atlas/source/utility.mask/shallow-floral-mask"
+      },
+      "providerId": "procedural",
+      "requestHash": "b97a364c82e89e4fa79e8be3cd507ac8e33fe292e7da4ee7e1c374e2e29548cb",
+      "sourceId": "source.utility.mask",
+      "widthPx": 32
+    },
+    {
+      "contentHash": "c0dfd0513b820a27095e9357ffc42013def2d1f100fba253217b8a9edd7e4bc2",
+      "heightPx": 32,
+      "provenance": {
+        "algorithm": "procedural-v0.1-typed-rgba",
+        "promptVocabulary": [
+          "brick-red",
+          "primary wall material",
+          "running-bond-brick"
+        ],
+        "providerId": "procedural",
+        "seedPath": "atlas/source/wall.primary/brick-red"
+      },
+      "providerId": "procedural",
+      "requestHash": "de21bfc55069aaba85b6af1e1b37a1d391f03ca26731fcb7ef3fd1dea4cb5c31",
+      "sourceId": "source.wall.primary",
+      "widthPx": 32
+    },
+    {
+      "contentHash": "986b45a1225f77e40a9cfb881e68bf7aeffeb0884ec1295e18367be417c372ae",
+      "heightPx": 32,
+      "provenance": {
+        "algorithm": "procedural-v0.1-typed-rgba",
+        "promptVocabulary": [
+          "brick-red",
+          "secondary wall material",
+          "painted-stucco"
+        ],
+        "providerId": "procedural",
+        "seedPath": "atlas/source/wall.secondary/brick-red"
+      },
+      "providerId": "procedural",
+      "requestHash": "a7507d9fbd6e2f1d1f5ee2cac6f7c6b781b99506a69cb52313887fb344c7af75",
+      "sourceId": "source.wall.secondary",
+      "widthPx": 32
+    }
+  ],
+  "coverageFieldMeans": {
+    "packed": {
+      "coverageMean": 0.2002,
+      "coverageSum": 199.9998,
+      "heightPx": 37,
+      "sampleCount": 999,
+      "widthPx": 27
+    },
+    "source": {
+      "coverageMean": 0.2002,
+      "coverageSum": 205.0048,
+      "heightPx": 32,
+      "sampleCount": 1024,
+      "widthPx": 32
+    }
+  },
+  "createdAt": "2026-10-15T00:24:41.826Z",
+  "humanReview": "pending",
+  "immutable": {
+    "controls": {
+      "bayCount": 7,
+      "corniceFamily": "bracketed-metal",
+      "detailLevel": "high",
+      "fidelityMode": "kit",
+      "floorCount": 4,
+      "lockedComponentKeys": [],
+      "prompt": "four floors, 7 bays, brick, flat roof, ornate trim",
+      "psgPresetId": "late19cCommercialDemo",
+      "remoteMaterialEnabled": false,
+      "roofType": "flat",
+      "seeds": {
+        "building": "building-seed",
+        "family": "family-seed",
+        "material": "material-seed",
+        "trim": "trim-seed"
+      },
+      "stylePackId": "late-19c-commercial-demo",
+      "trimDensity": "ornate",
+      "windowFamily": "tall-arched"
+    },
+    "cost": {
+      "geometryBytes": 3444336,
+      "instanceCount": 118,
+      "irTriangles": 11868,
+      "renderedTriangles": 61508
+    },
+    "freeze": {
+      "bounds": {
+        "center": [
+          0,
+          8.962499618530273,
+          -0.6603025794029236
+        ],
+        "max": [
+          14.848500370979309,
+          17.924999237060547,
+          7.840499997138977
+        ],
+        "min": [
+          -14.848500370979309,
+          0,
+          -9.161105155944824
+        ],
+        "size": [
+          29.697000741958618,
+          17.924999237060547,
+          17.0016051530838
+        ]
+      },
+      "lights": [
+        {
+          "fill": {
+            "color": [
+              0.6104955708001716,
+              0.775822218312646,
+              0.8713671191959567
+            ],
+            "intensity": 0.72,
+            "position": [
+              -26.059118151068688,
+              28.79592749297619,
+              -14.69213542997837
+            ],
+            "target": [
+              0,
+              10.754999542236328,
+              -0.6603025794029236
+            ]
+          },
+          "key": {
+            "color": [
+              1,
+              0.8962693533719567,
+              0.6724431569510133
+            ],
+            "intensity": 4.2,
+            "position": [
+              22.050023050904276,
+              44.83230789363384,
+              25.398815571665764
+            ],
+            "target": [
+              0,
+              10.754999542236328,
+              -0.6603025794029236
+            ]
+          },
+          "name": "front/ordinary"
+        },
+        {
+          "fill": {
+            "color": [
+              0.6104955708001716,
+              0.775822218312646,
+              0.8713671191959567
+            ],
+            "intensity": 0.72,
+            "position": [
+              -25.705604446092657,
+              15.047215497984638,
+              3.2742287133663615
+            ],
+            "target": [
+              0,
+              10.754999542236328,
+              -0.6603025794029236
+            ]
+          },
+          "key": {
+            "color": [
+              1,
+              0.8962693533719567,
+              0.6724431569510133
+            ],
+            "intensity": 4.2,
+            "position": [
+              46.737462629259376,
+              20.293257221677017,
+              -7.813995838983441
+            ],
+            "target": [
+              0,
+              10.754999542236328,
+              -0.6603025794029236
+            ]
+          },
+          "name": "front/raking"
+        },
+        {
+          "fill": {
+            "color": [
+              0.6104955708001716,
+              0.775822218312646,
+              0.8713671191959567
+            ],
+            "intensity": 0.72,
+            "position": [
+              -26.059118151068688,
+              28.79592749297619,
+              -14.69213542997837
+            ],
+            "target": [
+              0,
+              10.754999542236328,
+              -0.6603025794029236
+            ]
+          },
+          "key": {
+            "color": [
+              1,
+              0.8962693533719567,
+              0.6724431569510133
+            ],
+            "intensity": 4.2,
+            "position": [
+              22.050023050904276,
+              44.83230789363384,
+              25.398815571665764
+            ],
+            "target": [
+              0,
+              10.754999542236328,
+              -0.6603025794029236
+            ]
+          },
+          "name": "three-quarter/ordinary"
+        },
+        {
+          "fill": {
+            "color": [
+              0.6104955708001716,
+              0.775822218312646,
+              0.8713671191959567
+            ],
+            "intensity": 0.72,
+            "position": [
+              -25.705604446092657,
+              15.047215497984638,
+              3.2742287133663615
+            ],
+            "target": [
+              0,
+              10.754999542236328,
+              -0.6603025794029236
+            ]
+          },
+          "key": {
+            "color": [
+              1,
+              0.8962693533719567,
+              0.6724431569510133
+            ],
+            "intensity": 4.2,
+            "position": [
+              46.737462629259376,
+              20.293257221677017,
+              -7.813995838983441
+            ],
+            "target": [
+              0,
+              10.754999542236328,
+              -0.6603025794029236
+            ]
+          },
+          "name": "three-quarter/raking"
+        },
+        {
+          "fill": {
+            "color": [
+              0.6104955708001716,
+              0.775822218312646,
+              0.8713671191959567
+            ],
+            "intensity": 0.72,
+            "position": [
+              -26.059118151068688,
+              28.79592749297619,
+              -14.69213542997837
+            ],
+            "target": [
+              0,
+              10.754999542236328,
+              -0.6603025794029236
+            ]
+          },
+          "key": {
+            "color": [
+              1,
+              0.8962693533719567,
+              0.6724431569510133
+            ],
+            "intensity": 4.2,
+            "position": [
+              22.050023050904276,
+              44.83230789363384,
+              25.398815571665764
+            ],
+            "target": [
+              0,
+              10.754999542236328,
+              -0.6603025794029236
+            ]
+          },
+          "name": "right/ordinary"
+        },
+        {
+          "fill": {
+            "color": [
+              0.6104955708001716,
+              0.775822218312646,
+              0.8713671191959567
+            ],
+            "intensity": 0.72,
+            "position": [
+              -3.934531292769285,
+              15.047215497984638,
+              -26.36590702549558
+            ],
+            "target": [
+              0,
+              10.754999542236328,
+              -0.6603025794029236
+            ]
+          },
+          "key": {
+            "color": [
+              1,
+              0.8962693533719567,
+              0.6724431569510133
+            ],
+            "intensity": 4.2,
+            "position": [
+              7.153693259580518,
+              20.293257221677017,
+              46.07716004985645
+            ],
+            "target": [
+              0,
+              10.754999542236328,
+              -0.6603025794029236
+            ]
+          },
+          "name": "right/raking"
+        },
+        {
+          "fill": {
+            "color": [
+              0.6104955708001716,
+              0.775822218312646,
+              0.8713671191959567
+            ],
+            "intensity": 0.72,
+            "position": [
+              -26.059118151068688,
+              28.79592749297619,
+              -14.69213542997837
+            ],
+            "target": [
+              0,
+              10.754999542236328,
+              -0.6603025794029236
+            ]
+          },
+          "key": {
+            "color": [
+              1,
+              0.8962693533719567,
+              0.6724431569510133
+            ],
+            "intensity": 4.2,
+            "position": [
+              22.050023050904276,
+              44.83230789363384,
+              25.398815571665764
+            ],
+            "target": [
+              0,
+              10.754999542236328,
+              -0.6603025794029236
+            ]
+          },
+          "name": "rear/ordinary"
+        },
+        {
+          "fill": {
+            "color": [
+              0.6104955708001716,
+              0.775822218312646,
+              0.8713671191959567
+            ],
+            "intensity": 0.72,
+            "position": [
+              25.705604446092657,
+              15.047215497984638,
+              -4.594833872172209
+            ],
+            "target": [
+              0,
+              10.754999542236328,
+              -0.6603025794029236
+            ]
+          },
+          "key": {
+            "color": [
+              1,
+              0.8962693533719567,
+              0.6724431569510133
+            ],
+            "intensity": 4.2,
+            "position": [
+              -46.737462629259376,
+              20.293257221677017,
+              6.493390680177594
+            ],
+            "target": [
+              0,
+              10.754999542236328,
+              -0.6603025794029236
+            ]
+          },
+          "name": "rear/raking"
+        }
+      ],
+      "views": [
+        {
+          "far": 296.9700074195862,
+          "fov": 42,
+          "name": "front",
+          "near": 0.1,
+          "position": [
+            0,
+            8.962499618530273,
+            -46.34812466004199
+          ],
+          "target": [
+            0,
+            8.962499618530273,
+            -0.6603025794029236
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "far": 296.9700074195862,
+          "fov": 42,
+          "name": "three-quarter",
+          "near": 0.1,
+          "position": [
+            21.68732552404083,
+            16.848799809090576,
+            -40.09180353220443
+          ],
+          "target": [
+            0,
+            8.962499618530273,
+            -0.6603025794029236
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "far": 296.9700074195862,
+          "fov": 42,
+          "name": "right",
+          "near": 0.1,
+          "position": [
+            45.687822080639066,
+            8.962499618530273,
+            -0.6603025794029236
+          ],
+          "target": [
+            0,
+            8.962499618530273,
+            -0.6603025794029236
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "far": 296.9700074195862,
+          "fov": 42,
+          "name": "rear",
+          "near": 0.1,
+          "position": [
+            0,
+            8.962499618530273,
+            45.02751950123614
+          ],
+          "target": [
+            0,
+            8.962499618530273,
+            -0.6603025794029236
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ]
+        }
+      ]
+    },
+    "geometryHash": "4c884d88523c475649e86fb084073e13c7868d5bad568e26a2822121a8fb045e",
+    "identity": {
+      "atlasId": "atlas-1d48a26ed6a65eb6",
+      "buildingId": "family-86f9731664e70f71.building-8fb557b82f07",
+      "catalogId": "catalog-bf60d45e1b7db640",
+      "familyId": "family-86f9731664e70f71",
+      "graphId": "graph-5beee63f8fadfb4d",
+      "sourceGraphHash": "0806e42894bbb764ef7f9dc880cb00bb14615e6fe7015a83c30cbe49e43a9d7f"
+    },
+    "materialAnchors": {
+      "atlasManifest": {
+        "atlasId": "atlas-1d48a26ed6a65eb6",
+        "channels": [
+          "baseColor",
+          "normal",
+          "orm",
+          "height",
+          "opacity"
+        ],
+        "heightPx": 128,
+        "paddingPx": 4,
+        "schemaVersion": "0.1.0",
+        "slots": [
+          {
+            "artKitMaterialRoleId": "brick",
+            "compatibilityTags": [
+              "masonry",
+              "facade"
+            ],
+            "generationPrompt": "brick-red, primary wall material, masonry, facade",
+            "id": "wall.primary",
+            "materialSourceId": "source.wall.primary",
+            "metersPerTile": 0.96,
+            "periodicity": "xy",
+            "physicalSizeM": {
+              "height": 0.96,
+              "width": 0.96
+            },
+            "proceduralSource": "running-bond-brick",
+            "rectPx": {
+              "height": 37,
+              "width": 27,
+              "x": 4,
+              "y": 4
+            },
+            "role": "wall",
+            "seedPath": "atlas/slot/wall.primary/family-86f9731664e70f71",
+            "uvMode": "repeat"
+          },
+          {
+            "artKitMaterialRoleId": "plaster",
+            "compatibilityTags": [
+              "side",
+              "rear",
+              "masonry"
+            ],
+            "generationPrompt": "brick-red, secondary wall material, side, rear, masonry",
+            "id": "wall.secondary",
+            "materialSourceId": "source.wall.secondary",
+            "metersPerTile": 1.2,
+            "periodicity": "xy",
+            "physicalSizeM": {
+              "height": 1.2,
+              "width": 1.2
+            },
+            "proceduralSource": "painted-stucco",
+            "rectPx": {
+              "height": 37,
+              "width": 27,
+              "x": 35,
+              "y": 4
+            },
+            "role": "wall",
+            "seedPath": "atlas/slot/wall.secondary/family-86f9731664e70f71",
+            "uvMode": "repeat"
+          },
+          {
+            "artKitMaterialRoleId": "roof",
+            "compatibilityTags": [
+              "roof"
+            ],
+            "generationPrompt": "flat-membrane, roof surface, roof",
+            "id": "roof.primary",
+            "materialSourceId": "source.roof.primary",
+            "metersPerTile": 1.5,
+            "periodicity": "xy",
+            "physicalSizeM": {
+              "height": 1.5,
+              "width": 1.5
+            },
+            "proceduralSource": "roof-membrane",
+            "rectPx": {
+              "height": 37,
+              "width": 27,
+              "x": 66,
+              "y": 4
+            },
+            "role": "roof",
+            "seedPath": "atlas/slot/roof.primary/family-86f9731664e70f71",
+            "uvMode": "repeat"
+          },
+          {
+            "artKitMaterialRoleId": "glass",
+            "compatibilityTags": [
+              "window",
+              "glass"
+            ],
+            "generationPrompt": "tall-arched, slightly wavy glass, window, glass",
+            "id": "glass.primary",
+            "materialSourceId": "source.glass.primary",
+            "metersPerTile": 1,
+            "periodicity": "none",
+            "physicalSizeM": {
+              "height": 2.4,
+              "width": 1.4
+            },
+            "proceduralSource": "glass-tint",
+            "rectPx": {
+              "height": 37,
+              "width": 27,
+              "x": 97,
+              "y": 4
+            },
+            "role": "glass",
+            "seedPath": "atlas/slot/glass.primary/family-86f9731664e70f71",
+            "uvMode": "stretch"
+          },
+          {
+            "artKitMaterialRoleId": "painted-wood",
+            "compatibilityTags": [
+              "window",
+              "frame"
+            ],
+            "generationPrompt": "tall-arched, painted frame, window, frame",
+            "id": "frame.primary",
+            "materialSourceId": "source.frame.primary",
+            "metersPerTile": 0.32,
+            "periodicity": "x",
+            "physicalSizeM": {
+              "height": 0.32,
+              "width": 0.32
+            },
+            "proceduralSource": "painted-wood",
+            "rectPx": {
+              "height": 37,
+              "width": 27,
+              "x": 4,
+              "y": 45
+            },
+            "role": "frame",
+            "seedPath": "atlas/slot/frame.primary/family-86f9731664e70f71",
+            "uvMode": "cap-repeat-cap"
+          },
+          {
+            "artKitMaterialRoleId": "painted-wood",
+            "compatibilityTags": [
+              "door",
+              "storefront"
+            ],
+            "generationPrompt": "recessed-storefront, recessed storefront door, door, storefront",
+            "id": "door.primary",
+            "materialSourceId": "source.door.primary",
+            "metersPerTile": 0.32,
+            "periodicity": "none",
+            "physicalSizeM": {
+              "height": 3.2,
+              "width": 2.2
+            },
+            "proceduralSource": "painted-wood",
+            "rectPx": {
+              "height": 37,
+              "width": 27,
+              "x": 35,
+              "y": 45
+            },
+            "role": "door",
+            "seedPath": "atlas/slot/door.primary/family-86f9731664e70f71",
+            "uvMode": "stretch"
+          },
+          {
+            "artKitMaterialRoleId": "trim-stone",
+            "compatibilityTags": [
+              "trim",
+              "belt-course"
+            ],
+            "generationPrompt": "pressed-metal, horizontal trim, trim, belt-course",
+            "id": "trim.horizontal.primary",
+            "materialSourceId": "source.trim.horizontal.primary",
+            "metersPerTile": 0.64,
+            "periodicity": "x",
+            "physicalSizeM": {
+              "height": 0.64,
+              "width": 0.64
+            },
+            "proceduralSource": "carved-stone-trim",
+            "profileRecipeId": "profile.trim.pressed-metal.horizontal-primary",
+            "rectPx": {
+              "height": 37,
+              "width": 27,
+              "x": 66,
+              "y": 45
+            },
+            "role": "horizontalTrim",
+            "seedPath": "atlas/slot/trim.horizontal.primary/family-86f9731664e70f71",
+            "uvMode": "cap-repeat-cap"
+          },
+          {
+            "artKitMaterialRoleId": "painted-metal",
+            "compatibilityTags": [
+              "trim",
+              "sill",
+              "lintel"
+            ],
+            "generationPrompt": "pressed-metal, secondary horizontal trim, trim, sill, lintel",
+            "id": "trim.horizontal.secondary",
+            "materialSourceId": "source.trim.horizontal.secondary",
+            "metersPerTile": 0.2,
+            "periodicity": "x",
+            "physicalSizeM": {
+              "height": 0.2,
+              "width": 0.2
+            },
+            "proceduralSource": "painted-metal",
+            "profileRecipeId": "profile.trim.pressed-metal.horizontal-secondary",
+            "rectPx": {
+              "height": 37,
+              "width": 27,
+              "x": 97,
+              "y": 45
+            },
+            "role": "horizontalTrim",
+            "seedPath": "atlas/slot/trim.horizontal.secondary/family-86f9731664e70f71",
+            "uvMode": "cap-repeat-cap"
+          },
+          {
+            "artKitMaterialRoleId": "painted-metal",
+            "compatibilityTags": [
+              "trim",
+              "pilaster"
+            ],
+            "generationPrompt": "pressed-metal, vertical trim, trim, pilaster",
+            "id": "trim.vertical.primary",
+            "materialSourceId": "source.trim.vertical.primary",
+            "metersPerTile": 0.2,
+            "periodicity": "x",
+            "physicalSizeM": {
+              "height": 0.2,
+              "width": 0.2
+            },
+            "proceduralSource": "painted-metal",
+            "profileRecipeId": "profile.trim.pressed-metal.vertical-primary",
+            "rectPx": {
+              "height": 37,
+              "width": 27,
+              "x": 4,
+              "y": 86
+            },
+            "role": "verticalTrim",
+            "seedPath": "atlas/slot/trim.vertical.primary/family-86f9731664e70f71",
+            "uvMode": "cap-repeat-cap"
+          },
+          {
+            "artKitMaterialRoleId": "painted-metal",
+            "compatibilityTags": [
+              "cornice",
+              "profile"
+            ],
+            "generationPrompt": "bracketed-metal, primary cornice, cornice, profile",
+            "id": "cornice.primary",
+            "materialSourceId": "source.cornice.primary",
+            "metersPerTile": 0.2,
+            "periodicity": "x",
+            "physicalSizeM": {
+              "height": 0.2,
+              "width": 0.2
+            },
+            "proceduralSource": "painted-metal",
+            "profileRecipeId": "profile.cornice.bracketed-metal.primary",
+            "rectPx": {
+              "height": 37,
+              "width": 27,
+              "x": 35,
+              "y": 86
+            },
+            "role": "horizontalTrim",
+            "seedPath": "atlas/slot/cornice.primary/family-86f9731664e70f71",
+            "uvMode": "cap-repeat-cap"
+          },
+          {
+            "artKitMaterialRoleId": "grime",
+            "compatibilityTags": [
+              "ornament",
+              "mask"
+            ],
+            "generationPrompt": "shallow-floral-mask, shallow ornament mask, ornament, mask",
+            "id": "ornament.primary",
+            "materialSourceId": "source.ornament.primary",
+            "metersPerTile": 0.8,
+            "periodicity": "none",
+            "physicalSizeM": {
+              "height": 1.2,
+              "width": 1.2
+            },
+            "proceduralSource": "grime-weathering-mask",
+            "rectPx": {
+              "height": 37,
+              "width": 27,
+              "x": 66,
+              "y": 86
+            },
+            "role": "ornament",
+            "seedPath": "atlas/slot/ornament.primary/family-86f9731664e70f71",
+            "uvMode": "nine-slice"
+          },
+          {
+            "artKitMaterialRoleId": "grime",
+            "compatibilityTags": [
+              "utility",
+              "mask"
+            ],
+            "generationPrompt": "shallow-floral-mask, utility mask, utility, mask",
+            "id": "utility.mask",
+            "materialSourceId": "source.utility.mask",
+            "metersPerTile": 0.8,
+            "periodicity": "none",
+            "physicalSizeM": {
+              "height": 1,
+              "width": 1
+            },
+            "proceduralSource": "grime-weathering-mask",
+            "rectPx": {
+              "height": 37,
+              "width": 27,
+              "x": 97,
+              "y": 86
+            },
+            "role": "ornament",
+            "seedPath": "atlas/slot/utility.mask/family-86f9731664e70f71",
+            "uvMode": "stretch"
+          }
+        ],
+        "widthPx": 128
+      },
+      "brickCourseHeightM": 0.075
+    },
+    "resolvedSpec": {
+      "componentParameters": {
+        "bayRhythmSeed": 2924203225,
+        "buildingBayDelta": 0,
+        "buildingDepthM": 15,
+        "requestedBayCount": 7,
+        "requestedFloorCount": 4,
+        "trimDensity": "ornate",
+        "windowJitterSeed": 1236939644
+      },
+      "diagnostics": [],
+      "facade": {
+        "corniceHeightM": 1.85,
+        "frontBayCount": 7,
+        "groundFloorRatio": 0.3411,
+        "sideBaySpacingM": 3.788,
+        "symmetry": 0.721
+      },
+      "familyId": "family-86f9731664e70f71",
+      "locks": [],
+      "massing": {
+        "depthM": 15,
+        "floorCount": 4,
+        "floorHeightsM": [
+          5.6,
+          3.606,
+          3.606,
+          3.606
+        ],
+        "parapetHeightM": 1.287,
+        "roof": {
+          "type": "flat"
+        },
+        "widthM": 29.016
+      },
+      "materialParameters": {
+        "materialSeed": 608365906,
+        "wallWeathering": 0.35
+      },
+      "schemaVersion": "0.1.0",
+      "seeds": {
+        "building": "building-seed",
+        "family": "family-seed",
+        "material": "material-seed",
+        "trim": "trim-seed"
+      },
+      "selectedFamilies": {
+        "cornice": "bracketed-metal",
+        "door": "recessed-storefront",
+        "ornament": "shallow-floral-mask",
+        "pilaster": "brick-pilaster",
+        "roof": "flat-membrane",
+        "trim": "pressed-metal",
+        "wall": "brick-red",
+        "window": "tall-arched"
+      },
+      "sourceIntentHash": "921c041a2ae7ed7a7ce57bed2378291979487ddc84696e0da29f6243ad26afd5",
+      "stylePackId": "late-19c-commercial-demo",
+      "variationPolicy": {
+        "cornice": "family",
+        "door": "building",
+        "ornament": "element",
+        "pilaster": "building",
+        "roof": "family",
+        "trim": "family",
+        "wall": "family",
+        "window": "building"
+      }
+    }
+  },
+  "legacyReplay": {
+    "atlasContentHash": "1ad52cb4ac9efae1e2d66d6494858efc853a944adc29a9a43c1d4b4f70b86bfd",
+    "channelDataHashes": {
+      "baseColor": "c7cd8bf353053cb793352c557b5e0c02312d9498d323e8a2fea98fd9b88285f2",
+      "height": "e397478902d371e2092c152e8a9a61aa76d6b22ab1c2ed6b3a58ab426284a4a2",
+      "normal": "d6de301e7ee59230e70ea0eaf901be1f0b7bd11ec173f21a6a48caf33246a742",
+      "opacity": "b83972d67df3388b3cca6e06fe7717c1411cecf45c692bb49e8b116989ece4bc",
+      "orm": "5bad1e578b727846e1fd9157578ab993eba777d17a31c7015e343f05c78b310d"
+    },
+    "channelHashes": {
+      "baseColor": "30fb0294eb8bb119188fafb477cf8443c56fcb6caf5deccd1cb6637939773ad7",
+      "height": "06849f382d05284803d976b8f3457af985e8b20856357134d90f40a0a4df17ab",
+      "normal": "0f534fb1aa048d99d3632884187b7e15128b2dca9b47aa7fd6af9292063326c2",
+      "opacity": "0c621c24709cec200dd304950725bf62b6dd5657c3e0f38de86bebf8ecfb246b",
+      "orm": "20bf6fcdaddfdf6100342f9d9e3f0389ece9d467993cc3095349b41be11b28ee"
+    },
+    "packetKind": "buildo-r1-masonry-coverage-material-baseline",
+    "schemaVersion": "0.1.0",
+    "sourceHashes": [
+      {
+        "contentHash": "10cb054bfd9313aa9ae8e37eeb4bdfb58c194595804c922e50541d1d31e037ee",
+        "providerId": "procedural",
+        "requestHash": "92193df15bbfc1e4b2a63885039198c4176df18e3eb6f0c8c75b769ed9a10618",
+        "sourceId": "source.cornice.primary"
+      },
+      {
+        "contentHash": "79e9ad53fcc03cca7a6adfdb33495767a4fcdff08ea2bf2e40d5e83ba81fe1a8",
+        "providerId": "procedural",
+        "requestHash": "661212197a1264a592df7ce846f20261ff0281da382cbe0226c0d3eabba98351",
+        "sourceId": "source.door.primary"
+      },
+      {
+        "contentHash": "7a06889a3fc34bf4f40eeb0ef476a81853c11df6f676711e1efc90d6bf07aec0",
+        "providerId": "procedural",
+        "requestHash": "0dbad88ec78d4d985e62c98db227eab9ef75208b6012e2e7fd1f67ed37036b9d",
+        "sourceId": "source.frame.primary"
+      },
+      {
+        "contentHash": "386be192c5a79315e691526bd39859a4003f682e7c94ae41b583091859c96047",
+        "providerId": "procedural",
+        "requestHash": "d6dc4b1f198f857096f9eb4492c132aa1aff86b2b9b0f39038bb6e014fa6c57a",
+        "sourceId": "source.glass.primary"
+      },
+      {
+        "contentHash": "403b47f9b00241434412738ca5a767c24b1a519569eb7b059369f78e4423f598",
+        "providerId": "procedural",
+        "requestHash": "bff5d1bebde48e9ee853da2ee9e0d18b19b5dfa0568d43cae0e00f9c05ea91a3",
+        "sourceId": "source.ornament.primary"
+      },
+      {
+        "contentHash": "275823e48114ada21d258d65ef5a84fbf03e72f9f59695d7d38d3442a323ae20",
+        "providerId": "procedural",
+        "requestHash": "ceba1fb6d19f470336d764b0b6e5017dcd47233430e4ca2a0484533c7e895a16",
+        "sourceId": "source.roof.primary"
+      },
+      {
+        "contentHash": "342eb5c7167f4566fe0a68403093358c0136388910f13ee1856edea1ca28854d",
+        "providerId": "procedural",
+        "requestHash": "75fbd2115c9cee206dc76d745a3d1579d09f5e134110f44cf3c9d6cfb55ac5cf",
+        "sourceId": "source.trim.horizontal.primary"
+      },
+      {
+        "contentHash": "f97dc514093f4202d73b96a06dba15e0c254707077f01cd03b7054e6aa461ddf",
+        "providerId": "procedural",
+        "requestHash": "542705dd1c1c06429939f2bf16585b70ee417a62353324cb57a8cdf537c17c80",
+        "sourceId": "source.trim.horizontal.secondary"
+      },
+      {
+        "contentHash": "648ebb4e3474fdc8dbb535855896563ee75846954696896ad8b2f8faa36f0f59",
+        "providerId": "procedural",
+        "requestHash": "aa04c6d0cbea38e25db2ff70ccfd0997a58508c660b2719d0dbc60918815e458",
+        "sourceId": "source.trim.vertical.primary"
+      },
+      {
+        "contentHash": "1ab99bac5e6845a8df571748e7afa7a3b9c2a3a63c1cb84a9330df686c0bd585",
+        "providerId": "procedural",
+        "requestHash": "b97a364c82e89e4fa79e8be3cd507ac8e33fe292e7da4ee7e1c374e2e29548cb",
+        "sourceId": "source.utility.mask"
+      },
+      {
+        "contentHash": "ab206b69ff261d393ca5c1d325a9a919f374ac3f69365e824990054070098a18",
+        "providerId": "procedural",
+        "requestHash": "fe3c0040dee939d9713031bbaa6e8edbb84cbb7ccbd29f97c0b136f732a5c57a",
+        "sourceId": "source.wall.primary"
+      },
+      {
+        "contentHash": "986b45a1225f77e40a9cfb881e68bf7aeffeb0884ec1295e18367be417c372ae",
+        "providerId": "procedural",
+        "requestHash": "a7507d9fbd6e2f1d1f5ee2cac6f7c6b781b99506a69cb52313887fb344c7af75",
+        "sourceId": "source.wall.secondary"
+      }
+    ],
+    "sourceLayerHashes": [
+      {
+        "baseColor": "cd19b68815d372db1467b680123e8e2575126f8ccc9bb219672cbf4a1cfb5390",
+        "height": null,
+        "metalness": "7ff4f0eb4d3eda2771d44219f4ef82bb14becb52ad8d67a62e5dc03c38b381d7",
+        "opacity": null,
+        "provenanceHash": "b3c65e185b6dfbc1314495887af19b8001bba2e9fd9f98f88c160171310ec6e5",
+        "roughness": "299252ade7d4fe095ee29c50be966340fa77fcf8fe8aefe0a30079925b39f1e4",
+        "sourceId": "source.cornice.primary"
+      },
+      {
+        "baseColor": "518e5881ea1fdd4a0dfdd257fb66f1c7c495969e3f51e3ff6effe03afb698703",
+        "height": "3e9a55d74f25bd78b81d8ef5d058060d8e7f6a50a72690a373c2efaa5c9c1807",
+        "metalness": null,
+        "opacity": null,
+        "provenanceHash": "f113429df420aa0c23c2e4aae51eb73cf336e6a4cb16f899bf5011c0404c72a9",
+        "roughness": "f67306c8e18686d8c1cfd1636c43d0d7f310a7c922471e820bda4c74e4560630",
+        "sourceId": "source.door.primary"
+      },
+      {
+        "baseColor": "57ef5d2b4484acfd25c7ebbba2d9766e8ef373de40e51771c7f6ae415dcbaf0f",
+        "height": "b909800bb2b7c3b60ccd59b9403ae3eea38e92aa2bb636ddb22a9c86c3da614a",
+        "metalness": null,
+        "opacity": null,
+        "provenanceHash": "b5a235426da1b1210a0a641855fe2964e30ca43b2e9ed4424be017219b528fbb",
+        "roughness": "1ba58733db41cb8d0f4f533fa397c9a8424a4f35da38f2a2fa71070c78297d9b",
+        "sourceId": "source.frame.primary"
+      },
+      {
+        "baseColor": "a5d684891b8190003aa91ca9161d8e26db650574e9f5c2ef3ca3a7cf10e2d79c",
+        "height": null,
+        "metalness": null,
+        "opacity": "6480015e508666f23de80fa360256a3b23c20f17e5859da600520634babf98e3",
+        "provenanceHash": "d9353467f9ee08a5c510051e049507bcd544979930539b9d663594dbd92ed7c7",
+        "roughness": "991b52b70fe8a10e46aad5055d7b923a2ba6629e0d999c0278706c5d7547a1b2",
+        "sourceId": "source.glass.primary"
+      },
+      {
+        "baseColor": "55ada17dd6402800a97de6a5f3088e151ccb7348ff03e2976543c5253641b5ae",
+        "height": "a5eac5414ded35cdba966785d0518694cb9c5e72c314dba0503456c7d4547871",
+        "metalness": null,
+        "opacity": "af90e5a0406ac3ba70e62c54f38a9fc7e1e7cf2bae7c74b25e49011f7d46a5f5",
+        "provenanceHash": "bf9da58943e8052d8348c15a9036b881ddaa2912079ccad19aca0839f66a9e22",
+        "roughness": null,
+        "sourceId": "source.ornament.primary"
+      },
+      {
+        "baseColor": "81eca29990797d3f7a4f8090cb21a4392ceba5fd203fc6c1604ae21f9c72030d",
+        "height": "8e22b90d4d7f07c1aad47329afa181604ae55ded17a015674617083017b60d87",
+        "metalness": null,
+        "opacity": null,
+        "provenanceHash": "ac928e3babf20e89fb062cbf3ed7fb77530918d703bde431ef61717abcdf810a",
+        "roughness": "ab5ddfd1df92becd8f1ce0dc2b5026f610ea6928eb334345b2b6de00393c751a",
+        "sourceId": "source.roof.primary"
+      },
+      {
+        "baseColor": "6307b1125e17673e8264fe876829a0c8a7d3818ca083519e2c8ba7e8b41d69cd",
+        "height": null,
+        "metalness": "f419694bdd1b80e6dc15cd39f0b18f68b29e2306a98ad20edc14d0b6c5ed689c",
+        "opacity": null,
+        "provenanceHash": "286fb654ad9a450b8379e43f2868a3c8081525d13ef9ae25be1c8f7e0f2b729f",
+        "roughness": "b683fc0bfcc998ac7998e57eaa9a0c386881ee988f8c0310f28a16bc62488ebc",
+        "sourceId": "source.trim.horizontal.primary"
+      },
+      {
+        "baseColor": "77a0afd6bcd1596389d8446f88cdc98426be27bc4be2e82f6fa6ca761b2205f9",
+        "height": null,
+        "metalness": "0f3ecd405097cc9f9e6c2140351104979d72ef65585f8a63658f2663de5f8b6d",
+        "opacity": null,
+        "provenanceHash": "ec8d7cf141d1287988ca1b77e30e6cb19f4480b432d0c52c76cb229f0663ee73",
+        "roughness": "35067a005796ace6a96f6633ce986ffc1022a2f746c94863f90a157545fc6216",
+        "sourceId": "source.trim.horizontal.secondary"
+      },
+      {
+        "baseColor": "990cc06027dc34305be21bfb9e807643d5a653f37abae6169d69aa39ded5a3d3",
+        "height": null,
+        "metalness": "19765b53e2cd01ab12b45d9744865b8db999946c3023c721d92347b0a8e6e764",
+        "opacity": null,
+        "provenanceHash": "c01f3de66bd48bf7b1bc5e4b618ac8e45accd775104fa12d540ed3bd1bac7f4f",
+        "roughness": "b3746b6356e582dbe822ff1e3cb9d1c8c1c22eb5057368d9b345251cff330ccd",
+        "sourceId": "source.trim.vertical.primary"
+      },
+      {
+        "baseColor": "55ada17dd6402800a97de6a5f3088e151ccb7348ff03e2976543c5253641b5ae",
+        "height": "98218bd2cd49e8895267be284bba6bd23b474296d000029ac5e38026643abf6f",
+        "metalness": null,
+        "opacity": "7cece27a6ccaf8237b3ff694e0bc77584b323a73345244b780b8988af9b05720",
+        "provenanceHash": "d3a6fa8ea5cc9dbbe26bc5faee3c6551ce65301a2373f69e3f3b517cdc5bd90b",
+        "roughness": null,
+        "sourceId": "source.utility.mask"
+      },
+      {
+        "baseColor": "3d6db139436c8a6741e155971e13f22bc54c0bf6ab3f64bb38c899d4686a8b2b",
+        "height": "99170c4556e952d4476e7d84a59b6ee8ea1ef542da9cb7335ec94b8ef1cf5ec5",
+        "metalness": null,
+        "opacity": null,
+        "provenanceHash": "6938a903f29e9e63678010bde443ae23e0519e95ad33a0cefd6bb9c4e11fe019",
+        "roughness": "5c456366ae573db99c42c67074f8ebc9404a0ea702a8ca7ca16de37b8f2ceb4b",
+        "sourceId": "source.wall.primary"
+      },
+      {
+        "baseColor": "f97645454ca5d8775f0afa9a658fa97d2e5eebdac1ca032a9c34225e6319b09e",
+        "height": "16dbb42c2c1d5fb28b18d16ef02165a8bee887ea0fdf9f997719aea74899c977",
+        "metalness": null,
+        "opacity": null,
+        "provenanceHash": "ec5a79fef29463d464583aacc848b1576f6b81c934a622e2a8259b0745622ea1",
+        "roughness": "fd72c1053292a3a8bf071d38b811a5b90ced0848d89cfa0ea6fc059136c97247",
+        "sourceId": "source.wall.secondary"
+      }
+    ]
+  },
+  "legacySeedHash": "de21bfc55069aaba85b6af1e1b37a1d391f03ca26731fcb7ef3fd1dea4cb5c31",
+  "packetId": "2026-10-14-r1-s8",
+  "packetKind": "buildo-r1-primary-wall-periodic-sampling-delta",
+  "profile": {
+    "columnsPerCourse": 6,
+    "courseCount": 12,
+    "jointFractionOfCourse": 0.14,
+    "model": "primary-authored-wall-periodic-area-v2",
+    "schemaVersion": "0.1.0",
+    "tileSizeM": 0.96
+  },
+  "rasterDescriptor": {
+    "grainSizePx": {
+      "height": 32,
+      "width": 32
+    },
+    "legacyStochasticHash": "de21bfc55069aaba85b6af1e1b37a1d391f03ca26731fcb7ef3fd1dea4cb5c31",
+    "samplingProfile": {
+      "columnsPerCourse": 6,
+      "courseCount": 12,
+      "jointFractionOfCourse": 0.14,
+      "model": "primary-authored-wall-periodic-area-v2",
+      "schemaVersion": "0.1.0",
+      "tileSizeM": 0.96
+    },
+    "schemaVersion": "0.1.0",
+    "seedPath": "atlas/source/wall.primary/brick-red",
+    "seedRoot": "atlas/source/wall.primary/brick-red/de21bfc55069aaba85b6af1e1b37a1d391f03ca26731fcb7ef3fd1dea4cb5c31"
+  },
+  "schemaVersion": "0.1.0",
+  "selectedSourceId": "source.wall.primary"
+}

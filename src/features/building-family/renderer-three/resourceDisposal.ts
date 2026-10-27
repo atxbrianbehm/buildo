@@ -1,4 +1,5 @@
 import type { BuildingSceneRuntime } from "./buildingSceneAdapter";
+import type { InstancedMesh } from "three";
 
 export interface DisposeBuildingSceneResourcesOptions {
   disposeMaterials?: boolean;
@@ -22,6 +23,8 @@ export function disposeBuildingSceneResources(
 
   let geometriesDisposed = 0;
   for (const object of runtime.renderables) {
+    // Instance buffers belong to the object, rather than its BufferGeometry.
+    if (object.isInstancedMesh) (object as InstancedMesh).dispose();
     if (object.geometry.userData.disposed) {
       continue;
     }
@@ -30,6 +33,8 @@ export function disposeBuildingSceneResources(
     geometriesDisposed += 1;
   }
 
+  // A scene releases its composite lease even when the shared family atlas stays alive.
+  runtime.surfaceLease?.release();
   const shouldDisposeMaterials = options.disposeMaterials ?? true;
   const materialsDisposed = shouldDisposeMaterials ? runtime.materialRegistry.listMaterials().length : 0;
   if (shouldDisposeMaterials) {

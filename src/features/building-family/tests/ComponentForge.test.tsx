@@ -6,6 +6,11 @@ import { createAssemblyHallFixture } from "../ui/assemblyHallFixture";
 describe("ComponentForge", () => {
   it("renders generated component entries with selector controls, recipe data, dimensions, anchors, and atlas slot highlight", async () => {
     const fixture = await createAssemblyHallFixture();
+    const windowFrame = fixture.componentGallery.entries.find(
+      (entry) => entry.recipeId === "recipe.window.tall-arched.frame"
+    )!;
+    // V3 requires a deep opening assembly, not the previous 0.32 m recipe.
+    expect(windowFrame.dimensionsM.depth).toBeGreaterThanOrEqual(0.55);
 
     render(<ComponentForge fixture={fixture} />);
 
@@ -30,8 +35,15 @@ describe("ComponentForge", () => {
     expect(selected).toHaveTextContent("Wireframe on");
     expect(selected).toHaveTextContent("UV overlay on");
     expect(selected).toHaveTextContent("Semantic anchors on");
-    expect(selected).toHaveTextContent("1.35");
-    expect(selected).toHaveTextContent("0.32");
+    const dimensions = within(selected).getByText("Dimensions").nextElementSibling;
+    const expectedDimensions = [
+      windowFrame.dimensionsM.width,
+      windowFrame.dimensionsM.height,
+      windowFrame.dimensionsM.depth
+    ]
+      .map((value) => (Number.isInteger(value) ? String(value) : value.toFixed(2)))
+      .join(" x ");
+    expect(dimensions).toHaveTextContent(`${expectedDimensions} m`);
 
     const atlasSlots = screen.getByRole("table", { name: "Selected atlas slots" });
     expect(within(atlasSlots).getByText("glass.primary")).toBeInTheDocument();

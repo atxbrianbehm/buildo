@@ -1,4 +1,5 @@
 import { vi } from "vitest";
+import type { InstancedMesh } from "three";
 import { disposeBuildingSceneRuntime } from "../renderer-three/buildingSceneAdapter";
 import { disposeBuildingSceneResources } from "../renderer-three/resourceDisposal";
 import { createAssemblyHallFixture } from "../ui/assemblyHallFixture";
@@ -8,6 +9,7 @@ describe("renderer resource disposal", () => {
     const fixture = await createAssemblyHallFixture();
     const runtime = fixture.buildingRuntime;
     const geometryDisposers = runtime.renderables.map((object) => vi.spyOn(object.geometry, "dispose"));
+    const instanceDisposers = runtime.renderables.filter((object) => object.isInstancedMesh).map((object) => vi.spyOn(object as InstancedMesh, "dispose"));
     const materials = runtime.materialRegistry.listMaterials();
     const materialDisposers = materials.map((material) => vi.spyOn(material, "dispose"));
     const textureDisposers = Object.values(fixture.familyRuntime.textureSet.textures).map((texture) =>
@@ -26,6 +28,8 @@ describe("renderer resource disposal", () => {
       materialsDisposed: 0
     });
     expect(geometryDisposers.every((spy) => spy.mock.calls.length === 1)).toBe(true);
+    expect(instanceDisposers.length).toBeGreaterThan(0);
+    expect(instanceDisposers.every((spy) => spy.mock.calls.length === 1)).toBe(true);
     expect(materialDisposers.every((spy) => spy.mock.calls.length === 1)).toBe(true);
     expect(textureDisposers.every((spy) => spy.mock.calls.length === 1)).toBe(true);
     expect(runtime.root.children).toHaveLength(0);
@@ -39,6 +43,7 @@ describe("renderer resource disposal", () => {
     const fixture = await createAssemblyHallFixture();
     const runtime = fixture.buildingRuntime;
     const geometryDisposers = runtime.renderables.map((object) => vi.spyOn(object.geometry, "dispose"));
+    const instanceDisposers = runtime.renderables.filter((object) => object.isInstancedMesh).map((object) => vi.spyOn(object as InstancedMesh, "dispose"));
     const materials = fixture.familyRuntime.materialRegistry.listMaterials();
     const materialDisposers = materials.map((material) => vi.spyOn(material, "dispose"));
     const textureDisposers = Object.values(fixture.familyRuntime.textureSet.textures).map((texture) =>
@@ -57,6 +62,8 @@ describe("renderer resource disposal", () => {
       materialsDisposed: 0
     });
     expect(geometryDisposers.every((spy) => spy.mock.calls.length === 1)).toBe(true);
+    expect(instanceDisposers.length).toBeGreaterThan(0);
+    expect(instanceDisposers.every((spy) => spy.mock.calls.length === 1)).toBe(true);
     expect(materialDisposers.every((spy) => spy.mock.calls.length === 0)).toBe(true);
     expect(textureDisposers.every((spy) => spy.mock.calls.length === 0)).toBe(true);
     expect(materials.every((material) => material.userData.disposed === undefined)).toBe(true);

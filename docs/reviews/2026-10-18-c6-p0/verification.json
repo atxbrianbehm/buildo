@@ -1,0 +1,416 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "c6-p0-pinned-construction-recipes",
+  "status": "engineering-complete",
+  "closedAtUtc": "2026-10-18T05:22:40.906857+00:00",
+  "sourcePins": [
+    {
+      "file": "src/features/building-family/core/constructionGenerationResolver.ts",
+      "sha256": "ab32c45952883d8d885efdec6eef8c4f9e3e5165385923b6c612e84f20c98a11",
+      "snapshot": "source/src/features/building-family/core/constructionGenerationResolver.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/core/constructionRecipeCatalog.ts",
+      "sha256": "24c12715cd57940cfa54904144ece5bce9e73f8cfad2dfc9fcdc16095665e8ee",
+      "snapshot": "source/src/features/building-family/core/constructionRecipeCatalog.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionRecipeCatalog.test.ts",
+      "sha256": "92e44ac671c5b761b766d445f18d4e187a0fdcdf17393b2f702e1b0109d08d47",
+      "snapshot": "source/src/features/building-family/tests/constructionRecipeCatalog.test.ts.txt"
+    }
+  ],
+  "changedExistingImplementationPaths": [
+    "src/features/building-family/core/constructionGenerationResolver.ts"
+  ],
+  "unchangedC5SourcePins": 59,
+  "checks": [
+    {
+      "exitCode": 0,
+      "log": "test-results\\c6-p0-2026-10-18\\focused-02.log",
+      "name": "focused"
+    },
+    {
+      "exitCode": 0,
+      "log": "test-results\\c6-p0-2026-10-18\\typecheck-02.log",
+      "name": "typecheck"
+    },
+    {
+      "exitCode": 0,
+      "log": "test-results\\c6-p0-2026-10-18\\lint-02.log",
+      "name": "lint"
+    }
+  ],
+  "catalogTests": 18,
+  "focusedTests": 61,
+  "focusedFiles": 4,
+  "originalC5RecipePinAndCompilerBuffersExact": true,
+  "examples": [
+    {
+      "schemaVersion": "0.1.0",
+      "id": "restrained-masonry-rectangular",
+      "recipe": {
+        "id": "restrained-masonry-rectangular",
+        "version": "1",
+        "contentHash": "49ea533925dba5b5b0a59612bc8449685dc84437f990e2388f80acd946766add"
+      },
+      "resolverVersion": "construction-generation-resolver-v1",
+      "graphHash": "6d5c74f69dcf5999a140fdc560a59f0a9e2ab504f2e5110b8c0b9d264a9468f1",
+      "windowCount": 47,
+      "bounds": {
+        "min": [
+          -6.24,
+          0,
+          -5.24
+        ],
+        "max": [
+          6.24,
+          11.245000000000001,
+          5.24
+        ]
+      },
+      "materialInputsHash": "5a6aeb74609ddafd9ca4e5994e2f18beea9e695ee94b279960eb496556ccebab",
+      "prototypes": [
+        {
+          "id": "construction.prototype.frame.dbfdd186b18ec92018f3",
+          "role": "frame",
+          "positions": "c6413ca82f8ea57dc82c15dddf10c267068ea3c6ece39c664a55d497b0674331",
+          "indices": "024d026c4c8f7eb97103ee83df6edf029506923cbd0194eebd24b2034f9f3c73",
+          "uvs": "86bc6064996873589aa747b60ad79a60547d40f804bab1ebce9f0f6da314ae07"
+        },
+        {
+          "id": "construction.prototype.glass.dbfdd186b18ec92018f3",
+          "role": "glass",
+          "positions": "7f82402d7437b23b01b831669ba09133ecdc6ebe7d38bc4e79ac928da3fe8b5a",
+          "indices": "7cfb5d05b131b3e74e5bcea9f91f6ee76001c81b3d9b8a7312a338b69990ebed",
+          "uvs": "01d55d220ed75a352c8b51b5e4193648c559b48dc2fc889bd2377c52d0983436"
+        },
+        {
+          "id": "construction.prototype.trim.dbfdd186b18ec92018f3",
+          "role": "trim",
+          "positions": "e07406d31cee368d499fa2b5451df6bc4fa7f5c95b14dcd7c516318232ef8bf7",
+          "indices": "c467932fc162ee4df04940a363986ad7a9d83e59039e0ad9bf1f838c7419c2c5",
+          "uvs": "8c7b30227d269b0341b9cda7430f24da88cef475cbc9937f9ddeb7993a927c90"
+        }
+      ],
+      "meshes": [
+        {
+          "id": "building/c6-recipes-proof/node/wall/facade/wall",
+          "positions": "2e386490814315f95a729bcc206d1b2e84ef90b46bb4a5debf1875861ced3633",
+          "indices": "9f70b41bc0f910ffb93f76c4c0041351eaad7772ad69a514ec5f085a542a476f"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/wall/facade/right/wall",
+          "positions": "7212f3b7072b1bf844fe579ae83d714d788570b53c799cb6b747c20149af087f",
+          "indices": "8ebc675f033699466d73b059f3d65d022f850baaaef47551b62fb4a799d4e9a9"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/wall/facade/rear/wall",
+          "positions": "4635cadf90f0485b8303ee6f9cc971cb49d3c5499b43f341ee8bbcbc80a908d2",
+          "indices": "8ebc675f033699466d73b059f3d65d022f850baaaef47551b62fb4a799d4e9a9"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/wall/facade/left/wall",
+          "positions": "baaf5ac5b1898a606a54f7e8ef9f86adb4a5f189bf5baa418d829a9f06bb6a46",
+          "indices": "8ebc675f033699466d73b059f3d65d022f850baaaef47551b62fb4a799d4e9a9"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/door/facade/floor/0/bay/1/frame",
+          "positions": "2d86dc8ff55619414a89d7fda7e7b8208b64fff2f335643753f7a4ac16f46b1a",
+          "indices": "822fdc845a1b35400ff2848922e720f9d590f70b077b91efd00879ab4b56e892"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/door/facade/floor/0/bay/1/leaf",
+          "positions": "d41a4fb9d2bbec3b5427db9ab642371cf393d61c352f24d91ef27fb66acfe3af",
+          "indices": "b89265d5467b903ed204bacba252dbfa2757b91b62554f6f24f24c2d62f49345"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/door/facade/floor/0/bay/1/hardware",
+          "positions": "029f6d241841875328d55e49f912df4c004d446b4cfcfdcb4b5851a350817ddb",
+          "indices": "be43b66eb4d66666254d66bc8754d10bc8964746739d3b9fcbaee9a3cb4b4821"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/door/facade/floor/0/bay/1/glass",
+          "positions": "4986909c1701ffe286e953374e6ab11057575c004f092dd606e47e2fe2f6778c",
+          "indices": "6a6aca884dea3fc67883037c147c94d5d53561ac7a32c7076340eb92c1f60196"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/door/facade/floor/0/bay/1/trim",
+          "positions": "63ae4fcc6b89cdfb4bf5c871727730de3ab213d311d9114ffa6bb7598adced8d",
+          "indices": "6a6aca884dea3fc67883037c147c94d5d53561ac7a32c7076340eb92c1f60196"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/bands/building/band.4",
+          "positions": "581e6884c79f06f05176864d2391124a7ce14aac9870e6417cfb80c1825b59e0",
+          "indices": "6d0cdbe81fd0b6b8bdef05c0fe8479fca4d11b2ceccd70e7879307c5808152c8"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/bands/building/band.7.3",
+          "positions": "b3f5fdae6f39f69fd5e01dcf5f92fb06304aff8969b73ac7f7cd6e579345efc2",
+          "indices": "6d0cdbe81fd0b6b8bdef05c0fe8479fca4d11b2ceccd70e7879307c5808152c8"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/roof/building/roof",
+          "positions": "de26be9940d921b65db55dd7836fd8cc83d3f3cc1d74fdfe0477b86e4423483d",
+          "indices": "6a6aca884dea3fc67883037c147c94d5d53561ac7a32c7076340eb92c1f60196"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/roof/building/parapet",
+          "positions": "06bbbc92edd1e533d6e71cfa7e729f6cc9dd286a69914f306d6f9f6c9c0c210f",
+          "indices": "6b0f2ff9530db7af28f14f99efbf18472d2711785a92f77d6e23ca2364fa80f5"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/roof/building/cornice",
+          "positions": "db919d3da265ee9b446c836a1dc2d729d7bb0dcedd787d52ac0c07f5840f4fcc",
+          "indices": "7b621609f82bf7f64a63bfb9ca1a31fc49c8784077d21e8e2ae79924174cf07d"
+        }
+      ],
+      "portableReplay": true
+    },
+    {
+      "schemaVersion": "0.1.0",
+      "id": "deep-reveal-masonry",
+      "recipe": {
+        "id": "deep-reveal-masonry",
+        "version": "1",
+        "contentHash": "36a9abd965c3325b5aee39f38c8d6ddb8fccbc884b55005ecf6b00a8fbfcf3c3"
+      },
+      "resolverVersion": "construction-generation-resolver-v2",
+      "graphHash": "ab8791843cd16729a6ec848e3caada3bd8e5f5b12da2c55b9f28b8b401fccc4f",
+      "windowCount": 47,
+      "bounds": {
+        "min": [
+          -6.28,
+          0,
+          -5.28
+        ],
+        "max": [
+          6.28,
+          12.745000000000001,
+          5.28
+        ]
+      },
+      "materialInputsHash": "5a6aeb74609ddafd9ca4e5994e2f18beea9e695ee94b279960eb496556ccebab",
+      "prototypes": [
+        {
+          "id": "construction.prototype.frame.8ee19b0989dcb01f80ec",
+          "role": "frame",
+          "positions": "ace166658c5f06e501f1e248c565613e9382d15c587e56a4d279bf1ae1268ec5",
+          "indices": "024d026c4c8f7eb97103ee83df6edf029506923cbd0194eebd24b2034f9f3c73",
+          "uvs": "a1c2ca9e908f5177af5c931b1b3fd10d8689627a333e66d6657a05bbf5f9c56b"
+        },
+        {
+          "id": "construction.prototype.glass.8ee19b0989dcb01f80ec",
+          "role": "glass",
+          "positions": "e7564bcb0a7b212b3ebfc6cf8ce002691f5b2ed56d73ac44b7a97bccb9288aea",
+          "indices": "7cfb5d05b131b3e74e5bcea9f91f6ee76001c81b3d9b8a7312a338b69990ebed",
+          "uvs": "e44aa475fc6c1b8e80b780592464dbffbbf9f5e04a095a95954bd0583d8884f6"
+        },
+        {
+          "id": "construction.prototype.trim.8ee19b0989dcb01f80ec",
+          "role": "trim",
+          "positions": "212f0eb6f1130c5694b7acce9857a13eadfd97a730672b88daf826cfc8ff89eb",
+          "indices": "c467932fc162ee4df04940a363986ad7a9d83e59039e0ad9bf1f838c7419c2c5",
+          "uvs": "700eb6c16d57e05b5d43ba0f56590dbc4201bec7ea148cebf46bb3348e389dd9"
+        }
+      ],
+      "meshes": [
+        {
+          "id": "building/c6-recipes-proof/node/wall/facade/wall",
+          "positions": "7f8e2affd7f3f6c1a9ca5448e9cf38f7a6527f7f56a16942e9ff23cb63186061",
+          "indices": "9f70b41bc0f910ffb93f76c4c0041351eaad7772ad69a514ec5f085a542a476f"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/wall/facade/right/wall",
+          "positions": "e24e683f63ed594106e7d49fe420c506b6e3d121c66f89966a9e5ef074e15b4d",
+          "indices": "8ebc675f033699466d73b059f3d65d022f850baaaef47551b62fb4a799d4e9a9"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/wall/facade/rear/wall",
+          "positions": "c6b23a592efbdba776ae70aafb7e7ba4512597096662a2efccf8db96b712b27e",
+          "indices": "8ebc675f033699466d73b059f3d65d022f850baaaef47551b62fb4a799d4e9a9"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/wall/facade/left/wall",
+          "positions": "6a34cc7777e14fec41899505ad2db2f21488e7ef5d3a1f00362c7f9249a153f9",
+          "indices": "8ebc675f033699466d73b059f3d65d022f850baaaef47551b62fb4a799d4e9a9"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/door/facade/floor/0/bay/1/frame",
+          "positions": "97adf966792aabbd32daf89cfae9d475580b0002a2cdf0999e59c94de932b2c1",
+          "indices": "822fdc845a1b35400ff2848922e720f9d590f70b077b91efd00879ab4b56e892"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/door/facade/floor/0/bay/1/leaf",
+          "positions": "e3a8b3a569f9aaa6a5ad6e27b158da40908afd336f789abc48d91dd4e4dc439c",
+          "indices": "b89265d5467b903ed204bacba252dbfa2757b91b62554f6f24f24c2d62f49345"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/door/facade/floor/0/bay/1/hardware",
+          "positions": "ca541a32657bf41541c482d99a0a47b08c4ea7c67048fc22764bbe09950526d4",
+          "indices": "be43b66eb4d66666254d66bc8754d10bc8964746739d3b9fcbaee9a3cb4b4821"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/door/facade/floor/0/bay/1/glass",
+          "positions": "09b7779978d27c9c3083450caadb22687097dbbdcee2f3388b587f6d00c63e1b",
+          "indices": "6a6aca884dea3fc67883037c147c94d5d53561ac7a32c7076340eb92c1f60196"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/door/facade/floor/0/bay/1/trim",
+          "positions": "9fa53c5cedd31b660aba40a224193295a40efcfcfb7dc894049a26d46addfac1",
+          "indices": "6a6aca884dea3fc67883037c147c94d5d53561ac7a32c7076340eb92c1f60196"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/bands/building/band.4",
+          "positions": "dc360576008c79cd939c87204f11147498ad03d705f416c4c6d3fa0cb9e0e682",
+          "indices": "6d0cdbe81fd0b6b8bdef05c0fe8479fca4d11b2ceccd70e7879307c5808152c8"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/bands/building/band.8",
+          "positions": "0aebd28278a0a04ea3b5f263334a32eddaa840821ffde994dfad18361f69e3e6",
+          "indices": "6d0cdbe81fd0b6b8bdef05c0fe8479fca4d11b2ceccd70e7879307c5808152c8"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/roof/building/roof",
+          "positions": "b8e16cffcbda2bc3ac9abab5f0d8160fca6e5e548f89c882ce1bc7fefecba73b",
+          "indices": "6a6aca884dea3fc67883037c147c94d5d53561ac7a32c7076340eb92c1f60196"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/roof/building/parapet",
+          "positions": "39a7fa58235d8907b24b194bbcefa7ab09f357385e37825ae0ff5e9ec3e6334e",
+          "indices": "6b0f2ff9530db7af28f14f99efbf18472d2711785a92f77d6e23ca2364fa80f5"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/roof/building/cornice",
+          "positions": "5262091a00c2efa977767debe3daf96d067de53358c00e56d6defa24ca067437",
+          "indices": "7b621609f82bf7f64a63bfb9ca1a31fc49c8784077d21e8e2ae79924174cf07d"
+        }
+      ],
+      "portableReplay": true
+    },
+    {
+      "schemaVersion": "0.1.0",
+      "id": "projecting-cornice-masonry",
+      "recipe": {
+        "id": "projecting-cornice-masonry",
+        "version": "1",
+        "contentHash": "c3f453f7f39c52cdae80e08d7b48635a1f2de1980fd45f4db5bda4841714dee3"
+      },
+      "resolverVersion": "construction-generation-resolver-v2",
+      "graphHash": "16f6971a4cf77fb110bfb4718696c61f6e7c8be7fdbd6debb1f3cae5134bb11c",
+      "windowCount": 47,
+      "bounds": {
+        "min": [
+          -6.38,
+          0,
+          -5.38
+        ],
+        "max": [
+          6.38,
+          13.545,
+          5.38
+        ]
+      },
+      "materialInputsHash": "5a6aeb74609ddafd9ca4e5994e2f18beea9e695ee94b279960eb496556ccebab",
+      "prototypes": [
+        {
+          "id": "construction.prototype.frame.1b522290a046e7c53f93",
+          "role": "frame",
+          "positions": "410c89e5eb956ccd3ef24468c58105869bd72036d6028396a232195fc83b6287",
+          "indices": "024d026c4c8f7eb97103ee83df6edf029506923cbd0194eebd24b2034f9f3c73",
+          "uvs": "bafbc9ea4dbd32c895ad8930e00a9f5e07cdcf212c0b4bac789078c0a729e397"
+        },
+        {
+          "id": "construction.prototype.glass.1b522290a046e7c53f93",
+          "role": "glass",
+          "positions": "a883b2ddc96fa62a2ee3dc91f1710c0f3b80d463068967c86148a5ab3606a3ba",
+          "indices": "7cfb5d05b131b3e74e5bcea9f91f6ee76001c81b3d9b8a7312a338b69990ebed",
+          "uvs": "b7ab5335ae5f8e5710b9e65220334d3a56fde4bfa83f8441880088d6bdd7a9f5"
+        },
+        {
+          "id": "construction.prototype.trim.1b522290a046e7c53f93",
+          "role": "trim",
+          "positions": "4f27372a34dd88205aec053765a54827065f96dbe0b727248fa67819244126ed",
+          "indices": "c467932fc162ee4df04940a363986ad7a9d83e59039e0ad9bf1f838c7419c2c5",
+          "uvs": "cac998075856e4b42934a08f3b5dfa10df42dc9af26277acdd1fda334fce79d6"
+        }
+      ],
+      "meshes": [
+        {
+          "id": "building/c6-recipes-proof/node/wall/facade/wall",
+          "positions": "1a27a3d7ef8c6748899661263e3479cd05c5b5e06b04ba5ffd6952ecfc915f73",
+          "indices": "9f70b41bc0f910ffb93f76c4c0041351eaad7772ad69a514ec5f085a542a476f"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/wall/facade/right/wall",
+          "positions": "3fc7654a7c2051bd40fa4bb74492fdc6b66f7096c6e700a6bcac9ccc09f162fc",
+          "indices": "8ebc675f033699466d73b059f3d65d022f850baaaef47551b62fb4a799d4e9a9"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/wall/facade/rear/wall",
+          "positions": "c39ccc62c7ade1fd123640678239a87f22df80edceb295485376179c94b2d7dc",
+          "indices": "8ebc675f033699466d73b059f3d65d022f850baaaef47551b62fb4a799d4e9a9"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/wall/facade/left/wall",
+          "positions": "dffb5109499571f23f006b7ec67693988d980682ee1276bb76c41153157f33a0",
+          "indices": "8ebc675f033699466d73b059f3d65d022f850baaaef47551b62fb4a799d4e9a9"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/door/facade/floor/0/bay/1/frame",
+          "positions": "ff63afda8b67ae206004ca781b03b4cfb7bc3e131b301eb17f974f024e8cba9e",
+          "indices": "822fdc845a1b35400ff2848922e720f9d590f70b077b91efd00879ab4b56e892"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/door/facade/floor/0/bay/1/leaf",
+          "positions": "c9592e9884699485a5edf25ef1c182baf71726dee21e3183d3b6b0c21442f995",
+          "indices": "b89265d5467b903ed204bacba252dbfa2757b91b62554f6f24f24c2d62f49345"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/door/facade/floor/0/bay/1/hardware",
+          "positions": "7a905a7bd341040888286539665415e3ef809b719e2195e910f5810735051149",
+          "indices": "be43b66eb4d66666254d66bc8754d10bc8964746739d3b9fcbaee9a3cb4b4821"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/door/facade/floor/0/bay/1/glass",
+          "positions": "9198685d7580e16d798b2f8c06613a90597dce4bce5d454037e10fb3235d6b88",
+          "indices": "6a6aca884dea3fc67883037c147c94d5d53561ac7a32c7076340eb92c1f60196"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/door/facade/floor/0/bay/1/trim",
+          "positions": "6bb7e31bb90adcbd894ed05bd3b50a7ac23fd4137485dc55283cad500cd0cff2",
+          "indices": "6a6aca884dea3fc67883037c147c94d5d53561ac7a32c7076340eb92c1f60196"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/bands/building/band.4.5",
+          "positions": "fa174136a0b611e94d5e0dc8c3b819e3021cb91f138b476d789d585077a39859",
+          "indices": "6d0cdbe81fd0b6b8bdef05c0fe8479fca4d11b2ceccd70e7879307c5808152c8"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/bands/building/band.8.6",
+          "positions": "2c21c0ade55245e9e4e7fd923fcbd972227cfc70fd7d674b62a578916dfa55af",
+          "indices": "6d0cdbe81fd0b6b8bdef05c0fe8479fca4d11b2ceccd70e7879307c5808152c8"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/roof/building/roof",
+          "positions": "2ce1b0fad523165b2128273eb3d72d53eadc24c86ad0867d751e8b348ba6b8c3",
+          "indices": "6a6aca884dea3fc67883037c147c94d5d53561ac7a32c7076340eb92c1f60196"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/roof/building/parapet",
+          "positions": "9390737b1447e678d4770140e0bcfbc8ec847d0981967f04b60e792025dfd840",
+          "indices": "6b0f2ff9530db7af28f14f99efbf18472d2711785a92f77d6e23ca2364fa80f5"
+        },
+        {
+          "id": "building/c6-recipes-proof/node/roof/building/cornice",
+          "positions": "66d4766b5dd1b539fe7e2ca48e591436417cb2507b3993397d47dc95e2c531eb",
+          "indices": "7b621609f82bf7f64a63bfb9ca1a31fc49c8784077d21e8e2ae79924174cf07d"
+        }
+      ],
+      "portableReplay": true
+    }
+  ],
+  "newNativeOrFullRegression": false,
+  "productSelectorWired": false,
+  "nextPacket": "C6.P1"
+}

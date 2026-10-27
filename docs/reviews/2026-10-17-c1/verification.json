@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "c1-final-engineering-verification",
+  "recordedAt": "2026-10-17T20:26:53.690Z",
+  "checks": [
+    {
+      "command": "npm.cmd run typecheck",
+      "exitCode": 0,
+      "log": "test-results/c1-2026-10-17/typecheck-08.log",
+      "sha256": "1be658440d8af4c16a600196f09b5e40aae4773b96f4848d35f645c253cff5d8"
+    },
+    {
+      "command": "npm.cmd run lint",
+      "exitCode": 0,
+      "log": "test-results/c1-2026-10-17/lint-final-02.log",
+      "sha256": "49ee64cb9b440026cb01ef4306dd7d2752ef425efba7e5ca3109483df382dc8c"
+    },
+    {
+      "command": "npm.cmd run test -- --maxWorkers=2",
+      "exitCode": 0,
+      "log": "test-results/c1-2026-10-17/unit-final-02.log",
+      "sha256": "01bb3ad619cf8d53c7190d73cf69f022082890d10ebf3d31364f8d7ee629a337"
+    },
+    {
+      "command": "npm.cmd run build",
+      "exitCode": 0,
+      "log": "test-results/c1-2026-10-17/lint-build-final-02.log",
+      "sha256": "8da55d3f0cfe82c7f0c9a34bbae813b8e44ec21c03194af8396f74fcf884166d"
+    },
+    {
+      "command": "npm.cmd run test:e2e",
+      "exitCode": 0,
+      "log": "test-results/c1-2026-10-17/e2e-final-02.log",
+      "sha256": "412c72a949fde030538ddfd571325293e28e391f52a244a2dd3e1b3e3a766683"
+    }
+  ],
+  "unitTests": 1550,
+  "unitFiles": 107,
+  "actualRendererRuns": [
+    "webgpu",
+    "webgl"
+  ],
+  "rawCaptures": 22,
+  "reviewedImageCopies": [
+    {
+      "file": "images/webgl-clay-authored.png",
+      "sha256": "1f1e1c8929a82ab213b9d453f93172dd47f839531b724bb0031dd1d1033525e7"
+    },
+    {
+      "file": "images/webgl-clay-close.png",
+      "sha256": "f2c790e8539ea6d5891cbf290c7b99766f5bc647f7b07c7906b0039a92c338f9"
+    },
+    {
+      "file": "images/webgl-desktop-initial.png",
+      "sha256": "3e262a0ec11735cb1dead7566dfd80945acaed8c249783946a4a66e145c20d70"
+    },
+    {
+      "file": "images/webgl-textured-close.png",
+      "sha256": "8cebccbeabd6b2b39d26f84535b13864429cfdd526a166e8e288f63592986dbb"
+    },
+    {
+      "file": "images/webgl-textured-restored.png",
+      "sha256": "20a961976393f929aee8c88e538864eae4844d343093ddb953df60b8ee71bedd"
+    },
+    {
+      "file": "images/webgpu-clay-authored.png",
+      "sha256": "e67481ddf4046725e1afc8379df4258ee986706b31fbb6a13d2a3a25fa6a1c09"
+    },
+    {
+      "file": "images/webgpu-clay-close.png",
+      "sha256": "9c8593c2ebc70bbb0a46437c06d3a0bbeaa5a0d0e96878120b32029205fbadb3"
+    },
+    {
+      "file": "images/webgpu-desktop-initial.png",
+      "sha256": "d08e7fa24fa86a1edded6c0ef412dbc0c729cbaca84890afb332306e918c3588"
+    },
+    {
+      "file": "images/webgpu-textured-close.png",
+      "sha256": "4741094b1627675630684b5a27d854b32a95a3be05e23280ebb694f0ebece654"
+    },
+    {
+      "file": "images/webgpu-textured-restored.png",
+      "sha256": "7db3b48a62f8278609080c842005dfd9b184c1e9308bb8e7daa844f5f5583dfe"
+    }
+  ],
+  "retainedPriorSources": 265,
+  "changedExistingSources": 5,
+  "newSources": 12,
+  "humanAppearanceAcceptance": "accepted",
+  "nextGate": "C1 complete; C2 authorized",
+  "acceptance": {
+    "date": "2026-10-17",
+    "message": "Accepted",
+    "scope": "C1 facade bay"
+  }
+}
