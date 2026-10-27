@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "0.1.0",
+  "sourceSha256": "eb7466b09ab10f3e4040aeeb5acb85e959cd7dc75efa73f4f2da5140b0661cd1",
+  "aliases": [
+    {
+      "run": "before-webgl",
+      "name": "textured-input-v8.json",
+      "sha256": "eb7466b09ab10f3e4040aeeb5acb85e959cd7dc75efa73f4f2da5140b0661cd1",
+      "literalEqual": true
+    },
+    {
+      "run": "before-webgpu",
+      "name": "textured-input-v8.json",
+      "sha256": "eb7466b09ab10f3e4040aeeb5acb85e959cd7dc75efa73f4f2da5140b0661cd1",
+      "literalEqual": true
+    },
+    {
+      "run": "webgl",
+      "name": "textured-input-v8.json",
+      "sha256": "eb7466b09ab10f3e4040aeeb5acb85e959cd7dc75efa73f4f2da5140b0661cd1",
+      "literalEqual": true
+    },
+    {
+      "run": "webgl",
+      "name": "saved-v8.json",
+      "sha256": "eb7466b09ab10f3e4040aeeb5acb85e959cd7dc75efa73f4f2da5140b0661cd1",
+      "literalEqual": true
+    },
+    {
+      "run": "webgl",
+      "name": "reopened-v8.json",
+      "sha256": "eb7466b09ab10f3e4040aeeb5acb85e959cd7dc75efa73f4f2da5140b0661cd1",
+      "literalEqual": true
+    },
+    {
+      "run": "webgl",
+      "name": "cold-v8.json",
+      "sha256": "eb7466b09ab10f3e4040aeeb5acb85e959cd7dc75efa73f4f2da5140b0661cd1",
+      "literalEqual": true
+    },
+    {
+      "run": "webgl",
+      "name": "final-textured-v8.json",
+      "sha256": "eb7466b09ab10f3e4040aeeb5acb85e959cd7dc75efa73f4f2da5140b0661cd1",
+      "literalEqual": true
+    },
+    {
+      "run": "webgpu",
+      "name": "textured-input-v8.json",
+      "sha256": "eb7466b09ab10f3e4040aeeb5acb85e959cd7dc75efa73f4f2da5140b0661cd1",
+      "literalEqual": true
+    },
+    {
+      "run": "webgpu",
+      "name": "saved-v8.json",
+      "sha256": "eb7466b09ab10f3e4040aeeb5acb85e959cd7dc75efa73f4f2da5140b0661cd1",
+      "literalEqual": true
+    },
+    {
+      "run": "webgpu",
+      "name": "reopened-v8.json",
+      "sha256": "eb7466b09ab10f3e4040aeeb5acb85e959cd7dc75efa73f4f2da5140b0661cd1",
+      "literalEqual": true
+    },
+    {
+      "run": "webgpu",
+      "name": "cold-v8.json",
+      "sha256": "eb7466b09ab10f3e4040aeeb5acb85e959cd7dc75efa73f4f2da5140b0661cd1",
+      "literalEqual": true
+    },
+    {
+      "run": "webgpu",
+      "name": "final-textured-v8.json",
+      "sha256": "eb7466b09ab10f3e4040aeeb5acb85e959cd7dc75efa73f4f2da5140b0661cd1",
+      "literalEqual": true
+    }
+  ]
+}

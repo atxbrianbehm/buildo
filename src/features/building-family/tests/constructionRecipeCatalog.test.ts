@@ -52,7 +52,7 @@ const param = (result: Awaited<ReturnType<typeof resolveConstructionGeneration>>
 };
 
 describe("pinned executable construction recipe catalog", () => {
-  it("retains the original C5 recipe pin, resolution and every archived compiler buffer byte", async () => {
+  it("retains the original C5 recipe pin, resolution, mesh buffers and instance transforms", async () => {
     expect(await constructionRecipeReference()).toEqual(oldSource.recipe);
     expect(await readConstructionGenerationResolution(oldResolution, oldSource)).toEqual(oldResolution);
     const { construction, resolution } = await compileConstructionGeneration(oldSource);
@@ -66,7 +66,12 @@ describe("pinned executable construction recipe catalog", () => {
       expect(await digest(batch.indices!)).toBe(expected.indices);
     }
     for (const expected of oldMetrics.instances) {
-      const batch = construction.ir.instanceBatches.find(item => item.batchId === expected.id)!;
+      // Prototype IDs include the corrected trim compiler revision; authored scopes
+      // and every archived instance transform remain exact.
+      const role = expected.id.match(/prototype\.([^.]+)\./)![1];
+      const matches = construction.ir.instanceBatches.filter(item => item.recipeId.startsWith(`construction.prototype.${role}.`));
+      expect(matches).toHaveLength(1);
+      const batch = matches[0];
       expect(batch.count).toBe(expected.count); expect(await digest(batch.transforms!)).toBe(expected.transforms);
     }
   });

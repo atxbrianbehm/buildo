@@ -1,7 +1,7 @@
 import { emptyBounds, expandBounds, type PrimitiveGeometry, type Vec3 } from "./primitiveGeometry";
 import type { ProfileDefinition } from "./profileLibrary";
 
-/** Closed metre-space loft for edited openings; monotone profiles admit exact strip caps. */
+/** Closed metre-space loft for construction openings; monotone profiles admit exact strip caps. */
 export function extrudeConstructionOpeningTrim(input: { profile: ProfileDefinition; center: Vec3; runLengthM: number }): PrimitiveGeometry {
   const points = input.profile.points;
   if (!Number.isFinite(input.runLengthM) || input.runLengthM <= 0 || !input.center.every(Number.isFinite) || points.length < 2 ||

@@ -1,0 +1,2851 @@
+{
+  "schemaVersion": "0.1.0",
+  "api": "webgl",
+  "legacy": false,
+  "sourcePins": [
+    {
+      "file": "eslint.config.js",
+      "sha256": "ebd72019a926815cc06067cdd066a14045811e5c784d7c0d47dd71830426d53f"
+    },
+    {
+      "file": "package-lock.json",
+      "sha256": "200722a24fc5f411f9da0718d74864069871b2dd648205ffc3824f546ebefeaa"
+    },
+    {
+      "file": "package.json",
+      "sha256": "609f87639a2a698c02933850768881be0c1fd1d59710596c1ac99b7de9f498d1"
+    },
+    {
+      "file": "playwright.config.ts",
+      "sha256": "aa212bc301beefc9cbfa15db543cd17a0676c4466a91b82d73f3ad7908f4f2d8"
+    },
+    {
+      "file": "scripts/capture-period-compare.mjs",
+      "sha256": "5fa91c09ebaba038aac2d88aac75ae724d58a1dd0e15ff2575f709333a2ae831"
+    },
+    {
+      "file": "scripts/capture-r1-baseline.mjs",
+      "sha256": "dd2e0effdb6da943e7bd33f3c4088453591f312982dc1cc7969309b1daaf69c8"
+    },
+    {
+      "file": "scripts/capture-r1-masonry-discriminator.mjs",
+      "sha256": "cfc7f765dfc0d71afa20872826a538507e2cd449fec9b50b204a3c314f829c4c"
+    },
+    {
+      "file": "scripts/capture-r1-periodic-wall-material.mjs",
+      "sha256": "bf9bbcbc59c843be38218243668a452e2ab0ab3d33feee4899fd8fa39ba91afd"
+    },
+    {
+      "file": "scripts/capture-r1-primary-wall-material.mjs",
+      "sha256": "b4ebf36d8057477e68b8c409784ac68ab9c9490e4d5283e80bcb8934cb7c4c72"
+    },
+    {
+      "file": "scripts/capture-r1-wall-phase-production.mjs",
+      "sha256": "9514f9efb9deb0b05c078da7729bacf9cf58895df2474f0458f078665419b366"
+    },
+    {
+      "file": "scripts/capture-r1-wall-phase.mjs",
+      "sha256": "d02288dd8502dba2e6ae5a7d92ac8ea854c7fd8919807b053d7b7aef02dc1a79"
+    },
+    {
+      "file": "scripts/capture-r1-wall-seams.mjs",
+      "sha256": "0d46e38d8d9c3416e2f16af45bcb795234b0845e7583df073014cf4bd9212cd9"
+    },
+    {
+      "file": "scripts/dev-server.mjs",
+      "sha256": "42b56c044bf9e3459ee541037d2dccc319eebd38a70070e8401eeedfec7c6247"
+    },
+    {
+      "file": "scripts/diagnostics/r1-baseline-browser.mjs",
+      "sha256": "927bed4efce7bbfc976a9a560f93c1cbd2845801e5ff14a29f755d199622b7c8"
+    },
+    {
+      "file": "scripts/diagnostics/r1-baseline.html",
+      "sha256": "723752f03b868c178d1b1d10745590d445973ab825947dc7621d14b112fd6b76"
+    },
+    {
+      "file": "scripts/diagnostics/r1-building-capture.mjs",
+      "sha256": "1afee7904b4e812b72e1b8a614431221f2805413cb7e1e3e837f420c6eb42606"
+    },
+    {
+      "file": "scripts/diagnostics/r1-material-sampling.mjs",
+      "sha256": "a96b7679798e0c99a5f901d18dd739bf340188119645ae38bb2ab3cd565a8854"
+    },
+    {
+      "file": "scripts/diagnostics/r1-periodic-masonry-oracle.mjs",
+      "sha256": "f95b401051b3da83dac0e0bf27a611c5e40d15ec97e8810bf9d60afa96f95fa7"
+    },
+    {
+      "file": "scripts/diagnostics/r1-primary-wall-material-proof.mjs",
+      "sha256": "13904aa57ecd38eab204f5908ed1b8d5e4e8dcf4656309655c20dc3b3e25be72"
+    },
+    {
+      "file": "scripts/diagnostics/r1-primary-wall-periodic-proof.mjs",
+      "sha256": "8b7ec679ef43e19553de59bc6c9cba3a2d91aadf26ca1af1d4a7ef7ddcb5e5ca"
+    },
+    {
+      "file": "scripts/diagnostics/r1-wall-phase-attribution.mjs",
+      "sha256": "efaf013d93f24c804a3e660da670c37129e1550162664eba50756eb4fb521d4e"
+    },
+    {
+      "file": "scripts/diagnostics/r1-wall-phase-browser.mjs",
+      "sha256": "463f2485cb0e711408abc3a5dea2aa4d57703c31383c4306d806e5cf67f7b109"
+    },
+    {
+      "file": "scripts/diagnostics/r1-wall-phase-production-browser.mjs",
+      "sha256": "fbaa70372d63f01403863df0993f5d8d37e3f0dc8a5f72465688c1dd56f836e2"
+    },
+    {
+      "file": "scripts/diagnostics/r1-wall-seam-attribution.mjs",
+      "sha256": "9e82789ed5cdc11731d26647a42770b22028663c12eb021b1904f4d32a032427"
+    },
+    {
+      "file": "scripts/e2e-smoke.mjs",
+      "sha256": "db6d95ccdcd22b61b7afad9b44bba49c577a3e2b15d9dca5956ce785d7007665"
+    },
+    {
+      "file": "server/building-family/materialProviderRoute.test.ts",
+      "sha256": "256150948d0831b26e364d691b3a6bc59868071c1cacfaf8d5d9d282ff1edd3d"
+    },
+    {
+      "file": "server/building-family/materialProviderRoute.ts",
+      "sha256": "3fd22198ad6d323627546988e3fa724c383bae73b8102a8df3e71c08d5400027"
+    },
+    {
+      "file": "server/building-family/openAIImageMaterialProvider.test.ts",
+      "sha256": "a7c9e6e687ec56d011270b474a35a2f70ea1d0d3e9b5983c8ad9e9a9000cba9d"
+    },
+    {
+      "file": "server/building-family/openAIImageMaterialProvider.ts",
+      "sha256": "306094c1ce5addbf9f5c1a86d97281e890c990a2dcf6b7ffbc2a7d5ea10a477f"
+    },
+    {
+      "file": "server/building-family/periodReferenceStaticPlugin.ts",
+      "sha256": "4900bd407606904316274ba97b34c380a291d59393388524f376ae3551b9140c"
+    },
+    {
+      "file": "server/building-family/remoteMaterialArtifactCache.test.ts",
+      "sha256": "13de8bd6fcc8e447fcbd633aa015cf8bfc87ade385e015a87af07f8414fc136f"
+    },
+    {
+      "file": "server/building-family/remoteMaterialArtifactCache.ts",
+      "sha256": "9eb109e822a1d49b6781d00d158ba40d7799e39e82f7fcb3c7604b110ea1fce4"
+    },
+    {
+      "file": "server/building-family/viteMaterialProviderPlugin.test.ts",
+      "sha256": "851fd00fdedbfff1a903a147ef7f05de16bda145f9099ede0e7bc93e9ad5fcfc"
+    },
+    {
+      "file": "server/building-family/viteMaterialProviderPlugin.ts",
+      "sha256": "169cea7424747bd059382a4a0a234ac8a8d95adacd5051a01172c19111b8e841"
+    },
+    {
+      "file": "src/app/App.css",
+      "sha256": "9ea05417c6b30746688b82066df4640e2ebb578a161f24ae6f80f3931cb23d50"
+    },
+    {
+      "file": "src/app/App.test.tsx",
+      "sha256": "87de77799326ea869b1cffc09a6659a93f344cc0a8d9c20a5e729c18ce97947d"
+    },
+    {
+      "file": "src/app/App.tsx",
+      "sha256": "3fa028d92868b76bc879837ca0acab66d8ca7866cb7c119d6f62fdd46ad2e756"
+    },
+    {
+      "file": "src/app/main.tsx",
+      "sha256": "575d9e34bd914b74d70286812a3a33d3121b075cb43723003cff0c2a64e64846"
+    },
+    {
+      "file": "src/app/runEventSelectors.ts",
+      "sha256": "c3cfc9212c6b89343178620bc728559925c238c33944ca6b88812c8831b87716"
+    },
+    {
+      "file": "src/features/building-family/art-kit/artKitContracts.ts",
+      "sha256": "7ef65bed63bc11ca7d67090d490f80a5db989785da7c05966bff1600e6d3f9ab"
+    },
+    {
+      "file": "src/features/building-family/art-kit/artKitFacadePlanSummary.ts",
+      "sha256": "414ac2c88dbfbcbae7fffe51f8d3d41969134d2acc8e3c5cc0da3874d66cd7e7"
+    },
+    {
+      "file": "src/features/building-family/art-kit/facadeModulePlanner.ts",
+      "sha256": "ed2845014dee4746b8ecb10e5cf896c59328993bf4c138f95a3005f5c8eb530f"
+    },
+    {
+      "file": "src/features/building-family/art-kit/index.ts",
+      "sha256": "53b0f7230c9f8cf71a3a1810c0e45497a0d41f7c7e1d8cd09af8fbc0d70d9201"
+    },
+    {
+      "file": "src/features/building-family/art-kit/late19cApartmentKit.ts",
+      "sha256": "82d5a87d1831c5001b0010b236ac5958c5892a70128c80f0d476418181e170b9"
+    },
+    {
+      "file": "src/features/building-family/art-kit/moduleInstanceBuilder.ts",
+      "sha256": "4716be980f53630b83dd0af7fd7f8a8f0e4346a09d22c7cc271d235b19b4b632"
+    },
+    {
+      "file": "src/features/building-family/art-kit/moduleSnapGrid.ts",
+      "sha256": "35fe9bf2b70396ed2b0a56fc9c26683cd7cf10342dd3c58e789746e780218e93"
+    },
+    {
+      "file": "src/features/building-family/compiler/bayConstruction.worker.ts",
+      "sha256": "11756a085021e9d53e3b6ff11cd380c58dbe908b863ef428b1dc01f44d28dec1"
+    },
+    {
+      "file": "src/features/building-family/compiler/bayConstructionClient.ts",
+      "sha256": "09b6ae6b775fe81535796ef528a20ddd0f31f418d77ed7578dcbc8d439cd348c"
+    },
+    {
+      "file": "src/features/building-family/compiler/bayConstructionWorkerProtocol.ts",
+      "sha256": "13e6d56e8adc89cfdd384adf05c1f25a7ef6b83b91b4f94d1a8bec479ab64bb3"
+    },
+    {
+      "file": "src/features/building-family/compiler/bayWindowGeometry.ts",
+      "sha256": "23ba98ba901c06aafda5104aab38fbbe2002c2ee7fe43ea1e1959122f5af9aa9"
+    },
+    {
+      "file": "src/features/building-family/compiler/buildingCompiler.ts",
+      "sha256": "6ddf54c5b85b536939b37c1ba6716be83ae6cbb49ad475a630132bd9bfd7c332"
+    },
+    {
+      "file": "src/features/building-family/compiler/buildingGraphBuilder.ts",
+      "sha256": "ed2e920de926979287419cf7e541a2396f41331f3be043eb4853695215f3b1ae"
+    },
+    {
+      "file": "src/features/building-family/compiler/buildingShellGeometry.ts",
+      "sha256": "d3e206bee5018885d9113f97927fd04506e5c0462e3baa85341bf85c0e4769f8"
+    },
+    {
+      "file": "src/features/building-family/compiler/compiler.worker.ts",
+      "sha256": "c0a54e974bba16cfc28d88c6c86c5e675be0573bf7a5b1141e3cd248d0914a34"
+    },
+    {
+      "file": "src/features/building-family/compiler/compilerClient.ts",
+      "sha256": "68d7e40a20ab1aaac2b83046343d94547f1229a35686dfbdc4afb89b9c937981"
+    },
+    {
+      "file": "src/features/building-family/compiler/compilerWorkerProtocol.ts",
+      "sha256": "aa03ded22ae122440d4b612f9a9e7382c521b44d7fad9f6bbc25513949f628fb"
+    },
+    {
+      "file": "src/features/building-family/compiler/compilerWorkerRuntime.ts",
+      "sha256": "9b3beeb7e7478dc2873a262c1d2b2bfde7d67a1a04c77cf736fab08e40fe7980"
+    },
+    {
+      "file": "src/features/building-family/compiler/componentGalleryBuilder.ts",
+      "sha256": "cdf7dc9decb57882e7455dd97723f4494dbc4916ca7c8cc78fbefa6f4d5c44af"
+    },
+    {
+      "file": "src/features/building-family/compiler/constructionOpeningTrimGeometry.ts",
+      "sha256": "c47d835026e64c0fda13e0ce9061c6c9e63777c629dfd67177e44cede4749307"
+    },
+    {
+      "file": "src/features/building-family/compiler/constructionStorefrontGeometry.ts",
+      "sha256": "a3fa466cccf3f5dbe2f3fc5f8a9c355a68001607ba8f2ab44a4653ca5bc53dcb"
+    },
+    {
+      "file": "src/features/building-family/compiler/constructionSurfaceProgram.ts",
+      "sha256": "efb667b97f0bc35f405553feb671ceff8767a569afe941dd25e3b042af6e7dfe"
+    },
+    {
+      "file": "src/features/building-family/compiler/evaluateBayConstruction.ts",
+      "sha256": "186cfe3f1267d79855c0363d11334e438835d7c63f4d36399d76d5228ca6b99b"
+    },
+    {
+      "file": "src/features/building-family/compiler/evaluateConstruction.ts",
+      "sha256": "3bd602d4188faff363f095dedf1248cc3a77f76a164128d3e4142775d0f1814c"
+    },
+    {
+      "file": "src/features/building-family/compiler/evaluateFacadeConstruction.ts",
+      "sha256": "2dd5adab12e5186c307a6e54a4aae33ef1441db483edb7a539072b015bf42829"
+    },
+    {
+      "file": "src/features/building-family/compiler/expanders/index.ts",
+      "sha256": "c62d242468f4bf957daf55181c738b62279f4a01c7822d78d9650f3cf9443610"
+    },
+    {
+      "file": "src/features/building-family/compiler/facadeSplitPlan.ts",
+      "sha256": "092e1e7a382677775553464189a8b2323b49ef5c6ab8673c04700400c21621aa"
+    },
+    {
+      "file": "src/features/building-family/compiler/facadeWallSubdivision.ts",
+      "sha256": "9faaca8975cdfa7687816952281ce9e98af0ba9b1401cf59976697f3d7eb721d"
+    },
+    {
+      "file": "src/features/building-family/compiler/frontTrimClearance.ts",
+      "sha256": "bd8d472e5bb956b1bb60d59699f509250a1e116bc69345b355db83508d10228d"
+    },
+    {
+      "file": "src/features/building-family/compiler/openingGeometry.ts",
+      "sha256": "0a97a6ccf1204e85a119c628166d4dcd722eafa8d18517825a1de617f9bbc316"
+    },
+    {
+      "file": "src/features/building-family/compiler/openingSlotBinding.ts",
+      "sha256": "81cada9144abbe9f64f0b12d6ade28683dc3a315a3f6c9c2eade5fc145239773"
+    },
+    {
+      "file": "src/features/building-family/compiler/primitiveGeometry.ts",
+      "sha256": "8ef63e76a9781bbb79c177613e94e8826d1452a4bc5016c04bd09087093de92f"
+    },
+    {
+      "file": "src/features/building-family/compiler/profileLibrary.ts",
+      "sha256": "b6ce70e4a7e0fa039341446f84b78a4109f3cac9878e4f3db5b2d9a22053c140"
+    },
+    {
+      "file": "src/features/building-family/compiler/profileSweepGeometry.ts",
+      "sha256": "82aca74110c39c5128fa2a7041d2e9941a40962122681ce620df22d8e7a8c5ca"
+    },
+    {
+      "file": "src/features/building-family/compiler/profiledTrimGeometry.ts",
+      "sha256": "3f6e5daeb03f69768df640b686ae5094ee810c7b691446e2b6265687927e6d4e"
+    },
+    {
+      "file": "src/features/building-family/compiler/storefrontScopeSplit.ts",
+      "sha256": "345522a27f93c750f223c06b0df9d2c36165ff27f0864b8523bc00672cc08ea4"
+    },
+    {
+      "file": "src/features/building-family/components/componentCatalogBuilder.ts",
+      "sha256": "f4aee1c81fbe83bdda53bbb124820c9f7033dfd3e7dad4189d349d6dae5836fc"
+    },
+    {
+      "file": "src/features/building-family/components/frameBuilder.ts",
+      "sha256": "9894d45113ffe059dc601c05f73a241a1ca85f6603968ec6dfe5fd940a8b39c8"
+    },
+    {
+      "file": "src/features/building-family/components/openingAssemblyBuilder.ts",
+      "sha256": "a29604fc039e027d8e834e7f139a139e64a99f9b5de5b2f0c8fe5a3024414312"
+    },
+    {
+      "file": "src/features/building-family/components/primitiveBuilders.ts",
+      "sha256": "de0d64d3a571ce70436d3b915cb5d3552be3937fe0645d7709c002f7aa7942f9"
+    },
+    {
+      "file": "src/features/building-family/components/profileSweepBuilder.ts",
+      "sha256": "193b8f58b90c6857422dda5853c8b71580efe97ebaf5531744fe4bef4a3f5a1b"
+    },
+    {
+      "file": "src/features/building-family/components/profiledTrimBuilder.ts",
+      "sha256": "73d79a72230c1ef69c7f9184cf6e1038853d233cdb2f8e09acfa1d7fbf71af03"
+    },
+    {
+      "file": "src/features/building-family/components/quoinBuilder.ts",
+      "sha256": "cd58efd6b1a5dc786aa0464d772f47eea2c2bfd9b5335cb683f18e38113e3929"
+    },
+    {
+      "file": "src/features/building-family/components/roofBuilder.ts",
+      "sha256": "98b8802e6939443799d5f4b532cdf51378ed7d598d47525f948d30f0d1960157"
+    },
+    {
+      "file": "src/features/building-family/contracts/atlasManifest.ts",
+      "sha256": "1fa6fc09d56da6e4795da049bfd35c5f7aa063b6c208ca4197a581b4a8804980"
+    },
+    {
+      "file": "src/features/building-family/contracts/bayConstructionGraph.ts",
+      "sha256": "00e5cb6bf1c73516d0c59be2d46e33838ce6de1d167e1842130c98ba389091aa"
+    },
+    {
+      "file": "src/features/building-family/contracts/buildingDocument.ts",
+      "sha256": "7d8cb88cb0fe0963f25094a7d86e976b53256949f4957fdb578728cc0cf59ac5"
+    },
+    {
+      "file": "src/features/building-family/contracts/buildingFamilySpec.ts",
+      "sha256": "36fdd468f1496f362dac1761b6cf42c7bbcdfb004b289ced2d1dd7cc6a44a7d7"
+    },
+    {
+      "file": "src/features/building-family/contracts/buildingGraph.ts",
+      "sha256": "258d07a2b00f7dc5bd4752c6eb8ca6f8a3fd5536ea93bd0abb4a2243224a02c5"
+    },
+    {
+      "file": "src/features/building-family/contracts/buildingIntent.ts",
+      "sha256": "f69c230a96e40dbca5f4680adf8b32532e8b70c03cc00a7ac16cb835c4335a83"
+    },
+    {
+      "file": "src/features/building-family/contracts/componentRecipe.ts",
+      "sha256": "49053f5f10db361ebbb3e10ba1b740e33d3bb9713036e63be1c6fd2c7cd884a0"
+    },
+    {
+      "file": "src/features/building-family/contracts/constructionGeneration.ts",
+      "sha256": "306c6d48ea3746e1536d0e30365da811fbb39943ccb695ee8e57f380620af0f0"
+    },
+    {
+      "file": "src/features/building-family/contracts/constructionOpeningEdit.ts",
+      "sha256": "7bbd1b2a80a22c748d8dc94d0f9aca7add0a889a059d744f1fefff4890d2a5cd"
+    },
+    {
+      "file": "src/features/building-family/contracts/constructionStorefront.ts",
+      "sha256": "fd9278a4a25f06734ceccc9724cc65b4f7f0048ca6b2c99ce1a0b007fac0db5b"
+    },
+    {
+      "file": "src/features/building-family/contracts/generationRun.ts",
+      "sha256": "d3abec0b6768020737a020be0cfa48322643f5c7a0869801205d21ecdc5a3b7f"
+    },
+    {
+      "file": "src/features/building-family/contracts/historicalStylePack.ts",
+      "sha256": "5b001291235fda3e2a936797eab159857990c791e6ee9b35d65087d0abaceaba"
+    },
+    {
+      "file": "src/features/building-family/contracts/index.ts",
+      "sha256": "79b84d3597abe9190b9ee384320d02e39d50fdb8240c343d34c2fd62a2b7b73c"
+    },
+    {
+      "file": "src/features/building-family/contracts/moduleInstanceSet.ts",
+      "sha256": "2ebd8dec163ed90fa175601fb5cdf71fb32b972b6380cb750089f681b8badee0"
+    },
+    {
+      "file": "src/features/building-family/contracts/runtimeBuildingIR.ts",
+      "sha256": "a7c40f8a9693ac318ea918f0d0687949021540106a8cc3d2099d0117f976feee"
+    },
+    {
+      "file": "src/features/building-family/contracts/shared.ts",
+      "sha256": "a274949f0282bcf916ed7a6cd71ab2ba44bb2e8fc6a2d9c12f320c34e4b0b50e"
+    },
+    {
+      "file": "src/features/building-family/contracts/surfaceBaseAppearance.ts",
+      "sha256": "14d4c46d32c67c55d06005aeeef7041bf08928a691a70a77920d18e72e53ed74"
+    },
+    {
+      "file": "src/features/building-family/contracts/surfaceComposition.ts",
+      "sha256": "8933635c2421b77b3768f161e8bd3785e227077cb7ee60a9ecec4d50982c4101"
+    },
+    {
+      "file": "src/features/building-family/core/buildingSeedVariation.ts",
+      "sha256": "a4ae182fa94353c478d83dda32739a43d8a41036f1ced84fe4e9205c060e6312"
+    },
+    {
+      "file": "src/features/building-family/core/canonicalJson.ts",
+      "sha256": "f935e2704a8538ac10e5bc86e73fff8a7049e3db4a010022d0f03dfc5cb6e0c3"
+    },
+    {
+      "file": "src/features/building-family/core/constructionAppearance.ts",
+      "sha256": "048be34ded15b442b58360f9209b711b1a98ea728bb931fa13d54df6ebc53f73"
+    },
+    {
+      "file": "src/features/building-family/core/constructionGenerationResolver.ts",
+      "sha256": "ab32c45952883d8d885efdec6eef8c4f9e3e5165385923b6c612e84f20c98a11"
+    },
+    {
+      "file": "src/features/building-family/core/constructionGenerationSource.ts",
+      "sha256": "b00c4ca1ffbebe5339058dc073acb933f1ce67bd1e3f70918ae64ff460de353c"
+    },
+    {
+      "file": "src/features/building-family/core/constructionOpeningEdit.ts",
+      "sha256": "1ca5dc2c4b77603ca047c31d09df0534996c2ce3a29a0747607ee9d5b15258ed"
+    },
+    {
+      "file": "src/features/building-family/core/constructionOpeningEditGraph.ts",
+      "sha256": "4fa7a75d00d25a62fb5cda4664a5184c1b037ce14e0073520bf7fc4550137e01"
+    },
+    {
+      "file": "src/features/building-family/core/constructionRecipeCatalog.ts",
+      "sha256": "24c12715cd57940cfa54904144ece5bce9e73f8cfad2dfc9fcdc16095665e8ee"
+    },
+    {
+      "file": "src/features/building-family/core/constructionStorefront.ts",
+      "sha256": "2d8a82dd90d9bbb2eb710c2c19094ab7a58796226bf0468c2fc6fe1db5e933a3"
+    },
+    {
+      "file": "src/features/building-family/core/constructionStorefrontGraph.ts",
+      "sha256": "8a12d02df4404ce2908eb0333022e7e075a2d31f9e37b2048e9990d3c2ffde2e"
+    },
+    {
+      "file": "src/features/building-family/core/constructionSurfaceAuthoring.ts",
+      "sha256": "7eba091d1e417f4555d77502bda9c4c16fefd29b62b8cf2ee45af8bd63bf35c1"
+    },
+    {
+      "file": "src/features/building-family/core/constructionWindowVocabulary.ts",
+      "sha256": "ea27ba0d31adf9097d70f4d8abde9c402363e21f366e652e5f7dcbaa607c391e"
+    },
+    {
+      "file": "src/features/building-family/core/contentHash.ts",
+      "sha256": "c971fc747448a9ac1558398fabf4e68d021cbaeb8cb779a3374d50a92607a49e"
+    },
+    {
+      "file": "src/features/building-family/core/diagnostics.ts",
+      "sha256": "10249bd7301f9836a526bd84664186a7205b09e0718b5c25decef3bcb066cafe"
+    },
+    {
+      "file": "src/features/building-family/core/invalidation.ts",
+      "sha256": "0e51d2335b4a11c61d3c6d20c628fa26e6c586626d05e5aaedf37db8f09a15c9"
+    },
+    {
+      "file": "src/features/building-family/core/resolveBuildingDocument.ts",
+      "sha256": "03521e3682b601174e7d462a1ef987a78d57dedc9944113a84fd3142a30c5ffa"
+    },
+    {
+      "file": "src/features/building-family/core/seedTree.ts",
+      "sha256": "ab5fbb5a70d13cb7de44577e6cad0a187bc73e9b7b80a268f4f606f64d9f37c4"
+    },
+    {
+      "file": "src/features/building-family/core/semanticPaths.ts",
+      "sha256": "040de458c1e5f572ede7ecb77c6b2c023b710cfb1592f25f70bb1e9efb7a0078"
+    },
+    {
+      "file": "src/features/building-family/core/specNormalizer.ts",
+      "sha256": "e5f465c37d0a7015c8f8faf39a88933f977d542d36209342e88ed008fff12f65"
+    },
+    {
+      "file": "src/features/building-family/materials/artKitMaterialSet.ts",
+      "sha256": "21852e0d7a3f958a660f032223b41d92c75f86d6eff30c00165dc293809223a3"
+    },
+    {
+      "file": "src/features/building-family/materials/artifactCache.ts",
+      "sha256": "a355d6f168f051f6a52b8aaf4970375e984daa9f521528c33336d094f6834239"
+    },
+    {
+      "file": "src/features/building-family/materials/atlasDebugExport.ts",
+      "sha256": "10d954fe7df4a9452309bd73d2c3bddff25e1f6aa6e6067454dd9c116b312fdb"
+    },
+    {
+      "file": "src/features/building-family/materials/atlasLabFixture.ts",
+      "sha256": "fb90cd5a8f69dcc3f4635c51771df3aa71efbbe83678dd9d6f911677b9b6dc27"
+    },
+    {
+      "file": "src/features/building-family/materials/atlasPacker.ts",
+      "sha256": "3a0b3eed1aa268cb497d044586559704784de739b286db1b7eee0735b98df554"
+    },
+    {
+      "file": "src/features/building-family/materials/atlasPlanner.ts",
+      "sha256": "8d7fa3fb11fc02e388bafb4a77ac4ccb4f9d9f7add1003a7f2cb0f2f94d24d7f"
+    },
+    {
+      "file": "src/features/building-family/materials/composeSurfaceTile.ts",
+      "sha256": "7a976e53739d4999b65c6b36b1eafa5050de71853aece16b03b45ee118f2a5bb"
+    },
+    {
+      "file": "src/features/building-family/materials/constructionReferenceMaterials.ts",
+      "sha256": "17c11cacc0eada7d36771477912c0060c50d71295d014bc63240a2a360d8644a"
+    },
+    {
+      "file": "src/features/building-family/materials/indexedDbArtifactPersistence.ts",
+      "sha256": "84ec093461bb77810249bfb74b427e8da70990d05a99c60339c26ec0ccdbcb9f"
+    },
+    {
+      "file": "src/features/building-family/materials/normalFromHeight.ts",
+      "sha256": "fff0f7089eea2c7abfede62f5dcbb9f2e53a2274e82115dcdeb2cf04bbc9561a"
+    },
+    {
+      "file": "src/features/building-family/materials/periodicBlend.ts",
+      "sha256": "d3dd24412957780601fd0c6b57da8706561689642f4eee4ba228b30d940327e5"
+    },
+    {
+      "file": "src/features/building-family/materials/periodicMasonryRaster.ts",
+      "sha256": "bc668a8a248d72154746054d5ec38067367163d571a14fbc0a8d6e811d724eff"
+    },
+    {
+      "file": "src/features/building-family/materials/providers/fixtureMaterialProvider.ts",
+      "sha256": "d4e3a8e9b0e89c2f8abc79cfc564b548b725a352d577b7e7ebe24704471eff75"
+    },
+    {
+      "file": "src/features/building-family/materials/providers/proceduralMaterialProvider.ts",
+      "sha256": "8129f106e7b2143f65fc92960ed5d3b394931e71985647679fe4fab4063e4151"
+    },
+    {
+      "file": "src/features/building-family/materials/remoteMaterialImageBridge.ts",
+      "sha256": "5922eb09cdd61457ece4a1856e5fdc753d52acceeb5cc82434d2bc9c80bfbe15"
+    },
+    {
+      "file": "src/features/building-family/materials/remoteMaterialOverlay.ts",
+      "sha256": "96d94fc27660694f8808b9bfba0fde6ed06b8978cff6cbe3d145ed80326901c4"
+    },
+    {
+      "file": "src/features/building-family/materials/remoteMaterialProofPacket.ts",
+      "sha256": "67aa0eae00af6c201f3c39ea796a87201652210765867a502f0dcc6aed836910"
+    },
+    {
+      "file": "src/features/building-family/materials/resolveSurfaceBindings.ts",
+      "sha256": "f8a65ebd2ca42c30a882e3672eb734af9548a0c4448c40c714f9e2c2567b834a"
+    },
+    {
+      "file": "src/features/building-family/materials/surfaceBaseAppearance.ts",
+      "sha256": "040fa37d136c428101751e9669f4ec01eebac19ea84f84814304fc9aea7787a6"
+    },
+    {
+      "file": "src/features/building-family/performance/familyBenchmarkDocumentation.ts",
+      "sha256": "6c11b643f496f9765c35b2b814bdc32b539d25876c4cf6904a7fad74d1262bac"
+    },
+    {
+      "file": "src/features/building-family/performance/familyBenchmarkProfilePacket.ts",
+      "sha256": "5207ef4981de54e515410f3ee4b4fe23aeb8a62f7f9fd39e3541e985c421d6da"
+    },
+    {
+      "file": "src/features/building-family/performance/familyBenchmarkScene.ts",
+      "sha256": "588121e4a6b5624f0fba9146eab842ca7be23f3d9bee220546ae2f82dfa34e75"
+    },
+    {
+      "file": "src/features/building-family/performance/familyOrbitBenchmarkScene.ts",
+      "sha256": "5d8b593da047714d227b5861c039e0279205ce84fd256be04a4efe08af02ded7"
+    },
+    {
+      "file": "src/features/building-family/psg/fixtures/late19cCommercialPrompt.psg.json",
+      "sha256": "99acf8084640549111e5bc7f8664b1d9dfe0ae820329c1642175da0a2d3653fa"
+    },
+    {
+      "file": "src/features/building-family/psg/localRulePromptInterpreter.ts",
+      "sha256": "7f3f9ac74f4af10acd81da0dfdf7467b9303ad3f56828790116a3ab620ec3b59"
+    },
+    {
+      "file": "src/features/building-family/psg/psgBuildingIntentAdapter.ts",
+      "sha256": "e36a7627de0842b5ef30342477632b95fef796bf8c9a75f451e6ab60d9068338"
+    },
+    {
+      "file": "src/features/building-family/qa/clayQualityGate.ts",
+      "sha256": "752334d1ef97f1388d8dbe6f73e9e3cd7389358aacf25d5eae073379e3578058"
+    },
+    {
+      "file": "src/features/building-family/qa/facadeSplitObservability.ts",
+      "sha256": "ad4e5b839495b3620a341412b9c1555ed926f877de39b8254f8f5fcbffd0be7c"
+    },
+    {
+      "file": "src/features/building-family/qa/moduleQualityReport.ts",
+      "sha256": "0bdd766331c4d4fff734883b4dce28691589ae004f1fed55e8561b04ae591cc0"
+    },
+    {
+      "file": "src/features/building-family/qa/openingLayoutComparison.ts",
+      "sha256": "ed85ff031b0a3f0c58214dcdb5561a8fe0c41be330acb5da84c50ec7bec190d7"
+    },
+    {
+      "file": "src/features/building-family/qa/periodReferenceCatalog.ts",
+      "sha256": "8cba35f0e956aad9b2218d1ec658f5642256b19cde083d2dca9ff42907d54c98"
+    },
+    {
+      "file": "src/features/building-family/qa/r1BaselineContracts.ts",
+      "sha256": "7ac25181852f2c4afe6323bbdd948ac239e879e45c29b5bca712736686ad5ddd"
+    },
+    {
+      "file": "src/features/building-family/qa/r1MasonryAppearance.ts",
+      "sha256": "9f4b2174825dc891543d8472aa081ea5bd631e1bc967d0036efe28dbbf99208a"
+    },
+    {
+      "file": "src/features/building-family/qa/r1MasonryCoverage.ts",
+      "sha256": "05a8e56037dad0ac7b869b165f205a4ebd29c307a9d588ce15f19710bb1f47e9"
+    },
+    {
+      "file": "src/features/building-family/qa/r1PeriodicSampling.ts",
+      "sha256": "3487a67b5bf2192c40f3c00292344cef2b7d18aa5ae6ee50b4c76dcfce259c6f"
+    },
+    {
+      "file": "src/features/building-family/qa/r1WallPhase.ts",
+      "sha256": "d2f675ea468dcba4c47d1ce6537fbf6cd70b6e75e1126409f3da6591bf9c6b9c"
+    },
+    {
+      "file": "src/features/building-family/qa/r1WallPhaseProduction.ts",
+      "sha256": "901ca916b1fe8132143d9b09f8cb79ace37e9993c96d1ad6b81bde7508581259"
+    },
+    {
+      "file": "src/features/building-family/qa/r1WallSeams.ts",
+      "sha256": "19e1fe34690212f21bcf6dfb733d4c9c7bb910becc436d8539176690efd7d411"
+    },
+    {
+      "file": "src/features/building-family/qa/visualQaPacket.ts",
+      "sha256": "ede76b7e2232c1014e0255578fa84b58228e5821c2b207e93578ce3580d942d9"
+    },
+    {
+      "file": "src/features/building-family/renderer-three/assemblyRendererFactory.ts",
+      "sha256": "9d25c84743cfe20f407c4b0c8c01c337b50f8fd93c23a83a42c0bf7afc53b56f"
+    },
+    {
+      "file": "src/features/building-family/renderer-three/buildingAtlasMaterialFactory.ts",
+      "sha256": "7ec8edc57fb9bd19ad881bf5117c95da20c27ed87de57391ad16d6c45db01732"
+    },
+    {
+      "file": "src/features/building-family/renderer-three/buildingAtlasTextureFactory.ts",
+      "sha256": "6931aa769b52381635ec8387bd48e1bd843f9084df8bc40ca8e1b7f729d2dd31"
+    },
+    {
+      "file": "src/features/building-family/renderer-three/buildingSceneAdapter.ts",
+      "sha256": "f63eeea40accc2c14ffd94ff382b1474ad964ba9841065e9ea3cdb48ce3c89c9"
+    },
+    {
+      "file": "src/features/building-family/renderer-three/constructionFrameSelection.ts",
+      "sha256": "2cba32c7a5fc46bf42db9d5e0a3fd632ee45e6826e77b5167770edcf79aed005"
+    },
+    {
+      "file": "src/features/building-family/renderer-three/familyRuntime.ts",
+      "sha256": "3d19d6ce556ca64084ca583fe8cca2aa41f57d0232f9df7180035f8688f588a5"
+    },
+    {
+      "file": "src/features/building-family/renderer-three/recipeGeometryFactory.ts",
+      "sha256": "cdc31545d95a672b8d640408fe217f489a3bd27264c17d9850f26510ec52e4cb"
+    },
+    {
+      "file": "src/features/building-family/renderer-three/resourceDisposal.ts",
+      "sha256": "dd77dad13234bdf369cc081990ea7dc019845a681d09e563fe059cf7fd237c93"
+    },
+    {
+      "file": "src/features/building-family/renderer-three/surfaceMaterialRuntime.ts",
+      "sha256": "f64b443e7dbbecd5657602431a4ccc145d660fec378b77630bf4bd0840e048fd"
+    },
+    {
+      "file": "src/features/building-family/renderer-three/wallAtlasGeometry.ts",
+      "sha256": "4224ddd6c63dcea3289a53fb73cb46430a111617a8dd9182153f95f36d854907"
+    },
+    {
+      "file": "src/features/building-family/state/artifactRegistry.ts",
+      "sha256": "84d382c82911f00e5e14ddee66ee32073968fbf59919a88e5e28ae23670ae2bb"
+    },
+    {
+      "file": "src/features/building-family/state/bayConstructionProject.ts",
+      "sha256": "53f70ab1c75504cb0346b0587a6b68dc105a774e2b8d1a43efa4b9dc7c4a9b88"
+    },
+    {
+      "file": "src/features/building-family/state/buildingRunController.ts",
+      "sha256": "8c1f41a678dedbcd4289e2fb76111173b34885830533184a7319d3f593b4d95d"
+    },
+    {
+      "file": "src/features/building-family/state/buildingSourceCheckpoint.ts",
+      "sha256": "bc2fad403ee01b295063e135cc286712fc6f77f93971457e74bbd9efe28dbda4"
+    },
+    {
+      "file": "src/features/building-family/state/buildingSourceCheckpointWriter.ts",
+      "sha256": "0016232163f2b16d37a746190929236b14ec44ec722f8613814f6f80fa5403c2"
+    },
+    {
+      "file": "src/features/building-family/state/buildingSourceFile.ts",
+      "sha256": "28be641ec3375d12681ef2fa832b6b73d79787d37bbf1d245324e1d3f41557b4"
+    },
+    {
+      "file": "src/features/building-family/state/buildingStore.ts",
+      "sha256": "9df203894f9190e8d56289a5734e531b06090e6b4742b65cc68b6a9f7b3712a1"
+    },
+    {
+      "file": "src/features/building-family/state/buildingSurfaceSourceFile.ts",
+      "sha256": "4fd362345902d450f82cd1690aba31adba94c11277193959c9fda9783cf5df04"
+    },
+    {
+      "file": "src/features/building-family/state/buildingSurfaceSourceRestore.ts",
+      "sha256": "82e2aa1a969b0c26aeec7d94363e939308cda7320500a169379e0011ce73c781"
+    },
+    {
+      "file": "src/features/building-family/state/completedFamilyExportBundle.ts",
+      "sha256": "3c3e9d343b5defb555b463e43522855103fe116d0ea8d36c6c5677f47ca6b0bb"
+    },
+    {
+      "file": "src/features/building-family/state/completedFamilyExportImport.ts",
+      "sha256": "51c92106c6ec4947f10018f7a47516d9ee675fc286afb47a7c6eb10aa0133a54"
+    },
+    {
+      "file": "src/features/building-family/state/completedFamilyExportVerifier.ts",
+      "sha256": "8d5de9bcb40037ff5ca81d506635466f098faf7320cf8a6e37753600e77238ee"
+    },
+    {
+      "file": "src/features/building-family/state/completedFamilyPersistence.ts",
+      "sha256": "9b9aeae7f6a702391c63b630288b091325604e8008f1631f4497e87243650a38"
+    },
+    {
+      "file": "src/features/building-family/state/constructionCheckpoint.ts",
+      "sha256": "316331801e9e1453d45f4240481b6b53b239e242f9e3a4871664dd06eb53ca4f"
+    },
+    {
+      "file": "src/features/building-family/state/constructionCheckpointWriter.ts",
+      "sha256": "5b88fa7f1e817a4cbdf51e992db27a2323df580f798e38805ca03835fdd53e34"
+    },
+    {
+      "file": "src/features/building-family/state/constructionGenerationState.ts",
+      "sha256": "139c595a6c6d84b837acbdebd5dfb9c748c450170c6b9ba8258e9e5dd099000e"
+    },
+    {
+      "file": "src/features/building-family/state/constructionHistory.ts",
+      "sha256": "e3cf999673ae1f4b0b72e6adc1de28eb36fc450f90532f2ea1388d0a5721859c"
+    },
+    {
+      "file": "src/features/building-family/state/remoteMaterialApplicationCoordinator.ts",
+      "sha256": "9b1ae25a68944be6143b3f4b4ae58277001692159a813644c768b3b177d4adde"
+    },
+    {
+      "file": "src/features/building-family/state/remoteMaterialRouteClient.ts",
+      "sha256": "714dc9d106ed63bd6ef76c3793e231cce25db742c079dbb34a9ec6e470a7ba47"
+    },
+    {
+      "file": "src/features/building-family/state/useConstructionWorkspace.ts",
+      "sha256": "299b07522898468fc0dc8cbb1eaa086cd287ef345d2b8c6b20e4f8687fd55d3d"
+    },
+    {
+      "file": "src/features/building-family/style-packs/late-19c-commercial-demo.json",
+      "sha256": "9629636da706ff3f2078e834f2fca298974675e1c7ac0034961aade8cb798699"
+    },
+    {
+      "file": "src/features/building-family/tests/ArtKitLab.test.tsx",
+      "sha256": "1db76001ac13da31552514024ba54b062f08a0eb5b48c86924b72acf1776d298"
+    },
+    {
+      "file": "src/features/building-family/tests/ArtifactTracePanel.test.tsx",
+      "sha256": "7941fe559646e51b857476ad1b0e216041e0293e984ee01035cb4400c023d8d9"
+    },
+    {
+      "file": "src/features/building-family/tests/AssemblyHall.test.tsx",
+      "sha256": "4e4802af61f2b9cb094d80738377e4495271b3c24a632a36512b74de3b5f277e"
+    },
+    {
+      "file": "src/features/building-family/tests/ComponentForge.test.tsx",
+      "sha256": "818d06c5fd115a4bab9a0d5f9367e72d8ab66cff88021d91859f9700eb0f15d9"
+    },
+    {
+      "file": "src/features/building-family/tests/ConstructionBuildingControls.test.tsx",
+      "sha256": "a19e14090353c6dc5b1be0f5af21612631ff7daabbf7292bf1839a711174c83b"
+    },
+    {
+      "file": "src/features/building-family/tests/ConstructionNodePanel.test.tsx",
+      "sha256": "cfe3261d0427defa53f0454b9cc0194c1923b9100b9f6715be1186f949b45924"
+    },
+    {
+      "file": "src/features/building-family/tests/PeriodReferenceLab.test.tsx",
+      "sha256": "027c496c31fae595c5f477f81c2ba9bdfd3945384af6c710b3fad3bf1751072d"
+    },
+    {
+      "file": "src/features/building-family/tests/SampleBuildingGallery.test.tsx",
+      "sha256": "bb559a36c5596147ed22b069733c0295e42baa73d4b0a7672ee9277aa80cb60c"
+    },
+    {
+      "file": "src/features/building-family/tests/artKitContracts.test.ts",
+      "sha256": "eca26e335f5fd8dc8e873984a44aab581010bf78b045c9c6eb5b0175f247deb1"
+    },
+    {
+      "file": "src/features/building-family/tests/artKitFacadePlanSummary.test.ts",
+      "sha256": "15978a4d2a3f42ae8c7ac03c41ff43262ba5b0ef530ef4d4725458b9a1e1e444"
+    },
+    {
+      "file": "src/features/building-family/tests/artKitMaterialSet.test.ts",
+      "sha256": "def25811716f940ebf9d90df6ae0e6a59c0bbc373fbf99b4d0453f75554cb989"
+    },
+    {
+      "file": "src/features/building-family/tests/assemblyHallFixture.test.ts",
+      "sha256": "202e7f6acebda132f6a46188b00eef835179227b9ab35c42b8fb583d7e02343d"
+    },
+    {
+      "file": "src/features/building-family/tests/assemblyRendererFactory.test.ts",
+      "sha256": "b450e9960b5fcbd0807732d7f1120baefe50e212ea60bc376a0680431ae2719a"
+    },
+    {
+      "file": "src/features/building-family/tests/atlasArtifactCache.test.ts",
+      "sha256": "50d499369ce504fb679da46f2663d95d79e6752dfb1b130bc73ab0bbfc334356"
+    },
+    {
+      "file": "src/features/building-family/tests/atlasDebugExport.test.tsx",
+      "sha256": "44785069736bae098fe1c1d695e7d3496fba905f3ce14cfc40bea8524289ce67"
+    },
+    {
+      "file": "src/features/building-family/tests/atlasLabFixture.test.ts",
+      "sha256": "63fd134330f12952697d402aabd85a07e903a48fa1e82a6be896477f7a9ab338"
+    },
+    {
+      "file": "src/features/building-family/tests/atlasPacker.test.ts",
+      "sha256": "dc890db47ab00d0e15a09de5acf54f89a0f98482638d34fa492610283b0e962a"
+    },
+    {
+      "file": "src/features/building-family/tests/atlasPlanner.test.ts",
+      "sha256": "fd47d20dfe0598f5396cf3508c7e03be1d969e282ba050777a7e0a70ab8d8534"
+    },
+    {
+      "file": "src/features/building-family/tests/bayConstructionGraph.test.ts",
+      "sha256": "ff30545f307069d94a3e0b9852774108d57031fc5dba5430ae3122870b6aff72"
+    },
+    {
+      "file": "src/features/building-family/tests/bayConstructionWorkbench.test.tsx",
+      "sha256": "8b663f669746da26c5b55ac460d437b76e244bb8c9c78dca868b0cdf28378d21"
+    },
+    {
+      "file": "src/features/building-family/tests/bayConstructionWorker.test.ts",
+      "sha256": "10257cea28eeb2aec90822b3b987c127d9ca00f9c2e3451d2020212c65958660"
+    },
+    {
+      "file": "src/features/building-family/tests/browserPngLayerDecoder.test.ts",
+      "sha256": "86dc106c7afe53c0e690a2071e1b8451591704b1b4a7e7cd30ca7cf21b551b19"
+    },
+    {
+      "file": "src/features/building-family/tests/buildingAtlasTextureFactory.test.ts",
+      "sha256": "89e7746a643fa1935e4ba10737baa4db35b399f8f81098e82e5fa60145efb8f9"
+    },
+    {
+      "file": "src/features/building-family/tests/buildingCompiler.test.ts",
+      "sha256": "510c02f192b82ef969a626750d380b89a14cc450cb741cea32ffaa3504453cb7"
+    },
+    {
+      "file": "src/features/building-family/tests/buildingCompilerWorker.test.ts",
+      "sha256": "5cc9253289c3eaa248a139f96d2174398b8ffbc715a3aae8fea9d3d8f160c23e"
+    },
+    {
+      "file": "src/features/building-family/tests/buildingConstruction.test.ts",
+      "sha256": "8a7b2aa3f45e672d640d88581b6f656837f4e0e95cc0bd9799007bb675b1d7ad"
+    },
+    {
+      "file": "src/features/building-family/tests/buildingDocument.test.ts",
+      "sha256": "cf8baec3aa09a592d539ee6f4c3a82cad8b58b246abd1386d4fec7214724278b"
+    },
+    {
+      "file": "src/features/building-family/tests/buildingFamilyRuntime.test.ts",
+      "sha256": "1b3a555612ff1746fa1b10b530f468d8cdc249daeb5912d4327947ad49c3203e"
+    },
+    {
+      "file": "src/features/building-family/tests/buildingGraphBuilder.test.ts",
+      "sha256": "3acd24a859af7dfd3de42bb90c5046c4a79ee1c237190ab508d1ba8ff4e4b337"
+    },
+    {
+      "file": "src/features/building-family/tests/buildingSceneAdapter.test.ts",
+      "sha256": "cb8aeb26ad7e5cf7dbdd16006a24d16f3422465c3f6750a1ae1759c594d76043"
+    },
+    {
+      "file": "src/features/building-family/tests/buildingSeedVariation.test.ts",
+      "sha256": "789d4dba52092a6a9435b1cce3293da163ef687e50a813538c64e99e9e38c7a4"
+    },
+    {
+      "file": "src/features/building-family/tests/buildingSourceCheckpoint.test.ts",
+      "sha256": "92284ca5e45ff0a25e64433def9f8ac7f353722ea349d938ab5f6b835e48b117"
+    },
+    {
+      "file": "src/features/building-family/tests/buildingSourceCheckpointWriter.test.ts",
+      "sha256": "2397a935dafba54b0274c5dcec69caf8cd47ed8468479e7cebf7e3922d914d19"
+    },
+    {
+      "file": "src/features/building-family/tests/buildingSourceFile.test.ts",
+      "sha256": "7328d47607a496dab08a798f5177ff58d5ff2f8b91b2395c4c56cd6b6aaea1aa"
+    },
+    {
+      "file": "src/features/building-family/tests/buildingState.test.ts",
+      "sha256": "f35ab5eb770e205402001fe17a6f1f2676a9f65eac458a414a9b2fa1a7f22ae9"
+    },
+    {
+      "file": "src/features/building-family/tests/buildingSurfaceSourceCheckpoint.test.ts",
+      "sha256": "2d802abe682e364e3c15acbceeb8857d78e920c22dfd692775fa06ad84549dda"
+    },
+    {
+      "file": "src/features/building-family/tests/buildingSurfaceSourceController.test.ts",
+      "sha256": "93d67c89d19eabe6d4a7fd34987a8928f7a6c436368356628c2b9f3e67c8f4c6"
+    },
+    {
+      "file": "src/features/building-family/tests/buildingSurfaceSourceFile.test.ts",
+      "sha256": "bdb3952e98d3e1173b492549252a8424a72bd0c9fdb4fe81ea3746503aa0f355"
+    },
+    {
+      "file": "src/features/building-family/tests/buildingSurfaceSourceRestore.test.ts",
+      "sha256": "696668ce6fc77931a823e2ba7c2654d50e8bfacfc6a0ebcc077fda3bf0360bc1"
+    },
+    {
+      "file": "src/features/building-family/tests/canonicalJson.test.ts",
+      "sha256": "05f1574a76b7a5d5b1f42adf638d87a672a0d8bc32d0930813d8c386ca407c5a"
+    },
+    {
+      "file": "src/features/building-family/tests/clayQualityGate.test.ts",
+      "sha256": "214536846f5e3020e0e7f8e135fe6330f84d0619216a431c5eb316f9799cd909"
+    },
+    {
+      "file": "src/features/building-family/tests/completedFamilyExportBundle.test.ts",
+      "sha256": "45ab265928295adf0901511ab1f9744958163aebd4c28978c4a1c42a6d9f2596"
+    },
+    {
+      "file": "src/features/building-family/tests/completedFamilyPersistence.test.ts",
+      "sha256": "20a54d00fd15508e7bc03da779a297ba965998d254069b2b430bab1b55ce1f48"
+    },
+    {
+      "file": "src/features/building-family/tests/componentCatalogBuilder.test.ts",
+      "sha256": "76f8867fe424624906c33be7cd87b8965ddc8b18883a08430f690cb3c5922edb"
+    },
+    {
+      "file": "src/features/building-family/tests/componentGalleryBuilder.test.ts",
+      "sha256": "f32c6400e6dfae03f21e46864c2aeff4dab2da5836a5410a51ac156848395333"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionCheckpoint.test.ts",
+      "sha256": "e7ccd21accad4f1cb30f99432b6d16f85c28cbe47a96e4a8cfd5b5752ae38daf"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionGenerationResolver.test.ts",
+      "sha256": "3409d9aecd98bed44629374b490829be0ef204d2f25471c222c3ba22a49a928b"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionGenerationSource.test.ts",
+      "sha256": "4698dc6c0d73d680b1f0dab1e10967b600af81290550517497dd84c12d352d85"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionGenerationState.test.ts",
+      "sha256": "a151077cd4241ad9629f4afa98124be3bc427872715a0e5f61a38450c35bae3f"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionHistory.test.ts",
+      "sha256": "5e5dba8e342ed0cb799bc9178b5c1e22dff6b1e2a4059c6c15aa4e3013652e98"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionOpeningEdit.test.ts",
+      "sha256": "97919cf64f8cb62e12f3848942e9a164c4d947518326d8f531952dd912fa090b"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionOpeningEditGeometry.test.ts",
+      "sha256": "ae3599213443224d6cdb6b858d8cbbd64aef964bc91efd65d7f693ba5982bba1"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionRecipeCatalog.test.ts",
+      "sha256": "92e44ac671c5b761b766d445f18d4e187a0fdcdf17393b2f702e1b0109d08d47"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionReferenceMaterials.test.ts",
+      "sha256": "ba761f8fee368b45222f0a45346fbafe04053b826ed9f1fb3247d55c88d05d35"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionStorefront.test.ts",
+      "sha256": "4e7c0ff6476d2e7422efeedf3808fdd5e412fbe8265a0b63bd57a8326c00d8a8"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionStorefrontGeometry.test.ts",
+      "sha256": "ff60d0278e671572a95edca9475cacfc8f1f234840e10587388c3aad76ce6ef3"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionSurfaceProgram.test.ts",
+      "sha256": "82a1a02ad3fbec56d80bef0f214fd69db8008281c97d801118db62a69175db27"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionSurfaceRuntime.test.ts",
+      "sha256": "10d81dcd4f51eca05a61b5c1a8cc9cd5207b4607b26c1fe46a80354329c8fa99"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionWindowVocabulary.test.ts",
+      "sha256": "5e55dd2cd92ee2b598103b8e0ca9d1a1c0e1cb6ed79db8c2c8149855bccf1ccb"
+    },
+    {
+      "file": "src/features/building-family/tests/contracts.test.ts",
+      "sha256": "d0dd3490de1ca6a69c0e57919e36d51da34c1e5a9e340ee7baf59cf740beb210"
+    },
+    {
+      "file": "src/features/building-family/tests/expanders.test.ts",
+      "sha256": "4ce1f88e072a60b4a2bd9ca6b93a1390356e0819a10e7689d5a18f07a009d2f3"
+    },
+    {
+      "file": "src/features/building-family/tests/facadeConstruction.test.ts",
+      "sha256": "478ea3e2b99d0128d66bb86798b14daf223d859802addf89807e1d5ce79de5df"
+    },
+    {
+      "file": "src/features/building-family/tests/facadeModulePlanner.test.ts",
+      "sha256": "6e4e99f2288fa2a2922eafbfc8c5c4e5458395cb0de33c76d67f065492d97223"
+    },
+    {
+      "file": "src/features/building-family/tests/facadeSplitObservability.test.ts",
+      "sha256": "6d4fb9123662f828f5299dd8afe7b1c4fbe768780baf8f204e4307671460afd1"
+    },
+    {
+      "file": "src/features/building-family/tests/facadeSplitPlan.test.ts",
+      "sha256": "e37be31f2fdd1d29ecc34afd7805dc6e1419049d2378efb36731fda02c59db6e"
+    },
+    {
+      "file": "src/features/building-family/tests/facadeWallSubdivision.test.ts",
+      "sha256": "625f253d9d542dbaf808fbdd8bd84d9dd78dbcab25cf427bc7c1de05510712e4"
+    },
+    {
+      "file": "src/features/building-family/tests/familyBenchmarkDocumentation.test.ts",
+      "sha256": "5addf4fe362de44d48a650c661dc3748b04e0025f0c95dff51175dd2a0b3979e"
+    },
+    {
+      "file": "src/features/building-family/tests/familyBenchmarkProfilePacket.test.ts",
+      "sha256": "68151622761ac967176f2f476e0fc001d330777afe70ee7e4a2b15a2a278a783"
+    },
+    {
+      "file": "src/features/building-family/tests/familyBenchmarkScene.test.ts",
+      "sha256": "306262ae045442be854c359ae8615cd3cea2aa7bad98a44b2371c57924780a91"
+    },
+    {
+      "file": "src/features/building-family/tests/familyOrbitBenchmarkScene.test.ts",
+      "sha256": "20e4a27e862b194241e6b5e228eb399c321b8efd2bb69f9f8d2656eb16ace128"
+    },
+    {
+      "file": "src/features/building-family/tests/frontTrimClearance.test.ts",
+      "sha256": "b6730c5c5b83b27a0b0b26c120546478b2d7c027e5576feada4a5b8231f093ea"
+    },
+    {
+      "file": "src/features/building-family/tests/indexedDbArtifactPersistence.test.ts",
+      "sha256": "5741c739d77f4984793bfb75bbaecb569abdf8aa8c4f459a5dbe1f9f8714db9d"
+    },
+    {
+      "file": "src/features/building-family/tests/invalidation.test.ts",
+      "sha256": "75552a9a4c0581065b39f39811791208f39fa6a43f98499362d7af8835615d75"
+    },
+    {
+      "file": "src/features/building-family/tests/localRulePromptInterpreter.test.ts",
+      "sha256": "3519f0276b31c4b3751041c70ecbea7e36d5b152635af0ce89846448c16fa5f5"
+    },
+    {
+      "file": "src/features/building-family/tests/moduleInstanceBuilder.test.ts",
+      "sha256": "229cd516be57dffc6bdbba47610d4cedbf07e7e261679b2fda1978c3cdccb8b2"
+    },
+    {
+      "file": "src/features/building-family/tests/moduleQualityReport.test.ts",
+      "sha256": "874ca511ce1d6614bdd08bd489bd47fca5e1a37d28e8401bd5c01f13f00b76f4"
+    },
+    {
+      "file": "src/features/building-family/tests/moduleSnapGrid.test.ts",
+      "sha256": "eb6702c892d5331ded7ca053784b578d11b1f69a573a13d9bbf61a3e32577ad4"
+    },
+    {
+      "file": "src/features/building-family/tests/openingApertureVisibility.test.ts",
+      "sha256": "0ef09f8533f9db3a6aa9821283ce278d54c3fa4f9ecf803b1712bd1975639e14"
+    },
+    {
+      "file": "src/features/building-family/tests/openingAssemblyBuilder.test.ts",
+      "sha256": "515b860cd76102dc5cf7f6270cceb152d558cffd37a8deb13df8c506aeb7e309"
+    },
+    {
+      "file": "src/features/building-family/tests/openingGeometry.test.ts",
+      "sha256": "8b8b7da7a5913348469be2b80c19b45674ad38d503317d283703bae08b3fd4d5"
+    },
+    {
+      "file": "src/features/building-family/tests/openingLayoutComparison.test.ts",
+      "sha256": "56166cbdea12109bbc970da30cbac2e88ac3f344049522fef17b4891f25c3871"
+    },
+    {
+      "file": "src/features/building-family/tests/openingSlotBinding.test.ts",
+      "sha256": "4412c1f8427fb01511fb2c906d0907ec278b49601fb5a7ae20489d01db1efe55"
+    },
+    {
+      "file": "src/features/building-family/tests/periodComparisonNotes.fixture.test.ts",
+      "sha256": "683060bbc12544ce6ae1adcae184f3f808763e9190dda861946508d02037ec9b"
+    },
+    {
+      "file": "src/features/building-family/tests/periodReferenceCatalog.test.ts",
+      "sha256": "cea0807838596df797043e970c75b9495530178437e1703d0e3dbdf5b29a3625"
+    },
+    {
+      "file": "src/features/building-family/tests/periodicMasonryIntegration.test.ts",
+      "sha256": "fb4ae730efd7baff384cbd1269c899ea870b4fc5a4065d17af1f7c55897af942"
+    },
+    {
+      "file": "src/features/building-family/tests/periodicMasonryRaster.test.ts",
+      "sha256": "69a952fd8e55ed1936851e177a5a0c72d277b74872ffcdfe86fde4b30d69a9d2"
+    },
+    {
+      "file": "src/features/building-family/tests/proceduralMaterialProvider.test.ts",
+      "sha256": "25055d8e651ebf8d413728d750b550df4f9849a5747c3ddbc64fa4016c7005bd"
+    },
+    {
+      "file": "src/features/building-family/tests/profileLibraryG7.test.ts",
+      "sha256": "e20125cd037cd22fce674d067700cb21d5fc4b10ec131b8d11d036c7be6176f4"
+    },
+    {
+      "file": "src/features/building-family/tests/profileSweepGeometry.test.ts",
+      "sha256": "a09c660ae833b179082c6313931fdda14c384526b157afa07d6fbe6bb7b74120"
+    },
+    {
+      "file": "src/features/building-family/tests/profiledTrimBuilder.test.ts",
+      "sha256": "8cb5919d2e4ac14ca20b1bd35df8260560fef965880c0a49d8ac981d93b550b3"
+    },
+    {
+      "file": "src/features/building-family/tests/profiledTrimGeometry.test.ts",
+      "sha256": "39cfa5e4459cfd8955574ded843941c2150724d262395ce9f7f8590a97b5bffa"
+    },
+    {
+      "file": "src/features/building-family/tests/psgBuildingIntentAdapter.test.ts",
+      "sha256": "6f1f3c1ffba580c7d83e30e62402a90ab334c438067a745c6ead2a380d4bd5f8"
+    },
+    {
+      "file": "src/features/building-family/tests/psgToSpec.integration.test.ts",
+      "sha256": "9bc6114d27aea283e4e3a99434697c0ac091332bb151015830c4f9d0f27b1674"
+    },
+    {
+      "file": "src/features/building-family/tests/quoinBuilder.test.ts",
+      "sha256": "14daab88e55f6445da39bcee749f7b1ffddc9409830806df0c4f5076265c4f3e"
+    },
+    {
+      "file": "src/features/building-family/tests/r1BaselineContracts.test.ts",
+      "sha256": "cccc867d9af4c85790ade1f88ddad682662d80613ecc5fc299f270044667702c"
+    },
+    {
+      "file": "src/features/building-family/tests/r1MasonryAppearance.test.ts",
+      "sha256": "f18b6bc14c6250b7273a0e4f3b6d2f49298a5971a85e62fd9b8af7c3b3542486"
+    },
+    {
+      "file": "src/features/building-family/tests/r1MasonryCoverage.test.ts",
+      "sha256": "55c098be5a25e2986c0ebe39275278274647df6a8ff174e07558f10b83868601"
+    },
+    {
+      "file": "src/features/building-family/tests/r1PeriodicSampling.test.ts",
+      "sha256": "c74529efc282e9f6210b32db9494c208fdbc57ef4d5eff5a899218a1058163b2"
+    },
+    {
+      "file": "src/features/building-family/tests/r1WallPhase.test.ts",
+      "sha256": "70e52ca3c0fa1a8b6f5cddefe275b34fc2cc68e8cc97b0e98d2202e4d5d5376e"
+    },
+    {
+      "file": "src/features/building-family/tests/r1WallPhaseProduction.test.ts",
+      "sha256": "d01a6898b8701dd67aaa8b2cc51b87fb3c96c519868b0d53b068789f379af651"
+    },
+    {
+      "file": "src/features/building-family/tests/r1WallSamplingComparison.test.ts",
+      "sha256": "78222aecaa9df5832020cb7707944fb59a1a0f3d545af9571ee765f50f83f341"
+    },
+    {
+      "file": "src/features/building-family/tests/r1WallSeams.test.ts",
+      "sha256": "630971f2e6677d431c56edb72baa1fd8359874caeadad75d25d348fccaeba5f0"
+    },
+    {
+      "file": "src/features/building-family/tests/remoteMaterialApplicationCoordinator.test.ts",
+      "sha256": "c6ff6d662f0b11e78b2a04c2667d6b0c91be0f1aa566b2261af1ae384b081635"
+    },
+    {
+      "file": "src/features/building-family/tests/remoteMaterialImageBridge.test.ts",
+      "sha256": "d2303ccbdff24f22fa808e6abc73f1230e65e81ac3d3ef55d55a602dd8cf7130"
+    },
+    {
+      "file": "src/features/building-family/tests/remoteMaterialOverlay.test.ts",
+      "sha256": "d5f50747a1c1bbf8c14909985114616789b6dcf7c267ae389b968a27e93e7bd3"
+    },
+    {
+      "file": "src/features/building-family/tests/remoteMaterialProofPacket.test.ts",
+      "sha256": "0570be8c5e6419c3cf6f7ac080c66fe363152cf42471d7d1f092218d13163586"
+    },
+    {
+      "file": "src/features/building-family/tests/remoteMaterialRouteClient.test.ts",
+      "sha256": "3fd3ce05b9e146bc793f86407aa69ca340a42f073c79345a2ad9652f8db1744d"
+    },
+    {
+      "file": "src/features/building-family/tests/resolveBuildingDocument.test.ts",
+      "sha256": "8cfc11d37ed7e2a5468d06f2458cc2d8523b95a7c1a79b3d15a6ea334f856e2b"
+    },
+    {
+      "file": "src/features/building-family/tests/resourceDisposal.test.ts",
+      "sha256": "8363d7605a61eb2edadf92b7c2d1cbfa302a738683aa26bc7f2dd01c12fbec7f"
+    },
+    {
+      "file": "src/features/building-family/tests/seedTree.test.ts",
+      "sha256": "7388fbcf658cde8c815f51e4b4562f9b6cef24dba3865a284d2ba3c7ae17d161"
+    },
+    {
+      "file": "src/features/building-family/tests/specNormalizer.test.ts",
+      "sha256": "b6a0e9dac0e7d43522eb487014698275190cd17a6c0142e5c316ef9965d2ffd3"
+    },
+    {
+      "file": "src/features/building-family/tests/storefrontScopeSplit.test.ts",
+      "sha256": "a7dce701f5a440da7aab0f080793a1d8fb2b035dd783bc9e9e6ca0cc8a8654b8"
+    },
+    {
+      "file": "src/features/building-family/tests/surfaceBaseAppearance.test.ts",
+      "sha256": "5a0f38c8668ea256d5804efa65e7c4cef7efde9fab995c5328a2c185796c6034"
+    },
+    {
+      "file": "src/features/building-family/tests/surfaceComposition.test.ts",
+      "sha256": "8eb9c93f9decd6f3f55d4bc682f0c11d3faf9036415fe96414d0f4561ed28922"
+    },
+    {
+      "file": "src/features/building-family/tests/surfaceMaterialRuntime.test.ts",
+      "sha256": "dc36997cefbdb1a97fb13a8ed3f24e55fc94808775e44d592f1a166940dffd85"
+    },
+    {
+      "file": "src/features/building-family/tests/surfaceTileComposition.test.ts",
+      "sha256": "d87dafe381a9d149a9e8dd5a0fdc4272a455a1ad6d76967487fe331954e22c06"
+    },
+    {
+      "file": "src/features/building-family/tests/useConstructionWorkspace.test.tsx",
+      "sha256": "fdbb656126c67c4e432858fd1b7526799b6a1fa639b2281316ec825a03b06d52"
+    },
+    {
+      "file": "src/features/building-family/tests/utdgResearchBrief.test.ts",
+      "sha256": "04b868f8f25be33d2f89dad828b4f97348fca0e8a1b71de46891ca511672e4b5"
+    },
+    {
+      "file": "src/features/building-family/tests/visualQaPacket.test.ts",
+      "sha256": "fa17f1e7f4868b614af1b98c6e38faade563c8d408d827b15cbbb8dfc12bd572"
+    },
+    {
+      "file": "src/features/building-family/tests/wallAtlasSampling.test.ts",
+      "sha256": "e59eb7e0940cc44ee3eca5f8eb5d12d97be552f94696a4e235a4ba680d64f348"
+    },
+    {
+      "file": "src/features/building-family/ui/ArtKitLab.tsx",
+      "sha256": "9b9a46d62084800257f679bdb3f6a609b038ab17d085c2f3d5e158722d92b552"
+    },
+    {
+      "file": "src/features/building-family/ui/ArtifactTracePanel.tsx",
+      "sha256": "c3930a61f51a17c12d0a9caf21017a27bfcca081acf1d70b78a80e7808333b09"
+    },
+    {
+      "file": "src/features/building-family/ui/AssemblyHall.tsx",
+      "sha256": "8f13c33204b93a6354814bc231cba23f0d24c14c018a9992eb72b0bec558cafb"
+    },
+    {
+      "file": "src/features/building-family/ui/AtlasLab.tsx",
+      "sha256": "9f68f8f79b6b1ea7b28d9847329f603d6729e720774d152d920052ada456805e"
+    },
+    {
+      "file": "src/features/building-family/ui/BayConstructionWorkbench.tsx",
+      "sha256": "16aad3642e9fb92b3f02540e542f40a1f2c590311793d228ef878497f0a032f7"
+    },
+    {
+      "file": "src/features/building-family/ui/ComponentForge.tsx",
+      "sha256": "7ecd804d28854642916d9c9f5f79efb77f787a912a1a87ef1338fb071a09a382"
+    },
+    {
+      "file": "src/features/building-family/ui/ConstructionBuildingControls.tsx",
+      "sha256": "0e516f37226fd402a142ef8d647a042babd19910b7ad70475ac8ec6df67a4abf"
+    },
+    {
+      "file": "src/features/building-family/ui/ConstructionGenerationPanel.tsx",
+      "sha256": "3121ed7e3436ff0a802c4abeba5a97d56e469e2dd3ea06c2622ec78b730f27c1"
+    },
+    {
+      "file": "src/features/building-family/ui/ConstructionNodePanel.tsx",
+      "sha256": "8c98cb109f404bbadb59da844e4e08922b06b2df34e65cc2ba49b662e5fce1bd"
+    },
+    {
+      "file": "src/features/building-family/ui/ConstructionSurfacePanel.tsx",
+      "sha256": "c1433f5acae5d52d68b83ee505f6f9be1acb47bbcff56b923d9dcfa5a37c1fdc"
+    },
+    {
+      "file": "src/features/building-family/ui/PeriodReferenceLab.tsx",
+      "sha256": "01904a904fa6ac3d3b91bc171dc9ed1adf5126d6f46879c961c297610649d922"
+    },
+    {
+      "file": "src/features/building-family/ui/PromptTracePanel.tsx",
+      "sha256": "5c1778e9aa031a36a94d254ef99d291e7e29dcb04020a1485e239fe76e423cc0"
+    },
+    {
+      "file": "src/features/building-family/ui/SampleBuildingGallery.tsx",
+      "sha256": "bf324ba792d7c8001c376152b22f102e58c753dad3b78aa4b29107a8431785af"
+    },
+    {
+      "file": "src/features/building-family/ui/assemblyHallFixture.ts",
+      "sha256": "795c5340886be123e971052de7bc12ee4024e548332f986587c9071d230d7286"
+    },
+    {
+      "file": "src/features/building-family/ui/bayConstructionFixture.ts",
+      "sha256": "3d9e66b790dc9c10b6cf54777f972b8d15c59db6127e836278edc716435305a5"
+    },
+    {
+      "file": "src/features/building-family/ui/browserPngLayerDecoder.ts",
+      "sha256": "f368f5e17846ddff1b14704a2052b256205bca3ec0b053c79d56d855a2ac0137"
+    },
+    {
+      "file": "src/features/building-family/ui/constructionBuildingBindings.ts",
+      "sha256": "841974e018e0332f6094261e3dfe69abe026903e2f9e46a21bed633235348093"
+    },
+    {
+      "file": "src/features/building-family/utdg/index.ts",
+      "sha256": "191076a9e48c58394fcb15312667677b7a90879d722e0b4841184b4d8be5071f"
+    },
+    {
+      "file": "src/features/building-family/utdg/textureDescriptionContracts.ts",
+      "sha256": "8b58c6d68d4d723ef0d523fc86e69b83fb804a752d5b74ad1bcaaef12d6a274d"
+    },
+    {
+      "file": "src/features/prompt-spaghetti/contracts/psgDocument.ts",
+      "sha256": "cf49e15d669f00a14b1a21abda3a9a1fde807cbef603aba91dc98c2c73d53e3d"
+    },
+    {
+      "file": "src/features/prompt-spaghetti/core/evaluatePsg.ts",
+      "sha256": "cbb9767cb92037ea95c6163fc1a8072d81d8a18a51909e7760acb22c316f1384"
+    },
+    {
+      "file": "src/features/prompt-spaghetti/core/evaluationTrace.ts",
+      "sha256": "33d5808f4d592b674b1594d090b54e5eed749cd02522b8c92089fe6b331ab373"
+    },
+    {
+      "file": "src/features/prompt-spaghetti/fixtures/legacy-v2.psg.json",
+      "sha256": "3ba99594bba596bb636429a4180ec612e1fead7b1524ecae843366ef2aa200b2"
+    },
+    {
+      "file": "src/features/prompt-spaghetti/io/exportPsg.ts",
+      "sha256": "167865b627646cbf447767cf9b3507a5261de4c6704908b8b03bc3178df806c6"
+    },
+    {
+      "file": "src/features/prompt-spaghetti/io/importPsg.ts",
+      "sha256": "fdf05224481413d5bbdb06abb5e8e75139e63f8b6cca66bda77233e4c8df8050"
+    },
+    {
+      "file": "src/features/prompt-spaghetti/tests/evaluatePsg.test.ts",
+      "sha256": "18bb2b0daafaf1abad9999eedbb3c6521b709ecaee2f3bf7d2e03fe6c531ef06"
+    },
+    {
+      "file": "src/features/prompt-spaghetti/tests/legacyV2Compatibility.test.ts",
+      "sha256": "d364dc722a083625ba0f5dd8004d468823c22bc4e4d3dfb03034d611de0ed986"
+    },
+    {
+      "file": "src/test/setup.ts",
+      "sha256": "d494b5796f05a8593031aaac07417cfc85d53778b63681fd0cdb7be136448aff"
+    },
+    {
+      "file": "src/vite-env.d.ts",
+      "sha256": "bf144e3cdae616e27b064c8c2b94b14525e220fb3facc4cb4884d21b65eb5aa5"
+    },
+    {
+      "file": "tsconfig.app.json",
+      "sha256": "2f80ce050bd3347c1aba60fa0ed4873a639288df7e7f4392191e97d4588f5ebf"
+    },
+    {
+      "file": "tsconfig.json",
+      "sha256": "c3c1a5af0c9ed5727b295bd39076550c6a48a7a7d8a79eb29adc4e6c370830f0"
+    },
+    {
+      "file": "tsconfig.node.json",
+      "sha256": "effd4fa5d673af5bfc0a9f3d78e5345c1d0a9ab0fb3a75218104e1adb067312c"
+    },
+    {
+      "file": "vite.config.ts",
+      "sha256": "1e354b5e3f54acaeb536201706983c8edd17b6981d3e381f30769c42d683a9c3"
+    },
+    {
+      "file": "vitest.config.ts",
+      "sha256": "ef7cfb763835181b9f1f9e636c2f3bd911dc41a37ba334435da2625a0ee9f113"
+    },
+    {
+      "file": "src/features/building-family/ui/ConstructionOpeningControls.tsx",
+      "sha256": "e9761a955ec1a1ffc6bc499f4216c90dbd8c42901ce7e9e700ad54fe9f8e1367"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionOpeningControls.test.tsx",
+      "sha256": "d4810a7c3890d6da581c1140842d2d893b5294d228dfad1435c9007d6f4ac426"
+    }
+  ],
+  "state": [
+    {
+      "mode": "no-normal",
+      "drawnMaps": 4,
+      "drawnNormalMaps": 0,
+      "shadowLights": 1
+    },
+    {
+      "mode": "no-textures",
+      "drawnMaps": 0,
+      "drawnNormalMaps": 0,
+      "shadowLights": 1
+    },
+    {
+      "mode": "no-shadows",
+      "drawnMaps": 4,
+      "drawnNormalMaps": 4,
+      "shadowLights": 0
+    },
+    {
+      "mode": "clay-no-shadows",
+      "drawnMaps": 0,
+      "drawnNormalMaps": 0,
+      "shadowLights": 0
+    }
+  ],
+  "captures": [
+    {
+      "name": "whole-textured",
+      "camera": {
+        "position": [
+          16.515113244667788,
+          12.581690997216565,
+          -26.229885741531188
+        ],
+        "projection": [
+          2.391049314513554,
+          0,
+          0,
+          0,
+          0,
+          2.6050890646938014,
+          0,
+          0,
+          0,
+          0,
+          -1.0014981273793513,
+          -1,
+          0,
+          0,
+          -0.20014981273793514,
+          0
+        ],
+        "inverse": [
+          -0.8462328400897506,
+          -0.09758612979555839,
+          0.5238004654686359,
+          0,
+          4.1633363423443395e-17,
+          0.9830844974585317,
+          0.18315258899809822,
+          0,
+          -0.5328132696861398,
+          0.15498973555765147,
+          -0.8319183863325385,
+          0,
+          -1.476596622751459e-14,
+          -6.691856331707352,
+          -32.776117504719984,
+          1
+        ]
+      },
+      "sha256": "3f23d738f62119640f00c15b79f1cbb48d2d86df7bcec08193b934e745b3a38b",
+      "nativePixelHash": "47f60f2d1e673912f8d4cce2d11376748fcc7ad529b735696aa427ae3c8ac8e2",
+      "nativeFrame": {
+        "camera": {
+          "fov": 42,
+          "aspect": 1.0895170789163722,
+          "projection": [
+            2.391049314513554,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0014981273793513,
+            -1,
+            0,
+            0,
+            -0.20014981273793514,
+            0
+          ],
+          "inverse": [
+            -0.8462328400897506,
+            -0.09758612979555839,
+            0.5238004654686359,
+            0,
+            4.1633363423443395e-17,
+            0.9830844974585317,
+            0.18315258899809822,
+            0,
+            -0.5328132696861398,
+            0.15498973555765147,
+            -0.8319183863325385,
+            0,
+            -1.476596622751459e-14,
+            -6.691856331707352,
+            -32.776117504719984,
+            1
+          ]
+        },
+        "lights": [
+          {
+            "type": "AmbientLight",
+            "intensity": 0.12,
+            "position": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "HemisphereLight",
+            "intensity": 0.75,
+            "position": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 2.8,
+            "position": [
+              14.695999622344972,
+              29.518999576568604,
+              -17.36799955368042
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 0.35,
+            "position": [
+              -17.36799955368042,
+              18.830999851226807,
+              9.351999759674072
+            ]
+          }
+        ],
+        "sourceGraphHash": "525a50b616e9a0a5392895e0a2a6783a3098dbf84cd74570e2a7590ddd1385c6",
+        "frame": 8
+      }
+    },
+    {
+      "name": "sill-textured",
+      "camera": {
+        "position": [
+          0.4142557706708192,
+          6.174374540502921,
+          -9.201465009967547
+        ],
+        "projection": [
+          2.391049314513554,
+          0,
+          0,
+          0,
+          0,
+          2.6050890646938014,
+          0,
+          0,
+          0,
+          0,
+          -1.0014981273793513,
+          -1,
+          0,
+          0,
+          -0.20014981273793514,
+          0
+        ],
+        "inverse": [
+          -0.8462328400897505,
+          -0.09758612979555832,
+          0.5238004654686355,
+          0,
+          1.3877787807814457e-17,
+          0.9830844974585317,
+          0.18315258899809814,
+          0,
+          -0.5328132696861394,
+          0.15498973555765141,
+          -0.8319183863325383,
+          0,
+          -4.552105820525078,
+          -4.603373646227972,
+          -9.002707971025012,
+          1
+        ]
+      },
+      "sha256": "e11f0429b9bbdce4cdb57c6136c99f9318dd8ed5caf05bc88d3b66eb2e78b59a",
+      "nativePixelHash": "f2158ac990eb36aa1623124419d5bae3dd64fbe87f8fc41490b56e241443a48d",
+      "nativeFrame": {
+        "camera": {
+          "fov": 42,
+          "aspect": 1.0895170789163722,
+          "projection": [
+            2.391049314513554,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0014981273793513,
+            -1,
+            0,
+            0,
+            -0.20014981273793514,
+            0
+          ],
+          "inverse": [
+            -0.8462328400897505,
+            -0.09758612979555832,
+            0.5238004654686355,
+            0,
+            1.3877787807814457e-17,
+            0.9830844974585317,
+            0.18315258899809814,
+            0,
+            -0.5328132696861394,
+            0.15498973555765141,
+            -0.8319183863325383,
+            0,
+            -4.552105820525078,
+            -4.603373646227972,
+            -9.002707971025012,
+            1
+          ]
+        },
+        "lights": [
+          {
+            "type": "AmbientLight",
+            "intensity": 0.12,
+            "position": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "HemisphereLight",
+            "intensity": 0.75,
+            "position": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 2.8,
+            "position": [
+              14.695999622344972,
+              29.518999576568604,
+              -17.36799955368042
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 0.35,
+            "position": [
+              -17.36799955368042,
+              18.830999851226807,
+              9.351999759674072
+            ]
+          }
+        ],
+        "sourceGraphHash": "525a50b616e9a0a5392895e0a2a6783a3098dbf84cd74570e2a7590ddd1385c6",
+        "frame": 10
+      }
+    },
+    {
+      "name": "trim-end-textured",
+      "camera": {
+        "position": [
+          1.8322364232276134,
+          6.174374540502921,
+          -5.249013363902619
+        ],
+        "projection": [
+          2.391049314513554,
+          0,
+          0,
+          0,
+          0,
+          2.6050890646938014,
+          0,
+          0,
+          0,
+          0,
+          -1.0014981273793513,
+          -1,
+          0,
+          0,
+          -0.20014981273793514,
+          0
+        ],
+        "inverse": [
+          0.31425741824369763,
+          -0.17387367750215282,
+          0.9332792826108822,
+          0,
+          -6.938893903907228e-18,
+          0.9830844974585317,
+          0.18315258899809805,
+          0,
+          -0.9493378087271178,
+          -0.057557059763191365,
+          0.3089415960867211,
+          0,
+          -5.558880732842246,
+          -6.053471983195023,
+          -1.2192024106558434,
+          1
+        ]
+      },
+      "sha256": "08a8ac3ca7baf8d1506232c0313795bb23181216b8e121e6d3855df6e545986d",
+      "nativePixelHash": "56f5d7bd605b406fbbdcd5d16438ecf5d41802af2f2eff4060e1cf11da115586",
+      "nativeFrame": {
+        "camera": {
+          "fov": 42,
+          "aspect": 1.0895170789163722,
+          "projection": [
+            2.391049314513554,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0014981273793513,
+            -1,
+            0,
+            0,
+            -0.20014981273793514,
+            0
+          ],
+          "inverse": [
+            0.31425741824369763,
+            -0.17387367750215282,
+            0.9332792826108822,
+            0,
+            -6.938893903907228e-18,
+            0.9830844974585317,
+            0.18315258899809805,
+            0,
+            -0.9493378087271178,
+            -0.057557059763191365,
+            0.3089415960867211,
+            0,
+            -5.55985457338961,
+            -6.053471957689437,
+            -1.2192025475588835,
+            1
+          ]
+        },
+        "lights": [
+          {
+            "type": "AmbientLight",
+            "intensity": 0.12,
+            "position": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "HemisphereLight",
+            "intensity": 0.75,
+            "position": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 2.8,
+            "position": [
+              14.695999622344972,
+              29.518999576568604,
+              -17.36799955368042
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 0.35,
+            "position": [
+              -17.36799955368042,
+              18.830999851226807,
+              9.351999759674072
+            ]
+          }
+        ],
+        "sourceGraphHash": "525a50b616e9a0a5392895e0a2a6783a3098dbf84cd74570e2a7590ddd1385c6",
+        "frame": 129
+      }
+    },
+    {
+      "name": "sill-no-normal",
+      "camera": {
+        "position": [
+          1.8322364232276134,
+          6.174374540502921,
+          -5.249013363902619
+        ],
+        "projection": [
+          2.391049314513554,
+          0,
+          0,
+          0,
+          0,
+          2.6050890646938014,
+          0,
+          0,
+          0,
+          0,
+          -1.0014981273793513,
+          -1,
+          0,
+          0,
+          -0.20014981273793514,
+          0
+        ],
+        "inverse": [
+          0.3145289149698861,
+          -0.1738572091347617,
+          0.933190887482158,
+          0,
+          -8.326672684688672e-17,
+          0.9830844974585315,
+          0.18315258899809803,
+          0,
+          -0.9492478926222937,
+          -0.05760678509149734,
+          0.30920850030934777,
+          0,
+          -5.5589062081969045,
+          -6.053763166050391,
+          -1.2176394660499095,
+          1
+        ]
+      },
+      "sha256": "35b75f7b51240949104a7752cbd97b28be95a92a70e99cc62896f03aae0d62c4",
+      "nativePixelHash": "ccb2a98dc1c32ce9333e9f828da6ad16bf523f411b428228e8d87128f8fcd461",
+      "nativeFrame": {
+        "camera": {
+          "fov": 42,
+          "aspect": 1.0895170789163722,
+          "projection": [
+            2.391049314513554,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0014981273793513,
+            -1,
+            0,
+            0,
+            -0.20014981273793514,
+            0
+          ],
+          "inverse": [
+            0.3145289149698861,
+            -0.1738572091347617,
+            0.933190887482158,
+            0,
+            -8.326672684688672e-17,
+            0.9830844974585315,
+            0.18315258899809803,
+            0,
+            -0.9492478926222937,
+            -0.05760678509149734,
+            0.30920850030934777,
+            0,
+            -5.5589062081969045,
+            -6.053763166050391,
+            -1.2176394660499095,
+            1
+          ]
+        },
+        "lights": [
+          {
+            "type": "AmbientLight",
+            "intensity": 0.12,
+            "position": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "HemisphereLight",
+            "intensity": 0.75,
+            "position": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 2.8,
+            "position": [
+              14.695999622344972,
+              29.518999576568604,
+              -17.36799955368042
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 0.35,
+            "position": [
+              -17.36799955368042,
+              18.830999851226807,
+              9.351999759674072
+            ]
+          }
+        ],
+        "sourceGraphHash": "525a50b616e9a0a5392895e0a2a6783a3098dbf84cd74570e2a7590ddd1385c6",
+        "frame": 130
+      }
+    },
+    {
+      "name": "sill-no-textures",
+      "camera": {
+        "position": [
+          1.8322364232276134,
+          6.174374540502921,
+          -5.249013363902619
+        ],
+        "projection": [
+          2.391049314513554,
+          0,
+          0,
+          0,
+          0,
+          2.6050890646938014,
+          0,
+          0,
+          0,
+          0,
+          -1.0014981273793513,
+          -1,
+          0,
+          0,
+          -0.20014981273793514,
+          0
+        ],
+        "inverse": [
+          0.3145289149698861,
+          -0.1738572091347617,
+          0.933190887482158,
+          0,
+          -8.326672684688672e-17,
+          0.9830844974585315,
+          0.18315258899809803,
+          0,
+          -0.9492478926222937,
+          -0.05760678509149734,
+          0.30920850030934777,
+          0,
+          -5.5589062081969045,
+          -6.053763166050391,
+          -1.2176394660499095,
+          1
+        ]
+      },
+      "sha256": "0a1c042d758f45a336372d7f343ef9435d864d971fd60fadb0d7ffdb39229cbb",
+      "nativePixelHash": "bbeecbc2fe66e4342cd54b10dfc55f568e25e3b349963b66fa0857257ea124d2",
+      "nativeFrame": {
+        "camera": {
+          "fov": 42,
+          "aspect": 1.0895170789163722,
+          "projection": [
+            2.391049314513554,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0014981273793513,
+            -1,
+            0,
+            0,
+            -0.20014981273793514,
+            0
+          ],
+          "inverse": [
+            0.3145289149698861,
+            -0.1738572091347617,
+            0.933190887482158,
+            0,
+            -8.326672684688672e-17,
+            0.9830844974585315,
+            0.18315258899809803,
+            0,
+            -0.9492478926222937,
+            -0.05760678509149734,
+            0.30920850030934777,
+            0,
+            -5.5589062081969045,
+            -6.053763166050391,
+            -1.2176394660499095,
+            1
+          ]
+        },
+        "lights": [
+          {
+            "type": "AmbientLight",
+            "intensity": 0.12,
+            "position": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "HemisphereLight",
+            "intensity": 0.75,
+            "position": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 2.8,
+            "position": [
+              14.695999622344972,
+              29.518999576568604,
+              -17.36799955368042
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 0.35,
+            "position": [
+              -17.36799955368042,
+              18.830999851226807,
+              9.351999759674072
+            ]
+          }
+        ],
+        "sourceGraphHash": "525a50b616e9a0a5392895e0a2a6783a3098dbf84cd74570e2a7590ddd1385c6",
+        "frame": 131
+      }
+    },
+    {
+      "name": "sill-no-shadows",
+      "camera": {
+        "position": [
+          1.8322364232276134,
+          6.174374540502921,
+          -5.249013363902619
+        ],
+        "projection": [
+          2.391049314513554,
+          0,
+          0,
+          0,
+          0,
+          2.6050890646938014,
+          0,
+          0,
+          0,
+          0,
+          -1.0014981273793513,
+          -1,
+          0,
+          0,
+          -0.20014981273793514,
+          0
+        ],
+        "inverse": [
+          0.3145289149698861,
+          -0.1738572091347617,
+          0.933190887482158,
+          0,
+          -8.326672684688672e-17,
+          0.9830844974585315,
+          0.18315258899809803,
+          0,
+          -0.9492478926222937,
+          -0.05760678509149734,
+          0.30920850030934777,
+          0,
+          -5.5589062081969045,
+          -6.053763166050391,
+          -1.2176394660499095,
+          1
+        ]
+      },
+      "sha256": "4fa0cd841c683138d550bd1a0a89c968f9e7c19a65f815af150e63bddc56aa61",
+      "nativePixelHash": "60338b52aba3a0fddbb919464fbe89c97dcd2734c1fc8abd3e8830c6b3ffb634",
+      "nativeFrame": {
+        "camera": {
+          "fov": 42,
+          "aspect": 1.0895170789163722,
+          "projection": [
+            2.391049314513554,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0014981273793513,
+            -1,
+            0,
+            0,
+            -0.20014981273793514,
+            0
+          ],
+          "inverse": [
+            0.3145289149698861,
+            -0.1738572091347617,
+            0.933190887482158,
+            0,
+            -8.326672684688672e-17,
+            0.9830844974585315,
+            0.18315258899809803,
+            0,
+            -0.9492478926222937,
+            -0.05760678509149734,
+            0.30920850030934777,
+            0,
+            -5.5589062081969045,
+            -6.053763166050391,
+            -1.2176394660499095,
+            1
+          ]
+        },
+        "lights": [
+          {
+            "type": "AmbientLight",
+            "intensity": 0.12,
+            "position": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "HemisphereLight",
+            "intensity": 0.75,
+            "position": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 2.8,
+            "position": [
+              14.695999622344972,
+              29.518999576568604,
+              -17.36799955368042
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 0.35,
+            "position": [
+              -17.36799955368042,
+              18.830999851226807,
+              9.351999759674072
+            ]
+          }
+        ],
+        "sourceGraphHash": "525a50b616e9a0a5392895e0a2a6783a3098dbf84cd74570e2a7590ddd1385c6",
+        "frame": 132
+      }
+    },
+    {
+      "name": "sill-clay-no-shadows",
+      "camera": {
+        "position": [
+          1.8322364232276134,
+          6.174374540502921,
+          -5.249013363902619
+        ],
+        "projection": [
+          2.391049314513554,
+          0,
+          0,
+          0,
+          0,
+          2.6050890646938014,
+          0,
+          0,
+          0,
+          0,
+          -1.0014981273793513,
+          -1,
+          0,
+          0,
+          -0.20014981273793514,
+          0
+        ],
+        "inverse": [
+          0.3145289149698861,
+          -0.1738572091347617,
+          0.933190887482158,
+          0,
+          -8.326672684688672e-17,
+          0.9830844974585315,
+          0.18315258899809803,
+          0,
+          -0.9492478926222937,
+          -0.05760678509149734,
+          0.30920850030934777,
+          0,
+          -5.5589062081969045,
+          -6.053763166050391,
+          -1.2176394660499095,
+          1
+        ]
+      },
+      "sha256": "d43a9f0ae459e899e0a208770499385affa2a16aa127897e4ce8f28c0bdd1af6",
+      "nativePixelHash": "d62115ce8a8e8e65d9f8cb963cf5d060b4cae5f86d52970ad38f45dba7ef84ae",
+      "nativeFrame": {
+        "camera": {
+          "fov": 42,
+          "aspect": 1.0895170789163722,
+          "projection": [
+            2.391049314513554,
+            0,
+            0,
+            0,
+            0,
+            2.6050890646938014,
+            0,
+            0,
+            0,
+            0,
+            -1.0014981273793513,
+            -1,
+            0,
+            0,
+            -0.20014981273793514,
+            0
+          ],
+          "inverse": [
+            0.3145289149698861,
+            -0.1738572091347617,
+            0.933190887482158,
+            0,
+            -8.326672684688672e-17,
+            0.9830844974585315,
+            0.18315258899809803,
+            0,
+            -0.9492478926222937,
+            -0.05760678509149734,
+            0.30920850030934777,
+            0,
+            -5.5589062081969045,
+            -6.053763166050391,
+            -1.2176394660499095,
+            1
+          ]
+        },
+        "lights": [
+          {
+            "type": "AmbientLight",
+            "intensity": 0.12,
+            "position": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "HemisphereLight",
+            "intensity": 0.75,
+            "position": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 2.8,
+            "position": [
+              14.695999622344972,
+              29.518999576568604,
+              -17.36799955368042
+            ]
+          },
+          {
+            "type": "DirectionalLight",
+            "intensity": 0.35,
+            "position": [
+              -17.36799955368042,
+              18.830999851226807,
+              9.351999759674072
+            ]
+          }
+        ],
+        "sourceGraphHash": "525a50b616e9a0a5392895e0a2a6783a3098dbf84cd74570e2a7590ddd1385c6",
+        "frame": 133
+      }
+    }
+  ],
+  "draws": [
+    {
+      "label": "opened-source",
+      "hash": "525a50b616e9a0a5392895e0a2a6783a3098dbf84cd74570e2a7590ddd1385c6",
+      "compiler": "7cb2e879cb657cc7d38ccef59f5f68955291dff0eddd6d5569c02f851975c9ce",
+      "semantics": {
+        "building/authored-building/node/wall/facade/wall": "d4fd7a82ad02a1f34465ecea9254944db3c8054df257dc3387b25ac5a453041a",
+        "building/authored-building/node/wall/facade/right/wall": "09b89d9fead011b75b7cf3d06d5f0f5de4fdf211fa3473c6108ebc702bf54512",
+        "building/authored-building/node/wall/facade/rear/wall": "92ee0cfab4b07796d9a00196f961926653dea91607d744ab22c4b6ec748a29be",
+        "building/authored-building/node/wall/facade/left/wall": "8fff7b002752a6b93549eb03b308db2de3719607a977990c48a193f424e460f5",
+        "building/authored-building/node/door/facade/floor/0/bay/1/frame": "962c39aa742daf2146626a5ef532e5f2ad602cb888984b2f08fd351b2309ad80",
+        "building/authored-building/node/door/facade/floor/0/bay/1/leaf": "60514f09b9bb7c49bcafb0f6a7431e729761485e25fa3ea183f9f6b3e92fb1c4",
+        "building/authored-building/node/door/facade/floor/0/bay/1/hardware": "42e64a460908f1f87921b7155a3793799ffcd3e38e586917617f68031e1b869b",
+        "building/authored-building/node/door/facade/floor/0/bay/1/glass": "2b18db40589a4ae42917f88f6e0a26ade7d4561cb157aa41481bcde7374352cf",
+        "building/authored-building/node/door/facade/floor/0/bay/1/trim": "cccb97e288f2d3976f4725cc678deb5b6f9dc34fadc0625ad6fa3d0c9a92a8f7",
+        "building/authored-building/node/bands/building/band.3.7": "32ab4d5b05b46a05b9afba9870ae739235301a82f733dfa26788dafbdd0c5483",
+        "building/authored-building/node/bands/building/band.7.2": "832896254da77d946265cc7eabb36c7ae937c81ea44a0f2752bc832353122e2f",
+        "building/authored-building/node/roof/building/roof": "2c6777bbcf81a9177ba104fd23f120129d0c7bd70e04e869ea7b7e56c83f6bc6",
+        "building/authored-building/node/roof/building/parapet": "b9334eb89f54e0438e2c2314b8f6aed65534c6773788297dc04a73f8bdf9ec21",
+        "building/authored-building/node/roof/building/cornice": "5d46dff9b8ba875847cad4fd68a6db4fa55406f2e06d82e91308396994947117",
+        "building/authored-building/node/window/facade/floor/0/bay/0/frame": "2b682998e0acea84c6e2f47cf43a02678e6b5d9ffc6806eeaf4fd94d22bc215b",
+        "building/authored-building/node/window/facade/floor/0/bay/2/frame": "7fecd5a44ec566d32562a7f4d9a2352273f006b501c60575bb9ff08bcf2ecd00",
+        "building/authored-building/node/window/facade/floor/0/bay/3/frame": "091bf0d16ce0d742eaf916c993e2632c2e1308f05e50e4dfd38b0fc30eef6766",
+        "building/authored-building/node/window/facade/floor/0/bay/0/glass": "e96aa7cc6430a9e5bb99d6e43ce40575d5c31c84962c9727882ee5d141b8d037",
+        "building/authored-building/node/window/facade/floor/0/bay/2/glass": "37a864971a26e4f88f82617542a86b37979876abe5be6a32e9ad77804cc49c9c",
+        "building/authored-building/node/window/facade/floor/0/bay/3/glass": "933aaf8aaa0a92cc184a059173b2cf671da7f29ce7ec3983f53393fd638e3ef0",
+        "building/authored-building/node/window/facade/floor/0/bay/0/trim": "a017982a72261ba9be035a0b6e2b8edd604eff7602ee5dd43f5d3335bca43064",
+        "building/authored-building/node/window/facade/floor/0/bay/2/trim": "2e79450ff5a8f83b4e0e5df507e82c9f2b40b287cddbe4e3d267247736909611",
+        "building/authored-building/node/window/facade/floor/0/bay/3/trim": "2af48021ff2878495397866b571d8437bd42f9a48181b02accc99c3d5c0a0620",
+        "building/authored-building/node/window/facade/floor/1/bay/0/frame": "b46e0627abe8e2ba368de01a53c155da4bd467d91e60ac965116c534b017feff",
+        "building/authored-building/node/window/facade/floor/1/bay/1/frame": "6259abd94901b3ef72cccfb1ae6bad5a5e057d945f76328302bdeb971a2beaf7",
+        "building/authored-building/node/window/facade/floor/1/bay/2/frame": "c5be7054b1a222afb8dbf77f07f4bac44063a1ee657755908ee3b58c9d6e2051",
+        "building/authored-building/node/window/facade/floor/1/bay/3/frame": "113075c067a2cb2213bbd1e9fe6cb468f42592ee1f3116e459bd33b94db7f13c",
+        "building/authored-building/node/window/facade/floor/2/bay/0/frame": "9249d14f68b0ae2aad72af91d89fe9ecde125c33e3e1cb9e76a32bb597eaf78e",
+        "building/authored-building/node/window/facade/floor/2/bay/2/frame": "cf98392cf18384d41996a11764a3fd71b32a7734d67ee16d473429613f0b2213",
+        "building/authored-building/node/window/facade/floor/2/bay/3/frame": "303cb39411fadf3363692178f138358fa2392f59f5722c718365071e27f580c4",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/frame": "0be480dd3a8b494fa81bbf6df12a2f9c159ec147174de035e7e14f1da2b50034",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/frame": "d788c3089c11478591e7628db47567036265f14afaa781efa5dcfe555384c0fc",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/frame": "6b185e0530646bd233fb13302a71ce6d1bb72e1a766395dbff7ae0a63a0ae012",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/frame": "188f4586e39b9ce999f6cc7148bd4175df6bf2d485426de2116e85afbfb096b9",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/frame": "31f586903213b3a5d1ec4a9d4640a1997447df0ce2da5be5f22ce9efef22fae2",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/frame": "9cc877149ef1e1df37dbe6324860d2ff7891feeb2ef97bfa3010c9750823d9f5",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/frame": "e09a05ab3c46c2b0dae6231a1efb46aef08049ccb65292f809a330500aedefca",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/frame": "52d9636b7cfc9ba3754649252bb538089c458919f2fdb83bb4d8e13887847351",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/frame": "f53cb8b134eefe858ef56013522b8f9e83bdb5f2c52809106c4259c3bdb16a2a",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/frame": "327fcc5c7583f07d16413fb4c215bf2d008f9c35dfeaa37b46ac68909a2eba51",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/frame": "ff13ffe18b2662cbdf0041c246d08000d36e2ba1bcd2cafd0b09b5a48a257f95",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/frame": "4d41f2833735b89162b3c6eca4d83b6ddd8139b7f64f88d8326c6cc024445e23",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/frame": "446224d3622e1a4ad8cbd364a221a62b6cc998c6180226e237f67508727c3328",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/frame": "b44a57be85c628da5e57588fc57bcb563e96b71b45503b09751e2b75a866e92a",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/frame": "c80e8827878473a3cc709066c7ad3aaa080d1e99ab08291d2959bf9e94257982",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/frame": "90202968c05af8203444fddb5c22f85299fa3bc137ee2b1005021baeebdceebf",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/frame": "89a79cbc39f8babe51bead490f54639952086ac6ed6fe3e79aeb79e026fcb97c",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/frame": "35d656246853959c5274a4c0aed9b8203add9ac75c44fa11a4ccdba661d5a19d",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/frame": "00622b08e20ea13d39f7febc20c3b222fa0b99fed2038fe17e26fcbebf5dd5dd",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/frame": "41de04fdf491b9a9035fb04ee331bf972a4955ffd2c07cc201cef87485cee13d",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/frame": "0facf1676dce88efdc8b05886959ef3a4a87613584a52c087221856ca85fe88c",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/frame": "c692a4a7570c8f715e98a32cbe7533963fe3688186b055285dc3a9d6104c3db8",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/frame": "a46d85ad2331d5671c245184990dac0306e42f8a826c806ac5851685a3360b4b",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/frame": "952fdd146cfab6b0b24f566b052b629d321890860fd3264b9f48cef0b99c2604",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/frame": "82ea1df5e0cf3c78ab29b7bcdacf728eaf62342d8f85c38e4c60dfac7b5b0506",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/frame": "ceb5c96f43f1697c1d4d33705e96789e95d2ccf933b3ef39682d0476f32b3104",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/frame": "a973d5c5f69fb73d3e26821e226e21e93c15053074e6b871682662b454523faa",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/frame": "7fceba210c633a15057f0ddf70d661f627507ca44761c9a2cf47130418da1fee",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/frame": "4e4ebcd4d5ce5a1394f4bb3753a257df1740c957b1ebe380a747ebd633b0cbb4",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/frame": "f55ba8cea3c5e13dc9d2c5097ebc84df96875216d5c26926b14aa6cc325c1202",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/frame": "2ab448a36959066f87be6d02b67d2f52abeb7be9c13b567325c1baf9d9fd2d89",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/frame": "f90048d46fb9f97a4f4bc6fbd9f9525768d44677b2985bf026eb5e2cd5d055e0",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/frame": "81f4f351f9d35a3cd9555dfd97d3fd5a2b3fdd5bc146a9a5de99aba04e3403c0",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/frame": "94757596536077b249f8abfc65266a3edd8325f67e4a0ebf31dc62d6abe53b9f",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/frame": "c50ae11fd30f4e1578255546980cff636a5ad5d37adf24fb65001f30ccad5b70",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/frame": "cb6dadde6f8ce4632f64ab76642f37d24ce8939d1d4fbfdd046bc7e95dd272e2",
+        "building/authored-building/node/window/facade/floor/1/bay/0/glass": "b4f312b016c6fd5b05bf24bcd8451f3d8f648f0b318b6785a86b162585b18f51",
+        "building/authored-building/node/window/facade/floor/1/bay/1/glass": "bdc61bf53698b87e894a077639912f939eafc2d3920ef43c468ba21fc0041513",
+        "building/authored-building/node/window/facade/floor/1/bay/2/glass": "61d29689da2308b2a7ebf52d98e7dcfcfe5df41539f3698e5e00d2228b3e8d3c",
+        "building/authored-building/node/window/facade/floor/1/bay/3/glass": "5288f511598bd36b30f611f0f5dbdab6a1c0c879166b73bfeeb0793dcf47188c",
+        "building/authored-building/node/window/facade/floor/2/bay/0/glass": "2ce5e4016f8bfc06507e8121592a2245a960dd6f7734938bcd89c0037dc64a7f",
+        "building/authored-building/node/window/facade/floor/2/bay/2/glass": "0bfd83519becc6bad510efb29b8a9c497fc98ab317666e2261991a9d86c7ba5e",
+        "building/authored-building/node/window/facade/floor/2/bay/3/glass": "eaed40d8788d336174d09730d56976431581298d3b3d3a2f80a566fb9bcb2adf",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/glass": "dac8fef69e2db9a8a4eaab9717fdc3cf805852b6f43cb035747e34151d3a9970",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/glass": "01966dce2703dc395327ed14f48af0ac22c0fe4348c0e4f680f37d3f1909fd65",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/glass": "e3486a9b3c7cdf9e1c7994fe731e85d15d80711cb4d55015fc9c3e7a087c1f2d",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/glass": "5f58e71dc6787d555ad22fade8f58d2211b34494e91c86b7a487284326638269",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/glass": "702e48bf695ca194ee332022def8b16842fb96c735a4fd5617aaa7dda859dc15",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/glass": "f48b638f780991e3f149e3769fa3c87b263a28f65a1557856d6bb216085a6038",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/glass": "6639a73ec9dc0a31d3013ffb1fa7735b3f9a34c64d39a50e5cf1cfea9bd8a41c",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/glass": "72835347fa3d3761891c041f217960ec3799d4e88716f8c74054284049e40e3f",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/glass": "b3d5958ab9353243a628f2a56e92e3fa59339db312694f2379b16e84f4e8df8f",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/glass": "59b4038cff628942d691659644e81a56fb43f6f78cb86936bb4e5740075d7444",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/glass": "ba964f9e51ffb9b743fdeef033438c4ea295c1c2eb59252bf131a27bfed9ca20",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/glass": "de0648e83c7b7d2430f25e41637c5c7c33d0d88cb6ef1b11b68387a2b7f66d4e",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/glass": "5625fd179cec7dc772eb04b1a55334ba55241b1bf8ff8097c6156284aae5a87d",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/glass": "55c8da007c86defae6c40fd4e91a8d6a76f600d00b60f2f39b273228d002b53a",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/glass": "a7113b58855ab175e10e3b1de2f7fe7a55d97fb7ce0b1b36c2b072748ecd98b5",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/glass": "0f4dd42ef0a1a3b15a24478606da63ca3a72bb45d5c41b67d2686d5e079f0017",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/glass": "b65061276a9b8cd2f342edee5bfc7ac983b47ebf31462805437745db9586b702",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/glass": "98087ac1020f174a47ac589b70689c7e02e1b958d37bd58ce329a56055a9419f",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/glass": "990c04ae7d887d46fbe3d3bdf1953f9cfb7b6b3ae2ec30c2055f03a8105c409f",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/glass": "67c7ff95baf33aaba78f8a1f2e864fec7eee1609e49dcca26d0ae4bad25172ab",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/glass": "390cf1ca6bcc21d01108de5a42c362185637e1c31c385d296dd9e865cbccb5e2",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/glass": "31d844f7d7fa6eead5d394f16121673b514f14abd600cf2d4729b1e885713145",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/glass": "0340a49f2cb46eb3e043d2f548ecf41c0f3517fdb82a72461b0eb323c63cb6f1",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/glass": "4aeba4d5e1d1fe063c71fefe9f6ce2f575e353a3221bb2743cb4e9a3113f15b8",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/glass": "b939f2127670273c56ab1d4c60a3dd89a6ba4b840f436cb320f51e6037bddef4",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/glass": "36131b858bd354fe7cccace7dfd71c3a761b3244cb3390a8f1a132cffdfc709e",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/glass": "ff7988c1e7014e60520789bb1b6fd67aab916185bb2922aec5d47481897238d9",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/glass": "a8f8854fdc86dfdde53cb2f4ac7bcabfb2f073e69ae4a43a5d14317b20369843",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/glass": "c5d04b1e795043c893ce15ba486f7fd88e64aecf204fdd3cd38e86578604c025",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/glass": "9155ddec18c23fa8babff1b8aa7cd5c36c78b46fea96e4d9b7de210fd60755e4",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/glass": "790b9dbd2739707c2f0108ae5b42d201b119a87e4469de2fd84d62c600119def",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/glass": "1d3e9b4ec2ac44b681b8b6028a22602c61447fd4276e233b08d32b3651eaf1f4",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/glass": "211fd59a3bde6a49558ff16ae8a079d186c986c2dd514430f410d7796a245ed7",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/glass": "b3194e72db228d96ac456f894409ea4f2c863d584889350f6d70ca40be1dcd11",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/glass": "e2584011056c320748f254b4abad40004f9f084c08a1a8a3f5fb134e68026b15",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/glass": "762f6c800afea06c1376134a55ba81a58cfd6a16c45dbccca03bf0f178a7e974",
+        "building/authored-building/node/window/facade/floor/1/bay/0/trim": "1206ddb14157aeb7da4c941c8d6a67a56cf2d3ca6c1369dfdde9c9edf1d30b37",
+        "building/authored-building/node/window/facade/floor/1/bay/1/trim": "260f03d0e3bc91bef58078ed678992653a673f662fd877896ee0e33ac8a55e2c",
+        "building/authored-building/node/window/facade/floor/1/bay/2/trim": "e168f1f30d1b6da38044c2102dd4f50e7a6cf3b8d0aa6669112423c243f6374d",
+        "building/authored-building/node/window/facade/floor/1/bay/3/trim": "31f1a1a24c370920a64c0a2e66d080a3cfaddc95361a36d614561f8204c5a915",
+        "building/authored-building/node/window/facade/floor/2/bay/0/trim": "e9c327f7d27c734e380d697f81d01a571da828e4084fa4426323c8ba174b6305",
+        "building/authored-building/node/window/facade/floor/2/bay/2/trim": "3916d7d7ff056c6e631bf595e0f70820040b364b3614549c21c095c09121d0ee",
+        "building/authored-building/node/window/facade/floor/2/bay/3/trim": "3856812b2f0fb9f0aa454b6909eb6478f43767c2a8efd56626d10eeccdc4f995",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/trim": "497c60611dfcff333bc4a685ac0ea86652aef5559cdbae12460ca94ea917a8a9",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/trim": "09ea38e5f3dee4c7b2f417559ce1286c7ef48ceaaf113e02708b83b5123cb935",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/trim": "0b2bf64bfe4b7ccae0f747bc3e8a4fa9d2ca85abd9e9d7bd96862afffb497e52",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/trim": "95a9834f898ef884d5a1c0ef27fef51ed44ae3f5c09bc8f0a48cf76ee94f56be",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/trim": "27438b66b71ef137debc24a5e9905b2aa37711781600ce6e7e71b2f9f4713c26",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/trim": "bce48c489e57199905d56eb1516662647d52bb79c5245a193b4d57d984580c76",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/trim": "9f3c9df8060ef14aecbeb9e91ad0fdc07cad5920332a423624235d02e377ee7d",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/trim": "daf101710ee5302186f028ff7070b25eb5e4e719eeb0e50855d32a00e488ccaf",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/trim": "70be172954ba50d7224e6966d1de4fb5c85007eb1ac088b220c7106ab603177a",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/trim": "307cb9b8cf9aa13e017641f15e6e36aca92259a94d8778698c9dc42c91d3c077",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/trim": "885c12d0a778ec14954861dc6e7a6f78225e385e6250e9eed8145751bdc70367",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/trim": "59172d3c5196c0be8fce6eb0275cabb269491a87a5e2bd87f38fb729deaaf872",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/trim": "390d0b3eeab3cdc9af266e0343a1120ddb4e31f097eaa088b97b00540bb7e7b9",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/trim": "d525c45f77458cca62f6683ec858d989ba0aed89183220686a0a4d75baf4b849",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/trim": "26d716f43762d94340b2153af1f54256793db1e92692df702951733b98671a25",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/trim": "6aadd92546778d324799d793d287195a8744052253daedf1e838cf7737b2ddb3",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/trim": "272134efd9d412088600677be5071b2de5c0b13b56e3cf8f4e2cb3a16bd20681",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/trim": "027d070ee865f33c4e44eb57dfa5234c09a3b81b57a0b7d893ed4eba727dd36f",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/trim": "224f4d19f43b9e60f86a375344a434ed29974c92ccb74731c06a335a9886d1ed",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/trim": "dd7c8b917a9a90db87d8b45452bee5767176dd30da5ccb01955a9b90aa63bac9",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/trim": "53bfccdf40ea85813af2efb94b866dc076f4f3cfd8235be7c10840f8d1742a81",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/trim": "2223e8ea02bb8c556339b38ae8ed5f3b6a4696dbac2dbc7a47c31bf46cc9e81c",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/trim": "ffc1978889d2c7e8c1038e81a279a9ace7cfefa091851a743386ba71f8093634",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/trim": "612189cf40bbf2eae6dede67e3f61eef72933e82207202cc1e54bb1d71e16e7c",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/trim": "4f00cb7ed6f9f8024872512b8b81aac8db249a7c7a5c06af1493264851a9acf0",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/trim": "460a733559426956259c9aaf7e62a714537047c813bbb79c6374688ed4a5be72",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/trim": "529537a4e73bbce984b37b58748e0cb5c3da1da804d808f7077e77334a04943b",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/trim": "3f9baae683bba85434e92e13e24a6e8233f26ddb0f8f73fd7c8d8df04162ee5e",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/trim": "6ccdfaf603bee37fdc01ecc7eefac10476768ed68f087cf93038239187ddee4d",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/trim": "ccdcf07c49331395ba353e44e3384ab9ed8294df4fe32671bd397012be70be0b",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/trim": "f6557c6a9114fab0e045ceb80e1e01bf0507f6381cb86016bc939bb396b7a89f",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/trim": "9718a8b22096a56edb978dbf18243f435d64a8551a762b51965da9c21198ab8f",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/trim": "08c6eeff8e22048c7056f50c1c8fbed4e876025176816b0c201ff0bbc5e81adc",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/trim": "d0205ac04a76cef961df8513cc32f196c9cce86c2d2256e7b72d22dff2a1bdfd",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/trim": "15d969569124599dac00b867de4766795f484a9cbd3d52db6a2dca3db8d1b84e",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/trim": "7a827bbe1db75560df9a335006ae6bf451b7279749db4a09a6d343016903c9c0",
+        "building/authored-building/node/window/facade/floor/2/bay/1/frame": "31d23eb3ada085f65500c8af216c6bd74b8bd889757c402e201b3afaf13b46a2",
+        "building/authored-building/node/window/facade/floor/2/bay/1/glass": "43da34b29533c2319eaa85d2fb16089882d5377046034d78e45921d1394ea7dc",
+        "building/authored-building/node/window/facade/floor/2/bay/1/trim": "0552d4e8c07c6ce0ff75fdded279963f7844eec6933b01404c57e7e9b16964d7"
+      },
+      "bindings": {
+        "building/authored-building/node/wall/facade/wall": "c58e1f478a061724d3e6afcbb18d466b2a5fca658f7f5555b902c409f8147e4a",
+        "building/authored-building/node/wall/facade/right/wall": "c58e1f478a061724d3e6afcbb18d466b2a5fca658f7f5555b902c409f8147e4a",
+        "building/authored-building/node/wall/facade/rear/wall": "c58e1f478a061724d3e6afcbb18d466b2a5fca658f7f5555b902c409f8147e4a",
+        "building/authored-building/node/wall/facade/left/wall": "c58e1f478a061724d3e6afcbb18d466b2a5fca658f7f5555b902c409f8147e4a",
+        "building/authored-building/node/door/facade/floor/0/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/door/facade/floor/0/bay/1/leaf": "af2da47348dc4fededa8af859677cd98096b41d359f368247f353dadfb45188e",
+        "building/authored-building/node/door/facade/floor/0/bay/1/hardware": "c0c1b193a51c1299ba6d9e8bad73fefde063479d18596f79ca3f9228655bd4a9",
+        "building/authored-building/node/door/facade/floor/0/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/door/facade/floor/0/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/bands/building/band.3.7": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/bands/building/band.7.2": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/roof/building/roof": "6f5a3f0a6001c907f7f944871e09b27fc4488122dd3b6e518338269de84724ae",
+        "building/authored-building/node/roof/building/parapet": "c58e1f478a061724d3e6afcbb18d466b2a5fca658f7f5555b902c409f8147e4a",
+        "building/authored-building/node/roof/building/cornice": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/0/bay/0/frame": "c0099fdea82a1eef9ab231f4a1791b95fb371462037883593585ebcb74eded1f",
+        "building/authored-building/node/window/facade/floor/0/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/floor/0/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/floor/0/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/0/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/0/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/0/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/0/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/0/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/1/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/floor/1/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/floor/1/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/floor/1/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/floor/2/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/floor/2/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/floor/2/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/frame": "bfc59051b1e8a889319b29504c0d8e1cf85724ad7941db6664a5912d1d989cc0",
+        "building/authored-building/node/window/facade/floor/1/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/1/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/1/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/1/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/2/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/2/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/2/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/1/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/1/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/1/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/1/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/2/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/2/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/2/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/0/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/0/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/0/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/0/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/1/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/1/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/1/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/1/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/2/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/2/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/2/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/right/floor/2/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/0/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/1/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/rear/floor/2/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/0/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/0/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/0/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/0/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/1/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/1/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/1/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/1/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/2/bay/0/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/2/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/2/bay/2/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/left/floor/2/bay/3/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542",
+        "building/authored-building/node/window/facade/floor/2/bay/1/frame": "c0099fdea82a1eef9ab231f4a1791b95fb371462037883593585ebcb74eded1f",
+        "building/authored-building/node/window/facade/floor/2/bay/1/glass": "4e78e563158f10c71b2e6f14453177dfeb0bef72477e488cde85c22eda58ea3c",
+        "building/authored-building/node/window/facade/floor/2/bay/1/trim": "69894960da4c951fce95818c97726e217d085b580326d163ce06784df1add542"
+      },
+      "channels": {
+        "baseColor": "03612d14a7cc5e6004cea315e9db0ae9075701d6afcdcb309fbfcb3262aa1ddb",
+        "normal": "5a567d45e69b00bf9300548dfd1bd55ead5b2b2bd5f228cb1dfc22583f02e549",
+        "orm": "6f212dcaba3300dfbf5955c90ebf41dcc708e5e6d078ac4b97120a0ce04a2375",
+        "height": "f611b09b43e10f5e5b1ecf52f9292aa7370ddd2e684023bc8790acba40361738",
+        "opacity": "7b8d96493ae701cc8c2f889d8683843e8be4d3678411e2ebbad56d0d541057e6"
+      },
+      "drawCamera": {
+        "fov": 42,
+        "aspect": 1.0895170789163722,
+        "projection": [
+          2.391049314513554,
+          0,
+          0,
+          0,
+          0,
+          2.6050890646938014,
+          0,
+          0,
+          0,
+          0,
+          -1.0014981273793513,
+          -1,
+          0,
+          0,
+          -0.20014981273793514,
+          0
+        ],
+        "inverse": [
+          -0.8462328400897506,
+          -0.09758612979555839,
+          0.5238004654686359,
+          0,
+          4.1633363423443395e-17,
+          0.9830844974585317,
+          0.18315258899809822,
+          0,
+          -0.5328132696861398,
+          0.15498973555765147,
+          -0.8319183863325385,
+          0,
+          -1.476596622751459e-14,
+          -6.691856331707352,
+          -32.776117504719984,
+          1
+        ]
+      },
+      "drawLights": [
+        {
+          "type": "AmbientLight",
+          "intensity": 0.12,
+          "position": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "HemisphereLight",
+          "intensity": 0.75,
+          "position": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "type": "DirectionalLight",
+          "intensity": 2.8,
+          "position": [
+            14.695999622344972,
+            29.518999576568604,
+            -17.36799955368042
+          ]
+        },
+        {
+          "type": "DirectionalLight",
+          "intensity": 0.35,
+          "position": [
+            -17.36799955368042,
+            18.830999851226807,
+            9.351999759674072
+          ]
+        }
+      ],
+      "layerCount": 3,
+      "layers": [
+        {
+          "id": "finish",
+          "target": {
+            "kind": "element",
+            "relativePath": "node/window/facade/floor/0/bay/0/frame",
+            "expectedRole": "frame"
+          },
+          "sourceId": "source.frame.primary",
+          "mask": {
+            "kind": "constant",
+            "value": 1
+          },
+          "blend": "replace",
+          "opacity": 0.3,
+          "physicalSizeM": {
+            "width": 0.32,
+            "height": 0.32
+          },
+          "channels": [
+            "baseColor",
+            "normal",
+            "orm"
+          ]
+        },
+        {
+          "id": "finish_1",
+          "target": {
+            "kind": "element",
+            "relativePath": "node/window/facade/floor/2/bay/1/frame",
+            "expectedRole": "frame"
+          },
+          "sourceId": "source.frame.primary",
+          "mask": {
+            "kind": "constant",
+            "value": 1
+          },
+          "blend": "replace",
+          "opacity": 0.3,
+          "physicalSizeM": {
+            "width": 0.32,
+            "height": 0.32
+          },
+          "channels": [
+            "baseColor",
+            "normal",
+            "orm"
+          ]
+        },
+        {
+          "id": "t2.stone.trim",
+          "target": {
+            "kind": "role",
+            "role": "horizontalTrim"
+          },
+          "sourceId": "t2.stone",
+          "mask": {
+            "kind": "constant",
+            "value": 1
+          },
+          "blend": "replace",
+          "opacity": 1,
+          "physicalSizeM": {
+            "width": 0.64,
+            "height": 0.64
+          },
+          "channels": [
+            "baseColor",
+            "normal",
+            "orm"
+          ]
+        }
+      ],
+      "materialCount": 2,
+      "exactSubmittedGeometryAndTransforms": true,
+      "prototypeHash": "68993d00d8f0cedf8aa97d559cf54c913648f90d57e577d1fa92393e2a18c581",
+      "bounds": {
+        "min": [
+          -5.779999999999999,
+          0,
+          -6.68
+        ],
+        "max": [
+          5.779999999999999,
+          11.345,
+          6.68
+        ]
+      },
+      "backend": "webgl"
+    }
+  ],
+  "topology": [
+    {
+      "batchId": "construction.prototype.trim.400fd6515724de6729a8",
+      "triangles": 12,
+      "badWinding": 0,
+      "collapsedUv": 0
+    },
+    {
+      "batchId": "construction.prototype.trim.c2dac32ba9b39ba318ed",
+      "triangles": 44,
+      "badWinding": 22,
+      "collapsedUv": 0
+    },
+    {
+      "batchId": "construction.prototype.trim.1e1bc967f6bf7f603af7",
+      "triangles": 64,
+      "badWinding": 0,
+      "collapsedUv": 0
+    }
+  ],
+  "sourceExact": false,
+  "materialChannelsExact": false,
+  "coldPixelsExact": false,
+  "coldProviderCalls": null,
+  "coldMaterialGenerationCalls": null,
+  "errors": []
+}

@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "0.1.0",
+  "implementationCommit": "2a8c4e37a7643c138254afa08c378f5fc2463b6f",
+  "images": [
+    {
+      "file": "before-webgl/sill-textured.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/2a8c4e37a7643c138254afa08c378f5fc2463b6f/docs/reviews/2026-10-26-t2-regular-trim-recovery/before-webgl/sill-textured.png",
+      "status": 200,
+      "mime": "image/png",
+      "sha256": "e11f0429b9bbdce4cdb57c6136c99f9318dd8ed5caf05bc88d3b66eb2e78b59a",
+      "sizeBytes": 480858,
+      "literalLocalBytesEqual": true
+    },
+    {
+      "file": "webgl/sill-textured.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/2a8c4e37a7643c138254afa08c378f5fc2463b6f/docs/reviews/2026-10-26-t2-regular-trim-recovery/webgl/sill-textured.png",
+      "status": 200,
+      "mime": "image/png",
+      "sha256": "235949175d1225131846d90d269456a66f729a5e846ca58a649bbb497df26dda",
+      "sizeBytes": 475202,
+      "literalLocalBytesEqual": true
+    },
+    {
+      "file": "before-webgl/trim-end-textured.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/2a8c4e37a7643c138254afa08c378f5fc2463b6f/docs/reviews/2026-10-26-t2-regular-trim-recovery/before-webgl/trim-end-textured.png",
+      "status": 200,
+      "mime": "image/png",
+      "sha256": "08a8ac3ca7baf8d1506232c0313795bb23181216b8e121e6d3855df6e545986d",
+      "sizeBytes": 524923,
+      "literalLocalBytesEqual": true
+    },
+    {
+      "file": "webgl/trim-end-textured.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/2a8c4e37a7643c138254afa08c378f5fc2463b6f/docs/reviews/2026-10-26-t2-regular-trim-recovery/webgl/trim-end-textured.png",
+      "status": 200,
+      "mime": "image/png",
+      "sha256": "23201296feb180037e13a88c453f63e12b48b8823098db4059886a31c86f5860",
+      "sizeBytes": 522067,
+      "literalLocalBytesEqual": true
+    },
+    {
+      "file": "webgpu/sill-textured.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/2a8c4e37a7643c138254afa08c378f5fc2463b6f/docs/reviews/2026-10-26-t2-regular-trim-recovery/webgpu/sill-textured.png",
+      "status": 200,
+      "mime": "image/png",
+      "sha256": "b163116c9796c43f82079314b8587e43b56a3e232d6bfd396335056106259876",
+      "sizeBytes": 466247,
+      "literalLocalBytesEqual": true
+    },
+    {
+      "file": "webgl/whole-textured.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/2a8c4e37a7643c138254afa08c378f5fc2463b6f/docs/reviews/2026-10-26-t2-regular-trim-recovery/webgl/whole-textured.png",
+      "status": 200,
+      "mime": "image/png",
+      "sha256": "b0acbd40d9fb20c1f66c1937230ad91adf5892a49b657fd5beb4d7ba6f4e5b42",
+      "sizeBytes": 443090,
+      "literalLocalBytesEqual": true
+    }
+  ]
+}

@@ -1,0 +1,400 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "regular-trim-geometry-and-texture-verification",
+  "parentCommit": "c3056803c87defc06b6ad501b8381dc58414f022",
+  "totalSourcePins": 347,
+  "changedSourcePaths": [
+    "src/features/building-family/compiler/constructionOpeningTrimGeometry.ts",
+    "src/features/building-family/compiler/evaluateFacadeConstruction.ts",
+    "src/features/building-family/tests/buildingConstruction.test.ts",
+    "src/features/building-family/tests/constructionOpeningEditGeometry.test.ts",
+    "src/features/building-family/tests/constructionRecipeCatalog.test.ts",
+    "src/features/building-family/tests/constructionStorefrontGeometry.test.ts",
+    "src/features/building-family/tests/constructionWindowVocabulary.test.ts",
+    "src/features/building-family/tests/constructionRegularTrimGeometry.test.ts"
+  ],
+  "unchangedPriorPins": 339,
+  "changedSemanticPaths": [
+    "building/authored-building/node/window/facade/floor/1/bay/0/trim",
+    "building/authored-building/node/window/facade/floor/1/bay/1/trim",
+    "building/authored-building/node/window/facade/floor/1/bay/2/trim",
+    "building/authored-building/node/window/facade/floor/1/bay/3/trim",
+    "building/authored-building/node/window/facade/floor/2/bay/0/trim",
+    "building/authored-building/node/window/facade/floor/2/bay/2/trim",
+    "building/authored-building/node/window/facade/floor/2/bay/3/trim",
+    "building/authored-building/node/window/facade/right/floor/0/bay/0/trim",
+    "building/authored-building/node/window/facade/right/floor/0/bay/1/trim",
+    "building/authored-building/node/window/facade/right/floor/0/bay/2/trim",
+    "building/authored-building/node/window/facade/right/floor/0/bay/3/trim",
+    "building/authored-building/node/window/facade/right/floor/1/bay/0/trim",
+    "building/authored-building/node/window/facade/right/floor/1/bay/1/trim",
+    "building/authored-building/node/window/facade/right/floor/1/bay/2/trim",
+    "building/authored-building/node/window/facade/right/floor/1/bay/3/trim",
+    "building/authored-building/node/window/facade/right/floor/2/bay/0/trim",
+    "building/authored-building/node/window/facade/right/floor/2/bay/1/trim",
+    "building/authored-building/node/window/facade/right/floor/2/bay/2/trim",
+    "building/authored-building/node/window/facade/right/floor/2/bay/3/trim",
+    "building/authored-building/node/window/facade/rear/floor/0/bay/0/trim",
+    "building/authored-building/node/window/facade/rear/floor/0/bay/1/trim",
+    "building/authored-building/node/window/facade/rear/floor/0/bay/2/trim",
+    "building/authored-building/node/window/facade/rear/floor/0/bay/3/trim",
+    "building/authored-building/node/window/facade/rear/floor/1/bay/0/trim",
+    "building/authored-building/node/window/facade/rear/floor/1/bay/1/trim",
+    "building/authored-building/node/window/facade/rear/floor/1/bay/2/trim",
+    "building/authored-building/node/window/facade/rear/floor/1/bay/3/trim",
+    "building/authored-building/node/window/facade/rear/floor/2/bay/0/trim",
+    "building/authored-building/node/window/facade/rear/floor/2/bay/1/trim",
+    "building/authored-building/node/window/facade/rear/floor/2/bay/2/trim",
+    "building/authored-building/node/window/facade/rear/floor/2/bay/3/trim",
+    "building/authored-building/node/window/facade/left/floor/0/bay/0/trim",
+    "building/authored-building/node/window/facade/left/floor/0/bay/1/trim",
+    "building/authored-building/node/window/facade/left/floor/0/bay/2/trim",
+    "building/authored-building/node/window/facade/left/floor/0/bay/3/trim",
+    "building/authored-building/node/window/facade/left/floor/1/bay/0/trim",
+    "building/authored-building/node/window/facade/left/floor/1/bay/1/trim",
+    "building/authored-building/node/window/facade/left/floor/1/bay/2/trim",
+    "building/authored-building/node/window/facade/left/floor/1/bay/3/trim",
+    "building/authored-building/node/window/facade/left/floor/2/bay/0/trim",
+    "building/authored-building/node/window/facade/left/floor/2/bay/1/trim",
+    "building/authored-building/node/window/facade/left/floor/2/bay/2/trim",
+    "building/authored-building/node/window/facade/left/floor/2/bay/3/trim"
+  ],
+  "allOtherSubmittedGeometryExact": true,
+  "materialChannelHashesExact": true,
+  "semanticBindingsExact": true,
+  "profileBoundsExact": true,
+  "finalGeometryEqualAcrossBackends": true,
+  "beforeAfterViews": {
+    "webgl": [
+      {
+        "capture": "whole-textured",
+        "cameraExact": true,
+        "lightsExact": true
+      },
+      {
+        "capture": "sill-textured",
+        "cameraExact": true,
+        "lightsExact": true
+      },
+      {
+        "capture": "trim-end-textured",
+        "cameraExact": true,
+        "lightsExact": true
+      },
+      {
+        "capture": "sill-no-normal",
+        "cameraExact": true,
+        "lightsExact": true
+      },
+      {
+        "capture": "sill-no-textures",
+        "cameraExact": true,
+        "lightsExact": true
+      },
+      {
+        "capture": "sill-no-shadows",
+        "cameraExact": true,
+        "lightsExact": true
+      },
+      {
+        "capture": "sill-clay-no-shadows",
+        "cameraExact": true,
+        "lightsExact": true
+      }
+    ],
+    "webgpu": [
+      {
+        "capture": "whole-textured",
+        "cameraExact": true,
+        "lightsExact": true
+      },
+      {
+        "capture": "sill-textured",
+        "cameraExact": true,
+        "lightsExact": true
+      },
+      {
+        "capture": "trim-end-textured",
+        "cameraExact": false,
+        "lightsExact": true
+      },
+      {
+        "capture": "sill-no-normal",
+        "cameraExact": false,
+        "lightsExact": true
+      },
+      {
+        "capture": "sill-no-textures",
+        "cameraExact": false,
+        "lightsExact": true
+      }
+    ]
+  },
+  "native": {
+    "before-webgl": {
+      "states": 1,
+      "captures": 7,
+      "topology": [
+        {
+          "batchId": "construction.prototype.trim.400fd6515724de6729a8",
+          "triangles": 12,
+          "badWinding": 0,
+          "collapsedUv": 0
+        },
+        {
+          "batchId": "construction.prototype.trim.c2dac32ba9b39ba318ed",
+          "triangles": 44,
+          "badWinding": 22,
+          "collapsedUv": 0
+        },
+        {
+          "batchId": "construction.prototype.trim.1e1bc967f6bf7f603af7",
+          "triangles": 64,
+          "badWinding": 0,
+          "collapsedUv": 0
+        }
+      ],
+      "diagnostics": [
+        {
+          "mode": "no-normal",
+          "drawnMaps": 4,
+          "drawnNormalMaps": 0,
+          "shadowLights": 1
+        },
+        {
+          "mode": "no-textures",
+          "drawnMaps": 0,
+          "drawnNormalMaps": 0,
+          "shadowLights": 1
+        },
+        {
+          "mode": "no-shadows",
+          "drawnMaps": 4,
+          "drawnNormalMaps": 4,
+          "shadowLights": 0
+        },
+        {
+          "mode": "clay-no-shadows",
+          "drawnMaps": 0,
+          "drawnNormalMaps": 0,
+          "shadowLights": 0
+        }
+      ],
+      "errors": [],
+      "coldPixelsExact": false
+    },
+    "before-webgpu": {
+      "states": 1,
+      "captures": 5,
+      "topology": [
+        {
+          "batchId": "construction.prototype.trim.400fd6515724de6729a8",
+          "triangles": 12,
+          "badWinding": 0,
+          "collapsedUv": 0
+        },
+        {
+          "batchId": "construction.prototype.trim.c2dac32ba9b39ba318ed",
+          "triangles": 44,
+          "badWinding": 22,
+          "collapsedUv": 0
+        },
+        {
+          "batchId": "construction.prototype.trim.1e1bc967f6bf7f603af7",
+          "triangles": 64,
+          "badWinding": 0,
+          "collapsedUv": 0
+        }
+      ],
+      "diagnostics": [
+        {
+          "mode": "no-normal",
+          "drawnMaps": 4,
+          "drawnNormalMaps": 0,
+          "shadowLights": 1
+        },
+        {
+          "mode": "no-textures",
+          "drawnMaps": 0,
+          "drawnNormalMaps": 0,
+          "shadowLights": 1
+        }
+      ],
+      "errors": [],
+      "coldPixelsExact": false
+    },
+    "webgl": {
+      "states": 4,
+      "captures": 10,
+      "topology": [
+        {
+          "batchId": "construction.prototype.trim.400fd6515724de6729a8",
+          "triangles": 12,
+          "badWinding": 0,
+          "collapsedUv": 0
+        },
+        {
+          "batchId": "construction.prototype.trim.32b0b4eb4c222349f0a8",
+          "triangles": 64,
+          "badWinding": 0,
+          "collapsedUv": 0
+        },
+        {
+          "batchId": "construction.prototype.trim.1e1bc967f6bf7f603af7",
+          "triangles": 64,
+          "badWinding": 0,
+          "collapsedUv": 0
+        }
+      ],
+      "diagnostics": [
+        {
+          "mode": "no-normal",
+          "drawnMaps": 4,
+          "drawnNormalMaps": 0,
+          "shadowLights": 1
+        },
+        {
+          "mode": "no-textures",
+          "drawnMaps": 0,
+          "drawnNormalMaps": 0,
+          "shadowLights": 1
+        },
+        {
+          "mode": "no-shadows",
+          "drawnMaps": 4,
+          "drawnNormalMaps": 4,
+          "shadowLights": 0
+        },
+        {
+          "mode": "clay-no-shadows",
+          "drawnMaps": 0,
+          "drawnNormalMaps": 0,
+          "shadowLights": 0
+        }
+      ],
+      "errors": [],
+      "coldPixelsExact": true
+    },
+    "webgpu": {
+      "states": 4,
+      "captures": 8,
+      "topology": [
+        {
+          "batchId": "construction.prototype.trim.400fd6515724de6729a8",
+          "triangles": 12,
+          "badWinding": 0,
+          "collapsedUv": 0
+        },
+        {
+          "batchId": "construction.prototype.trim.32b0b4eb4c222349f0a8",
+          "triangles": 64,
+          "badWinding": 0,
+          "collapsedUv": 0
+        },
+        {
+          "batchId": "construction.prototype.trim.1e1bc967f6bf7f603af7",
+          "triangles": 64,
+          "badWinding": 0,
+          "collapsedUv": 0
+        }
+      ],
+      "diagnostics": [
+        {
+          "mode": "no-normal",
+          "drawnMaps": 4,
+          "drawnNormalMaps": 0,
+          "shadowLights": 1
+        },
+        {
+          "mode": "no-textures",
+          "drawnMaps": 0,
+          "drawnNormalMaps": 0,
+          "shadowLights": 1
+        }
+      ],
+      "errors": [],
+      "coldPixelsExact": true
+    }
+  },
+  "portableSourceSha256": "eb7466b09ab10f3e4040aeeb5acb85e959cd7dc75efa73f4f2da5140b0661cd1",
+  "legacyCompilerGolden": {
+    "before": "10b9860522a4ac9818f38e9d081fc05bade653ea87447822335be008a98108f9",
+    "after": "6d29b0a682efe0139bfe0016355bdc34ae0a914c1912a9bf01359ea4d4900691",
+    "reason": "Intentional whole-building sill/lintel topology correction; graph, recipe and material source JSON stay literal."
+  },
+  "requiredChecks": [
+    {
+      "name": "typecheck",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-27T04:31:36.4420302Z",
+      "endedAtUtc": "2026-10-27T04:31:48.5483592Z",
+      "sourcePinsStable": true,
+      "log": "test-results/t2-regular-trim-recovery-2026-10-26/typecheck-final.log"
+    },
+    {
+      "name": "lint",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-27T04:31:48.6272528Z",
+      "endedAtUtc": "2026-10-27T04:32:07.6638101Z",
+      "sourcePinsStable": true,
+      "log": "test-results/t2-regular-trim-recovery-2026-10-26/lint-final.log"
+    },
+    {
+      "name": "test",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-27T04:32:07.7074486Z",
+      "endedAtUtc": "2026-10-27T04:38:51.7476856Z",
+      "sourcePinsStable": true,
+      "log": "test-results/t2-regular-trim-recovery-2026-10-26/test-final.log"
+    },
+    {
+      "name": "build",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-27T04:38:51.7937134Z",
+      "endedAtUtc": "2026-10-27T04:39:04.8977211Z",
+      "sourcePinsStable": true,
+      "log": "test-results/t2-regular-trim-recovery-2026-10-26/build-final.log"
+    },
+    {
+      "name": "test:e2e",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-27T04:39:04.9339306Z",
+      "endedAtUtc": "2026-10-27T04:41:42.2685706Z",
+      "sourcePinsStable": true,
+      "log": "test-results/t2-regular-trim-recovery-2026-10-26/test-e2e-final.log"
+    }
+  ],
+  "testOnlyUpdatesAfterNativeCapture": [
+    "src/features/building-family/tests/buildingConstruction.test.ts",
+    "src/features/building-family/tests/constructionRecipeCatalog.test.ts"
+  ],
+  "nativeProductionPinsStillExact": true,
+  "diagnosticFinish": {
+    "slotId": "trim.horizontal.primary",
+    "targetRole": "horizontalTrim",
+    "physicalSizeM": {
+      "width": 0.64,
+      "height": 0.64
+    },
+    "channels": [
+      "baseColor",
+      "normal",
+      "orm"
+    ],
+    "sourceMaterialLibraryLiteralUnchanged": true
+  },
+  "tests": {
+    "passed": 1866,
+    "files": 129
+  },
+  "standardE2E": [
+    "R3_P1_WORKSPACE_E2E_RESULT",
+    "R3_P6_WINDOW_WIDTH_E2E_RESULT",
+    "R3_P11_SOURCE_CHECKPOINT_RECOVERY_E2E_RESULT",
+    "R3_P12_WINDOW_WIDTH_HISTORY_E2E_RESULT",
+    "R3_P15_WIDTH_BATCH_SOURCE_E2E_RESULT",
+    "R3_P16_WINDOW_FLOOR_WIDTH_E2E_RESULT",
+    "R3_P18_WINDOW_BAY_WIDTH_E2E_RESULT",
+    "R4_P4_SURFACE_SOURCE_APP_E2E_RESULT"
+  ]
+}

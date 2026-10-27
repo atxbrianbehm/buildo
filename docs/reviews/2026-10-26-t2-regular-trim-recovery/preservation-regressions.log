@@ -1,0 +1,37 @@
+
+> buildo@0.0.0 test
+> vitest run src/features/building-family/tests/buildingConstruction.test.ts src/features/building-family/tests/constructionRecipeCatalog.test.ts src/features/building-family/tests/constructionRegularTrimGeometry.test.ts
+
+
+ RUN  v4.1.9 C:/Users/behmb/Documents/Cascade Projects/buildo
+
+ ❯ src/features/building-family/tests/constructionRecipeCatalog.test.ts (18 tests | 1 failed) 2912ms
+     × retains the original C5 recipe pin, resolution, mesh buffers and instance transforms 51ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/building-family/tests/constructionRecipeCatalog.test.ts > pinned executable construction recipe catalog > retains the original C5 recipe pin, resolution, mesh buffers and instance transforms
+AssertionError: expected [] to have a length of 1 but got +0
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ src/features/building-family/tests/constructionRecipeCatalog.test.ts:73:23
+     71|       const role = expected.id.match(/prototype\.([^.]+)\./)![1];
+     72|       const matches = construction.ir.instanceBatches.filter(item => i…
+     73|       expect(matches).toHaveLength(1);
+       |                       ^
+     74|       const batch = matches[0];
+     75|       expect(batch.count).toBe(expected.count); expect(await digest(ba…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 31 passed (32)
+   Start at  23:30:45
+   Duration  4.47s (transform 758ms, setup 340ms, import 1.17s, tests 3.48s, environment 2.35s)
+

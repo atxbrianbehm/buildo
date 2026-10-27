@@ -5,6 +5,24 @@ import { constructionFacadeSolid, constructionFacePose, constructionProfileRing,
 import { BayConstructionWorkerRequestSchema, BayConstructionWorkerReplySchema } from "../compiler/bayConstructionWorkerProtocol";
 import type { FacadeBayScope } from "../compiler/facadeWallSubdivision";
 
+function expectRetainedWindowGeometry(actual: NonNullable<Awaited<ReturnType<typeof evaluateConstruction>>["prototypes"]>[number], previous: NonNullable<Awaited<ReturnType<typeof evaluateConstruction>>["prototypes"]>[number]) {
+  if (actual.role !== "trim") {
+    expect(actual.positions).toEqual(previous.positions); expect(actual.normals).toEqual(previous.normals); expect(actual.indices).toEqual(previous.indices);
+    return;
+  }
+  // The whole-building cap topology is repaired; retain its exact exterior profile.
+  const exterior = (part: typeof actual) => [...new Set([...part.positions!].flatMap((_, i) =>
+    i % 3 === 0 && Math.abs(part.normals![i]) < .9 && part.positions![i + 2] !== 0
+      ? [`${part.positions![i + 1]},${part.positions![i + 2]}`] : []))].sort();
+  expect(exterior(actual)).toEqual(exterior(previous));
+  for (const axis of [0, 1, 2]) {
+    const values = (part: typeof actual) => [...part.positions!].filter((_, i) => i % 3 === axis);
+    expect(Math.min(...values(actual))).toBe(Math.min(...values(previous)));
+    expect(Math.max(...values(actual))).toBe(Math.max(...values(previous)));
+  }
+  expect(actual.indices!.length).toBeGreaterThan(previous.indices!.length);
+}
+
 it("constructs four continuous walls, forty-seven shared window assemblies, a paneled entrance and a complete roof", async () => {
   const graph=createBuildingConstructionGraph(),result=await evaluateConstruction(graph);
   expect(result.ir.instanceBatches.map(batch=>batch.count)).toEqual([47,47,47]);expect(result.prototypes).toHaveLength(3);
@@ -21,7 +39,7 @@ it("constructs four continuous walls, forty-seven shared window assemblies, a pa
 it("submits exact quarter-turn poses and retains accepted window solids with metric timber coordinates",async()=>{
   const graph=createBuildingConstructionGraph(),whole=await evaluateConstruction(graph),legacy=await evaluateConstruction(repeatBayAsFacade(createBayConstructionGraph()));
   for(const prototype of whole.prototypes!){const previous=legacy.prototypes!.find(batch=>batch.role===prototype.role)!;
-    expect(prototype.positions).toEqual(previous.positions);expect(prototype.normals).toEqual(previous.normals);expect(prototype.indices).toEqual(previous.indices);
+    expectRetainedWindowGeometry(prototype, previous);
     if(prototype.role === 'frame'){expect(prototype.uvs!.some(value=>value>1)).toBe(true);expect(previous.uvs!.every(value=>value===0)).toBe(true);}
   }
   const frames=whole.ir.instanceBatches.find(batch=>batch.recipeId.includes("prototype.frame"))!;
@@ -76,7 +94,7 @@ it("completes the standard saved facade while retaining its front geometry param
   expect(JSON.stringify(source)).toBe(before);expect(whole.schemaVersion).toBe("0.4.0");expect(whole.documentId).toBe(source.documentId);
   expect(whole.nodes.find(node=>node.type==='SetSurface')!.composition).toEqual(comp);
   const old=await evaluateConstruction(source),next=await evaluateConstruction(whole);
-  for(const prototype of next.prototypes!){const previous=old.prototypes!.find(batch=>batch.role===prototype.role)!;expect(prototype.positions).toEqual(previous.positions);expect(prototype.normals).toEqual(previous.normals);expect(prototype.indices).toEqual(previous.indices);}
+  for(const prototype of next.prototypes!){const previous=old.prototypes!.find(batch=>batch.role===prototype.role)!;expectRetainedWindowGeometry(prototype, previous);}
   expect(whole.nodes.find(node=>node.type==='Storeys')!.parameters.groundHeightM).toBeCloseTo(3.8);
   const custom=structuredClone(source);custom.nodes.push({id:'custom',type:'FacadeScope',parameters:{widthM:2,heightM:3,wallDepthM:.3}});
   expect(()=>completeFacadeAsBuilding(custom)).toThrow('custom branches');

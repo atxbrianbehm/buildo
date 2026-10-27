@@ -71,7 +71,7 @@ describe("selected opening scope compiler", () => {
       expect(result.ir.semanticIndex).toEqual(before.ir.semanticIndex);
       expect(result.prototypes).toEqual(before.prototypes);
     }
-    expect(await hashCanonicalJson(await evaluateConstruction(createBuildingConstructionGraph()))).toBe("10b9860522a4ac9818f38e9d081fc05bade653ea87447822335be008a98108f9");
+    expect(await hashCanonicalJson(await evaluateConstruction(createBuildingConstructionGraph()))).toBe("6d29b0a682efe0139bfe0016355bdc34ae0a914c1912a9bf01359ea4d4900691");
   });
   it("changes one real aperture, frame, glazing and sill while retaining every unrelated part", async () => {
     const old=await evaluateConstruction(base()), source=edited(), before=structuredClone(source), next=await evaluateConstruction(source);
