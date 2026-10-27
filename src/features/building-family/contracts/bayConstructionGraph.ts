@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { ConstructionStorefrontParametersSchema } from "./constructionStorefront";
+import { ConstructionOpeningWidthOverrideSchema } from "./constructionOpeningEdit";
 import { findBuildingDocumentJsonIssue } from "./buildingDocument";
 import { BuildingSurfaceCompositionSchema } from "./surfaceComposition";
 
@@ -18,6 +19,8 @@ export const BayConstructionNodeSchema = z.discriminatedUnion("type", [
   z.object({ id, type: z.literal("PlaceDoor"), input: scopeInput, bypassed: z.boolean().optional(), parameters: z.object({ bayIndex: z.number().int().min(0).max(19), widthM: z.number().finite().min(0.7).max(2.5), heightM: z.number().finite().min(2).max(4) }).strict() }).strict(),
   z.object({ id, type: z.literal("AssembleDoor"), input: scopeInput, bypassed: z.boolean().optional(), parameters: z.object({ recessM: z.number().finite().min(0.02).max(2), frameWidthM: z.number().finite().min(0.04).max(0.2), leafHeightM: z.number().finite().min(1.9).max(2.7), thresholdProjectionM: z.number().finite().min(0.02).max(0.4) }).strict() }).strict(),
   z.object({ id, type: z.literal("PlaceStorefront"), input: scopeInput, bypassed: z.boolean().optional(), parameters: ConstructionStorefrontParametersSchema.omit({ entranceWidthM: true }).extend({ mode: z.union([z.literal(0), z.literal(1)]) }).strict() }).strict(),
+  z.object({ id, type: z.literal("EditOpeningWidth"), input: scopeInput, bypassed: z.boolean().optional(),
+    overrides: z.array(ConstructionOpeningWidthOverrideSchema).max(220) }).strict(),
   z.object({ id, type: z.literal("BuildingRoof"), input: scopeInput, bypassed: z.boolean().optional(), parameters: z.object({ parapetHeightM: z.number().finite().min(0.2).max(1.2), copingProjectionM: z.number().finite().min(0.02).max(0.2), corniceHeightM: z.number().finite().min(0.1).max(0.6), corniceProjectionM: z.number().finite().min(0.08).max(0.4) }).strict() }).strict(),
   z.object({ id, type: z.literal("FacadeScope"),
     parameters: z.object({ widthM: metres, heightM: metres, wallDepthM: metres }).strict()
@@ -52,7 +55,7 @@ export const BayConstructionNodeSchema = z.discriminatedUnion("type", [
 export type BayConstructionNode = z.infer<typeof BayConstructionNodeSchema>;
 
 const shape = z.object({
-  schemaVersion: z.enum(["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0"]),
+  schemaVersion: z.enum(["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0"]),
   kind: z.literal("bay-construction"),
   documentId: id,
   nodes: z.array(BayConstructionNodeSchema).min(2).max(128),
@@ -62,9 +65,15 @@ const shape = z.object({
   const issue = (message: string, path: Array<string | number> = ["nodes"]) =>
     context.addIssue({ code: "custom", message, path });
   for (const node of graph.nodes) {
-    if (node.type === "PlaceStorefront" && graph.schemaVersion !== "0.6.0") issue("Storefront operators require construction graph version 0.6.0.");
-    if (["Footprint", "Storeys", "PlaceDoor", "AssembleDoor", "BuildingRoof"].includes(node.type) && !["0.4.0", "0.5.0", "0.6.0"].includes(graph.schemaVersion)) issue("Whole-building operators require construction graph version 0.4.0.");
-    if (["JoinGeometry", "SetSurface"].includes(node.type) && !["0.3.0", "0.4.0", "0.5.0", "0.6.0"].includes(graph.schemaVersion)) issue("Surface operators require construction graph version 0.3.0.");
+    if (node.type === "PlaceStorefront" && !["0.6.0", "0.7.0"].includes(graph.schemaVersion)) issue("Storefront operators require construction graph version 0.6.0.");
+    if (node.type === "EditOpeningWidth") {
+      if (graph.schemaVersion !== "0.7.0") issue("Scoped opening edits require construction graph version 0.7.0.");
+      const targets = node.overrides.map(({ target }) => JSON.stringify([target.documentId, target.storeysNodeId, target.face, target.floorIndex, target.bayIndex]));
+      if (new Set(targets).size !== targets.length) issue("Opening width targets must be unique.");
+      if (node.overrides.some(({ target }) => target.documentId !== graph.documentId)) issue("Opening width targets must belong to the construction document.");
+    }
+    if (["Footprint", "Storeys", "PlaceDoor", "AssembleDoor", "BuildingRoof"].includes(node.type) && !["0.4.0", "0.5.0", "0.6.0", "0.7.0"].includes(graph.schemaVersion)) issue("Whole-building operators require construction graph version 0.4.0.");
+    if (["JoinGeometry", "SetSurface"].includes(node.type) && !["0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0"].includes(graph.schemaVersion)) issue("Surface operators require construction graph version 0.3.0.");
     if (node.type === "SetSurface") {
       if (node.composition.documentId !== graph.documentId) issue("Surface composition must belong to the construction document.");
       for (const layer of node.composition.layers) {
@@ -78,13 +87,17 @@ const shape = z.object({
       issue("Facade operators and bypass require construction graph version 0.2.0.");
     }
     if (node.type === "AssembleWindow") {
-      if (["0.5.0", "0.6.0"].includes(graph.schemaVersion) && node.parameters.layout === undefined) issue("Window vocabulary graphs require an explicit assembly layout.");
-      if (!["0.5.0", "0.6.0"].includes(graph.schemaVersion) && node.parameters.layout !== undefined) issue("Window assembly layouts require construction graph version 0.5.0.");
+      if (["0.5.0", "0.6.0", "0.7.0"].includes(graph.schemaVersion) && node.parameters.layout === undefined) issue("Window vocabulary graphs require an explicit assembly layout.");
+      if (!["0.5.0", "0.6.0", "0.7.0"].includes(graph.schemaVersion) && node.parameters.layout !== undefined) issue("Window assembly layouts require construction graph version 0.5.0.");
     }
     if (nodes.has(node.id)) issue("Node IDs must be unique.");
     nodes.set(node.id, node);
   }
   if (graph.nodes.filter(node => node.type === "SetSurface").length > 1) issue("Use one final surface finish node with an ordered layer stack.");
+  if (graph.nodes.filter(node => node.type === "EditOpeningWidth").length > 1) issue("Use one scoped opening width operation.");
+  for (const node of graph.nodes) if (node.type === "EditOpeningWidth") for (const { target } of node.overrides) {
+    if (nodes.get(target.storeysNodeId)?.type !== "Storeys" || nodes.get(target.windowNodeId)?.type !== "AssembleWindow") issue("Opening width targets require existing storeys and window assembly operators.");
+  }
   if (nodes.get(graph.outputNodeId)?.type !== "Output") issue("The graph output must be an Output node.", ["outputNodeId"]);
   const references = (node: BayConstructionNode) =>
     "inputs" in node ? node.inputs : "input" in node ? [node.input] : [];
@@ -124,7 +137,7 @@ export type BayConstructionGraph = z.infer<typeof BayConstructionGraphSchema>;
 
 export function constructionOutputSocket(type: BayConstructionNode["type"]): "scope" | "geometry" | "footprint" | undefined {
   if (type === "Footprint") return "footprint";
-  if (["Storeys", "PlaceDoor", "PlaceStorefront", "FacadeScope", "SplitFloors", "SplitBays", "SelectScopes", "PlaceOpening"].includes(type)) return "scope";
+  if (["Storeys", "PlaceDoor", "PlaceStorefront", "EditOpeningWidth", "FacadeScope", "SplitFloors", "SplitBays", "SelectScopes", "PlaceOpening"].includes(type)) return "scope";
   if (["EmitWall", "AssembleWindow", "ProfileTrim", "RoofCap", "JoinGeometry", "SetSurface", "AssembleDoor", "BuildingRoof"].includes(type)) return "geometry";
 }
 

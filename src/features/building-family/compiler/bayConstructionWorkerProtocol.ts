@@ -5,7 +5,7 @@ import { BuildingSurfaceCompositionSchema } from "../contracts/surfaceCompositio
 import { constructionSurfaceAt } from "./constructionSurfaceProgram";
 
 export const BayConstructionWorkerRequestSchema = z.object({
-  schemaVersion: z.enum(["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0"]), type: z.literal("evaluate-bay"),
+  schemaVersion: z.enum(["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0"]), type: z.literal("evaluate-bay"),
   requestId: z.number().int().positive(), graph: BayConstructionGraphSchema,
   previewNodeId: z.string().min(1).max(80).optional()
 }).strict().superRefine((request, context) => {
@@ -13,24 +13,25 @@ export const BayConstructionWorkerRequestSchema = z.object({
     context.addIssue({ code: "custom", message: "Facade graphs and previews require worker protocol 0.2.0." });
   }
   if ((request.graph.schemaVersion === "0.6.0") !== (request.schemaVersion === "0.6.0")) context.addIssue({ code: "custom", message: "Storefront graphs require matching worker protocol 0.6.0." });
+  if ((request.graph.schemaVersion === "0.7.0") !== (request.schemaVersion === "0.7.0")) context.addIssue({ code: "custom", message: "Scoped opening graphs require matching worker protocol 0.7.0." });
   if (request.graph.schemaVersion === "0.5.0" && request.schemaVersion !== "0.5.0") context.addIssue({ code: "custom", message: "Window vocabulary graphs require worker protocol 0.5.0." });
   if (request.graph.schemaVersion === "0.4.0" && request.schemaVersion !== "0.4.0") context.addIssue({ code: "custom", message: "Whole-building graphs require worker protocol 0.4.0." });
   if (request.graph.schemaVersion === "0.3.0" && request.schemaVersion !== "0.3.0") context.addIssue({ code: "custom", message: "Surface graphs require worker protocol 0.3.0." });
 });
 const vector = z.tuple([z.number().finite(), z.number().finite(), z.number().finite()]);
 export const BayConstructionWorkerReplySchema = z.discriminatedUnion("type", [
-  z.object({ schemaVersion: z.enum(["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0"]), type: z.literal("bay-result"),
+  z.object({ schemaVersion: z.enum(["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0"]), type: z.literal("bay-result"),
     requestId: z.number().int().positive(),
     result: z.object({ graph: BayConstructionGraphSchema, ir: RuntimeBuildingIRSchema,
       prototypes: z.array(MeshBatchIRSchema).max(512).optional(), previewNodeId: z.string().optional(),
       surfaceComposition: BuildingSurfaceCompositionSchema.optional(),
-      trace: z.array(z.object({ nodeId: z.string(), type: z.enum(["FacadeScope", "PlaceOpening", "EmitWall", "AssembleWindow", "Output", "SplitFloors", "SplitBays", "SelectScopes", "ProfileTrim", "RoofCap", "JoinGeometry", "SetSurface", "Footprint", "Storeys", "PlaceDoor", "AssembleDoor", "BuildingRoof", "PlaceStorefront"]),
+      trace: z.array(z.object({ nodeId: z.string(), type: z.enum(["FacadeScope", "PlaceOpening", "EmitWall", "AssembleWindow", "Output", "SplitFloors", "SplitBays", "SelectScopes", "ProfileTrim", "RoofCap", "JoinGeometry", "SetSurface", "Footprint", "Storeys", "PlaceDoor", "AssembleDoor", "BuildingRoof", "PlaceStorefront", "EditOpeningWidth"]),
         output: z.enum(["scope", "geometry", "footprint"]), openingCount: z.number().int().nonnegative(),
         meshCount: z.number().int().nonnegative(), bounds: z.object({ min: vector, max: vector }).strict(),
         scopeCount: z.number().int().nonnegative().max(256).optional(), scopeNames: z.array(z.string()).max(256).optional()
       }).strict()) }).strict()
   }).strict(),
-  z.object({ schemaVersion: z.enum(["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0"]), type: z.literal("bay-error"),
+  z.object({ schemaVersion: z.enum(["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0"]), type: z.literal("bay-error"),
     requestId: z.number().int().nonnegative(), message: z.string() }).strict()
 ]).superRefine((reply, context) => {
   if (reply.type !== "bay-result") return;
@@ -39,9 +40,10 @@ export const BayConstructionWorkerReplySchema = z.discriminatedUnion("type", [
     context.addIssue({ code: "custom", message: "Facade results require worker protocol 0.2.0." });
   }
   if ((result.graph.schemaVersion === "0.6.0") !== (reply.schemaVersion === "0.6.0")) context.addIssue({ code: "custom", message: "Storefront results require matching worker protocol 0.6.0." });
+  if ((result.graph.schemaVersion === "0.7.0") !== (reply.schemaVersion === "0.7.0")) context.addIssue({ code: "custom", message: "Scoped opening results require matching worker protocol 0.7.0." });
   if (result.graph.schemaVersion === "0.5.0" && reply.schemaVersion !== "0.5.0") context.addIssue({ code: "custom", message: "Window vocabulary results require worker protocol 0.5.0." });
   if (result.graph.schemaVersion === "0.4.0" && reply.schemaVersion !== "0.4.0") context.addIssue({ code: "custom", message: "Whole-building results require worker protocol 0.4.0." });
-  if (!["0.3.0", "0.4.0", "0.5.0", "0.6.0"].includes(reply.schemaVersion) && (result.graph.schemaVersion === "0.3.0" || result.surfaceComposition)) context.addIssue({ code: "custom", message: "Surface results require worker protocol 0.3.0." });
+  if (!["0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0"].includes(reply.schemaVersion) && (result.graph.schemaVersion === "0.3.0" || result.surfaceComposition)) context.addIssue({ code: "custom", message: "Surface results require worker protocol 0.3.0." });
   const expectedComposition = constructionSurfaceAt(result.graph, result.previewNodeId ?? result.graph.outputNodeId);
   if (JSON.stringify(result.surfaceComposition ?? null) !== JSON.stringify(expectedComposition ?? null)) context.addIssue({ code: "custom", message: "Surface instructions do not match the executed graph output." });
   if (!result.prototypes) {

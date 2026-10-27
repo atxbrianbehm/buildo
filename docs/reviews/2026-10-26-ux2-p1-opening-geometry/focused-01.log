@@ -1,0 +1,30 @@
+
+ RUN  v4.1.9 C:/Users/behmb/Documents/Cascade Projects/buildo
+
+ ❯ src/features/building-family/tests/constructionOpeningEditGeometry.test.ts (15 tests | 3 failed) 1470ms
+     × retains finite wound geometry and noncollapsed metre UVs for assembly 0 35ms
+     × retains finite wound geometry and noncollapsed metre UVs for assembly 1 33ms
+     × retains finite wound geometry and noncollapsed metre UVs for assembly 2 37ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/building-family/tests/constructionOpeningEditGeometry.test.ts > selected opening scope compiler > retains finite wound geometry and noncollapsed metre UVs for assembly 0
+ FAIL  src/features/building-family/tests/constructionOpeningEditGeometry.test.ts > selected opening scope compiler > retains finite wound geometry and noncollapsed metre UVs for assembly 1
+ FAIL  src/features/building-family/tests/constructionOpeningEditGeometry.test.ts > selected opening scope compiler > retains finite wound geometry and noncollapsed metre UVs for assembly 2
+AssertionError: expected -0.0009642854117389299 to be greater than 0
+ ❯ src/features/building-family/tests/constructionOpeningEditGeometry.test.ts:147:60
+    145|         const cross=[ab[1]*ac[2]-ab[2]*ac[1],ab[2]*ac[0]-ab[0]*ac[2],a…
+    146|         const normal=geometry.normals!.slice(ids[0]*3,ids[0]*3+3);
+    147|         expect(cross.reduce((sum,v,j)=>sum+v*normal[j],0)).toBeGreater…
+       |                                                            ^
+    148|         const uv=ids.map(id=>geometry.uvs!.slice(id*2,id*2+2));
+    149|         expect(Math.abs((uv[1][0]-uv[0][0])*(uv[2][1]-uv[0][1])-(uv[1]…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+
+ Test Files  1 failed | 4 passed (5)
+      Tests  3 failed | 64 passed (67)
+   Start at  20:59:50
+   Duration  2.77s (transform 659ms, setup 488ms, import 2.25s, tests 2.90s, environment 3.66s)
+

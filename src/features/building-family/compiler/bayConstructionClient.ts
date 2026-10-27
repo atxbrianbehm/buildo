@@ -24,7 +24,7 @@ export class BayConstructionClient {
     const requestId = ++this.sequence;
     return new Promise((resolve, reject) => {
       this.pending.set(requestId, { resolve, reject });
-      try { this.worker.postMessage({ schemaVersion: graph.schemaVersion === "0.6.0" ? "0.6.0" : graph.schemaVersion === "0.5.0" ? "0.5.0" : graph.schemaVersion === "0.4.0" ? "0.4.0" : graph.schemaVersion === "0.3.0" ? "0.3.0" : graph.schemaVersion === "0.2.0" || previewNodeId ? "0.2.0" : "0.1.0", type: "evaluate-bay", requestId, graph,
+      try { this.worker.postMessage({ schemaVersion: graph.schemaVersion === "0.7.0" ? "0.7.0" : graph.schemaVersion === "0.6.0" ? "0.6.0" : graph.schemaVersion === "0.5.0" ? "0.5.0" : graph.schemaVersion === "0.4.0" ? "0.4.0" : graph.schemaVersion === "0.3.0" ? "0.3.0" : graph.schemaVersion === "0.2.0" || previewNodeId ? "0.2.0" : "0.1.0", type: "evaluate-bay", requestId, graph,
         ...(previewNodeId ? { previewNodeId } : {}) }); }
       catch (error) { this.pending.delete(requestId); reject(error instanceof Error ? error : new Error("Cannot start construction evaluation.")); }
     });

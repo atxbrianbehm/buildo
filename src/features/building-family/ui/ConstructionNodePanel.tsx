@@ -23,10 +23,11 @@ const buildingPositions: Record<string,Point> = {
   join:{x:1008,y:322},surface:{x:1254,y:322},output:{x:1500,y:322}
 };
 function initialPoint(version: BayConstructionGraph["schemaVersion"], id: string, index: number): Point {
-  if (["0.4.0", "0.5.0", "0.6.0"].includes(version)) return buildingPositions[id] ?? defaultPoint(id,index);
+  if (["0.4.0", "0.5.0", "0.6.0", "0.7.0"].includes(version)) return buildingPositions[id] ?? defaultPoint(id,index);
   return version === "0.3.0" && id === "output" ? {x:1254,y:322} : id === "join" ? {x:762,y:322} : id === "surface" ? {x:1008,y:322} : defaultPoint(id,index);
 }
 const defaults: Record<BayConstructionNode["type"], Record<string, number>> = {
+  EditOpeningWidth: {},
   PlaceStorefront: { ...DEFAULT_STOREFRONT_PARAMETERS },
   Footprint: { widthM: 11.2, depthM: 8.4, wallDepthM: .36 }, Storeys: { count: 3, groundHeightM: 4, upperHeightM: 3.7 }, PlaceDoor: { bayIndex: 1, widthM: 1.22, heightM: 2.9 }, AssembleDoor: { recessM: .14, frameWidthM: .075, leafHeightM: 2.3, thresholdProjectionM: .15 }, BuildingRoof: { parapetHeightM: .55, copingProjectionM: .06, corniceHeightM: .3, corniceProjectionM: .24 },
   FacadeScope: { widthM: 2.8, heightM: 3.8, wallDepthM: 0.36 }, SplitFloors: { count: 3 }, SplitBays: { count: 4 },
@@ -60,7 +61,7 @@ export function ConstructionNodePanel({ graph, selected, disabled, names, onSele
     else if ((p.y + 110) * zoom > container.scrollTop + container.clientHeight) container.scrollTop = (p.y + 110) * zoom - container.clientHeight;
   }, [selected, zoom, graph.nodes, graph.schemaVersion, positions]);
   function replace(node: BayConstructionNode) {
-    onChange({ ...graph, schemaVersion: ["0.3.0", "0.4.0", "0.5.0", "0.6.0"].includes(graph.schemaVersion) ? graph.schemaVersion : "0.2.0", nodes: graph.nodes.map(value => value.id === node.id ? node : value) });
+    onChange({ ...graph, schemaVersion: ["0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0"].includes(graph.schemaVersion) ? graph.schemaVersion : "0.2.0", nodes: graph.nodes.map(value => value.id === node.id ? node : value) });
   }
   function connect(target: BayConstructionNode) {
     const source = graph.nodes.find(node => node.id === connection);
@@ -88,8 +89,8 @@ export function ConstructionNodePanel({ graph, selected, disabled, names, onSele
         ...(Object.keys(defaults[addType]).length ? { parameters: defaults[addType] } : {}) };
     const result = BayConstructionNodeSchema.safeParse(raw);
     if (!result.success || (addType === "SetSurface" ? !geometry || graph.nodes.some(node => node.type === "SetSurface") : !upstream && !["FacadeScope", "Footprint", "Storeys", "Output", "JoinGeometry"].includes(addType))) { setError("Add a compatible source first; use one final surface finish node."); return; }
-    const added = ["0.5.0", "0.6.0"].includes(graph.schemaVersion) && result.data.type === "AssembleWindow" ? { ...result.data, parameters: { ...result.data.parameters, layout: 0 as const } } : result.data;
-    onChange({ ...graph, schemaVersion: graph.schemaVersion === "0.6.0" ? "0.6.0" : graph.schemaVersion === "0.5.0" ? "0.5.0" : graph.schemaVersion === "0.4.0" || ["Footprint", "Storeys", "PlaceDoor", "AssembleDoor", "BuildingRoof"].includes(addType) ? "0.4.0" : graph.schemaVersion === "0.3.0" || ["SetSurface", "JoinGeometry"].includes(addType) ? "0.3.0" : "0.2.0", nodes: [...graph.nodes, added] }); onSelect(id); setError(null);
+    const added = ["0.5.0", "0.6.0", "0.7.0"].includes(graph.schemaVersion) && result.data.type === "AssembleWindow" ? { ...result.data, parameters: { ...result.data.parameters, layout: 0 as const } } : result.data;
+    onChange({ ...graph, schemaVersion: ["0.6.0", "0.7.0"].includes(graph.schemaVersion) ? graph.schemaVersion : graph.schemaVersion === "0.5.0" ? "0.5.0" : graph.schemaVersion === "0.4.0" || ["Footprint", "Storeys", "PlaceDoor", "AssembleDoor", "BuildingRoof"].includes(addType) ? "0.4.0" : graph.schemaVersion === "0.3.0" || ["SetSurface", "JoinGeometry"].includes(addType) ? "0.3.0" : "0.2.0", nodes: [...graph.nodes, added] }); onSelect(id); setError(null);
   }
   const node = graph.nodes.find(value => value.id === selected);
   const connectingNode = graph.nodes.find(value => value.id === connection);
@@ -146,7 +147,7 @@ export function ConstructionNodePanel({ graph, selected, disabled, names, onSele
     </div>
     <div className="construction-graph__toolbar">
       <select aria-label="Operator to add" value={addType} disabled={disabled} onChange={event => setAddType(event.currentTarget.value as BayConstructionNode["type"])}>
-        {Object.entries(names).filter(([type]) => type !== "PlaceStorefront" || graph.schemaVersion === "0.6.0").map(([type, label]) => <option key={type} value={type}>{label}</option>)}
+        {Object.entries(names).filter(([type]) => type !== "EditOpeningWidth" && (type !== "PlaceStorefront" || ["0.6.0", "0.7.0"].includes(graph.schemaVersion))).map(([type, label]) => <option key={type} value={type}>{label}</option>)}
       </select><button type="button" disabled={disabled || graph.nodes.length >= 128} onClick={add}>Add node</button>
       <button type="button" disabled={disabled || !node || graph.nodes.length <= 2} onClick={() => {
         onChange({ ...graph, nodes: graph.nodes.filter(value => value.id !== selected) }); onSelect(graph.nodes.find(value => value.id !== selected)!.id); setConnection(null);

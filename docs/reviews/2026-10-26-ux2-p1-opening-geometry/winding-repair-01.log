@@ -1,0 +1,35 @@
+
+ RUN  v4.1.9 C:/Users/behmb/Documents/Cascade Projects/buildo
+
+ ❯ src/features/building-family/tests/constructionOpeningEditGeometry.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/building-family/tests/constructionOpeningEditGeometry.test.ts [ src/features/building-family/tests/constructionOpeningEditGeometry.test.ts ]
+Error: Transform failed with 1 error:
+
+[PARSE_ERROR] Expected `,` or `]` but found `;`
+    ╭─[ src/features/building-family/compiler/constructionOpeningTrimGeometry.ts:13:129 ]
+    │
+ 13 │   const ring: Array<readonly [number,number]> = [[section[0][0],input.center[2]],...section,[section.at(-1)![0],input.center[2]];
+    │                                                 ┬                                                                               ┬  
+    │                                                 ╰────────────────────────────────────────────────────────────────────────────────── Opened here
+    │                                                                                                                                 │  
+    │                                                                                                                                 ╰── `,` or `]` expected
+────╯
+
+  Plugin: vite:oxc
+  File: C:/Users/behmb/Documents/Cascade Projects/buildo/src/features/building-family/compiler/constructionOpeningTrimGeometry.ts
+ ❯ transformWithOxc ../../Cascade%20Projects/buildo/node_modules/vite/dist/node/chunks/node.js:3657:19
+ ❯ TransformPluginContext.transform ../../Cascade%20Projects/buildo/node_modules/vite/dist/node/chunks/node.js:3728:26
+ ❯ EnvironmentPluginContainer.transform ../../Cascade%20Projects/buildo/node_modules/vite/dist/node/chunks/node.js:29699:51
+ ❯ loadAndTransform ../../Cascade%20Projects/buildo/node_modules/vite/dist/node/chunks/node.js:19725:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  21:03:00
+   Duration  1.25s (transform 178ms, setup 101ms, import 0ms, tests 0ms, environment 723ms)
+
