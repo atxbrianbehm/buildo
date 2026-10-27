@@ -1,0 +1,42 @@
+[
+  {
+    "name": "typecheck",
+    "exitCode": 0,
+    "startedAtUtc": "2026-10-27T03:58:48.1792258Z",
+    "endedAtUtc": "2026-10-27T03:59:01.3533706Z",
+    "sourcePinsStable": true,
+    "log": "test-results/t1-sill-texture-interactions-2026-10-26/typecheck-final.log"
+  },
+  {
+    "name": "lint",
+    "exitCode": 0,
+    "startedAtUtc": "2026-10-27T03:59:01.4524718Z",
+    "endedAtUtc": "2026-10-27T03:59:38.9953225Z",
+    "sourcePinsStable": true,
+    "log": "test-results/t1-sill-texture-interactions-2026-10-26/lint-final.log"
+  },
+  {
+    "name": "test",
+    "exitCode": 0,
+    "startedAtUtc": "2026-10-27T03:59:39.0598154Z",
+    "endedAtUtc": "2026-10-27T04:06:23.1555919Z",
+    "sourcePinsStable": true,
+    "log": "test-results/t1-sill-texture-interactions-2026-10-26/test-final.log"
+  },
+  {
+    "name": "build",
+    "exitCode": 0,
+    "startedAtUtc": "2026-10-27T04:06:23.1989465Z",
+    "endedAtUtc": "2026-10-27T04:06:36.4858187Z",
+    "sourcePinsStable": true,
+    "log": "test-results/t1-sill-texture-interactions-2026-10-26/build-final.log"
+  },
+  {
+    "name": "test:e2e",
+    "exitCode": 0,
+    "startedAtUtc": "2026-10-27T04:06:36.5321035Z",
+    "endedAtUtc": "2026-10-27T04:09:18.5168627Z",
+    "sourcePinsStable": true,
+    "log": "test-results/t1-sill-texture-interactions-2026-10-26/test-e2e-final.log"
+  }
+]

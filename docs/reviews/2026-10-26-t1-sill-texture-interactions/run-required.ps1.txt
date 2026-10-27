@@ -1,0 +1,23 @@
+$ErrorActionPreference = 'Continue'
+$packetDir = 'test-results/t1-sill-texture-interactions-2026-10-26'
+$sourcePins = Get-Content "$packetDir/source-pins.json" -Raw | ConvertFrom-Json
+function Assert-SourcePins {
+  foreach ($pin in $sourcePins.files) {
+    $actual = (Get-FileHash -LiteralPath $pin.file -Algorithm SHA256).Hash.ToLowerInvariant()
+    if ($actual -ne $pin.sha256) { throw "Source changed during required checks: $($pin.file)" }
+  }
+}
+$results = @()
+foreach ($name in @('typecheck','lint','test','build','test:e2e')) {
+  Assert-SourcePins
+  $started = [DateTime]::UtcNow.ToString('o')
+  $log = "$packetDir/$($name.Replace(':','-'))-final.log"
+  & npm.cmd run $name *> $log
+  $code = $LASTEXITCODE
+  Assert-SourcePins
+  $results += [pscustomobject]@{ name=$name; exitCode=$code; startedAtUtc=$started; endedAtUtc=[DateTime]::UtcNow.ToString('o'); sourcePinsStable=$true; log=$log }
+  $results | ConvertTo-Json -Depth 5 | Set-Content "$packetDir/required-checks.json" -Encoding utf8
+  Write-Output "CHECK $name EXIT=$code SOURCE_PINS_STABLE=true"
+  if ($code -ne 0) { Get-Content $log -Tail 25; exit $code }
+}
+Write-Output 'ALL_FIVE_CHECKS_PASSED_AND_SOURCE_STABLE'

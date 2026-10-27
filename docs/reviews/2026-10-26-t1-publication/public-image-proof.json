@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "0.1.0",
+  "implementationCommit": "6f50c880c2422471c5c28f2bdb2a1cfcf25c63d0",
+  "images": [
+    {
+      "file": "negative-control-webgl/sill-textured.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/6f50c880c2422471c5c28f2bdb2a1cfcf25c63d0/docs/reviews/2026-10-26-t1-sill-texture-interactions/negative-control-webgl/sill-textured.png",
+      "status": 200,
+      "mime": "image/png",
+      "sha256": "ba2c8301940d7324d999702985f5a4c78feeeb2e152bd7527345a31776abedb1",
+      "sizeBytes": 305355,
+      "literalLocalBytesEqual": true
+    },
+    {
+      "file": "webgl/sill-textured.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/6f50c880c2422471c5c28f2bdb2a1cfcf25c63d0/docs/reviews/2026-10-26-t1-sill-texture-interactions/webgl/sill-textured.png",
+      "status": 200,
+      "mime": "image/png",
+      "sha256": "f325cb20ca5c43615ad9f741044cd7e671bed2918d07389a74659c30644aa047",
+      "sizeBytes": 303025,
+      "literalLocalBytesEqual": true
+    },
+    {
+      "file": "negative-control-webgl/sill-no-textures.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/6f50c880c2422471c5c28f2bdb2a1cfcf25c63d0/docs/reviews/2026-10-26-t1-sill-texture-interactions/negative-control-webgl/sill-no-textures.png",
+      "status": 200,
+      "mime": "image/png",
+      "sha256": "19019b8108d0d080d38f6fa2a0054760ddcd175485200372701f28f59aa6284b",
+      "sizeBytes": 84099,
+      "literalLocalBytesEqual": true
+    },
+    {
+      "file": "webgl/sill-no-textures.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/6f50c880c2422471c5c28f2bdb2a1cfcf25c63d0/docs/reviews/2026-10-26-t1-sill-texture-interactions/webgl/sill-no-textures.png",
+      "status": 200,
+      "mime": "image/png",
+      "sha256": "ec4c8b3753a1ed02f1c10a50a02f56872f3273bd83f4b92c2120628e7120a815",
+      "sizeBytes": 83321,
+      "literalLocalBytesEqual": true
+    },
+    {
+      "file": "webgpu/sill-textured.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/6f50c880c2422471c5c28f2bdb2a1cfcf25c63d0/docs/reviews/2026-10-26-t1-sill-texture-interactions/webgpu/sill-textured.png",
+      "status": 200,
+      "mime": "image/png",
+      "sha256": "ecaa628ff57844987a04cc318aeca7e5bd8d249a3a706080e1e3d595a80766a5",
+      "sizeBytes": 296582,
+      "literalLocalBytesEqual": true
+    },
+    {
+      "file": "webgl/whole-textured.png",
+      "url": "https://raw.githubusercontent.com/atxbrianbehm/buildo/6f50c880c2422471c5c28f2bdb2a1cfcf25c63d0/docs/reviews/2026-10-26-t1-sill-texture-interactions/webgl/whole-textured.png",
+      "status": 200,
+      "mime": "image/png",
+      "sha256": "012f35155d8bb36c188a66cdd33a86589ad8c134f463c7cc788e9132c335db30",
+      "sizeBytes": 431898,
+      "literalLocalBytesEqual": true
+    }
+  ]
+}

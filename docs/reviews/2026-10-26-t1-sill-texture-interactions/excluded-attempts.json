@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "0.1.0",
+  "attempts": [
+    {
+      "run": "before-webgl",
+      "excluded": true,
+      "reason": "On-demand renderer was not requested after material toggles; only the original textured frame is meaningful."
+    },
+    {
+      "run": "before-webgl-02",
+      "excludedFromFinalVerification": true,
+      "reason": "Explicit draws corrected the discriminator, but the first driver enabled shadow casting on non-shadow lights during restoration. Superseded by final negative control."
+    },
+    {
+      "run": "before-webgpu",
+      "excluded": true,
+      "reason": "Mutating cached WebGPU material maps in place caused a diagnostic TextureNode null matrix failure; final harness assigns fresh material clones instead."
+    },
+    {
+      "run": "syntax-only edit",
+      "excluded": true,
+      "reason": "Driver edit matched a helper-local state declaration and failed parsing before execution; rebuilt from the accepted original harness."
+    },
+    {
+      "run": "final-webgpu",
+      "excluded": true,
+      "reason": "Diagnostic light castShadow mutation invalidated a cached ShadowNode (null depthTexture). Final WebGPU run keeps the production shadow setup and isolates map/normal effects only; WebGL supplies the shadow-off discriminator."
+    }
+  ]
+}

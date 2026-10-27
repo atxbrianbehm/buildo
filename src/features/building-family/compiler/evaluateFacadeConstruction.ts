@@ -252,7 +252,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
           if (!cell.storefrontPlan && (p.frameWidthM * 4 >= Math.min(opening.widthM, opening.heightM) || p.recessM + 0.08 >= cell.scope.sizeM[2])) throw new Error(`Node ${node.id}: frame or recess does not fit the wall.`);
           const sillM = Math.round((opening.centerYM - cell.scope.originM[1] - opening.heightM / 2) * 1e9) / 1e9;
           const metricTimberUvs=Boolean(cell.building);
-          const key = JSON.stringify(cell.storefrontPlan ? [opening.widthM, opening.heightM, sillM, cell.storefrontPlan.source.parameters, "storefront-v1"] : cell.localOpeningWidth ? [opening.widthM,opening.heightM,sillM,p,"local-opening-solid-trim-v1"] : metricTimberUvs ? [opening.widthM, opening.heightM, sillM, p, "metric-timber-uv-v1"] : [opening.widthM, opening.heightM, sillM, p]);
+          const key = JSON.stringify(cell.storefrontPlan ? [opening.widthM, opening.heightM, sillM, cell.storefrontPlan.source.parameters, "storefront-seated-sill-v2"] : cell.localOpeningWidth ? [opening.widthM,opening.heightM,sillM,p,"local-opening-solid-trim-v1"] : metricTimberUvs ? [opening.widthM, opening.heightM, sillM, p, "metric-timber-uv-v1"] : [opening.widthM, opening.heightM, sillM, p]);
           if (!templates.has(key)) templates.set(key, (async () => {
             if (cell.storefrontPlan) {
               const geometry = buildConstructionStorefrontGeometry(cell.storefrontPlan);

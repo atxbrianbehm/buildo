@@ -1,0 +1,227 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "sill-texture-interaction-verification",
+  "sourceParent": "956f93d84dab9d299257e7bd6ca0d49250f17841",
+  "productionSourcePathsChanged": [
+    "src/features/building-family/compiler/constructionStorefrontGeometry.ts",
+    "src/features/building-family/compiler/evaluateFacadeConstruction.ts",
+    "src/features/building-family/tests/constructionStorefrontGeometry.test.ts"
+  ],
+  "unchangedSourcePins": 343,
+  "totalSourcePins": 346,
+  "controlledNegativeReproduction": "Vite replaces only bottom + 0.015 with bottom - 0.015 in the storefront compiler; on-disk final source stays pinned. Prototype cache key remains the final v2 key in this diagnostic.",
+  "changedNativeSemanticPaths": [
+    "building/authored-building/node/window/facade/floor/0/bay/0/trim",
+    "building/authored-building/node/window/facade/floor/0/bay/2/trim",
+    "building/authored-building/node/window/facade/floor/0/bay/3/trim"
+  ],
+  "allOtherSubmittedGeometryAndTransformsExact": true,
+  "originalMaterialChannelsAndBindingsExact": true,
+  "negativeControlCameraAndLightsExact": true,
+  "finalGeometryEqualAcrossBackends": true,
+  "reviewedSourceSha256": "f4f4a273bde8f2920f43c1d882f43361310f092176122ce1307d91f54d5d6df8",
+  "portableFiles": [
+    {
+      "backend": "webgpu",
+      "file": "saved-v8.json",
+      "sha256": "f4f4a273bde8f2920f43c1d882f43361310f092176122ce1307d91f54d5d6df8",
+      "literalEqualToReviewedV8": true
+    },
+    {
+      "backend": "webgpu",
+      "file": "reopened-v8.json",
+      "sha256": "f4f4a273bde8f2920f43c1d882f43361310f092176122ce1307d91f54d5d6df8",
+      "literalEqualToReviewedV8": true
+    },
+    {
+      "backend": "webgpu",
+      "file": "cold-v8.json",
+      "sha256": "f4f4a273bde8f2920f43c1d882f43361310f092176122ce1307d91f54d5d6df8",
+      "literalEqualToReviewedV8": true
+    },
+    {
+      "backend": "webgl",
+      "file": "saved-v8.json",
+      "sha256": "f4f4a273bde8f2920f43c1d882f43361310f092176122ce1307d91f54d5d6df8",
+      "literalEqualToReviewedV8": true
+    },
+    {
+      "backend": "webgl",
+      "file": "reopened-v8.json",
+      "sha256": "f4f4a273bde8f2920f43c1d882f43361310f092176122ce1307d91f54d5d6df8",
+      "literalEqualToReviewedV8": true
+    },
+    {
+      "backend": "webgl",
+      "file": "cold-v8.json",
+      "sha256": "f4f4a273bde8f2920f43c1d882f43361310f092176122ce1307d91f54d5d6df8",
+      "literalEqualToReviewedV8": true
+    },
+    {
+      "backend": "negative-control-webgl",
+      "file": "saved-v8.json",
+      "sha256": "f4f4a273bde8f2920f43c1d882f43361310f092176122ce1307d91f54d5d6df8",
+      "literalEqualToReviewedV8": true
+    },
+    {
+      "backend": "negative-control-webgl",
+      "file": "reopened-v8.json",
+      "sha256": "f4f4a273bde8f2920f43c1d882f43361310f092176122ce1307d91f54d5d6df8",
+      "literalEqualToReviewedV8": true
+    },
+    {
+      "backend": "negative-control-webgl",
+      "file": "cold-v8.json",
+      "sha256": "f4f4a273bde8f2920f43c1d882f43361310f092176122ce1307d91f54d5d6df8",
+      "literalEqualToReviewedV8": true
+    }
+  ],
+  "native": {
+    "webgpu": {
+      "states": 4,
+      "captures": 7,
+      "errors": [],
+      "coldProviderCalls": 0,
+      "coldMaterialGenerationCalls": 0,
+      "coldPixelsExact": true,
+      "diagnostics": [
+        {
+          "mode": "no-normal",
+          "drawnMaps": 3,
+          "drawnNormalMaps": 0,
+          "shadowLights": 1
+        },
+        {
+          "mode": "no-textures",
+          "drawnMaps": 0,
+          "drawnNormalMaps": 0,
+          "shadowLights": 1
+        }
+      ]
+    },
+    "webgl": {
+      "states": 4,
+      "captures": 9,
+      "errors": [],
+      "coldProviderCalls": 0,
+      "coldMaterialGenerationCalls": 0,
+      "coldPixelsExact": true,
+      "diagnostics": [
+        {
+          "mode": "no-normal",
+          "drawnMaps": 3,
+          "drawnNormalMaps": 0,
+          "shadowLights": 1
+        },
+        {
+          "mode": "no-textures",
+          "drawnMaps": 0,
+          "drawnNormalMaps": 0,
+          "shadowLights": 1
+        },
+        {
+          "mode": "no-shadows",
+          "drawnMaps": 3,
+          "drawnNormalMaps": 3,
+          "shadowLights": 0
+        },
+        {
+          "mode": "clay-no-shadows",
+          "drawnMaps": 0,
+          "drawnNormalMaps": 0,
+          "shadowLights": 0
+        }
+      ]
+    },
+    "negative-control-webgl": {
+      "states": 4,
+      "captures": 9,
+      "errors": [],
+      "coldProviderCalls": 0,
+      "coldMaterialGenerationCalls": 0,
+      "coldPixelsExact": true,
+      "diagnostics": [
+        {
+          "mode": "no-normal",
+          "drawnMaps": 3,
+          "drawnNormalMaps": 0,
+          "shadowLights": 1
+        },
+        {
+          "mode": "no-textures",
+          "drawnMaps": 0,
+          "drawnNormalMaps": 0,
+          "shadowLights": 1
+        },
+        {
+          "mode": "no-shadows",
+          "drawnMaps": 3,
+          "drawnNormalMaps": 3,
+          "shadowLights": 0
+        },
+        {
+          "mode": "clay-no-shadows",
+          "drawnMaps": 0,
+          "drawnNormalMaps": 0,
+          "shadowLights": 0
+        }
+      ]
+    }
+  },
+  "requiredChecks": [
+    {
+      "name": "typecheck",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-27T03:58:48.1792258Z",
+      "endedAtUtc": "2026-10-27T03:59:01.3533706Z",
+      "sourcePinsStable": true,
+      "log": "test-results/t1-sill-texture-interactions-2026-10-26/typecheck-final.log"
+    },
+    {
+      "name": "lint",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-27T03:59:01.4524718Z",
+      "endedAtUtc": "2026-10-27T03:59:38.9953225Z",
+      "sourcePinsStable": true,
+      "log": "test-results/t1-sill-texture-interactions-2026-10-26/lint-final.log"
+    },
+    {
+      "name": "test",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-27T03:59:39.0598154Z",
+      "endedAtUtc": "2026-10-27T04:06:23.1555919Z",
+      "sourcePinsStable": true,
+      "log": "test-results/t1-sill-texture-interactions-2026-10-26/test-final.log"
+    },
+    {
+      "name": "build",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-27T04:06:23.1989465Z",
+      "endedAtUtc": "2026-10-27T04:06:36.4858187Z",
+      "sourcePinsStable": true,
+      "log": "test-results/t1-sill-texture-interactions-2026-10-26/build-final.log"
+    },
+    {
+      "name": "test:e2e",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-27T04:06:36.5321035Z",
+      "endedAtUtc": "2026-10-27T04:09:18.5168627Z",
+      "sourcePinsStable": true,
+      "log": "test-results/t1-sill-texture-interactions-2026-10-26/test-e2e-final.log"
+    }
+  ],
+  "tests": {
+    "files": 128,
+    "passed": 1863
+  },
+  "standardE2E": [
+    "R3_P1_WORKSPACE_E2E_RESULT",
+    "R3_P6_WINDOW_WIDTH_E2E_RESULT",
+    "R3_P11_SOURCE_CHECKPOINT_RECOVERY_E2E_RESULT",
+    "R3_P12_WINDOW_WIDTH_HISTORY_E2E_RESULT",
+    "R3_P15_WIDTH_BATCH_SOURCE_E2E_RESULT",
+    "R3_P16_WINDOW_FLOOR_WIDTH_E2E_RESULT",
+    "R3_P18_WINDOW_BAY_WIDTH_E2E_RESULT",
+    "R4_P4_SURFACE_SOURCE_APP_E2E_RESULT"
+  ]
+}
