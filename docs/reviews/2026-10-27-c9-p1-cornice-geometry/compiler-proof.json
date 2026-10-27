@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "cornice-p1-compiler-proof",
+  "sourceProjectSha256": "eb7466b09ab10f3e4040aeeb5acb85e959cd7dc75efa73f4f2da5140b0661cd1",
+  "originalSourceExact": true,
+  "providerOrMaterialCalls": 0,
+  "productControlsAndPortableContinuationPendingP2": true,
+  "cases": [
+    {
+      "layout": 0,
+      "name": "moulded",
+      "graphVersion": "0.8.0",
+      "corniceVertices": 224,
+      "corniceTriangles": 112,
+      "corniceHash": "15e239285d5c4956a8cd5fe7f2e3f1af12c6d0a439974a8025b0f4652fc33e5b",
+      "protectedHash": "28a2d81da54df415156f31ef4071aad168616cc15e80c8b7727e50da292b2fc1",
+      "protectedPartsExact": true,
+      "mouldedExact": true,
+      "repeatedEvaluationExact": true,
+      "graphSha256": "51d473441d55b252ab29f1b3a8776021874bfd1e4f8591dae2e6f57afb2be38c"
+    },
+    {
+      "layout": 1,
+      "name": "dentil-course",
+      "graphVersion": "0.8.0",
+      "corniceVertices": 14848,
+      "corniceTriangles": 6816,
+      "corniceHash": "2e8b0c279d5d1a9269bcce781cc940fcd0e5c45a703eadfe7b1b67723d90ebe9",
+      "protectedHash": "28a2d81da54df415156f31ef4071aad168616cc15e80c8b7727e50da292b2fc1",
+      "protectedPartsExact": true,
+      "mouldedExact": null,
+      "repeatedEvaluationExact": true,
+      "graphSha256": "2393213da8ea3ea15f405ada5836476a51193dfeb8d153aa53b3728e3c84f8ab"
+    },
+    {
+      "layout": 2,
+      "name": "bracket-course",
+      "graphVersion": "0.8.0",
+      "corniceVertices": 16448,
+      "corniceTriangles": 6664,
+      "corniceHash": "c1628790fdb1d63976709845ae6e7a229f29ebb45d07a835fb8543547cb20369",
+      "protectedHash": "28a2d81da54df415156f31ef4071aad168616cc15e80c8b7727e50da292b2fc1",
+      "protectedPartsExact": true,
+      "mouldedExact": null,
+      "repeatedEvaluationExact": true,
+      "graphSha256": "995e9ca6e559e26ee086e90728bb895b3e2fb0c32f1a062e2db1898e1fb73bca"
+    }
+  ]
+}

@@ -1,0 +1,120 @@
+{
+  "schemaVersion": "0.1.0",
+  "files": [
+    {
+      "file": "before-source-pins.json",
+      "sha256": "a8f3cdb0f3929735f4b6d0789ab06b69de4d3f24449c444dfdc56d0cecab5919",
+      "bytes": 60257
+    },
+    {
+      "file": "compiler-proof.json",
+      "sha256": "99c3e0c2fbf42478ea368b15bc01a52fb440b67fded00df31e23c1bae87093f6",
+      "bytes": 1877
+    },
+    {
+      "file": "export-proof.log",
+      "sha256": "71ba176edca3088354487ce1720dc97aedf34df9ff9b72b7008c7e79d2ebfd7e",
+      "bytes": 1992
+    },
+    {
+      "file": "export-proof.mjs",
+      "sha256": "3f494e924509dc679f775bcb1a4b79bc897d1a6e9321cc12b6c3f9fa284def94",
+      "bytes": 2609
+    },
+    {
+      "file": "focused-02.log",
+      "sha256": "60c7c1aeff79dbd5dc81bba12123dbfb5556032a67afa3080a009efd8adcda22",
+      "bytes": 847
+    },
+    {
+      "file": "graphs/bracket-course.json",
+      "sha256": "de1406d267b6b75fb050547af5dd0ac108e98b39a0d896f4cbea3c2e8122fb00",
+      "bytes": 6903
+    },
+    {
+      "file": "graphs/dentil-course.json",
+      "sha256": "789d6897e58be0c26c2d7d848a0b37791ed05e451ea67e7eaf21187966609f68",
+      "bytes": 6903
+    },
+    {
+      "file": "graphs/moulded.json",
+      "sha256": "5e151ea2518632d621c16063701b2133aa8384caa151ace8dded2ab00828828a",
+      "bytes": 6903
+    },
+    {
+      "file": "lint.log",
+      "sha256": "a21c6d2dedb756f860b052cb2d84cd603fbbe38ee53e1ad76ab9c5803f028958",
+      "bytes": 37
+    },
+    {
+      "file": "README.md",
+      "sha256": "eead6c21a2788cd0e13df0f0ddc01fb18e48378d0cd7d8b37ed943b988aae763",
+      "bytes": 2580
+    },
+    {
+      "file": "source/src/features/building-family/compiler/bayConstructionClient.ts",
+      "sha256": "813b222e965ad8e3beedebfb0da449fb9dd3d2404c54fc36cf5ec75fc9a9085c",
+      "bytes": 2968
+    },
+    {
+      "file": "source/src/features/building-family/compiler/bayConstructionWorkerProtocol.ts",
+      "sha256": "1245893f6f9f2e04953d8c8b23c4c57942d67a995fd6947e38fe2730b48fbecd",
+      "bytes": 6696
+    },
+    {
+      "file": "source/src/features/building-family/compiler/constructionBevelledBox.ts",
+      "sha256": "b254171d3e17959535708f9afdc1c0259c8d9c27c5a5c51e48129dd78c09308d",
+      "bytes": 3396
+    },
+    {
+      "file": "source/src/features/building-family/compiler/constructionCorniceGeometry.ts",
+      "sha256": "f1bada83cfa64597bc8d947e1a0da1ef6d029aba8ed7248e3169f215b5e9efe4",
+      "bytes": 2354
+    },
+    {
+      "file": "source/src/features/building-family/compiler/evaluateConstruction.ts",
+      "sha256": "73a480cc9fdaa3465cb7be7400edf23e086bbaee10331125afa768bbe4b54b24",
+      "bytes": 2031
+    },
+    {
+      "file": "source/src/features/building-family/compiler/evaluateFacadeConstruction.ts",
+      "sha256": "b749ba21d1e52d7cf54592889867bca189a9316a5c44a266570f660542fe3556",
+      "bytes": 33729
+    },
+    {
+      "file": "source/src/features/building-family/contracts/bayConstructionGraph.ts",
+      "sha256": "5ed5ec068923bde58b4621a87892f77121cf8e11f2b8bbed41794f4ce1c4b5ac",
+      "bytes": 17454
+    },
+    {
+      "file": "source/src/features/building-family/core/constructionCorniceVocabulary.ts",
+      "sha256": "ec1c584bc2e4067b80cd5267b6ea4c6e153d4aaf6189f3e0afbe628bde788a0e",
+      "bytes": 1557
+    },
+    {
+      "file": "source/src/features/building-family/tests/bayConstructionWorker.test.ts",
+      "sha256": "21e941c5f19f4bb9dbeb638985ad5682563a3ab5b97784cbc2bc26f6541a5c83",
+      "bytes": 7035
+    },
+    {
+      "file": "source/src/features/building-family/tests/constructionCorniceGeometry.test.ts",
+      "sha256": "2288279d4ae3202c1d7b0f1a9116e51625fe696f57913fa5373765c20daad103",
+      "bytes": 12838
+    },
+    {
+      "file": "source-pins.json",
+      "sha256": "d6a4e93ff42a8aba497184fc65d7086ca0f66c0a22aaa41f5dccc33d529c3efc",
+      "bytes": 62401
+    },
+    {
+      "file": "typecheck.log",
+      "sha256": "1927639a5b89b1406e25b817bb2c8efb1e16fccc181e86591db136d628e7f5e6",
+      "bytes": 49
+    },
+    {
+      "file": "verification.json",
+      "sha256": "5eadb2bc757b0e30787752f2ce3ea3f2c5d03a74b44d1a2c2198dc9845076ddf",
+      "bytes": 3353
+    }
+  ]
+}
