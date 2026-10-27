@@ -1,4 +1,5 @@
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
+import { withConstructionCorniceLayout } from "../core/constructionCorniceVocabulary";
 import { groupedStorefrontCount } from "../ui/constructionBuildingBindings";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
@@ -7,6 +8,18 @@ import { supportsGroupedConstruction, groupedWindowCount } from "../ui/construct
 import { createBuildingConstructionGraph } from "../contracts/bayConstructionGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
 afterEach(cleanup);
+
+it("offers one named four-elevation cornice choice and respects bypass/custom boundaries",()=>{
+  const graph=withConstructionCorniceLayout(createBuildingConstructionGraph(),2),before=structuredClone(graph),view=mount(graph);
+  fireEvent.click(screen.getByText("Roof & trim",{selector:"summary"}));
+  const select=screen.getByRole("combobox",{name:"Cornice treatment"});
+  expect(select).toHaveValue("2");expect(select).toHaveAccessibleDescription("Profile and detail course on all four elevations.");
+  expect([...select.querySelectorAll("option")].map(option=>option.textContent)).toEqual(["Moulded cornice","Dentil course","Bracket course"]);
+  fireEvent.change(select,{target:{value:"1"}});expect(view.onFieldChange).toHaveBeenCalledWith("roof","corniceAssembly","1");expect(graph).toEqual(before);
+  view.unmount();graph.nodes.find(node=>node.type==="BuildingRoof")!.bypassed=true;mount(graph);
+  fireEvent.click(screen.getByText("Roof & trim",{selector:"summary"}));expect(screen.getByRole("combobox",{name:"Cornice treatment"})).toBeDisabled();
+  graph.nodes.find(node=>node.type==="BuildingRoof")!.input.nodeId="bays";expect(supportsGroupedConstruction(graph)).toBe(false);
+});
 function mount(graph = createBuildingConstructionGraph(), dirty = false, counts = { window: 47, storefront: 0 }) {
   const fields = Object.fromEntries(graph.nodes.filter(node => "parameters" in node).map(node => [node.id,Object.fromEntries(Object.entries(node.parameters).map(([key,value]) => [key,String(value)]))]));
   const onFieldChange=vi.fn(),onApply=vi.fn(),onRevert=vi.fn(),onAdvanced=vi.fn();

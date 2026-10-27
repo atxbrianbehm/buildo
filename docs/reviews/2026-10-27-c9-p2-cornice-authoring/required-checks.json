@@ -1,0 +1,42 @@
+[
+  {
+    "name": "typecheck",
+    "exitCode": 0,
+    "startedAtUtc": "2026-10-27T06:13:06.3398943Z",
+    "endedAtUtc": "2026-10-27T06:13:16.9234727Z",
+    "sourcePinsStable": true,
+    "log": "test-results/c9-p2-cornice-authoring-2026-10-27/typecheck-final.log"
+  },
+  {
+    "name": "lint",
+    "exitCode": 0,
+    "startedAtUtc": "2026-10-27T06:13:17.0146428Z",
+    "endedAtUtc": "2026-10-27T06:13:32.8826925Z",
+    "sourcePinsStable": true,
+    "log": "test-results/c9-p2-cornice-authoring-2026-10-27/lint-final.log"
+  },
+  {
+    "name": "test",
+    "exitCode": 0,
+    "startedAtUtc": "2026-10-27T06:13:32.9322127Z",
+    "endedAtUtc": "2026-10-27T06:19:43.0569756Z",
+    "sourcePinsStable": true,
+    "log": "test-results/c9-p2-cornice-authoring-2026-10-27/test-final.log"
+  },
+  {
+    "name": "build",
+    "exitCode": 0,
+    "startedAtUtc": "2026-10-27T06:19:43.1036503Z",
+    "endedAtUtc": "2026-10-27T06:19:56.2137080Z",
+    "sourcePinsStable": true,
+    "log": "test-results/c9-p2-cornice-authoring-2026-10-27/build-final.log"
+  },
+  {
+    "name": "test:e2e",
+    "exitCode": 0,
+    "startedAtUtc": "2026-10-27T06:19:56.2541339Z",
+    "endedAtUtc": "2026-10-27T06:22:20.2700129Z",
+    "sourcePinsStable": true,
+    "log": "test-results/c9-p2-cornice-authoring-2026-10-27/test-e2e-final.log"
+  }
+]

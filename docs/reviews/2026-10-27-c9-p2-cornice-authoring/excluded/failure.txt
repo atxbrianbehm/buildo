@@ -1,0 +1,22 @@
+AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+
+  {
+    max: [
++     5.779999999999999,
+-     5.88,
+      11.345,
++     6.68
+-     6.78
+    ],
+    min: [
++     -5.779999999999999,
+-     -5.88,
+      0,
++     -6.68
+-     -6.78
+    ]
+  }
+
+    at protectedParts (file:///C:/Users/behmb/Documents/Cascade%20Projects/buildo/test-results/c9-p2-cornice-authoring-2026-10-27/verify-native.mjs:171:92)
+    at file:///C:/Users/behmb/Documents/Cascade%20Projects/buildo/test-results/c9-p2-cornice-authoring-2026-10-27/verify-native.mjs:212:236

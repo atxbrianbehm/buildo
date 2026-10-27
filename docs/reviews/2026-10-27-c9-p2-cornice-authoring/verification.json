@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "cornice-p2-verification",
+  "parentCommit": "961d93fabd36c2a52405dcc81964c104facc9e35",
+  "gates": [
+    {
+      "name": "typecheck",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-27T06:13:06.3398943Z",
+      "endedAtUtc": "2026-10-27T06:13:16.9234727Z",
+      "sourcePinsStable": true,
+      "log": "test-results/c9-p2-cornice-authoring-2026-10-27/typecheck-final.log"
+    },
+    {
+      "name": "lint",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-27T06:13:17.0146428Z",
+      "endedAtUtc": "2026-10-27T06:13:32.8826925Z",
+      "sourcePinsStable": true,
+      "log": "test-results/c9-p2-cornice-authoring-2026-10-27/lint-final.log"
+    },
+    {
+      "name": "test",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-27T06:13:32.9322127Z",
+      "endedAtUtc": "2026-10-27T06:19:43.0569756Z",
+      "sourcePinsStable": true,
+      "log": "test-results/c9-p2-cornice-authoring-2026-10-27/test-final.log"
+    },
+    {
+      "name": "build",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-27T06:19:43.1036503Z",
+      "endedAtUtc": "2026-10-27T06:19:56.2137080Z",
+      "sourcePinsStable": true,
+      "log": "test-results/c9-p2-cornice-authoring-2026-10-27/build-final.log"
+    },
+    {
+      "name": "test:e2e",
+      "exitCode": 0,
+      "startedAtUtc": "2026-10-27T06:19:56.2541339Z",
+      "endedAtUtc": "2026-10-27T06:22:20.2700129Z",
+      "sourcePinsStable": true,
+      "log": "test-results/c9-p2-cornice-authoring-2026-10-27/test-e2e-final.log"
+    }
+  ],
+  "unitTests": 1921,
+  "unitFiles": 131,
+  "e2eWorkflows": 8,
+  "totalPins": 354,
+  "priorUnchangedPins": 339,
+  "changedPaths": [
+    "src/features/building-family/core/constructionCorniceVocabulary.ts",
+    "src/features/building-family/core/constructionOpeningEditGraph.ts",
+    "src/features/building-family/core/constructionStorefrontGraph.ts",
+    "src/features/building-family/core/constructionSurfaceAuthoring.ts",
+    "src/features/building-family/core/constructionWindowVocabulary.ts",
+    "src/features/building-family/state/bayConstructionProject.ts",
+    "src/features/building-family/state/constructionGenerationState.ts",
+    "src/features/building-family/tests/ConstructionBuildingControls.test.tsx",
+    "src/features/building-family/tests/bayConstructionWorkbench.test.tsx",
+    "src/features/building-family/tests/constructionGenerationState.test.ts",
+    "src/features/building-family/ui/BayConstructionWorkbench.tsx",
+    "src/features/building-family/ui/ConstructionBuildingControls.tsx",
+    "src/features/building-family/ui/ConstructionGenerationPanel.tsx",
+    "src/features/building-family/ui/ConstructionNodePanel.tsx",
+    "src/features/building-family/ui/constructionBuildingBindings.ts"
+  ],
+  "native": {
+    "webgl": {
+      "workflowStates": 15,
+      "workflowCaptures": 21,
+      "closeStates": 4,
+      "closeCaptures": 12,
+      "sourceHistoryRoomAndColdExact": true,
+      "mouldedPixelsExactToT3": true,
+      "coldProviderCalls": 0,
+      "coldMaterialGenerationCalls": 0
+    },
+    "webgpu": {
+      "workflowStates": 15,
+      "workflowCaptures": 21,
+      "closeStates": 4,
+      "closeCaptures": 12,
+      "sourceHistoryRoomAndColdExact": true,
+      "mouldedPixelsExactToT3": true,
+      "coldProviderCalls": 0,
+      "coldMaterialGenerationCalls": 0
+    }
+  },
+  "literalPortableV9ExactAcrossBackendsAndCold": true,
+  "reviewedProjectSha256": "ed78c1d30c3522eee90f6f36b79763ae4807f1daab77e706ebcf738c59b309aa",
+  "reviewedProjectZipSha256": "4be1823e771902a9ed66ba8cb2954ff74a7a8069dda865d61748e6a8748c7d68",
+  "automatedAndNativeEngineeringComplete": true,
+  "humanVisualReview": "pending",
+  "artistSessions": 0,
+  "historicalArchitectureCoverage": "unknown",
+  "limitations": [
+    "Changes stay inside the prior cornice envelope and are modest at whole-building scale.",
+    "Dark shadow fringe remains visible in textured and clay views; this packet does not repair the renderer shadow quality.",
+    "Earlier close framing is excluded from the final visual review; use close-webgl and close-webgpu."
+  ]
+}

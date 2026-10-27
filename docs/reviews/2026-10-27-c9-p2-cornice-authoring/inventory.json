@@ -1,0 +1,910 @@
+{
+  "schemaVersion": "0.1.0",
+  "files": [
+    {
+      "file": "before-source-pins.json",
+      "sha256": "d6a4e93ff42a8aba497184fc65d7086ca0f66c0a22aaa41f5dccc33d529c3efc",
+      "bytes": 62401
+    },
+    {
+      "file": "build-final.log",
+      "sha256": "263a9c821ccc7072d6656e253879f781b32b89cbed3870267defd95a89c906c9",
+      "bytes": 977
+    },
+    {
+      "file": "close-04-webgl.log",
+      "sha256": "bb7773e9ea7188f844c7e66f22b14915acb12f21b6fd8ff13ace4459c6b4cf5b",
+      "bytes": 1673
+    },
+    {
+      "file": "close-04-webgpu.log",
+      "sha256": "c3b78ebb0a7a8ead6e9608abf22149dc7034d8bad8236f7a0382cc6d5fa78305",
+      "bytes": 272
+    },
+    {
+      "file": "close-webgl/bracket-clay-close.png",
+      "sha256": "13c0f10fbb79d75aa6ce573802f217f27f93285b45706dedba83882d4db14584",
+      "bytes": 125047
+    },
+    {
+      "file": "close-webgl/bracket-close.png",
+      "sha256": "ebf633e2572aaa050eb281beef0e15e139126ab61da897cd1aa2a53e3b9506d7",
+      "bytes": 412235
+    },
+    {
+      "file": "close-webgl/bracket-no-normal.png",
+      "sha256": "c31f0ba099ab0dc1d9df1e76ff73f76a90b676f21f90d21b779466cfd04e1ac9",
+      "bytes": 360488
+    },
+    {
+      "file": "close-webgl/bracket-no-textures.png",
+      "sha256": "74ccd02c1fc5e100add36a536d7bb81f1e996d0ae151fc343a070adf490898a8",
+      "bytes": 130417
+    },
+    {
+      "file": "close-webgl/dentil-clay-close.png",
+      "sha256": "6f6ab9cf0372909541ab04b8c93b055e5fa0c128ce9ad617e2750af7a54f1850",
+      "bytes": 161480
+    },
+    {
+      "file": "close-webgl/dentil-close.png",
+      "sha256": "1c6083a974bb7307f2e2790a376d970095b31ae4e5e0bbfb8d2f957fba4da5a8",
+      "bytes": 442103
+    },
+    {
+      "file": "close-webgl/dentil-no-normal.png",
+      "sha256": "666c09225a12f68b51cf9c2717cd0c431d7705b8f58523cbd981d4ddb42e30fa",
+      "bytes": 391781
+    },
+    {
+      "file": "close-webgl/dentil-no-textures.png",
+      "sha256": "e21f9ef83ca664fc7b33c3488c85a5a67a38b6f91f739527687077c285a19253",
+      "bytes": 175259
+    },
+    {
+      "file": "close-webgl/moulded-clay-close.png",
+      "sha256": "0dccdbfb71b327f160228c7c67b256c2b4afd689b9890a676c4fff652ddc0a8f",
+      "bytes": 162229
+    },
+    {
+      "file": "close-webgl/moulded-close.png",
+      "sha256": "e963afcec2a490107f2b672234afd9328e91db269a2762e4ef8547eb503063db",
+      "bytes": 441020
+    },
+    {
+      "file": "close-webgl/moulded-no-normal.png",
+      "sha256": "cb0aa06b53c6bfa10b4368f28d8e16688f1211c924af0f845e060a7d26764896",
+      "bytes": 391285
+    },
+    {
+      "file": "close-webgl/moulded-no-textures.png",
+      "sha256": "b4379a175e1adcf8ad62f5b40ea0dd8f45a7bdb1e06b71609c5bb198146c8fc6",
+      "bytes": 177600
+    },
+    {
+      "file": "close-webgl/native-bracket-clay-close.png",
+      "sha256": "763a70c742ae21a7025d5c05cd67ccd972efd08bd64cc028fbbbbb8796af0b96",
+      "bytes": 182175
+    },
+    {
+      "file": "close-webgl/native-bracket-close.png",
+      "sha256": "a2981da1fbaa6803e2035b57d0e7d16c83c9f77f019f681432cd0bbb8a329835",
+      "bytes": 705551
+    },
+    {
+      "file": "close-webgl/native-bracket-no-normal.png",
+      "sha256": "157b9a95888ac753df50eeba2129ae5e6524acee3491ee20334a4c310cf1b406",
+      "bytes": 601850
+    },
+    {
+      "file": "close-webgl/native-bracket-no-textures.png",
+      "sha256": "3a4b1f4785bb832d0836d752424f627f9b6d7cbe9a2fe86ce2318523970a95c0",
+      "bytes": 193398
+    },
+    {
+      "file": "close-webgl/native-dentil-clay-close.png",
+      "sha256": "556639b7d01e2d9762f284c6799ab3cd1ccf5fc293413a9a306901aa3bc66d67",
+      "bytes": 236165
+    },
+    {
+      "file": "close-webgl/native-dentil-close.png",
+      "sha256": "61858b5abad5c7c3497e61020ea5ec3db0a63b541a3e313ed5f1b326bf4540b7",
+      "bytes": 751714
+    },
+    {
+      "file": "close-webgl/native-dentil-no-normal.png",
+      "sha256": "e7e49ba04fb8500038121dc86d9bf0d4036de78b212f947b049fca151ecce006",
+      "bytes": 651978
+    },
+    {
+      "file": "close-webgl/native-dentil-no-textures.png",
+      "sha256": "893ba32f93834064835784a06b7ac42e671526e0895d2173f4c111e850800a5c",
+      "bytes": 254802
+    },
+    {
+      "file": "close-webgl/native-moulded-clay-close.png",
+      "sha256": "7719284ca49a3e5f469a06426bd7701cccf0427771d1413fc1838dc3dd3dca00",
+      "bytes": 237622
+    },
+    {
+      "file": "close-webgl/native-moulded-close.png",
+      "sha256": "2c8a1be93abf2ec5950334b8ce56f8c8a7451e3167d2e7bdf34770c837c46648",
+      "bytes": 749138
+    },
+    {
+      "file": "close-webgl/native-moulded-no-normal.png",
+      "sha256": "98816593dbf4160ce7d5ffbe59d5629fd0b9bc17a244d8e3555d13ba4c435833",
+      "bytes": 650750
+    },
+    {
+      "file": "close-webgl/native-moulded-no-textures.png",
+      "sha256": "8a56efe937aa2fb8f14106ed77bc4eab4f4d45edd9fdbaf62d2b96ae761e21a6",
+      "bytes": 258051
+    },
+    {
+      "file": "close-webgl/receipt.json",
+      "sha256": "9cf72e08ee8f51bb79852f52bf80de7a71eb709b8e8243a7fafab7dd4617b8da",
+      "bytes": 299981
+    },
+    {
+      "file": "close-webgpu/bracket-clay-close.png",
+      "sha256": "7e7c6a59c4b0710965235f142a15eebea7c20701c5feb7787379489e43afbc38",
+      "bytes": 108179
+    },
+    {
+      "file": "close-webgpu/bracket-close.png",
+      "sha256": "fe3605fdb4bcf5e8eb03003732c406aa7fdf261c31641df2a22975054242a1d1",
+      "bytes": 391849
+    },
+    {
+      "file": "close-webgpu/bracket-no-normal.png",
+      "sha256": "d50380aba7f39f8f53797f4444ad8f1c5f6f328756837d38fc538c5c11b874e5",
+      "bytes": 339951
+    },
+    {
+      "file": "close-webgpu/bracket-no-textures.png",
+      "sha256": "f3c92df845fd2c2f150cc48fcec6250fd54174fbf85fc102b54346aff48b3aa0",
+      "bytes": 113679
+    },
+    {
+      "file": "close-webgpu/dentil-clay-close.png",
+      "sha256": "b7f508e3ca2322e3856dde5159e25dc5ab976462aa2bb70bca351b3439fab366",
+      "bytes": 133593
+    },
+    {
+      "file": "close-webgpu/dentil-close.png",
+      "sha256": "014c110bcdd5713df1cc20b6895726f44c0d3cc68788552270b4aeb43d5a0f68",
+      "bytes": 414456
+    },
+    {
+      "file": "close-webgpu/dentil-no-normal.png",
+      "sha256": "0f8239b6b3073c26d1c5f4d21b8fc1b2ed19df71e5145fcae3fc354a54e32b95",
+      "bytes": 365614
+    },
+    {
+      "file": "close-webgpu/dentil-no-textures.png",
+      "sha256": "0fc8892dca59cdbe4fae7bdadbda4700d7dca5f6927685226aff0ebb0a56b602",
+      "bytes": 147000
+    },
+    {
+      "file": "close-webgpu/moulded-clay-close.png",
+      "sha256": "a49bd19443ec8b14888fdb89eded3650e7d5bf9e363eeaddc95c1b468ae4f1ef",
+      "bytes": 131859
+    },
+    {
+      "file": "close-webgpu/moulded-close.png",
+      "sha256": "00bd87c17b2e4ce5f0bb2c1bd2152da12a88d2f8c8f182201b08e5d266113003",
+      "bytes": 413255
+    },
+    {
+      "file": "close-webgpu/moulded-no-normal.png",
+      "sha256": "17f1c7375935b2d86d0a039d226b435311728c446580311811ff4866c3228e72",
+      "bytes": 364464
+    },
+    {
+      "file": "close-webgpu/moulded-no-textures.png",
+      "sha256": "586f02a92e754ec770c38424f10d0fabfd5c2785cc8101cd23327410e20119fb",
+      "bytes": 145453
+    },
+    {
+      "file": "close-webgpu/native-bracket-clay-close.png",
+      "sha256": "4e462a4559e23f4fb20a4dbf5de7e1705410310a824dff45adaca54c6c5a0d72",
+      "bytes": 183302
+    },
+    {
+      "file": "close-webgpu/native-bracket-close.png",
+      "sha256": "46aec6d3c73b21390fc5d02cbd9fba81c0c4cb7bf385ef59e17fc5d10194a370",
+      "bytes": 700495
+    },
+    {
+      "file": "close-webgpu/native-bracket-no-normal.png",
+      "sha256": "d4c15ea8403293131b2ba08d232d17e212831120e5b94aba8137e660c2283fd3",
+      "bytes": 597179
+    },
+    {
+      "file": "close-webgpu/native-bracket-no-textures.png",
+      "sha256": "db66e71b4bebbd212f666d6f4c9db3d147424b80aa9835fd45c2625d29ceb322",
+      "bytes": 193974
+    },
+    {
+      "file": "close-webgpu/native-dentil-clay-close.png",
+      "sha256": "1c6eda6a511c48fcf5dbb878218b21819890cb2b972cbcb19b657f5d55b1ae2d",
+      "bytes": 228603
+    },
+    {
+      "file": "close-webgpu/native-dentil-close.png",
+      "sha256": "bb4b58b76da505f156d7af90d528b779a5a3d934174ef77db8d46ee339562b76",
+      "bytes": 736455
+    },
+    {
+      "file": "close-webgpu/native-dentil-no-normal.png",
+      "sha256": "613134ae48f52a14ab58995243468cc7cc0c68696024deb1303bffbc6862e1f5",
+      "bytes": 637199
+    },
+    {
+      "file": "close-webgpu/native-dentil-no-textures.png",
+      "sha256": "35fbd94cf125095623ae373928bdcffad1e229e840958a8f8b2469a1c4a05ea0",
+      "bytes": 248557
+    },
+    {
+      "file": "close-webgpu/native-moulded-clay-close.png",
+      "sha256": "a17ab1ae4662bf807cf6d4f408c58983c42243510aebdab0295a8feafad3227f",
+      "bytes": 226381
+    },
+    {
+      "file": "close-webgpu/native-moulded-close.png",
+      "sha256": "31061be2b7a6cae2f70a2307ed50fc14cf336ed783240e09f9268fccc6e84c25",
+      "bytes": 733286
+    },
+    {
+      "file": "close-webgpu/native-moulded-no-normal.png",
+      "sha256": "2f69104e4f228934cccad2acaeac49b998eef24e055d7de749226bf3fe354868",
+      "bytes": 633411
+    },
+    {
+      "file": "close-webgpu/native-moulded-no-textures.png",
+      "sha256": "7f9393e113276a65ee4acd8e559370095011e935dc6a6d0f9dac3b8c54639261",
+      "bytes": 248364
+    },
+    {
+      "file": "close-webgpu/receipt.json",
+      "sha256": "d446169bd3ff4f492fa7e19098f8bd105de6d3806fc2b3cac3fbc5c52e99192b",
+      "bytes": 300262
+    },
+    {
+      "file": "excluded/close-02-webgl-receipt.json",
+      "sha256": "5bca6fdaa9a2869d9d544e8ff42d45a4fe25dc4fbd86f7c6a30bf92de8be4303",
+      "bytes": 300263
+    },
+    {
+      "file": "excluded/close-02-webgl.log",
+      "sha256": "9218c651ada9be45774ee40272bca3d06a9cdcfb876972d4e48d8a6e65e6fcd3",
+      "bytes": 1629
+    },
+    {
+      "file": "excluded/close-03-webgl-receipt.json",
+      "sha256": "867f7c8d6cd9bc4de69e307b27c1ce5d42e6f31039e4add15c222f7d7844403f",
+      "bytes": 300260
+    },
+    {
+      "file": "excluded/close-03-webgl.log",
+      "sha256": "eb87845fa63cfe37b80bffba6e9a2289dc9299187b8458ce361d0cbc825f5f5f",
+      "bytes": 1629
+    },
+    {
+      "file": "excluded/failure.png",
+      "sha256": "fdafc9f8f2c6ea78e04af30d642936ac26ccdee45f5f3b787c0b788a91a6d2d3",
+      "bytes": 501637
+    },
+    {
+      "file": "excluded/failure.txt",
+      "sha256": "f493179f6153a8990874d3149243d537e3570be4d9bf465e70f920724c441920",
+      "bytes": 580
+    },
+    {
+      "file": "excluded/native-01-webgl.log",
+      "sha256": "9b969aa18d6d40bd42351f07e83eada7c503cf39a273f3c4bdeecbd1fe2a9347",
+      "bytes": 2957
+    },
+    {
+      "file": "excluded/partial-captures.json",
+      "sha256": "86d0e7cc67a299c5e951fa2310752880678da8220f81b57e50773df4038cd981",
+      "bytes": 36745
+    },
+    {
+      "file": "excluded/partial-draws.json",
+      "sha256": "93c333512df06c53c6d3b482bd7c704cede1667265f09a8bd2c377c316b60f9e",
+      "bytes": 296046
+    },
+    {
+      "file": "excluded/verify-native-01-original.mjs",
+      "sha256": "1a08edae4a67e83d77459f741ea7bfdf270f31acea3c0a7d82701be5b6f55888",
+      "bytes": 33746
+    },
+    {
+      "file": "focused-01.log",
+      "sha256": "821cc0db8e646f9dbd8f3e715c183bc6be909f06d08ea61d37d92f38d479ff43",
+      "bytes": 574
+    },
+    {
+      "file": "lint-final.log",
+      "sha256": "a21c6d2dedb756f860b052cb2d84cd603fbbe38ee53e1ad76ab9c5803f028958",
+      "bytes": 37
+    },
+    {
+      "file": "native-02-webgl.log",
+      "sha256": "6844cc3d9717903924d4b1784c864ad08d83f6ee59ea58451417415caa2310c8",
+      "bytes": 3814
+    },
+    {
+      "file": "native-03-webgpu.log",
+      "sha256": "37868c0d7fb794a5a53c4013bad71b053694d99b9d0420f96d1bf130c5da44e1",
+      "bytes": 874
+    },
+    {
+      "file": "native-webgl/bracket-clay-close.png",
+      "sha256": "5d66f4a146e0a8f828a8b2fdeb896f1ff239997b8141eee39c8da32d9a8b3c17",
+      "bytes": 68666
+    },
+    {
+      "file": "native-webgl/bracket-close.png",
+      "sha256": "a229eee473cb3ba9d97354430ac40d248bd28e1a09be1ae7aecdf78d4abc67ed",
+      "bytes": 286000
+    },
+    {
+      "file": "native-webgl/bracket-no-normal.png",
+      "sha256": "1e48c642368409b259802eb8945efd5491e70b2d524849b7d1d2c79210fb7ff7",
+      "bytes": 260137
+    },
+    {
+      "file": "native-webgl/bracket-no-textures.png",
+      "sha256": "712752dd7f465b1cd3a55591e349c0bc642dfc36ed72c4dafc9836678d933f85",
+      "bytes": 73415
+    },
+    {
+      "file": "native-webgl/bracket-whole.png",
+      "sha256": "d4cadccf2096980ee5d9aa80c5a2ef7e3c7131f5d9b551c54522029ef38f0b24",
+      "bytes": 441550
+    },
+    {
+      "file": "native-webgl/cold-building.png",
+      "sha256": "d4cadccf2096980ee5d9aa80c5a2ef7e3c7131f5d9b551c54522029ef38f0b24",
+      "bytes": 441550
+    },
+    {
+      "file": "native-webgl/compact-controls.png",
+      "sha256": "81fd290d58888159af479fec27c4b2f8a6f157d59304558bf0bf66e56ef5f81f",
+      "bytes": 216161
+    },
+    {
+      "file": "native-webgl/dentil-clay-close.png",
+      "sha256": "e0398f8277e36de21e148509ede4974bdcff6909ba594364b9bbdda7868f0d30",
+      "bytes": 82942
+    },
+    {
+      "file": "native-webgl/dentil-close.png",
+      "sha256": "e1dbcf6410c3aa63dcdce97bdd9f59d63957b513ea41cd2c690f8a7249cdcfdc",
+      "bytes": 298471
+    },
+    {
+      "file": "native-webgl/dentil-no-normal.png",
+      "sha256": "c816391e083c8ef9bcac0386d3c4586abb5af04bc43ce63807045e0568eaa550",
+      "bytes": 272708
+    },
+    {
+      "file": "native-webgl/dentil-no-textures.png",
+      "sha256": "86cb8c268cc7bdca82bf43b16fe79891311b3be05edce4e0a07c7b6fbba90d2a",
+      "bytes": 91337
+    },
+    {
+      "file": "native-webgl/dentil-whole.png",
+      "sha256": "09d0295e7194d9f074be6165944f69f865e77ee0eb4fdab43d5e83042afa9f52",
+      "bytes": 443297
+    },
+    {
+      "file": "native-webgl/final-building.png",
+      "sha256": "d4cadccf2096980ee5d9aa80c5a2ef7e3c7131f5d9b551c54522029ef38f0b24",
+      "bytes": 441550
+    },
+    {
+      "file": "native-webgl/moulded-clay-close.png",
+      "sha256": "736bcf8f6c544a4a4e708025358d82082743caa5bf2f22e8a85771f7a494344c",
+      "bytes": 82898
+    },
+    {
+      "file": "native-webgl/moulded-close.png",
+      "sha256": "b8125e7286c7aaa4b43b02b5a92e6ed1d8c58615067825d62369b4741f6db0de",
+      "bytes": 297130
+    },
+    {
+      "file": "native-webgl/moulded-whole.png",
+      "sha256": "b0acbd40d9fb20c1f66c1937230ad91adf5892a49b657fd5beb4d7ba6f4e5b42",
+      "bytes": 443090
+    },
+    {
+      "file": "native-webgl/native-bracket-clay-close.png",
+      "sha256": "1daf35db594c4e8483dda1cef9f787b3df8a44a00e0b577c5b897110093d6532",
+      "bytes": 108335
+    },
+    {
+      "file": "native-webgl/native-bracket-close.png",
+      "sha256": "4cb362c4aa8dda83c25d3d42d24accb13bd6d70a2a7378554098273cc5011de0",
+      "bytes": 498842
+    },
+    {
+      "file": "native-webgl/native-bracket-no-normal.png",
+      "sha256": "172610f4b7a46f6163850c0666481ff64534884f528f2cd7a265bf027dfa033d",
+      "bytes": 448446
+    },
+    {
+      "file": "native-webgl/native-bracket-no-textures.png",
+      "sha256": "55ec1696eee64118a3886d7584fe1a37a9377f8de39d91bdb5abea2ca2468b8a",
+      "bytes": 116521
+    },
+    {
+      "file": "native-webgl/native-bracket-whole.png",
+      "sha256": "5785a67582691406699cbf9716297e5b2ccdc18cab2a3dcd6af231b3f977e587",
+      "bytes": 592418
+    },
+    {
+      "file": "native-webgl/native-cold-building.png",
+      "sha256": "5785a67582691406699cbf9716297e5b2ccdc18cab2a3dcd6af231b3f977e587",
+      "bytes": 592418
+    },
+    {
+      "file": "native-webgl/native-dentil-clay-close.png",
+      "sha256": "af67b6e3ff7f549d9388843bd6045cde39002eabe24f14eb9fe649c629e96863",
+      "bytes": 127290
+    },
+    {
+      "file": "native-webgl/native-dentil-close.png",
+      "sha256": "cedb02fc7908500f6de6a22789708a2a4f1126fa3ab2e3a820de96d905a78d16",
+      "bytes": 511085
+    },
+    {
+      "file": "native-webgl/native-dentil-no-normal.png",
+      "sha256": "6cb81b83ae542332a5f231313d35de264178f8fdce7fdbe11f523a91f2628ab3",
+      "bytes": 461362
+    },
+    {
+      "file": "native-webgl/native-dentil-no-textures.png",
+      "sha256": "01f0347655bb6cf9ecf660180e7fc17b452f0b66cfa34b0ba519ff17cea0a0c1",
+      "bytes": 140225
+    },
+    {
+      "file": "native-webgl/native-dentil-whole.png",
+      "sha256": "d1fa0797261eeb7ad4cfa3a03f60bd7ff0b57a514698cd54b2574d2e147a9f2b",
+      "bytes": 595805
+    },
+    {
+      "file": "native-webgl/native-final-building.png",
+      "sha256": "5785a67582691406699cbf9716297e5b2ccdc18cab2a3dcd6af231b3f977e587",
+      "bytes": 592418
+    },
+    {
+      "file": "native-webgl/native-moulded-clay-close.png",
+      "sha256": "efe47cfac55b6a21639370cfcd154579c710247225e770acd07f193359fda90a",
+      "bytes": 127375
+    },
+    {
+      "file": "native-webgl/native-moulded-close.png",
+      "sha256": "a9f42185089028f9ead44f09cd8fa271152bc9ce0a2d2cc844791fa4f767306e",
+      "bytes": 507775
+    },
+    {
+      "file": "native-webgl/native-moulded-whole.png",
+      "sha256": "5181e0b4b992ad599997888b21dd6d359efc108468052ed7efa15886d9b7ca7f",
+      "bytes": 596086
+    },
+    {
+      "file": "native-webgl/native-restored-building.png",
+      "sha256": "5785a67582691406699cbf9716297e5b2ccdc18cab2a3dcd6af231b3f977e587",
+      "bytes": 592418
+    },
+    {
+      "file": "native-webgl/native-returned-building.png",
+      "sha256": "5785a67582691406699cbf9716297e5b2ccdc18cab2a3dcd6af231b3f977e587",
+      "bytes": 592418
+    },
+    {
+      "file": "native-webgl/native-sill-no-normal.png",
+      "sha256": "04005d256d2117c77eb28410a49400cac2ce14d1bf875e0fd1cd66335d761074",
+      "bytes": 730704
+    },
+    {
+      "file": "native-webgl/native-sill-no-textures.png",
+      "sha256": "0b89a8354ac55f9e29aade9d77af15b61f0bf9a41824fac1cedd1a7e6c0d0270",
+      "bytes": 183194
+    },
+    {
+      "file": "native-webgl/native-sill-textured.png",
+      "sha256": "6c1b391a708576885c96e35c4ccbf79914a43fecebc34a19f553ebd687345a8e",
+      "bytes": 796840
+    },
+    {
+      "file": "native-webgl/receipt.json",
+      "sha256": "0ac14c5caedb29a0837b6a99ef2e23ec39e26a8c68509c64b8f429cf4dd262b6",
+      "bytes": 879996
+    },
+    {
+      "file": "native-webgl/restored-building.png",
+      "sha256": "d4cadccf2096980ee5d9aa80c5a2ef7e3c7131f5d9b551c54522029ef38f0b24",
+      "bytes": 441550
+    },
+    {
+      "file": "native-webgl/returned-building.png",
+      "sha256": "d4cadccf2096980ee5d9aa80c5a2ef7e3c7131f5d9b551c54522029ef38f0b24",
+      "bytes": 441550
+    },
+    {
+      "file": "native-webgl/sill-no-normal.png",
+      "sha256": "85ae516be278f90c7c7e23c8a9eeac13bd96cf4c898302b2946bde57fc73f292",
+      "bytes": 446385
+    },
+    {
+      "file": "native-webgl/sill-no-textures.png",
+      "sha256": "13618a7695877544434aa7560d26f3a2a5f13b0b8afbb4a84ba65ede826c20b0",
+      "bytes": 124214
+    },
+    {
+      "file": "native-webgl/sill-textured.png",
+      "sha256": "56b2c205e58e8d3b05932cc33af39c56842b3783df2aa738e194269be0e9e2b2",
+      "bytes": 480717
+    },
+    {
+      "file": "native-webgpu/bracket-clay-close.png",
+      "sha256": "b931c8bb129af78794b2f4b19c739e7160fbd2228c5caf2f7cef6199e48ef087",
+      "bytes": 80756
+    },
+    {
+      "file": "native-webgpu/bracket-close.png",
+      "sha256": "d57714c4ddb771d3edd8f4860d75c194bb4ab9adab0514a1761a7de7980c9771",
+      "bytes": 213429
+    },
+    {
+      "file": "native-webgpu/bracket-no-normal.png",
+      "sha256": "a9cc0e2a5937847bfacef84fd760bf8eea234b4d53c11c9cab7454dd0a7585d0",
+      "bytes": 185370
+    },
+    {
+      "file": "native-webgpu/bracket-no-textures.png",
+      "sha256": "3a3af0d78e4b0b7c33cc69c0d1fb0a09301dc452ab40172c64d8cdd470bfbf49",
+      "bytes": 71873
+    },
+    {
+      "file": "native-webgpu/bracket-whole.png",
+      "sha256": "9ec7664524bfb07fa0cd4b83b86ab06b6735a244311fd3b9e8c022e189afa4d2",
+      "bytes": 439981
+    },
+    {
+      "file": "native-webgpu/cold-building.png",
+      "sha256": "9ec7664524bfb07fa0cd4b83b86ab06b6735a244311fd3b9e8c022e189afa4d2",
+      "bytes": 439981
+    },
+    {
+      "file": "native-webgpu/compact-controls.png",
+      "sha256": "58b0a60f73d52af4dbea57506adddf214932e33459e93d29e8b67e5b4b6bc923",
+      "bytes": 214615
+    },
+    {
+      "file": "native-webgpu/dentil-clay-close.png",
+      "sha256": "2d8a041f3d51b748d3636c3f31e0bd3cae1b6c54c9da46789df24748d1eb4672",
+      "bytes": 80135
+    },
+    {
+      "file": "native-webgpu/dentil-close.png",
+      "sha256": "48823663af552755947fd283d771b69d337a09352429e568e222ecdc3b64fc31",
+      "bytes": 217771
+    },
+    {
+      "file": "native-webgpu/dentil-no-normal.png",
+      "sha256": "caa28e45ff4e60df41c6f6e22bb0026fb1f51db5252cc44d34d68729f6f263b4",
+      "bytes": 188365
+    },
+    {
+      "file": "native-webgpu/dentil-no-textures.png",
+      "sha256": "a42f2b15fc31f10c4ccbd310adc094d1c6cb0111490d37751d31d3c957967be6",
+      "bytes": 71364
+    },
+    {
+      "file": "native-webgpu/dentil-whole.png",
+      "sha256": "6e5d9a95a1ec22eee8aec16840326d897ee983da51c3289e4cd29d25b31b0385",
+      "bytes": 441745
+    },
+    {
+      "file": "native-webgpu/final-building.png",
+      "sha256": "9ec7664524bfb07fa0cd4b83b86ab06b6735a244311fd3b9e8c022e189afa4d2",
+      "bytes": 439981
+    },
+    {
+      "file": "native-webgpu/moulded-clay-close.png",
+      "sha256": "6ee18dbb15aa2c8fd6125345854f1f301406fe1a394b0bf3ebb6014a4b48eda9",
+      "bytes": 82256
+    },
+    {
+      "file": "native-webgpu/moulded-close.png",
+      "sha256": "1805ada37c4e27323c3944452cce958e60ae9b953fb6bb674b5b14ae21745b1a",
+      "bytes": 199150
+    },
+    {
+      "file": "native-webgpu/moulded-whole.png",
+      "sha256": "f6201fa375018d43fa419566113067921f0c45d48d7468de2c09307f3fc8a2c3",
+      "bytes": 441044
+    },
+    {
+      "file": "native-webgpu/native-bracket-clay-close.png",
+      "sha256": "acb41c735f3ceaf22e69787af4f2dd4c9045fcab50494f325b134db583487ad7",
+      "bytes": 126647
+    },
+    {
+      "file": "native-webgpu/native-bracket-close.png",
+      "sha256": "9a65779fb5215e02d1a214ca5c3b29ce3fd32d99899f5f10a11c2d5b508bdefa",
+      "bytes": 361460
+    },
+    {
+      "file": "native-webgpu/native-bracket-no-normal.png",
+      "sha256": "8608549984affad4e9807d7e7c327f9a0704c679dc5b6dbf03bb9685d10b9726",
+      "bytes": 307359
+    },
+    {
+      "file": "native-webgpu/native-bracket-no-textures.png",
+      "sha256": "82a020acf1ed501922c3c25e914f9cf1c3980096652a62fe5843ede5bd1537a0",
+      "bytes": 114642
+    },
+    {
+      "file": "native-webgpu/native-bracket-whole.png",
+      "sha256": "f1540b7dbd83038e638f9f6555a0d1a17db0f1282cd76684c7a5e19b4d73fc03",
+      "bytes": 595946
+    },
+    {
+      "file": "native-webgpu/native-cold-building.png",
+      "sha256": "f1540b7dbd83038e638f9f6555a0d1a17db0f1282cd76684c7a5e19b4d73fc03",
+      "bytes": 595946
+    },
+    {
+      "file": "native-webgpu/native-dentil-clay-close.png",
+      "sha256": "737fd5af62273c558e920cc4c4ffdf7295719951b82df80b84e34884c79bed1a",
+      "bytes": 125198
+    },
+    {
+      "file": "native-webgpu/native-dentil-close.png",
+      "sha256": "bfbbdb43019146b4dff2d73dfdfe3c9fa7628d36ab7c2bc7c8df6407e8cc3a7d",
+      "bytes": 369260
+    },
+    {
+      "file": "native-webgpu/native-dentil-no-normal.png",
+      "sha256": "9ee8b9849a9b5da5eac3850e3951528e5bc6a30dd815f32b1d768dbc90a501ab",
+      "bytes": 312627
+    },
+    {
+      "file": "native-webgpu/native-dentil-no-textures.png",
+      "sha256": "6d65518cd1a66ab1d29a8bd47ed6c7a50b729913d35da78e7681a8a08b76786f",
+      "bytes": 113201
+    },
+    {
+      "file": "native-webgpu/native-dentil-whole.png",
+      "sha256": "b9f91a1d5a60963b679d0bf00715d53d6fa14af3d3996465a3d38562a40ae556",
+      "bytes": 599149
+    },
+    {
+      "file": "native-webgpu/native-final-building.png",
+      "sha256": "f1540b7dbd83038e638f9f6555a0d1a17db0f1282cd76684c7a5e19b4d73fc03",
+      "bytes": 595946
+    },
+    {
+      "file": "native-webgpu/native-moulded-clay-close.png",
+      "sha256": "7e93f4e1204cf9babfc8d79ab6601bf160cdadbd7be0f956894325c1e0e6338b",
+      "bytes": 130190
+    },
+    {
+      "file": "native-webgpu/native-moulded-close.png",
+      "sha256": "d2e87aff40cbad6a83e6378c979b17571983dcee58228f15e710be591d3ab14c",
+      "bytes": 336948
+    },
+    {
+      "file": "native-webgpu/native-moulded-whole.png",
+      "sha256": "833de8a7fcd589d0617617c4cda700c3f25f013c17f4b01250bd425f110ae196",
+      "bytes": 599095
+    },
+    {
+      "file": "native-webgpu/native-restored-building.png",
+      "sha256": "f1540b7dbd83038e638f9f6555a0d1a17db0f1282cd76684c7a5e19b4d73fc03",
+      "bytes": 595946
+    },
+    {
+      "file": "native-webgpu/native-returned-building.png",
+      "sha256": "f1540b7dbd83038e638f9f6555a0d1a17db0f1282cd76684c7a5e19b4d73fc03",
+      "bytes": 595946
+    },
+    {
+      "file": "native-webgpu/native-sill-no-normal.png",
+      "sha256": "b84acc4ff8efdacebfa6806363306f769c78ecb901245adab771fd37f46c0d6c",
+      "bytes": 731428
+    },
+    {
+      "file": "native-webgpu/native-sill-no-textures.png",
+      "sha256": "048730f35d344f9c31fb8ca294520f2f83cd696664b1b2da5f68760ab9f0eb31",
+      "bytes": 185753
+    },
+    {
+      "file": "native-webgpu/native-sill-textured.png",
+      "sha256": "35ea20cc56630caa5ef7ad3bb1a4e6ec8d18d3548468f2cf39f039771b9c3b5a",
+      "bytes": 794393
+    },
+    {
+      "file": "native-webgpu/receipt.json",
+      "sha256": "a91e282bdb622852c04914e74fe6edc29f7993513ff3a9fce1dac3a08eb81762",
+      "bytes": 879993
+    },
+    {
+      "file": "native-webgpu/restored-building.png",
+      "sha256": "9ec7664524bfb07fa0cd4b83b86ab06b6735a244311fd3b9e8c022e189afa4d2",
+      "bytes": 439981
+    },
+    {
+      "file": "native-webgpu/returned-building.png",
+      "sha256": "9ec7664524bfb07fa0cd4b83b86ab06b6735a244311fd3b9e8c022e189afa4d2",
+      "bytes": 439981
+    },
+    {
+      "file": "native-webgpu/sill-no-normal.png",
+      "sha256": "388e76bf71fefb87d1ffe9bb0e8aa20fb30ef498e0e5fc9b53199d7c003f299d",
+      "bytes": 438942
+    },
+    {
+      "file": "native-webgpu/sill-no-textures.png",
+      "sha256": "1f8c4379669438feaa0a6e96cc58dae07a698ac41899054f14adc777ce19c47a",
+      "bytes": 117091
+    },
+    {
+      "file": "native-webgpu/sill-textured.png",
+      "sha256": "321fe4c198905283a67d6d1af881cb2493f46f465d4fad656ca046ce62eb9306",
+      "bytes": 470872
+    },
+    {
+      "file": "README.md",
+      "sha256": "9560ed7a1da720508a53ab83fc33cbcf571218ef5570c0bb9786f31b53fcee4c",
+      "bytes": 4278
+    },
+    {
+      "file": "required-checks.json",
+      "sha256": "e56abca61a51957404ef643bb67d2ee02ab4ed637b3e1023e02657019f505914",
+      "bytes": 1345
+    },
+    {
+      "file": "reviewed-project-v9.zip",
+      "sha256": "4be1823e771902a9ed66ba8cb2954ff74a7a8069dda865d61748e6a8748c7d68",
+      "bytes": 3899220
+    },
+    {
+      "file": "run-required.ps1",
+      "sha256": "62c8d348239a66e408465bd26b0e5d36c1e14f3b8ac9355a151a1263987257d6",
+      "bytes": 1197
+    },
+    {
+      "file": "source/src/features/building-family/core/constructionCorniceVocabulary.ts",
+      "sha256": "83e14c3a547428392b322b1ba0134b15f895a53dc41c18175b62db6431be3eac",
+      "bytes": 1895
+    },
+    {
+      "file": "source/src/features/building-family/core/constructionOpeningEditGraph.ts",
+      "sha256": "8e276117e320c052e3eb9b6fcca538947d7c7a5ae23164b7d00fa8748546b912",
+      "bytes": 6276
+    },
+    {
+      "file": "source/src/features/building-family/core/constructionStorefrontGraph.ts",
+      "sha256": "ba27f213a9544b18ba094567c71cb207de09dac554fe00a36d946c3ab220742f",
+      "bytes": 3567
+    },
+    {
+      "file": "source/src/features/building-family/core/constructionSurfaceAuthoring.ts",
+      "sha256": "61fa99fc1628ea95104e13c38ffa5587a0f61a3efc31ff94fb35d5928b0fac75",
+      "bytes": 8264
+    },
+    {
+      "file": "source/src/features/building-family/core/constructionWindowVocabulary.ts",
+      "sha256": "e7130f6ad997eb75bb6a1e118fb7d96b3688858a16c124d820f38192c1ff0299",
+      "bytes": 2429
+    },
+    {
+      "file": "source/src/features/building-family/state/bayConstructionProject.ts",
+      "sha256": "a7378d6b41d5edab8290a044d79f5694425df72ab7fd2b8199366f0219464312",
+      "bytes": 5018
+    },
+    {
+      "file": "source/src/features/building-family/state/constructionGenerationState.ts",
+      "sha256": "4ef7fa26fa2647330e60f894bfc30c3943b6919d03c8d46d3ddefa3c4940bf72",
+      "bytes": 15608
+    },
+    {
+      "file": "source/src/features/building-family/tests/bayConstructionWorkbench.test.tsx",
+      "sha256": "fc977957d8fb761f7c567df89e442dc7aef38f91b2ab755ae3453449a0919503",
+      "bytes": 59377
+    },
+    {
+      "file": "source/src/features/building-family/tests/ConstructionBuildingControls.test.tsx",
+      "sha256": "6b99acb223dac4d6bc11c3f7c1f5923080b6327de109aa7d7335c0e85ffd7af9",
+      "bytes": 8474
+    },
+    {
+      "file": "source/src/features/building-family/tests/constructionGenerationState.test.ts",
+      "sha256": "911864bb172fa92b4c1034879ac3eba6dda34615eb0d75446e8c3530adb68801",
+      "bytes": 25221
+    },
+    {
+      "file": "source/src/features/building-family/ui/BayConstructionWorkbench.tsx",
+      "sha256": "3bb6fd0ca89bb8fcefdd495a0b06c5cf2caadef4c3f92d5e88c6ec51ccc2756e",
+      "bytes": 42360
+    },
+    {
+      "file": "source/src/features/building-family/ui/constructionBuildingBindings.ts",
+      "sha256": "115713abaaf49a2deb0fcdfbd345d656e0167a690193039644f8ff18c43cfc9f",
+      "bytes": 3650
+    },
+    {
+      "file": "source/src/features/building-family/ui/ConstructionBuildingControls.tsx",
+      "sha256": "bd319a03eb54a49b5d99e6dddf2364392d6adab8389851c5540a29e1ac23ed49",
+      "bytes": 11626
+    },
+    {
+      "file": "source/src/features/building-family/ui/ConstructionGenerationPanel.tsx",
+      "sha256": "8f7ee1e1f5ad5cb447c7377ab8a78bb65c4c99bf175c142ba8bb2c2cbaab2ecf",
+      "bytes": 6103
+    },
+    {
+      "file": "source/src/features/building-family/ui/ConstructionNodePanel.tsx",
+      "sha256": "c5c211507255a2a6d1085b507d56afd90d6b6e48530778d513a19dbe118b9b99",
+      "bytes": 15272
+    },
+    {
+      "file": "source-continuation.json",
+      "sha256": "9bf3f53937784a491bbebc7fcc0a7f0d3fb535ac901aa241d3e74f240862c1a1",
+      "bytes": 1157529
+    },
+    {
+      "file": "source-pins.json",
+      "sha256": "7ae955bb7f4281f8acaea68b35a1ae390419ad19b099a7f5c9c3b8464515de11",
+      "bytes": 62401
+    },
+    {
+      "file": "test-e2e-final.log",
+      "sha256": "815a7462ff2ab2224b6aa92c612117d0863f324d23f5b4e3d3e1d5acdf91b445",
+      "bytes": 234510
+    },
+    {
+      "file": "test-final.log",
+      "sha256": "cb5e88bc5aa0f4aafe2ec29cfd253977a3387f38455634e72ba3128989a393d7",
+      "bytes": 303
+    },
+    {
+      "file": "typecheck-final.log",
+      "sha256": "1927639a5b89b1406e25b817bb2c8efb1e16fccc181e86591db136d628e7f5e6",
+      "bytes": 49
+    },
+    {
+      "file": "verification.json",
+      "sha256": "dd9206a91f37729387bd57e27d78ba5894dc7de1cf2afac960a7160e90dcfd99",
+      "bytes": 4185
+    },
+    {
+      "file": "verify-close-04.mjs",
+      "sha256": "b4054a704ce3e1982ceb39170844c14bac7505f856dcc0cdf4744477627c0c84",
+      "bytes": 29354
+    },
+    {
+      "file": "verify-native-01.mjs",
+      "sha256": "1a08edae4a67e83d77459f741ea7bfdf270f31acea3c0a7d82701be5b6f55888",
+      "bytes": 33746
+    },
+    {
+      "file": "verify-native-02.mjs",
+      "sha256": "6fa30e2dbf73233e2e3fc2d22e9975c1e0b1e7ef4e8effab7e4b5dc7bfc6a35a",
+      "bytes": 33857
+    },
+    {
+      "file": "verify-native-03.mjs",
+      "sha256": "e1e6b5bb502967b652c7a7ba9e0f2f6e3a5ada56e31f4e49cd195741dd89149c",
+      "bytes": 35079
+    }
+  ]
+}
