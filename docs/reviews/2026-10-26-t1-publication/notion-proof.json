@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "0.1.0",
+  "pageId": "3fdb77d6-cd4f-812a-9f88-f1316beb9c25",
+  "imageCountBefore": 120,
+  "imageCountAfter": 126,
+  "oldNativeFileReferences": 112,
+  "allOldNativeReferencesRetained": true,
+  "allPriorPublicImagesRetained": true,
+  "allSixPublicImagesPresent": true,
+  "ux2AcceptanceRecorded": true,
+  "metadata": {
+    "type": "page"
+  }
+}
