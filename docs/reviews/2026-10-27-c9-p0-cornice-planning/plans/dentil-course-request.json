@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "construction-cornice-detail-request",
+  "assembly": "dentil-course",
+  "building": {
+    "widthM": 11.2,
+    "depthM": 13,
+    "heightM": 10.7
+  },
+  "cornice": {
+    "heightM": 0.24,
+    "projectionM": 0.18
+  }
+}

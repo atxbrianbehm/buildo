@@ -1,0 +1,99 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "cornice-planning-proof",
+  "sourceProjectSha256": "eb7466b09ab10f3e4040aeeb5acb85e959cd7dc75efa73f4f2da5140b0661cd1",
+  "sourceOnly": true,
+  "noProductRuntimeChange": true,
+  "cases": [
+    {
+      "assembly": "moulded",
+      "units": 0,
+      "profilePoints": 8,
+      "backingPoints": 8,
+      "recipe": "none",
+      "readbackExact": true,
+      "faceCounts": [
+        {
+          "face": "front",
+          "count": 0,
+          "marginM": 5.6
+        },
+        {
+          "face": "right",
+          "count": 0,
+          "marginM": 6.5
+        },
+        {
+          "face": "rear",
+          "count": 0,
+          "marginM": 5.6
+        },
+        {
+          "face": "left",
+          "count": 0,
+          "marginM": 6.5
+        }
+      ]
+    },
+    {
+      "assembly": "dentil-course",
+      "units": 152,
+      "profilePoints": 8,
+      "backingPoints": 10,
+      "recipe": "dentil",
+      "readbackExact": true,
+      "faceCounts": [
+        {
+          "face": "front",
+          "count": 35,
+          "marginM": 0.21799999999999908
+        },
+        {
+          "face": "right",
+          "count": 41,
+          "marginM": 0.1819999999999995
+        },
+        {
+          "face": "rear",
+          "count": 35,
+          "marginM": 0.21799999999999908
+        },
+        {
+          "face": "left",
+          "count": 41,
+          "marginM": 0.1819999999999995
+        }
+      ]
+    },
+    {
+      "assembly": "bracket-course",
+      "units": 78,
+      "profilePoints": 8,
+      "backingPoints": 8,
+      "recipe": "bracket",
+      "readbackExact": true,
+      "faceCounts": [
+        {
+          "face": "front",
+          "count": 18,
+          "marginM": 0.21799999999999908
+        },
+        {
+          "face": "right",
+          "count": 21,
+          "marginM": 0.1819999999999995
+        },
+        {
+          "face": "rear",
+          "count": 18,
+          "marginM": 0.21799999999999908
+        },
+        {
+          "face": "left",
+          "count": 21,
+          "marginM": 0.1819999999999995
+        }
+      ]
+    }
+  ]
+}

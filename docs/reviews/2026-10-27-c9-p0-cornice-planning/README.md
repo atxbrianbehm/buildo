@@ -1,0 +1,13 @@
+# C9.P0 — pure cornice-detail planning
+
+Strict request/plan0.1 now describes the existing moulded cornice envelope and a carved backing/repeat layout for dentil and bracket courses. This packet changes no product runtime: all347 preexisting code/config/test pins stay byte-identical. Three pure contract/core/test files are added. Graph/worker0.8, geometry, product controls and portable0.9 are later P1/P2 work.
+
+The planner balances repeat centres and physical gaps on all four faces, reserves corner clearance, and rejects requests above512 units before unit allocation. Moulded mode has no repeats. Detailed backing and bracket profiles stay inside the original cornice solid; unit width and cadence derive from existing cornice dimensions. A 2 mm internal back embed is part of the physical plan, not a polygon-offset or texture workaround. No mesh asset, random choice, material generation, renderer, DOM or store dependency is introduced.
+
+Validation: **33 focused cases**, typecheck and lint pass. Cases match the actual existing compiler's eight-point cornice envelope at three size/projection settings; verify serialization/ownership/determinism, mirrored face cadence, physical gaps/corners, exactly512 units and rejection above it, every bracket segment's envelope containment, causal span/height changes, malformed dimensions/versions/unknown fields, tampered derived data and non-JSON/accessor rejection. [Gate and preservation proof](verification.json), [focused log](focused-01.log), [source pins](source-pins.json).
+
+The [exported examples](planning-proof.json) use dimensions from the actual reviewed T2/T3 portable source, SHA256 `eb7466b09ab10f3e4040aeeb5acb85e959cd7dc75efa73f4f2da5140b0661cd1`. Moulded plans zero units, dentil course152, bracket course78. All three plans are parsed/rederived through the real exports and remain exact after JSON readback. [Requests and plans](plans/) contain schema-versioned physical planning data, not rendered buildings or a historical-style claim.
+
+Source guards reject changes to cadence, profile, recipe, face/unit order, address, budget and source. Shapes alone are not authoritative: P1 must use `readConstructionCorniceDetailPlan` before generating geometry. The current App continues using the accepted T3 building source and images; no new visual capability or human aesthetic acceptance is claimed by this groundwork.
+
+[Sequential feature plan](../../plans/cornice-detail-vocabulary.md) requires a separate P1 geometry/protocol packet and P2 authoring/continuation packet, followed by review of actual treatments. Original PSG/UTDG/recipe and material lineage remain unchanged and architecture coverage remains unknown. Publish P0 as its own PR; continue P1 without another intermediate human gate.

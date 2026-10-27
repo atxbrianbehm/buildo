@@ -1,0 +1,1060 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "construction-cornice-detail-plan",
+  "source": {
+    "schemaVersion": "0.1.0",
+    "kind": "construction-cornice-detail-request",
+    "assembly": "dentil-course",
+    "building": {
+      "widthM": 11.2,
+      "depthM": 13,
+      "heightM": 10.7
+    },
+    "cornice": {
+      "heightM": 0.24,
+      "projectionM": 0.18
+    }
+  },
+  "unitBudget": 512,
+  "envelopeProfile": [
+    {
+      "yM": 10.459999999999999,
+      "depthM": 0
+    },
+    {
+      "yM": 10.508,
+      "depthM": 0.081
+    },
+    {
+      "yM": 10.543999999999999,
+      "depthM": 0.081
+    },
+    {
+      "yM": 10.58,
+      "depthM": 0.1296
+    },
+    {
+      "yM": 10.639999999999999,
+      "depthM": 0.1296
+    },
+    {
+      "yM": 10.664,
+      "depthM": 0.18
+    },
+    {
+      "yM": 10.7,
+      "depthM": 0.18
+    },
+    {
+      "yM": 10.7,
+      "depthM": 0
+    }
+  ],
+  "backingProfile": [
+    {
+      "yM": 10.459999999999999,
+      "depthM": 0
+    },
+    {
+      "yM": 10.508,
+      "depthM": 0.081
+    },
+    {
+      "yM": 10.508,
+      "depthM": 0.021599999999999998
+    },
+    {
+      "yM": 10.543999999999999,
+      "depthM": 0.021599999999999998
+    },
+    {
+      "yM": 10.543999999999999,
+      "depthM": 0.081
+    },
+    {
+      "yM": 10.58,
+      "depthM": 0.1296
+    },
+    {
+      "yM": 10.639999999999999,
+      "depthM": 0.1296
+    },
+    {
+      "yM": 10.664,
+      "depthM": 0.18
+    },
+    {
+      "yM": 10.7,
+      "depthM": 0.18
+    },
+    {
+      "yM": 10.7,
+      "depthM": 0
+    }
+  ],
+  "recipe": {
+    "kind": "dentil",
+    "widthM": 0.156,
+    "bottomM": 10.508,
+    "topM": 10.543999999999999,
+    "backDepthM": 0.0196,
+    "frontDepthM": 0.081,
+    "bevelM": 0.0028799999999999672
+  },
+  "faces": [
+    {
+      "face": "front",
+      "spanM": 11.2,
+      "count": 35,
+      "pitchM": 0.312,
+      "endInsetM": 0.09,
+      "occupiedM": 10.764000000000001,
+      "marginM": 0.21799999999999908,
+      "firstCenterM": -5.304
+    },
+    {
+      "face": "right",
+      "spanM": 13,
+      "count": 41,
+      "pitchM": 0.312,
+      "endInsetM": 0.09,
+      "occupiedM": 12.636000000000001,
+      "marginM": 0.1819999999999995,
+      "firstCenterM": -6.24
+    },
+    {
+      "face": "rear",
+      "spanM": 11.2,
+      "count": 35,
+      "pitchM": 0.312,
+      "endInsetM": 0.09,
+      "occupiedM": 10.764000000000001,
+      "marginM": 0.21799999999999908,
+      "firstCenterM": -5.304
+    },
+    {
+      "face": "left",
+      "spanM": 13,
+      "count": 41,
+      "pitchM": 0.312,
+      "endInsetM": 0.09,
+      "occupiedM": 12.636000000000001,
+      "marginM": 0.1819999999999995,
+      "firstCenterM": -6.24
+    }
+  ],
+  "units": [
+    {
+      "id": "front/0",
+      "face": "front",
+      "ordinal": 0,
+      "centerAlongM": -5.304
+    },
+    {
+      "id": "front/1",
+      "face": "front",
+      "ordinal": 1,
+      "centerAlongM": -4.992
+    },
+    {
+      "id": "front/2",
+      "face": "front",
+      "ordinal": 2,
+      "centerAlongM": -4.68
+    },
+    {
+      "id": "front/3",
+      "face": "front",
+      "ordinal": 3,
+      "centerAlongM": -4.368
+    },
+    {
+      "id": "front/4",
+      "face": "front",
+      "ordinal": 4,
+      "centerAlongM": -4.056
+    },
+    {
+      "id": "front/5",
+      "face": "front",
+      "ordinal": 5,
+      "centerAlongM": -3.7439999999999998
+    },
+    {
+      "id": "front/6",
+      "face": "front",
+      "ordinal": 6,
+      "centerAlongM": -3.432
+    },
+    {
+      "id": "front/7",
+      "face": "front",
+      "ordinal": 7,
+      "centerAlongM": -3.12
+    },
+    {
+      "id": "front/8",
+      "face": "front",
+      "ordinal": 8,
+      "centerAlongM": -2.808
+    },
+    {
+      "id": "front/9",
+      "face": "front",
+      "ordinal": 9,
+      "centerAlongM": -2.496
+    },
+    {
+      "id": "front/10",
+      "face": "front",
+      "ordinal": 10,
+      "centerAlongM": -2.184
+    },
+    {
+      "id": "front/11",
+      "face": "front",
+      "ordinal": 11,
+      "centerAlongM": -1.8719999999999999
+    },
+    {
+      "id": "front/12",
+      "face": "front",
+      "ordinal": 12,
+      "centerAlongM": -1.56
+    },
+    {
+      "id": "front/13",
+      "face": "front",
+      "ordinal": 13,
+      "centerAlongM": -1.248
+    },
+    {
+      "id": "front/14",
+      "face": "front",
+      "ordinal": 14,
+      "centerAlongM": -0.9359999999999999
+    },
+    {
+      "id": "front/15",
+      "face": "front",
+      "ordinal": 15,
+      "centerAlongM": -0.624
+    },
+    {
+      "id": "front/16",
+      "face": "front",
+      "ordinal": 16,
+      "centerAlongM": -0.312
+    },
+    {
+      "id": "front/17",
+      "face": "front",
+      "ordinal": 17,
+      "centerAlongM": 0
+    },
+    {
+      "id": "front/18",
+      "face": "front",
+      "ordinal": 18,
+      "centerAlongM": 0.312
+    },
+    {
+      "id": "front/19",
+      "face": "front",
+      "ordinal": 19,
+      "centerAlongM": 0.624
+    },
+    {
+      "id": "front/20",
+      "face": "front",
+      "ordinal": 20,
+      "centerAlongM": 0.9359999999999999
+    },
+    {
+      "id": "front/21",
+      "face": "front",
+      "ordinal": 21,
+      "centerAlongM": 1.248
+    },
+    {
+      "id": "front/22",
+      "face": "front",
+      "ordinal": 22,
+      "centerAlongM": 1.56
+    },
+    {
+      "id": "front/23",
+      "face": "front",
+      "ordinal": 23,
+      "centerAlongM": 1.8719999999999999
+    },
+    {
+      "id": "front/24",
+      "face": "front",
+      "ordinal": 24,
+      "centerAlongM": 2.184
+    },
+    {
+      "id": "front/25",
+      "face": "front",
+      "ordinal": 25,
+      "centerAlongM": 2.496
+    },
+    {
+      "id": "front/26",
+      "face": "front",
+      "ordinal": 26,
+      "centerAlongM": 2.808
+    },
+    {
+      "id": "front/27",
+      "face": "front",
+      "ordinal": 27,
+      "centerAlongM": 3.12
+    },
+    {
+      "id": "front/28",
+      "face": "front",
+      "ordinal": 28,
+      "centerAlongM": 3.432
+    },
+    {
+      "id": "front/29",
+      "face": "front",
+      "ordinal": 29,
+      "centerAlongM": 3.7439999999999998
+    },
+    {
+      "id": "front/30",
+      "face": "front",
+      "ordinal": 30,
+      "centerAlongM": 4.056
+    },
+    {
+      "id": "front/31",
+      "face": "front",
+      "ordinal": 31,
+      "centerAlongM": 4.368
+    },
+    {
+      "id": "front/32",
+      "face": "front",
+      "ordinal": 32,
+      "centerAlongM": 4.68
+    },
+    {
+      "id": "front/33",
+      "face": "front",
+      "ordinal": 33,
+      "centerAlongM": 4.992
+    },
+    {
+      "id": "front/34",
+      "face": "front",
+      "ordinal": 34,
+      "centerAlongM": 5.304
+    },
+    {
+      "id": "right/0",
+      "face": "right",
+      "ordinal": 0,
+      "centerAlongM": -6.24
+    },
+    {
+      "id": "right/1",
+      "face": "right",
+      "ordinal": 1,
+      "centerAlongM": -5.928
+    },
+    {
+      "id": "right/2",
+      "face": "right",
+      "ordinal": 2,
+      "centerAlongM": -5.616
+    },
+    {
+      "id": "right/3",
+      "face": "right",
+      "ordinal": 3,
+      "centerAlongM": -5.304
+    },
+    {
+      "id": "right/4",
+      "face": "right",
+      "ordinal": 4,
+      "centerAlongM": -4.992
+    },
+    {
+      "id": "right/5",
+      "face": "right",
+      "ordinal": 5,
+      "centerAlongM": -4.68
+    },
+    {
+      "id": "right/6",
+      "face": "right",
+      "ordinal": 6,
+      "centerAlongM": -4.368
+    },
+    {
+      "id": "right/7",
+      "face": "right",
+      "ordinal": 7,
+      "centerAlongM": -4.056
+    },
+    {
+      "id": "right/8",
+      "face": "right",
+      "ordinal": 8,
+      "centerAlongM": -3.7439999999999998
+    },
+    {
+      "id": "right/9",
+      "face": "right",
+      "ordinal": 9,
+      "centerAlongM": -3.432
+    },
+    {
+      "id": "right/10",
+      "face": "right",
+      "ordinal": 10,
+      "centerAlongM": -3.12
+    },
+    {
+      "id": "right/11",
+      "face": "right",
+      "ordinal": 11,
+      "centerAlongM": -2.808
+    },
+    {
+      "id": "right/12",
+      "face": "right",
+      "ordinal": 12,
+      "centerAlongM": -2.496
+    },
+    {
+      "id": "right/13",
+      "face": "right",
+      "ordinal": 13,
+      "centerAlongM": -2.184
+    },
+    {
+      "id": "right/14",
+      "face": "right",
+      "ordinal": 14,
+      "centerAlongM": -1.8719999999999999
+    },
+    {
+      "id": "right/15",
+      "face": "right",
+      "ordinal": 15,
+      "centerAlongM": -1.56
+    },
+    {
+      "id": "right/16",
+      "face": "right",
+      "ordinal": 16,
+      "centerAlongM": -1.248
+    },
+    {
+      "id": "right/17",
+      "face": "right",
+      "ordinal": 17,
+      "centerAlongM": -0.9359999999999999
+    },
+    {
+      "id": "right/18",
+      "face": "right",
+      "ordinal": 18,
+      "centerAlongM": -0.624
+    },
+    {
+      "id": "right/19",
+      "face": "right",
+      "ordinal": 19,
+      "centerAlongM": -0.312
+    },
+    {
+      "id": "right/20",
+      "face": "right",
+      "ordinal": 20,
+      "centerAlongM": 0
+    },
+    {
+      "id": "right/21",
+      "face": "right",
+      "ordinal": 21,
+      "centerAlongM": 0.312
+    },
+    {
+      "id": "right/22",
+      "face": "right",
+      "ordinal": 22,
+      "centerAlongM": 0.624
+    },
+    {
+      "id": "right/23",
+      "face": "right",
+      "ordinal": 23,
+      "centerAlongM": 0.9359999999999999
+    },
+    {
+      "id": "right/24",
+      "face": "right",
+      "ordinal": 24,
+      "centerAlongM": 1.248
+    },
+    {
+      "id": "right/25",
+      "face": "right",
+      "ordinal": 25,
+      "centerAlongM": 1.56
+    },
+    {
+      "id": "right/26",
+      "face": "right",
+      "ordinal": 26,
+      "centerAlongM": 1.8719999999999999
+    },
+    {
+      "id": "right/27",
+      "face": "right",
+      "ordinal": 27,
+      "centerAlongM": 2.184
+    },
+    {
+      "id": "right/28",
+      "face": "right",
+      "ordinal": 28,
+      "centerAlongM": 2.496
+    },
+    {
+      "id": "right/29",
+      "face": "right",
+      "ordinal": 29,
+      "centerAlongM": 2.808
+    },
+    {
+      "id": "right/30",
+      "face": "right",
+      "ordinal": 30,
+      "centerAlongM": 3.12
+    },
+    {
+      "id": "right/31",
+      "face": "right",
+      "ordinal": 31,
+      "centerAlongM": 3.432
+    },
+    {
+      "id": "right/32",
+      "face": "right",
+      "ordinal": 32,
+      "centerAlongM": 3.7439999999999998
+    },
+    {
+      "id": "right/33",
+      "face": "right",
+      "ordinal": 33,
+      "centerAlongM": 4.056
+    },
+    {
+      "id": "right/34",
+      "face": "right",
+      "ordinal": 34,
+      "centerAlongM": 4.368
+    },
+    {
+      "id": "right/35",
+      "face": "right",
+      "ordinal": 35,
+      "centerAlongM": 4.68
+    },
+    {
+      "id": "right/36",
+      "face": "right",
+      "ordinal": 36,
+      "centerAlongM": 4.992
+    },
+    {
+      "id": "right/37",
+      "face": "right",
+      "ordinal": 37,
+      "centerAlongM": 5.304
+    },
+    {
+      "id": "right/38",
+      "face": "right",
+      "ordinal": 38,
+      "centerAlongM": 5.616
+    },
+    {
+      "id": "right/39",
+      "face": "right",
+      "ordinal": 39,
+      "centerAlongM": 5.928
+    },
+    {
+      "id": "right/40",
+      "face": "right",
+      "ordinal": 40,
+      "centerAlongM": 6.24
+    },
+    {
+      "id": "rear/0",
+      "face": "rear",
+      "ordinal": 0,
+      "centerAlongM": -5.304
+    },
+    {
+      "id": "rear/1",
+      "face": "rear",
+      "ordinal": 1,
+      "centerAlongM": -4.992
+    },
+    {
+      "id": "rear/2",
+      "face": "rear",
+      "ordinal": 2,
+      "centerAlongM": -4.68
+    },
+    {
+      "id": "rear/3",
+      "face": "rear",
+      "ordinal": 3,
+      "centerAlongM": -4.368
+    },
+    {
+      "id": "rear/4",
+      "face": "rear",
+      "ordinal": 4,
+      "centerAlongM": -4.056
+    },
+    {
+      "id": "rear/5",
+      "face": "rear",
+      "ordinal": 5,
+      "centerAlongM": -3.7439999999999998
+    },
+    {
+      "id": "rear/6",
+      "face": "rear",
+      "ordinal": 6,
+      "centerAlongM": -3.432
+    },
+    {
+      "id": "rear/7",
+      "face": "rear",
+      "ordinal": 7,
+      "centerAlongM": -3.12
+    },
+    {
+      "id": "rear/8",
+      "face": "rear",
+      "ordinal": 8,
+      "centerAlongM": -2.808
+    },
+    {
+      "id": "rear/9",
+      "face": "rear",
+      "ordinal": 9,
+      "centerAlongM": -2.496
+    },
+    {
+      "id": "rear/10",
+      "face": "rear",
+      "ordinal": 10,
+      "centerAlongM": -2.184
+    },
+    {
+      "id": "rear/11",
+      "face": "rear",
+      "ordinal": 11,
+      "centerAlongM": -1.8719999999999999
+    },
+    {
+      "id": "rear/12",
+      "face": "rear",
+      "ordinal": 12,
+      "centerAlongM": -1.56
+    },
+    {
+      "id": "rear/13",
+      "face": "rear",
+      "ordinal": 13,
+      "centerAlongM": -1.248
+    },
+    {
+      "id": "rear/14",
+      "face": "rear",
+      "ordinal": 14,
+      "centerAlongM": -0.9359999999999999
+    },
+    {
+      "id": "rear/15",
+      "face": "rear",
+      "ordinal": 15,
+      "centerAlongM": -0.624
+    },
+    {
+      "id": "rear/16",
+      "face": "rear",
+      "ordinal": 16,
+      "centerAlongM": -0.312
+    },
+    {
+      "id": "rear/17",
+      "face": "rear",
+      "ordinal": 17,
+      "centerAlongM": 0
+    },
+    {
+      "id": "rear/18",
+      "face": "rear",
+      "ordinal": 18,
+      "centerAlongM": 0.312
+    },
+    {
+      "id": "rear/19",
+      "face": "rear",
+      "ordinal": 19,
+      "centerAlongM": 0.624
+    },
+    {
+      "id": "rear/20",
+      "face": "rear",
+      "ordinal": 20,
+      "centerAlongM": 0.9359999999999999
+    },
+    {
+      "id": "rear/21",
+      "face": "rear",
+      "ordinal": 21,
+      "centerAlongM": 1.248
+    },
+    {
+      "id": "rear/22",
+      "face": "rear",
+      "ordinal": 22,
+      "centerAlongM": 1.56
+    },
+    {
+      "id": "rear/23",
+      "face": "rear",
+      "ordinal": 23,
+      "centerAlongM": 1.8719999999999999
+    },
+    {
+      "id": "rear/24",
+      "face": "rear",
+      "ordinal": 24,
+      "centerAlongM": 2.184
+    },
+    {
+      "id": "rear/25",
+      "face": "rear",
+      "ordinal": 25,
+      "centerAlongM": 2.496
+    },
+    {
+      "id": "rear/26",
+      "face": "rear",
+      "ordinal": 26,
+      "centerAlongM": 2.808
+    },
+    {
+      "id": "rear/27",
+      "face": "rear",
+      "ordinal": 27,
+      "centerAlongM": 3.12
+    },
+    {
+      "id": "rear/28",
+      "face": "rear",
+      "ordinal": 28,
+      "centerAlongM": 3.432
+    },
+    {
+      "id": "rear/29",
+      "face": "rear",
+      "ordinal": 29,
+      "centerAlongM": 3.7439999999999998
+    },
+    {
+      "id": "rear/30",
+      "face": "rear",
+      "ordinal": 30,
+      "centerAlongM": 4.056
+    },
+    {
+      "id": "rear/31",
+      "face": "rear",
+      "ordinal": 31,
+      "centerAlongM": 4.368
+    },
+    {
+      "id": "rear/32",
+      "face": "rear",
+      "ordinal": 32,
+      "centerAlongM": 4.68
+    },
+    {
+      "id": "rear/33",
+      "face": "rear",
+      "ordinal": 33,
+      "centerAlongM": 4.992
+    },
+    {
+      "id": "rear/34",
+      "face": "rear",
+      "ordinal": 34,
+      "centerAlongM": 5.304
+    },
+    {
+      "id": "left/0",
+      "face": "left",
+      "ordinal": 0,
+      "centerAlongM": -6.24
+    },
+    {
+      "id": "left/1",
+      "face": "left",
+      "ordinal": 1,
+      "centerAlongM": -5.928
+    },
+    {
+      "id": "left/2",
+      "face": "left",
+      "ordinal": 2,
+      "centerAlongM": -5.616
+    },
+    {
+      "id": "left/3",
+      "face": "left",
+      "ordinal": 3,
+      "centerAlongM": -5.304
+    },
+    {
+      "id": "left/4",
+      "face": "left",
+      "ordinal": 4,
+      "centerAlongM": -4.992
+    },
+    {
+      "id": "left/5",
+      "face": "left",
+      "ordinal": 5,
+      "centerAlongM": -4.68
+    },
+    {
+      "id": "left/6",
+      "face": "left",
+      "ordinal": 6,
+      "centerAlongM": -4.368
+    },
+    {
+      "id": "left/7",
+      "face": "left",
+      "ordinal": 7,
+      "centerAlongM": -4.056
+    },
+    {
+      "id": "left/8",
+      "face": "left",
+      "ordinal": 8,
+      "centerAlongM": -3.7439999999999998
+    },
+    {
+      "id": "left/9",
+      "face": "left",
+      "ordinal": 9,
+      "centerAlongM": -3.432
+    },
+    {
+      "id": "left/10",
+      "face": "left",
+      "ordinal": 10,
+      "centerAlongM": -3.12
+    },
+    {
+      "id": "left/11",
+      "face": "left",
+      "ordinal": 11,
+      "centerAlongM": -2.808
+    },
+    {
+      "id": "left/12",
+      "face": "left",
+      "ordinal": 12,
+      "centerAlongM": -2.496
+    },
+    {
+      "id": "left/13",
+      "face": "left",
+      "ordinal": 13,
+      "centerAlongM": -2.184
+    },
+    {
+      "id": "left/14",
+      "face": "left",
+      "ordinal": 14,
+      "centerAlongM": -1.8719999999999999
+    },
+    {
+      "id": "left/15",
+      "face": "left",
+      "ordinal": 15,
+      "centerAlongM": -1.56
+    },
+    {
+      "id": "left/16",
+      "face": "left",
+      "ordinal": 16,
+      "centerAlongM": -1.248
+    },
+    {
+      "id": "left/17",
+      "face": "left",
+      "ordinal": 17,
+      "centerAlongM": -0.9359999999999999
+    },
+    {
+      "id": "left/18",
+      "face": "left",
+      "ordinal": 18,
+      "centerAlongM": -0.624
+    },
+    {
+      "id": "left/19",
+      "face": "left",
+      "ordinal": 19,
+      "centerAlongM": -0.312
+    },
+    {
+      "id": "left/20",
+      "face": "left",
+      "ordinal": 20,
+      "centerAlongM": 0
+    },
+    {
+      "id": "left/21",
+      "face": "left",
+      "ordinal": 21,
+      "centerAlongM": 0.312
+    },
+    {
+      "id": "left/22",
+      "face": "left",
+      "ordinal": 22,
+      "centerAlongM": 0.624
+    },
+    {
+      "id": "left/23",
+      "face": "left",
+      "ordinal": 23,
+      "centerAlongM": 0.9359999999999999
+    },
+    {
+      "id": "left/24",
+      "face": "left",
+      "ordinal": 24,
+      "centerAlongM": 1.248
+    },
+    {
+      "id": "left/25",
+      "face": "left",
+      "ordinal": 25,
+      "centerAlongM": 1.56
+    },
+    {
+      "id": "left/26",
+      "face": "left",
+      "ordinal": 26,
+      "centerAlongM": 1.8719999999999999
+    },
+    {
+      "id": "left/27",
+      "face": "left",
+      "ordinal": 27,
+      "centerAlongM": 2.184
+    },
+    {
+      "id": "left/28",
+      "face": "left",
+      "ordinal": 28,
+      "centerAlongM": 2.496
+    },
+    {
+      "id": "left/29",
+      "face": "left",
+      "ordinal": 29,
+      "centerAlongM": 2.808
+    },
+    {
+      "id": "left/30",
+      "face": "left",
+      "ordinal": 30,
+      "centerAlongM": 3.12
+    },
+    {
+      "id": "left/31",
+      "face": "left",
+      "ordinal": 31,
+      "centerAlongM": 3.432
+    },
+    {
+      "id": "left/32",
+      "face": "left",
+      "ordinal": 32,
+      "centerAlongM": 3.7439999999999998
+    },
+    {
+      "id": "left/33",
+      "face": "left",
+      "ordinal": 33,
+      "centerAlongM": 4.056
+    },
+    {
+      "id": "left/34",
+      "face": "left",
+      "ordinal": 34,
+      "centerAlongM": 4.368
+    },
+    {
+      "id": "left/35",
+      "face": "left",
+      "ordinal": 35,
+      "centerAlongM": 4.68
+    },
+    {
+      "id": "left/36",
+      "face": "left",
+      "ordinal": 36,
+      "centerAlongM": 4.992
+    },
+    {
+      "id": "left/37",
+      "face": "left",
+      "ordinal": 37,
+      "centerAlongM": 5.304
+    },
+    {
+      "id": "left/38",
+      "face": "left",
+      "ordinal": 38,
+      "centerAlongM": 5.616
+    },
+    {
+      "id": "left/39",
+      "face": "left",
+      "ordinal": 39,
+      "centerAlongM": 5.928
+    },
+    {
+      "id": "left/40",
+      "face": "left",
+      "ordinal": 40,
+      "centerAlongM": 6.24
+    }
+  ]
+}
