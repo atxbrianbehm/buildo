@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "selected-opening-contract-verification",
+  "baseCommit": "8039083047ee151d66e7e98c04eb9ab5b20cdd20",
+  "checks": [
+    {
+      "name": "typecheck",
+      "exitCode": 0
+    },
+    {
+      "name": "lint",
+      "exitCode": 0
+    },
+    {
+      "name": "focused-tests",
+      "exitCode": 0,
+      "tests": 51,
+      "files": 2,
+      "newTests": 27
+    }
+  ],
+  "preservedSourcePins": 338,
+  "newSourcePins": [
+    {
+      "file": "src/features/building-family/contracts/constructionOpeningEdit.ts",
+      "sha256": "441c1274d5a0e577679470c9c39f8e4596350ea61e9ef8ef7086118d9216c12a",
+      "snapshot": "source/contracts-constructionOpeningEdit.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/core/constructionOpeningEdit.ts",
+      "sha256": "1ca5dc2c4b77603ca047c31d09df0534996c2ce3a29a0747607ee9d5b15258ed",
+      "snapshot": "source/core-constructionOpeningEdit.ts.txt"
+    },
+    {
+      "file": "src/features/building-family/tests/constructionOpeningEdit.test.ts",
+      "sha256": "97919cf64f8cb62e12f3848942e9a164c4d947518326d8f531952dd912fa090b",
+      "snapshot": "source/tests-constructionOpeningEdit.test.ts.txt"
+    }
+  ],
+  "graphVersionChanged": false,
+  "productControlImplemented": false,
+  "nativeCapturePerformed": false,
+  "nextPacket": "UX2.P1"
+}
