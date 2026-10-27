@@ -1,7 +1,9 @@
 import { withConstructionStorefront, constructionHasStorefront, CONSTRUCTION_FRONTAGE_OPTIONS } from "../core/constructionStorefrontGraph";
 import { CONSTRUCTION_WINDOW_LAYOUTS, upgradeConstructionWindowVocabulary } from "../core/constructionWindowVocabulary";
 import { ConstructionBuildingControls } from "./ConstructionBuildingControls";
-import { groupedWindowCount, groupedStorefrontCount } from "./constructionBuildingBindings";
+import { ConstructionOpeningControls } from "./ConstructionOpeningControls";
+import { withConstructionOpeningWidth, withoutConstructionOpeningWidth } from "../core/constructionOpeningEditGraph";
+import { constructionOpeningOptions, supportsGroupedConstruction, groupedWindowCount, groupedStorefrontCount } from "./constructionBuildingBindings";
 import { ConstructionReferenceSnapshotSchema, type ConstructionReferenceSnapshot } from "../contracts/constructionGeneration";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { canonicalJson } from "../core/canonicalJson";
@@ -79,10 +81,13 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   const [fields, setFields] = useState(() => fieldsFor(draft));
   const [selected, setSelected] = useState(draft.nodes[0].id);
   const [accepted, setAccepted] = useState<BayConstructionFixture | null>(null);
-  const [pending, setPending] = useState(true), [saving, setSaving] = useState(false), [dirty, setDirty] = useState(false);
+  const [pending, setPending] = useState(true), [saving, setSaving] = useState(false), [buildingDirty, setDirty] = useState(false);
+  const [openingDirty, setOpeningDirty] = useState(false);
+  const dirty = buildingDirty || openingDirty;
   const [error, setError] = useState<string | null>(null), [viewerReady, setViewerReady] = useState(false);
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [selectedFrame, setSelectedFrame] = useState<string | null>(null);
+  const selectedFrameRef = useRef<string | null>(null);
   const [previewNode, setPreviewNode] = useState<string | null>(null);
   const shown = useRef<BayConstructionFixture | null>(null);
   const alive = useRef(false), sequence = useRef(0), abort = useRef<AbortController | null>(null);
@@ -92,9 +97,13 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   const viewer = useRef<BuildingFixtureViewerPreparer | null>(null);
   const fileInput = useRef<HTMLInputElement>(null), downloads = useRef(new Map<string, number>());
 
-  const selectFrame = useCallback((selection: AssemblyHallWindowSelection | null) => {
-    setSelectedFrame(selection && selection.fixture === current.current?.fixture && shown.current === selection.fixture ? selection.semanticPath : null);
+  const chooseFrame = useCallback((path: string | null) => {
+    if (selectedFrameRef.current !== path) { selectedFrameRef.current = path; setSelectedFrame(path); setOpeningDirty(false); }
   }, []);
+  const selectFrame = useCallback((selection: AssemblyHallWindowSelection | null) => {
+    if (selection && (selection.fixture !== current.current?.fixture || shown.current !== selection.fixture)) return;
+    chooseFrame(selection?.semanticPath ?? null);
+  }, [chooseFrame]);
 
   const collect = useCallback((owner: Owner) => {
     if (owner.retired && owner.leases === 0) {
@@ -126,7 +135,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     const nextGeneration = lineage === undefined ? previous?.generation ?? null : lineage;
     if (previous && shown.current === previous.fixture && JSON.stringify(previous.fixture.construction.graph) === JSON.stringify(graph) &&
         previous.materials.file.contentHash === materials.file.contentHash && canonicalJson(previous.generation) === canonicalJson(nextGeneration)) {
-      setDraft(graph); setFields(fieldsFor(graph)); setDirty(false); setError(null);
+      setDraft(graph); setFields(fieldsFor(graph)); setDirty(false); setOpeningDirty(false); setError(null);
       if (historyAction === "open") { history.record(graph, materials.file.contentHash, true, nextGeneration); onSessionChange({ graph, materials, history: history.snapshot(), generation: nextGeneration }); }
       return;
     }
@@ -153,7 +162,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       setPreviewNode(null);
       setAccepted(candidate); setDraft(result.graph); setFields(fieldsFor(result.graph));
       setSelected(id => result.graph.nodes.some(node => node.id === id) ? id : result.graph.nodes[0].id);
-      setDirty(false); setError(null);
+      setDirty(false); setOpeningDirty(false); setError(null);
       if (historyAction === "undo" || historyAction === "redo") history.acceptTraversal(historyAction, result.graph);
       else history.record(result.graph, materials.file.contentHash, historyAction === "open", nextGeneration);
       onSessionChange({ graph: result.graph, materials, history: history.snapshot(), generation: nextGeneration });
@@ -220,6 +229,18 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       await publish(project.graph, { ...materials, file: project.materialSource }, token, signal, "open", project.generation ?? null);
     });
   }
+  async function applyOpeningWidth(text: string | null) {
+    const source = current.current;
+    if (!source || buildingDirty || previewNode || shown.current !== source.fixture) return;
+    const option = constructionOpeningOptions(source.fixture.construction.graph, source.fixture.ir).find(value=>value.path===selectedFrameRef.current);
+    await perform(async (token,signal) => {
+      if (!option) throw new Error("Select a current upper-front window before editing its width.");
+      if (text !== null && (!text.trim() || !Number.isFinite(Number(text)))) throw new Error("Enter a finite selected-window width.");
+      const graph = text === null ? withoutConstructionOpeningWidth(source.fixture.construction.graph,option.target)
+        : withConstructionOpeningWidth(source.fixture.construction.graph,{target:option.target,widthM:Number(text)});
+      await publish(graph,source.materials,token,signal);
+    });
+  }
   async function generateBuilding(reroll: boolean) {
     const acceptedSource = current.current;
     if (!acceptedSource || dirty) return;
@@ -265,7 +286,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   function revertDraft() {
     const source = current.current; if (!source) return;
     const graph = source.fixture.construction.graph;
-    setDraft(graph); setFields(fieldsFor(graph)); setDirty(false); setError(null);
+    setDraft(graph); setFields(fieldsFor(graph)); setDirty(false); setOpeningDirty(false); setError(null);
     setSelected(id => graph.nodes.some(node => node.id === id) ? id : graph.nodes[0].id);
   }
   async function preview(id: string | null) {
@@ -311,7 +332,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   }
   const node = draft.nodes.find(node => node.id === selected) ?? draft.nodes[0];
   const output = accepted?.construction.trace.find(entry => entry.nodeId === node.id);
-  const disabled = pending || saving;
+  const disabled = pending || saving || openingDirty;
   function replace(next: BayConstructionNode) {
     setDraft(graph => ({ ...graph, nodes: graph.nodes.map(value => value.id === next.id ? next : value) }));
     setDirty(true);
@@ -359,6 +380,8 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
                 onChange={event => { const text = event.currentTarget.value; setFields(all => ({ ...all, [node.id]: { ...all[node.id], [key]: text } })); setDirty(true); }} />}
             </label>) : null}
             {constructionHasStorefront(draft) && (node.type === "PlaceDoor" || node.type === "AssembleDoor") ? <p>The ground frontage sets the door height, frame and recess. Use its head band and transom controls.</p> : null}
+            {node.type === "EditOpeningWidth" ? <div><p>{node.overrides.length} local width {node.overrides.length===1?"override":"overrides"}. Use Selected window controls to apply or reset a width.</p>
+              <ul>{node.overrides.map(({target,widthM})=><li key={`${target.floorIndex}/${target.bayIndex}`}>Front · Storey {target.floorIndex+1} · Bay {target.bayIndex+1}: {widthM} m</li>)}</ul></div> : null}
             {"input" in node ? <label className="control-panel__field-wide"><span>{node.input.socket === "scope" ? "Scope input" : node.input.socket === "footprint" ? "Footprint input" : "Geometry input"}</span>
               <select aria-label={node.input.socket === "scope" ? "Scope input" : node.input.socket === "footprint" ? "Footprint input" : "Geometry input"} value={node.input.nodeId}
                 onChange={event => replace(BayConstructionNodeSchema.parse({ ...node, input: { nodeId: event.currentTarget.value, socket: node.input.socket } }))}>
@@ -395,10 +418,10 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     data-construction-kind={buildingMode ? "building" : facadeMode ? "facade" : "bay"} data-surface-layer-count={accepted?.construction.surfaceComposition?.layers.length ?? 0} data-construction-preview={previewNode ?? "output"}>
     {buildingMode ? <header className="construction-workspace__toolbar"><p>Building construction</p><div className="construction-project-actions">{historyActions}{fileActions}</div></header> : null}
     <div className="building-workspace__stage">
-      {accepted ? <AssemblyHall workspace constructionFrameSelection onWindowSelectionChange={selectFrame} fixture={accepted} acquireFixtureViewerLease={acquireLease} registerFixtureViewer={registerViewer} rendererFactory={rendererFactory}
+      {accepted ? <AssemblyHall workspace constructionFrameSelection selectedConstructionPath={selectedFrame} onWindowSelectionChange={selectFrame} fixture={accepted} acquireFixtureViewerLease={acquireLease} registerFixtureViewer={registerViewer} rendererFactory={rendererFactory}
         title={buildingMode ? "Building construction" : facadeMode ? "Facade construction" : "Facade bay"} description={buildingMode ? "Footprint, storeys, openings and continuous architectural profiles" : facadeMode ? "Connected scopes, openings and shared procedural assemblies" : "An authored opening, sash and masonry scope"} showFamilyTools={false} lighting={buildingMode ? "construction" : "bay"} conciseFallback framing={buildingMode || facadeMode ? "facade" : "building"} />
         : <div className="room-panel__loading" role="status">Preparing construction materials and geometry…</div>}
-      {!buildingMode ? nodeProperties : <p className="construction-workspace__target">Whole building · Shared architectural controls{selectedFrame ? ". A frame is selected for surface finishes; geometry edits remain shared." : ""}</p>}
+      {!buildingMode ? nodeProperties : <p className="construction-workspace__target">Whole building · Shared architectural controls{selectedFrame ? ". Selected upper-front window widths can be edited separately; surface finishes retain their own scope." : ""}</p>}
     </div>
     <aside className="building-workspace__inspector" aria-label="Construction inspector" aria-busy={pending}>
       <h2>{buildingMode ? "Building controls" : "Construction"}</h2>
@@ -408,8 +431,14 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       <p role="status">{pending ? "Updating construction…" : dirty ? "Changes are not applied." : previewNode ? `Previewing ${previewType ? names[previewType] : "intermediate output"}. Saved construction is unchanged.` : accepted ? buildingMode ? "Building is up to date." : facadeMode ? "Facade is up to date." : "Bay is up to date." : "Construction is unavailable."}</p>
       {error ? <p role="alert">{error}</p> : null}
       </div>
-      {buildingMode && !advancedOpen && accepted ? <ConstructionBuildingControls graph={draft} fields={fields} windowCount={groupedWindowCount(accepted.construction.graph,accepted.ir)} storefrontCount={groupedStorefrontCount(accepted.construction.graph,accepted.ir)}
-        disabled={disabled || !viewerReady || Boolean(previewNode)} dirty={dirty}
+      {buildingMode && !advancedOpen && accepted && supportsGroupedConstruction(accepted.construction.graph) ? <ConstructionOpeningControls
+        key={accepted.ir.sourceGraphHash+":"+selectedFrame} options={constructionOpeningOptions(accepted.construction.graph,accepted.ir)} selectedPath={selectedFrame}
+        disabled={pending || saving || buildingDirty || !viewerReady || Boolean(previewNode)} buildingDirty={buildingDirty}
+        onSelect={path=>{const source=current.current;if(!source || shown.current!==source.fixture)return;
+          if(!path || constructionOpeningOptions(source.fixture.construction.graph,source.fixture.ir).some(option=>option.path===path))chooseFrame(path||null);}}
+        onApply={text=>void applyOpeningWidth(text)} onReset={()=>void applyOpeningWidth(null)} onDraftChange={value=>{setOpeningDirty(value);if(!value)setError(null);}} /> : null}
+      {buildingMode && !advancedOpen && accepted ? <ConstructionBuildingControls graph={draft} fields={fields} windowCount={groupedWindowCount(accepted.construction.graph,accepted.ir)} storefrontCount={groupedStorefrontCount(accepted.construction.graph,accepted.ir)} localWidthCount={constructionOpeningOptions(accepted.construction.graph,accepted.ir).filter(option=>option.overridden).length}
+        disabled={disabled || !viewerReady || Boolean(previewNode)} dirty={buildingDirty}
         onFieldChange={(id,key,text) => {
           if (id === "frontage" && !draft.nodes.some(node => node.id === "frontage")) {
             const migrated = withConstructionStorefront(draft, 0);

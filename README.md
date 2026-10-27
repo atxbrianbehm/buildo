@@ -2,7 +2,7 @@
 
 Buildo is a procedural building construction workbench built with React, Three.js and Zustand. Connected geometry operators create architectural scopes; semantic surface layers bind finishes to those scopes.
 
-The current starting workflow constructs one rectangular building with four facades, repeated procedural windows, an entrance and a complete roof. C4/C5 are accepted; C6 offers three pinned geometric recipes. C7 adds **Twin casement** and **Six-light casement** beside the original double-hung sash. C8 adds wide display frontage and a glazed entrance from real procedural geometry. Grouped architectural controls edit the real graph while preserving materials, generation and portable recovery. All five checks pass (1,812 tests /125 files), plus both native backends. [Current vocabulary results and actual images](docs/reviews/2026-10-25-c8-p2-storefront-authoring/README.md). Broader artist/C6/family/block reviews remain separate.
+The current starting workflow constructs one rectangular building with four facades, repeated procedural windows, an entrance and a complete roof. C4/C5, the three C6 geometric recipes and the grouped workflow are accepted. C7 adds **Twin casement** and **Six-light casement** beside the original double-hung sash; C8 adds display frontage and a glazed entrance. UX2 adds one real local structural task: widen a selected upper-front window while retaining other openings. All five checks pass (1,860 tests /128 files), plus19 states on each native backend. [Selected-window results and actual images](docs/reviews/2026-10-26-ux2-p2-selected-window-authoring/README.md). Human review of this new task, artist sessions and family/block/performance acceptance remain separate.
 
 ## Construct a building
 
@@ -13,6 +13,8 @@ The current starting workflow constructs one rectangular building with four faca
 
 For a shopfront, choose **Ground floor → Ground frontage → Storefront**. Set the numbered entrance bay and width; **Frontage proportions** exposes piers, bulkhead, head band, transom, frame and recess. Apply updates the front ground-floor row; upper storeys and other elevations keep their windows.
 
+For one local width, click an upper-front frame or its glass, or choose its numbered storey/bay under **Selected window → Window to edit**. Change **Selected width (m)**, then **Apply window width**. The wall aperture, frame, glazing and sill change together. **Use shared width** resets that window to the current shared opening width. Shared controls disclose retained local widths. Unapplied local text blocks other publication actions until applied or reverted.
+
 Open **Generate & vary** in the construction inspector to choose 2–6 storeys and 3–6 bays per elevation, then set building/material/trim seeds and choose **Generate building** or **Reroll unlocked**. Lock footprint, storeys or openings; **Keep edited dimensions and assemblies** retains edited dimensions, window assemblies and ground frontage. Authored finish intent survives material replacement. A changed material library starts a fresh undo history. Custom graph connections remain editable and portable; the bounded recipe rejects rerolls that would overwrite them. Window and frontage choices are authored exceptions over the pinned recipe base: keep authored changes or lock openings to retain them; clearing both restores the actual seeded recipe and punched frontage.
 
 **Import reference snapshot** admits the versioned Buildo reference boundary and pins the imported data for generation and offline continuation. The default is a local material demo with unknown architecture coverage. Material roles and physical scales are consumed; a live architectural UTDG adapter remains future work.
@@ -21,7 +23,7 @@ Older bay/facade files still open. Standard connected facades offer **Complete b
 
 Inside **Advanced recipe graph**, **Advanced generator** returns to the existing generation workflow. Existing lab links remain available, including `#room=promptLab` and `#room=assemblyHall`; they do not force the new default landing. Use `#document=your-workspace` on the root route for a separate local construction workspace. These procedural materials and reflection-based glazing are a preview; interiors, accepted families and blocks remain later milestones.
 
-Selecting a frame enables local surface finishes; geometry controls remain shared across generated windows. Local structural editing is explicitly unavailable in this prototype.
+Local width overrides survive **Keep edited dimensions and assemblies** or **Lock openings** during generation; clearing both releases them. Removing a preserved target rejects the candidate and retains the accepted building. A finish painted onto a removed frame has its own guard: explicitly remove that finish before removing its storey, or keep the target. Side/rear windows, ground frontage and other local structural dimensions remain outside this first scoped task. Portable project0.8 retains graph0.7, materials and generation lineage; old files remain literal.
 
 ## Project Docs
 

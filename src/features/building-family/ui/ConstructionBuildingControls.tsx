@@ -12,7 +12,7 @@ const groups = [
   { id: "frontage", label: "Ground floor", fields: [] },
   { id: "roof", label: "Roof & trim", fields: [["roof", "parapetHeightM", "Parapet height (m)", "Wall above the roof deck."], ["roof", "copingProjectionM", "Coping projection (m)", "Overhang of the parapet cap."], ["roof", "corniceHeightM", "Cornice height (m)", "Height of the continuous roof profile."], ["roof", "corniceProjectionM", "Cornice projection (m)", "How far the cornice projects."], ["bands", "heightM", "Belt height (m)", "Height of the horizontal storey bands."], ["bands", "projectionM", "Belt projection (m)", "How far the storey bands project."]] }
 ] as const;
-const proportions = [["opening", "widthM", "Opening width (m)", "Width of the repeated window opening."], ["opening", "heightM", "Opening height (m)", "Height of the repeated window opening."], ["opening", "sillM", "Sill height (m)", "Height above each storey floor."]] as const;
+const proportions = [["opening", "widthM", "Opening width (m)", "Width of regular openings without a local width override."], ["opening", "heightM", "Opening height (m)", "Height of the repeated window opening."], ["opening", "sillM", "Sill height (m)", "Height above each storey floor."]] as const;
 const frontageProportions = [
   ["frontage", "pierWidthM", "Masonry pier width (m)", "Masonry retained at each side of a display bay."],
   ["frontage", "bulkheadHeightM", "Bulkhead height (m)", "Solid masonry below the display glazing; the entrance stays at grade."],
@@ -22,8 +22,8 @@ const frontageProportions = [
   ["frontage", "recessM", "Storefront recess (m)", "Distance from masonry face to the storefront frame."]
 ] as const;
 
-export function ConstructionBuildingControls({ graph, fields, windowCount, storefrontCount = 0, disabled, dirty, onFieldChange, onApply, onRevert, onAdvanced }: {
-  graph: BayConstructionGraph; fields: Fields; windowCount: number; storefrontCount?: number; disabled: boolean; dirty: boolean;
+export function ConstructionBuildingControls({ graph, fields, windowCount, storefrontCount = 0, localWidthCount = 0, disabled, dirty, onFieldChange, onApply, onRevert, onAdvanced }: {
+  graph: BayConstructionGraph; fields: Fields; windowCount: number; storefrontCount?: number; localWidthCount?: number; disabled: boolean; dirty: boolean;
   onFieldChange: (nodeId: string, field: string, text: string) => void; onApply: () => void; onRevert: () => void; onAdvanced: () => void;
 }) {
   const [active, setActive] = useState<string | null>("openings"), prefix = useId();
@@ -36,8 +36,8 @@ export function ConstructionBuildingControls({ graph, fields, windowCount, store
   const storefront = constructionHasStorefront(graph), frontageChosen = fields.frontage?.mode === "1";
   const frontageBypassed = Boolean(graph.nodes.find(node => node.type === "PlaceStorefront" && node.bypassed));
   const bayCount = graph.nodes.find(node => node.type === "SplitBays")!.parameters.count;
-  const unavailable = <p className="construction-grouped__unavailable" aria-label="Local geometry editing unavailable">Local geometry edits — not implemented</p>;
-  const actions = <div className="construction-grouped__actions"><button type="submit" aria-label="Apply construction">{onlyWindows ? `Apply to ${windowCount} windows` : "Apply changes"}</button>
+  const unavailable = <p className="construction-grouped__unavailable" aria-label="Local geometry scope">Upper-front window widths have selected-window controls. Other local geometry edits are not implemented.</p>;
+  const actions = <div className="construction-grouped__actions"><button type="submit" aria-label="Apply construction">{onlyWindows && !localWidthCount ? `Apply to ${windowCount} windows` : "Apply changes"}</button>
     {dirty ? <button type="button" onClick={onRevert}>Revert draft</button> : null}</div>;
   const field = ([nodeId,key,label,hint]: readonly string[]) => {
     const node = graph.nodes.find(node => node.id === nodeId)!, bypassed = "bypassed" in node && node.bypassed;
@@ -50,7 +50,7 @@ export function ConstructionBuildingControls({ graph, fields, windowCount, store
       {groups.map(group => <details key={group.id} open={active === group.id} className="construction-grouped__section">
         <summary onClick={event => {event.preventDefault();setActive(value => value === group.id ? null : group.id);}}>{group.label}</summary>
         {active === group.id ? <div className="construction-grouped__body">
-          <p className="construction-grouped__scope">{group.id === "frontage" ? dirty ? "Apply updates the front ground-floor row. Upper storeys and other elevations keep their windows." : storefront ? `Applies to ${storefrontCount} front ground-floor bays, including the entrance.` : "Front ground-floor frontage. Upper storeys and other elevations keep their windows." : group.id === "openings" ? pendingLayout ? "Shared window controls. Apply pending layout changes to update the affected count." : storefront ? `Applies to ${windowCount} regular windows. Display glazing is controlled under Ground floor.` : `Applies to all ${windowCount} generated windows.` : "Applies to the whole building."}</p>
+          <p className="construction-grouped__scope">{group.id === "frontage" ? dirty ? "Apply updates the front ground-floor row. Upper storeys and other elevations keep their windows." : storefront ? `Applies to ${storefrontCount} front ground-floor bays, including the entrance.` : "Front ground-floor frontage. Upper storeys and other elevations keep their windows." : group.id === "openings" ? localWidthCount ? `Shared controls for ${windowCount} regular windows; ${localWidthCount} local ${localWidthCount === 1 ? "width is" : "widths are"} retained.` : pendingLayout ? "Shared window controls. Apply pending layout changes to update the affected count." : storefront ? `Applies to ${windowCount} regular windows. Display glazing is controlled under Ground floor.` : `Applies to all ${windowCount} generated windows.` : "Applies to the whole building."}</p>
           {group.id === "openings" ? <label className="construction-grouped__field construction-grouped__assembly">
             <span><strong>Window assembly</strong><small id={prefix+"assembly"}>{storefront ? "Frame and glazing for regular windows; display bays use their own assembly." : "Frame and glazing construction for every generated window."}</small></span>
             <select aria-label="Window assembly" aria-describedby={prefix+"assembly"} value={fields.window?.layout ?? "0"}

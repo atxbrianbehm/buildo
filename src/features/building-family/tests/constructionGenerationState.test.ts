@@ -1,4 +1,5 @@
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
+import { withConstructionOpeningWidth } from "../core/constructionOpeningEditGraph";
 import { withConstructionWindowLayout } from "../core/constructionWindowVocabulary";
 import { describe, expect, it } from "vitest";
 import { createBuildingConstructionGraph } from "../contracts/bayConstructionGraph";
@@ -18,6 +19,26 @@ async function initial() {
   return { ...result, lineage, template };
 }
 const footprint = (graph: ReturnType<typeof createBuildingConstructionGraph>) => graph.nodes.find(node => node.type === "Footprint")!.parameters;
+
+it("retains one local width through authored/locked generation and explicitly releases or rejects target loss", async () => {
+  const a=await initial(), target={documentId:a.graph.documentId,storeysNodeId:"facade",windowNodeId:"window",face:"front" as const,floorIndex:2,bayIndex:3};
+  const edited=withConstructionOpeningWidth(withConstructionStorefront(withConstructionWindowLayout(a.graph,"window",2),1),{target,widthM:1.8});
+  const before=structuredClone(edited), b=await resolveWorkbenchGeneration(edited,a.lineage,defaultConstructionGenerationControls,true);
+  const overrides=(graph:typeof edited)=>graph.nodes.find(node=>node.type==="EditOpeningWidth")!.overrides;
+  expect(edited).toEqual(before); expect(overrides(b.graph)).toEqual([{target,widthM:1.8}]);
+  expect(b.graph.nodes.find(node=>node.type==="PlaceStorefront")!.parameters.mode).toBe(1);
+  expect(b.graph.nodes.find(node=>node.type==="AssembleWindow")!.parameters.layout).toBe(2);
+  const lineage={...a.lineage,source:b.source,resolution:b.resolution,materialPlan:await planConstructionReferenceMaterials(a.template,b.source)};
+  expect(lineage.materialPlan.materialInputsHash).toBe(a.lineage.materialPlan.materialInputsHash);
+  const c=await resolveWorkbenchGeneration(b.graph,lineage,{...b.controls,preserveAuthored:false,lockOpenings:true},true);
+  expect(overrides(c.graph)).toEqual([{target,widthM:1.8}]);
+  await expect(resolveWorkbenchGeneration(edited,a.lineage,{...defaultConstructionGenerationControls,floorCount:2})).rejects.toThrow(/preserved selected window/);
+  await expect(resolveWorkbenchGeneration(edited,a.lineage,{...defaultConstructionGenerationControls,bayCount:3})).rejects.toThrow(/preserved selected window/);
+  const released=await resolveWorkbenchGeneration(edited,a.lineage,{...defaultConstructionGenerationControls,preserveAuthored:false,lockOpenings:false,floorCount:2,bayCount:3});
+  expect(overrides(released.graph)).toEqual([]);
+  expect(released.graph.nodes.find(node=>node.type==="PlaceOpening")!.parameters).toEqual(released.resolution.graph.nodes.find(node=>node.type==="PlaceOpening")!.parameters);
+  expect((await evaluateConstruction(released.graph)).ir.semanticIndex.some(entry=>entry.semanticPath.includes("/floor/2/"))).toBe(false);
+});
 
 describe("workbench generation ownership", () => {
   it("generates through the existing graph and compiler with literal local-demo coverage", async () => {

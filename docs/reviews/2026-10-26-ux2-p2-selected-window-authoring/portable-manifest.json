@@ -1,0 +1,118 @@
+{
+  "schemaVersion": "0.1.0",
+  "uniqueFiles": 4,
+  "aliases": [
+    {
+      "backend": "webgpu",
+      "file": "before-local-edit.json",
+      "sha256": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb",
+      "entry": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb.json",
+      "schemaVersion": "0.7.0"
+    },
+    {
+      "backend": "webgpu",
+      "file": "cold-v8.json",
+      "sha256": "f4f4a273bde8f2920f43c1d882f43361310f092176122ce1307d91f54d5d6df8",
+      "entry": "f4f4a273bde8f2920f43c1d882f43361310f092176122ce1307d91f54d5d6df8.json",
+      "schemaVersion": "0.8.0"
+    },
+    {
+      "backend": "webgpu",
+      "file": "finished-v8.json",
+      "sha256": "f4f4a273bde8f2920f43c1d882f43361310f092176122ce1307d91f54d5d6df8",
+      "entry": "f4f4a273bde8f2920f43c1d882f43361310f092176122ce1307d91f54d5d6df8.json",
+      "schemaVersion": "0.8.0"
+    },
+    {
+      "backend": "webgpu",
+      "file": "kept-v8.json",
+      "sha256": "f4f4a273bde8f2920f43c1d882f43361310f092176122ce1307d91f54d5d6df8",
+      "entry": "f4f4a273bde8f2920f43c1d882f43361310f092176122ce1307d91f54d5d6df8.json",
+      "schemaVersion": "0.8.0"
+    },
+    {
+      "backend": "webgpu",
+      "file": "legacy-v7-reopened.json",
+      "sha256": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb",
+      "entry": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb.json",
+      "schemaVersion": "0.7.0"
+    },
+    {
+      "backend": "webgpu",
+      "file": "locked-v8.json",
+      "sha256": "14dd5d11b756b496debfbd8eee5a0f9e3b6f44bab978c1c0a254e6c58195e105",
+      "entry": "14dd5d11b756b496debfbd8eee5a0f9e3b6f44bab978c1c0a254e6c58195e105.json",
+      "schemaVersion": "0.8.0"
+    },
+    {
+      "backend": "webgpu",
+      "file": "released-v8.json",
+      "sha256": "9bea76f3667adfbbdeae8cf6873ec1c1963646c99ce36a72ee36276124af5be7",
+      "entry": "9bea76f3667adfbbdeae8cf6873ec1c1963646c99ce36a72ee36276124af5be7.json",
+      "schemaVersion": "0.8.0"
+    },
+    {
+      "backend": "webgpu",
+      "file": "reopened-v8.json",
+      "sha256": "f4f4a273bde8f2920f43c1d882f43361310f092176122ce1307d91f54d5d6df8",
+      "entry": "f4f4a273bde8f2920f43c1d882f43361310f092176122ce1307d91f54d5d6df8.json",
+      "schemaVersion": "0.8.0"
+    },
+    {
+      "backend": "webgl",
+      "file": "before-local-edit.json",
+      "sha256": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb",
+      "entry": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb.json",
+      "schemaVersion": "0.7.0"
+    },
+    {
+      "backend": "webgl",
+      "file": "cold-v8.json",
+      "sha256": "f4f4a273bde8f2920f43c1d882f43361310f092176122ce1307d91f54d5d6df8",
+      "entry": "f4f4a273bde8f2920f43c1d882f43361310f092176122ce1307d91f54d5d6df8.json",
+      "schemaVersion": "0.8.0"
+    },
+    {
+      "backend": "webgl",
+      "file": "finished-v8.json",
+      "sha256": "f4f4a273bde8f2920f43c1d882f43361310f092176122ce1307d91f54d5d6df8",
+      "entry": "f4f4a273bde8f2920f43c1d882f43361310f092176122ce1307d91f54d5d6df8.json",
+      "schemaVersion": "0.8.0"
+    },
+    {
+      "backend": "webgl",
+      "file": "kept-v8.json",
+      "sha256": "f4f4a273bde8f2920f43c1d882f43361310f092176122ce1307d91f54d5d6df8",
+      "entry": "f4f4a273bde8f2920f43c1d882f43361310f092176122ce1307d91f54d5d6df8.json",
+      "schemaVersion": "0.8.0"
+    },
+    {
+      "backend": "webgl",
+      "file": "legacy-v7-reopened.json",
+      "sha256": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb",
+      "entry": "74f2b1202737de0859937989805dd681202985f4407da0a1d64e50f05e3fa9cb.json",
+      "schemaVersion": "0.7.0"
+    },
+    {
+      "backend": "webgl",
+      "file": "locked-v8.json",
+      "sha256": "14dd5d11b756b496debfbd8eee5a0f9e3b6f44bab978c1c0a254e6c58195e105",
+      "entry": "14dd5d11b756b496debfbd8eee5a0f9e3b6f44bab978c1c0a254e6c58195e105.json",
+      "schemaVersion": "0.8.0"
+    },
+    {
+      "backend": "webgl",
+      "file": "released-v8.json",
+      "sha256": "9bea76f3667adfbbdeae8cf6873ec1c1963646c99ce36a72ee36276124af5be7",
+      "entry": "9bea76f3667adfbbdeae8cf6873ec1c1963646c99ce36a72ee36276124af5be7.json",
+      "schemaVersion": "0.8.0"
+    },
+    {
+      "backend": "webgl",
+      "file": "reopened-v8.json",
+      "sha256": "f4f4a273bde8f2920f43c1d882f43361310f092176122ce1307d91f54d5d6df8",
+      "entry": "f4f4a273bde8f2920f43c1d882f43361310f092176122ce1307d91f54d5d6df8.json",
+      "schemaVersion": "0.8.0"
+    }
+  ]
+}

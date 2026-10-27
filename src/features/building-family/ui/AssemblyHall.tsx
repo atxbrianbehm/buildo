@@ -78,6 +78,7 @@ export interface AssemblyHallProps {
   framing?: "building" | "facade";
   onWindowSelectionChange?: (selection: AssemblyHallWindowSelection | null) => void;
   constructionFrameSelection?: boolean;
+  selectedConstructionPath?: string | null;
   conciseFallback?: boolean;
   acquireFixtureViewerLease?: (fixture: AssemblyHallFixture) => () => void;
   registerFixtureViewer?: (preparer: BuildingFixtureViewerPreparer) => () => void;
@@ -580,6 +581,7 @@ export function AssemblyHall({
   framing = "building",
   onWindowSelectionChange,
   constructionFrameSelection = false,
+  selectedConstructionPath,
   conciseFallback = false,
   acquireFixtureViewerLease,
   registerFixtureViewer,
@@ -737,6 +739,7 @@ export function AssemblyHall({
 
   useEffect(() => { windowSelectionChangeRef.current = onWindowSelectionChange; }, [onWindowSelectionChange]);
   useEffect(() => { constructionFrameSelectionRef.current = constructionFrameSelection; viewerSessionRef.current?.refreshSelection(); }, [constructionFrameSelection]);
+  useEffect(() => { if (selectedConstructionPath !== undefined) viewerSessionRef.current?.selectSemanticPath(selectedConstructionPath ?? ""); }, [selectedConstructionPath]);
 
   useEffect(() => {
     revealThroughStageRef.current = revealThroughStage;
