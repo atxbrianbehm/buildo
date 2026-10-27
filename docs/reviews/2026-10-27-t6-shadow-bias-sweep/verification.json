@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "shadow-bias-sweep-verification",
+  "parentCommit": "a36f2f9f9ab54bc1140555e7348dcf4e0f37e33e",
+  "productSourceChanged": false,
+  "priorSourceConfigTestPinsExact": 354,
+  "backends": {
+    "webgl": {
+      "conditions": 5,
+      "exactRestoreFrames": 5,
+      "allCameraMatricesExact": true
+    },
+    "webgpu": {
+      "conditions": 5,
+      "exactRestoreFrames": 5,
+      "allCameraMatricesExact": true
+    }
+  },
+  "projectedSamplesPerBackend": 123,
+  "providerOrMaterialGenerationCallsDuringTests": 0,
+  "fixApproved": false,
+  "c9VisualReview": "pending"
+}
