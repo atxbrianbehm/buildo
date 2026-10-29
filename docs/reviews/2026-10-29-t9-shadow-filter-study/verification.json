@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "shadow-filter-study-verification",
+  "parentCommit": "ca5eee9917a2c041b20be9f840e6fbe8fa877e58",
+  "sourcePinsExact": 356,
+  "threeSourceHashes": {
+    "node_modules/three/package.json": "8308e43d6d6dd4c636c2dfe2e724da07dcd9fe4349bba6afb56f2c5ba6625391",
+    "node_modules/three/src/renderers/webgl/WebGLShadowMap.js": "7d69ca09821ed119d7e1db25e88ad43c2b8c7dd87e8746e1c63f8b86086b3e05",
+    "node_modules/three/src/nodes/lighting/ShadowNode.js": "64a11d9a6b7a281f2a9a82e6f362284da54d59ba91df85515db8a073cbcb18b9",
+    "node_modules/three/src/nodes/lighting/ShadowFilterNode.js": "02d2c7bc6951c77f3be043c98d59c3d85ef9f70c26f9773e78718b065d7c24a3"
+  },
+  "freshRuns": 8,
+  "viewsPerRun": 5,
+  "fixedCameraViewsPerPair": 5,
+  "webglFixedViewsPixelIdentical": 5,
+  "gpuLiveRestoreAttempt": "excluded: close-default image mismatch with exact camera",
+  "productSourceChanged": false,
+  "filterPromoted": false,
+  "c9VisualDecision": "pending"
+}

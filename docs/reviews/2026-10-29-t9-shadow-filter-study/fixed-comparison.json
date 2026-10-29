@@ -1,0 +1,149 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "fresh-filter-fixed-camera-comparison",
+  "cameraOverride": "Close cameras explicitly set from prior actual WebGPU view; damping drained and restored. Other cameras use the UI.",
+  "backends": {
+    "webgl": {
+      "activeBaselineFilter": 1,
+      "activeCandidateFilter": 1,
+      "views": {
+        "whole-default": {
+          "checks": {
+            "drawCamera": true,
+            "drawLights": true,
+            "compiler": true,
+            "bindings": true,
+            "channels": true
+          },
+          "changedPixels": 0,
+          "changedChannels": 0,
+          "meanAbsoluteChannelDelta": 0.0,
+          "maxChannelDelta": 0
+        },
+        "close-default": {
+          "checks": {
+            "drawCamera": true,
+            "drawLights": true,
+            "compiler": true,
+            "bindings": true,
+            "channels": true
+          },
+          "changedPixels": 0,
+          "changedChannels": 0,
+          "meanAbsoluteChannelDelta": 0.0,
+          "maxChannelDelta": 0
+        },
+        "close-lower": {
+          "checks": {
+            "drawCamera": true,
+            "drawLights": true,
+            "compiler": true,
+            "bindings": true,
+            "channels": true
+          },
+          "changedPixels": 0,
+          "changedChannels": 0,
+          "meanAbsoluteChannelDelta": 0.0,
+          "maxChannelDelta": 0
+        },
+        "whole-lower": {
+          "checks": {
+            "drawCamera": true,
+            "drawLights": true,
+            "compiler": true,
+            "bindings": true,
+            "channels": true
+          },
+          "changedPixels": 0,
+          "changedChannels": 0,
+          "meanAbsoluteChannelDelta": 0.0,
+          "maxChannelDelta": 0
+        },
+        "sill-default": {
+          "checks": {
+            "drawCamera": true,
+            "drawLights": true,
+            "compiler": true,
+            "bindings": true,
+            "channels": true
+          },
+          "changedPixels": 0,
+          "changedChannels": 0,
+          "meanAbsoluteChannelDelta": 0.0,
+          "maxChannelDelta": 0
+        }
+      }
+    },
+    "webgpu": {
+      "activeBaselineFilter": 2,
+      "activeCandidateFilter": 1,
+      "views": {
+        "whole-default": {
+          "checks": {
+            "drawCamera": true,
+            "drawLights": true,
+            "compiler": true,
+            "bindings": true,
+            "channels": true
+          },
+          "changedPixels": 22852,
+          "changedChannels": 57857,
+          "meanAbsoluteChannelDelta": 0.071879,
+          "maxChannelDelta": 39
+        },
+        "close-default": {
+          "checks": {
+            "drawCamera": true,
+            "drawLights": true,
+            "compiler": true,
+            "bindings": true,
+            "channels": true
+          },
+          "changedPixels": 56333,
+          "changedChannels": 157771,
+          "meanAbsoluteChannelDelta": 0.311856,
+          "maxChannelDelta": 38
+        },
+        "close-lower": {
+          "checks": {
+            "drawCamera": true,
+            "drawLights": true,
+            "compiler": true,
+            "bindings": true,
+            "channels": true
+          },
+          "changedPixels": 37622,
+          "changedChannels": 107256,
+          "meanAbsoluteChannelDelta": 0.294921,
+          "maxChannelDelta": 50
+        },
+        "whole-lower": {
+          "checks": {
+            "drawCamera": true,
+            "drawLights": true,
+            "compiler": true,
+            "bindings": true,
+            "channels": true
+          },
+          "changedPixels": 11810,
+          "changedChannels": 29585,
+          "meanAbsoluteChannelDelta": 0.035696,
+          "maxChannelDelta": 43
+        },
+        "sill-default": {
+          "checks": {
+            "drawCamera": true,
+            "drawLights": true,
+            "compiler": true,
+            "bindings": true,
+            "channels": true
+          },
+          "changedPixels": 34380,
+          "changedChannels": 92064,
+          "meanAbsoluteChannelDelta": 0.118658,
+          "maxChannelDelta": 36
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+AssertionError [ERR_ASSERTION]: Original filter failed exact restoration
++ actual - expected
+
++ '2c6e5a80bb19f63aa27174eeba8dbab1098c851a9547e28d7e1767367518e587'
+- '89020d9cf59fd84406a2b23ef754d689eea0d5425e822b98af588d432382d425'
+
+    at sweep (file:///C:/Users/behmb/Documents/Cascade%20Projects/buildo/test-results/t9-shadow-filter-2026-10-29/same-camera.mjs:220:38)
+    at async file:///C:/Users/behmb/Documents/Cascade%20Projects/buildo/test-results/t9-shadow-filter-2026-10-29/same-camera.mjs:226:106

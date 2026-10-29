@@ -1,0 +1,585 @@
+{
+  "schemaVersion": "0.1.0",
+  "files": [
+    {
+      "file": "compare-fixed.py",
+      "bytes": 1502,
+      "sha256": "0f234412fafc391426a35f2f5bd7e26831e6445ffc1e7e8e8d607c3354e09591"
+    },
+    {
+      "file": "compare.py",
+      "bytes": 1254,
+      "sha256": "501cb8b2ea0b2176702bb32ffbdd536ac4fb808173f223621f0f1907d39fca23"
+    },
+    {
+      "file": "comparison.json",
+      "bytes": 3589,
+      "sha256": "0939cd31aa9ebb9e75ef4cc021e0c73d269ddce66917e1021bab3221be3a63ef"
+    },
+    {
+      "file": "excluded/webgpu-same-camera-01/close-default-baseline.png",
+      "bytes": 387922,
+      "sha256": "5b5ceef2e321d53f03795307efeb1818bd6feb458c662e452c4c538543079c00"
+    },
+    {
+      "file": "excluded/webgpu-same-camera-01/close-default-pcf.png",
+      "bytes": 402760,
+      "sha256": "f490b884651cc3ce7d5232d688201d5f23b2f7f389598320ca28fab58af7b9e0"
+    },
+    {
+      "file": "excluded/webgpu-same-camera-01/close-default-restored.png",
+      "bytes": 368249,
+      "sha256": "9dec1431c6b4402704b1e6d43a23c078e916a6e4e186df261566c690e3410d55"
+    },
+    {
+      "file": "excluded/webgpu-same-camera-01/close-default-stable.png",
+      "bytes": 387922,
+      "sha256": "5b5ceef2e321d53f03795307efeb1818bd6feb458c662e452c4c538543079c00"
+    },
+    {
+      "file": "excluded/webgpu-same-camera-01/failure.png",
+      "bytes": 448926,
+      "sha256": "d7ce5ffb52dc2e253c63c314ff440858bac19dc2dd4e416bb71e4466556b0d18"
+    },
+    {
+      "file": "excluded/webgpu-same-camera-01/failure.txt",
+      "bytes": 507,
+      "sha256": "f87c9ccb950f59ecd70ccd31864f48d40baa654174fa5c3a1cf636a00b940d93"
+    },
+    {
+      "file": "excluded/webgpu-same-camera-01/native-close-default-baseline.png",
+      "bytes": 693629,
+      "sha256": "89020d9cf59fd84406a2b23ef754d689eea0d5425e822b98af588d432382d425"
+    },
+    {
+      "file": "excluded/webgpu-same-camera-01/native-close-default-pcf.png",
+      "bytes": 695606,
+      "sha256": "98cfc237ea4214d95376ccc41d29e7977190473524a8ea254254dbd4d731025b"
+    },
+    {
+      "file": "excluded/webgpu-same-camera-01/native-close-default-restored.png",
+      "bytes": 667149,
+      "sha256": "2c6e5a80bb19f63aa27174eeba8dbab1098c851a9547e28d7e1767367518e587"
+    },
+    {
+      "file": "excluded/webgpu-same-camera-01/native-close-default-stable.png",
+      "bytes": 693629,
+      "sha256": "89020d9cf59fd84406a2b23ef754d689eea0d5425e822b98af588d432382d425"
+    },
+    {
+      "file": "excluded/webgpu-same-camera-01/native-whole-default-baseline.png",
+      "bytes": 594044,
+      "sha256": "e5fe12efd472be9a8f42fafec05f977d4c630d7f8e3a93370cf4a33a9a578339"
+    },
+    {
+      "file": "excluded/webgpu-same-camera-01/native-whole-default-pcf.png",
+      "bytes": 590439,
+      "sha256": "ecdb42e13048aae5a3bedb6c39bd06f6ac7b221b355c4b2fc43b1f8d9daf6563"
+    },
+    {
+      "file": "excluded/webgpu-same-camera-01/native-whole-default-restored.png",
+      "bytes": 594044,
+      "sha256": "e5fe12efd472be9a8f42fafec05f977d4c630d7f8e3a93370cf4a33a9a578339"
+    },
+    {
+      "file": "excluded/webgpu-same-camera-01/native-whole-default-stable.png",
+      "bytes": 594044,
+      "sha256": "e5fe12efd472be9a8f42fafec05f977d4c630d7f8e3a93370cf4a33a9a578339"
+    },
+    {
+      "file": "excluded/webgpu-same-camera-01/partial-captures.json",
+      "bytes": 22537,
+      "sha256": "2654d3cc29fef4592fb9278ba724485be07341591f94577ef073d1a25efffa33"
+    },
+    {
+      "file": "excluded/webgpu-same-camera-01/whole-default-baseline.png",
+      "bytes": 438569,
+      "sha256": "ba87243624e926b4378eb1cf51d9322d2ef79824d5bbe1b607896b3b76162333"
+    },
+    {
+      "file": "excluded/webgpu-same-camera-01/whole-default-pcf.png",
+      "bytes": 437982,
+      "sha256": "773d5dd02b483a9745c48e4f8247df4013d8a9abcc1f78110e26ee02c1eb4f2c"
+    },
+    {
+      "file": "excluded/webgpu-same-camera-01/whole-default-restored.png",
+      "bytes": 438569,
+      "sha256": "ba87243624e926b4378eb1cf51d9322d2ef79824d5bbe1b607896b3b76162333"
+    },
+    {
+      "file": "excluded/webgpu-same-camera-01/whole-default-stable.png",
+      "bytes": 438569,
+      "sha256": "ba87243624e926b4378eb1cf51d9322d2ef79824d5bbe1b607896b3b76162333"
+    },
+    {
+      "file": "filter-capture.mjs.txt",
+      "bytes": 32000,
+      "sha256": "06e05737a8c57640c38ea21b77ba7e0dbab75aec4d2170d3adeb9f694dccfd09"
+    },
+    {
+      "file": "fixed-camera-capture.mjs.txt",
+      "bytes": 33062,
+      "sha256": "50893ac38c377cccf5ad5a9d676baf2995a892acf78ca529143a4272779662e0"
+    },
+    {
+      "file": "fixed-comparison.json",
+      "bytes": 4296,
+      "sha256": "b4c343a7ee23842824af52e14e8cb49c03e1726b1e2aabe1cacc72ad76eaabbf"
+    },
+    {
+      "file": "README.md",
+      "bytes": 2690,
+      "sha256": "f07a3c13a0544f83828c5360cfc36eee9962630de415f6f3a4fd87ac8d79e804"
+    },
+    {
+      "file": "runs/webgl-baseline-01/close-default.png",
+      "bytes": 404354,
+      "sha256": "bc1e59b7eb7967de4bc0f163b30dbd5f77e1e83c590d28573f3cd08809f19975"
+    },
+    {
+      "file": "runs/webgl-baseline-01/close-lower.png",
+      "bytes": 400758,
+      "sha256": "61c0cdd59058b198a51314c2752160f1d330171f2c70c48e94a25bb6e8c0f9cf"
+    },
+    {
+      "file": "runs/webgl-baseline-01/native-close-default.png",
+      "bytes": 695646,
+      "sha256": "c24612fc038775cf56ffb7d11706892e2db9110259dc6880376287e761e7a309"
+    },
+    {
+      "file": "runs/webgl-baseline-01/native-close-lower.png",
+      "bytes": 706019,
+      "sha256": "6712286dc118006ef3fcbe09613e5f6fef5782bd86bf6b8655f001d5c79caa3a"
+    },
+    {
+      "file": "runs/webgl-baseline-01/native-sill-default.png",
+      "bytes": 784190,
+      "sha256": "267a8a9762b9492d69ae5b0eb0bd0961451a13aa5b12e47b30266084f2f57b56"
+    },
+    {
+      "file": "runs/webgl-baseline-01/native-whole-default.png",
+      "bytes": 589950,
+      "sha256": "7b938c38592a9ef9885ca9ec4fec2f794e2769dda5832e7663535f38becb5395"
+    },
+    {
+      "file": "runs/webgl-baseline-01/native-whole-lower.png",
+      "bytes": 585884,
+      "sha256": "f4c9fafd98f542441d2c673022a289e45ad9a44032a2d7897e0c41c6e787cde8"
+    },
+    {
+      "file": "runs/webgl-baseline-01/receipt.json",
+      "bytes": 329152,
+      "sha256": "ab57e4fed3d6a9164bf703133828c891fefa9462d58cd4cc3f35bb21b43909ca"
+    },
+    {
+      "file": "runs/webgl-baseline-01/sill-default.png",
+      "bytes": 468978,
+      "sha256": "c674497930ae5d6d01623620a218e3ab3c78f84d578a02902e3087d9ea273024"
+    },
+    {
+      "file": "runs/webgl-baseline-01/whole-default.png",
+      "bytes": 440056,
+      "sha256": "25ba1c3cc9b98874dd1cd75fc79c6434e042da68ab4778f23686531c163cea15"
+    },
+    {
+      "file": "runs/webgl-baseline-01/whole-lower.png",
+      "bytes": 440946,
+      "sha256": "8a2207e68301061556c0564825f3ce771a1ed217375dc0bf0efb30b682f5dbb8"
+    },
+    {
+      "file": "runs/webgl-fixed-baseline-01/close-default.png",
+      "bytes": 404742,
+      "sha256": "985d9e17fa73d4e981ab2a7555e965a44d42eee21f5b02adc94ea15eb8ace849"
+    },
+    {
+      "file": "runs/webgl-fixed-baseline-01/close-lower.png",
+      "bytes": 401827,
+      "sha256": "b36d8b85b9c47c507c5014bee42fdd4e211423a1757387bff69ed68e5e052a82"
+    },
+    {
+      "file": "runs/webgl-fixed-baseline-01/native-close-default.png",
+      "bytes": 695699,
+      "sha256": "0fbc2e3e6137f5eaa5ae3597b78defc167d9b447ec549da62aee41f5cfce32f7"
+    },
+    {
+      "file": "runs/webgl-fixed-baseline-01/native-close-lower.png",
+      "bytes": 706624,
+      "sha256": "9b85feb343423ff4feacf1d458967095b51ecd50c621dc88453ffd9eaeeed4c2"
+    },
+    {
+      "file": "runs/webgl-fixed-baseline-01/native-sill-default.png",
+      "bytes": 784190,
+      "sha256": "267a8a9762b9492d69ae5b0eb0bd0961451a13aa5b12e47b30266084f2f57b56"
+    },
+    {
+      "file": "runs/webgl-fixed-baseline-01/native-whole-default.png",
+      "bytes": 589950,
+      "sha256": "7b938c38592a9ef9885ca9ec4fec2f794e2769dda5832e7663535f38becb5395"
+    },
+    {
+      "file": "runs/webgl-fixed-baseline-01/native-whole-lower.png",
+      "bytes": 585884,
+      "sha256": "f4c9fafd98f542441d2c673022a289e45ad9a44032a2d7897e0c41c6e787cde8"
+    },
+    {
+      "file": "runs/webgl-fixed-baseline-01/receipt.json",
+      "bytes": 329164,
+      "sha256": "08ccc77b4c3225692550eab592574257af2927516eade3e0e92f34d1fdef4600"
+    },
+    {
+      "file": "runs/webgl-fixed-baseline-01/sill-default.png",
+      "bytes": 468978,
+      "sha256": "c674497930ae5d6d01623620a218e3ab3c78f84d578a02902e3087d9ea273024"
+    },
+    {
+      "file": "runs/webgl-fixed-baseline-01/whole-default.png",
+      "bytes": 440056,
+      "sha256": "25ba1c3cc9b98874dd1cd75fc79c6434e042da68ab4778f23686531c163cea15"
+    },
+    {
+      "file": "runs/webgl-fixed-baseline-01/whole-lower.png",
+      "bytes": 440946,
+      "sha256": "8a2207e68301061556c0564825f3ce771a1ed217375dc0bf0efb30b682f5dbb8"
+    },
+    {
+      "file": "runs/webgl-fixed-pcf-01/close-default.png",
+      "bytes": 404742,
+      "sha256": "985d9e17fa73d4e981ab2a7555e965a44d42eee21f5b02adc94ea15eb8ace849"
+    },
+    {
+      "file": "runs/webgl-fixed-pcf-01/close-lower.png",
+      "bytes": 401827,
+      "sha256": "b36d8b85b9c47c507c5014bee42fdd4e211423a1757387bff69ed68e5e052a82"
+    },
+    {
+      "file": "runs/webgl-fixed-pcf-01/native-close-default.png",
+      "bytes": 695699,
+      "sha256": "0fbc2e3e6137f5eaa5ae3597b78defc167d9b447ec549da62aee41f5cfce32f7"
+    },
+    {
+      "file": "runs/webgl-fixed-pcf-01/native-close-lower.png",
+      "bytes": 706624,
+      "sha256": "9b85feb343423ff4feacf1d458967095b51ecd50c621dc88453ffd9eaeeed4c2"
+    },
+    {
+      "file": "runs/webgl-fixed-pcf-01/native-sill-default.png",
+      "bytes": 784190,
+      "sha256": "267a8a9762b9492d69ae5b0eb0bd0961451a13aa5b12e47b30266084f2f57b56"
+    },
+    {
+      "file": "runs/webgl-fixed-pcf-01/native-whole-default.png",
+      "bytes": 589950,
+      "sha256": "7b938c38592a9ef9885ca9ec4fec2f794e2769dda5832e7663535f38becb5395"
+    },
+    {
+      "file": "runs/webgl-fixed-pcf-01/native-whole-lower.png",
+      "bytes": 585884,
+      "sha256": "f4c9fafd98f542441d2c673022a289e45ad9a44032a2d7897e0c41c6e787cde8"
+    },
+    {
+      "file": "runs/webgl-fixed-pcf-01/receipt.json",
+      "bytes": 329159,
+      "sha256": "b457e7699571e98176788ab19e75a2eb9c0f7b1005cffceedb43b42865ef50e3"
+    },
+    {
+      "file": "runs/webgl-fixed-pcf-01/sill-default.png",
+      "bytes": 468978,
+      "sha256": "c674497930ae5d6d01623620a218e3ab3c78f84d578a02902e3087d9ea273024"
+    },
+    {
+      "file": "runs/webgl-fixed-pcf-01/whole-default.png",
+      "bytes": 440056,
+      "sha256": "25ba1c3cc9b98874dd1cd75fc79c6434e042da68ab4778f23686531c163cea15"
+    },
+    {
+      "file": "runs/webgl-fixed-pcf-01/whole-lower.png",
+      "bytes": 440946,
+      "sha256": "8a2207e68301061556c0564825f3ce771a1ed217375dc0bf0efb30b682f5dbb8"
+    },
+    {
+      "file": "runs/webgl-pcf-01/close-default.png",
+      "bytes": 404721,
+      "sha256": "73c1178d0fe4a76f0084ca8f528ceb3288a3f47452fe9270b9e1648507156295"
+    },
+    {
+      "file": "runs/webgl-pcf-01/close-lower.png",
+      "bytes": 401817,
+      "sha256": "c535bc7fef74cdcbf8dc8622be51c216c0085fd2bb89df4218755b9a99082ded"
+    },
+    {
+      "file": "runs/webgl-pcf-01/native-close-default.png",
+      "bytes": 695243,
+      "sha256": "d180bbffb9dcaeca12f54037e061933be54d58e08cdc79c677cd1f449359e7fd"
+    },
+    {
+      "file": "runs/webgl-pcf-01/native-close-lower.png",
+      "bytes": 706716,
+      "sha256": "b0bc05e6c9f4181aa6be236f0f730f4aefc038b127ee8cd21bf5826f98f332a2"
+    },
+    {
+      "file": "runs/webgl-pcf-01/native-sill-default.png",
+      "bytes": 784190,
+      "sha256": "267a8a9762b9492d69ae5b0eb0bd0961451a13aa5b12e47b30266084f2f57b56"
+    },
+    {
+      "file": "runs/webgl-pcf-01/native-whole-default.png",
+      "bytes": 589950,
+      "sha256": "7b938c38592a9ef9885ca9ec4fec2f794e2769dda5832e7663535f38becb5395"
+    },
+    {
+      "file": "runs/webgl-pcf-01/native-whole-lower.png",
+      "bytes": 585884,
+      "sha256": "394fc675352a54eb58c2654f9badd419fe9b989bf88d58f460fba09412d2ed54"
+    },
+    {
+      "file": "runs/webgl-pcf-01/receipt.json",
+      "bytes": 329155,
+      "sha256": "f7344ecb6c84a81a9f0f9b90385995a24c04c5b3702f9cfccbbfeb2b5cf2d433"
+    },
+    {
+      "file": "runs/webgl-pcf-01/sill-default.png",
+      "bytes": 468978,
+      "sha256": "c674497930ae5d6d01623620a218e3ab3c78f84d578a02902e3087d9ea273024"
+    },
+    {
+      "file": "runs/webgl-pcf-01/whole-default.png",
+      "bytes": 440056,
+      "sha256": "25ba1c3cc9b98874dd1cd75fc79c6434e042da68ab4778f23686531c163cea15"
+    },
+    {
+      "file": "runs/webgl-pcf-01/whole-lower.png",
+      "bytes": 440946,
+      "sha256": "64452c0a503ae63f2c7286c1d88bd22081df664ba7d1c00d1faa55978228559e"
+    },
+    {
+      "file": "runs/webgpu-baseline-01/close-default.png",
+      "bytes": 388146,
+      "sha256": "6d7df4c0545fcc94f33583235d8ddce44ea48745ed60d546466d9f14e8e2e459"
+    },
+    {
+      "file": "runs/webgpu-baseline-01/close-lower.png",
+      "bytes": 388811,
+      "sha256": "74d141d7ad3cdf7d22ec0b8d4eb00d7957fed55fcf58a231a4b07adeca836289"
+    },
+    {
+      "file": "runs/webgpu-baseline-01/native-close-default.png",
+      "bytes": 693807,
+      "sha256": "2d951585a816b8f68ac0e12a041e56ed3ba0625f1733fcc77fc086393380c43f"
+    },
+    {
+      "file": "runs/webgpu-baseline-01/native-close-lower.png",
+      "bytes": 702603,
+      "sha256": "d76f11199cc39dc54623ee3f4d91b8eb0aa7966d2358464f75ff7b7cc15c190a"
+    },
+    {
+      "file": "runs/webgpu-baseline-01/native-sill-default.png",
+      "bytes": 783395,
+      "sha256": "13e040eb12576844943e4aa795bd1dc7ed164fec75546fab68b66c96c223798d"
+    },
+    {
+      "file": "runs/webgpu-baseline-01/native-whole-default.png",
+      "bytes": 594044,
+      "sha256": "e5fe12efd472be9a8f42fafec05f977d4c630d7f8e3a93370cf4a33a9a578339"
+    },
+    {
+      "file": "runs/webgpu-baseline-01/native-whole-lower.png",
+      "bytes": 585265,
+      "sha256": "6a189d80bc46896b191cb129e5293b37fcaaa0fe6568a97ea7e2465bcf48a9d5"
+    },
+    {
+      "file": "runs/webgpu-baseline-01/receipt.json",
+      "bytes": 329110,
+      "sha256": "ae33236368687bc4e27fc36fc708d68903aaf2e53979e3c3344bf99a3fbd8cc9"
+    },
+    {
+      "file": "runs/webgpu-baseline-01/sill-default.png",
+      "bytes": 463902,
+      "sha256": "37b9e14aed34c3776ff5c734cd2519f9a4fdb868b2ce1d4387f8af667bf021fd"
+    },
+    {
+      "file": "runs/webgpu-baseline-01/whole-default.png",
+      "bytes": 438569,
+      "sha256": "ba87243624e926b4378eb1cf51d9322d2ef79824d5bbe1b607896b3b76162333"
+    },
+    {
+      "file": "runs/webgpu-baseline-01/whole-lower.png",
+      "bytes": 437366,
+      "sha256": "66adb91de515f5ece96c67c1dc461db93c1d63c15de31f45c5d6d17fe8099a3c"
+    },
+    {
+      "file": "runs/webgpu-fixed-baseline-01/close-default.png",
+      "bytes": 388146,
+      "sha256": "6d7df4c0545fcc94f33583235d8ddce44ea48745ed60d546466d9f14e8e2e459"
+    },
+    {
+      "file": "runs/webgpu-fixed-baseline-01/close-lower.png",
+      "bytes": 388811,
+      "sha256": "74d141d7ad3cdf7d22ec0b8d4eb00d7957fed55fcf58a231a4b07adeca836289"
+    },
+    {
+      "file": "runs/webgpu-fixed-baseline-01/native-close-default.png",
+      "bytes": 693807,
+      "sha256": "2d951585a816b8f68ac0e12a041e56ed3ba0625f1733fcc77fc086393380c43f"
+    },
+    {
+      "file": "runs/webgpu-fixed-baseline-01/native-close-lower.png",
+      "bytes": 702603,
+      "sha256": "d76f11199cc39dc54623ee3f4d91b8eb0aa7966d2358464f75ff7b7cc15c190a"
+    },
+    {
+      "file": "runs/webgpu-fixed-baseline-01/native-sill-default.png",
+      "bytes": 783395,
+      "sha256": "13e040eb12576844943e4aa795bd1dc7ed164fec75546fab68b66c96c223798d"
+    },
+    {
+      "file": "runs/webgpu-fixed-baseline-01/native-whole-default.png",
+      "bytes": 594044,
+      "sha256": "e5fe12efd472be9a8f42fafec05f977d4c630d7f8e3a93370cf4a33a9a578339"
+    },
+    {
+      "file": "runs/webgpu-fixed-baseline-01/native-whole-lower.png",
+      "bytes": 585265,
+      "sha256": "6a189d80bc46896b191cb129e5293b37fcaaa0fe6568a97ea7e2465bcf48a9d5"
+    },
+    {
+      "file": "runs/webgpu-fixed-baseline-01/receipt.json",
+      "bytes": 329170,
+      "sha256": "9316007f0e437dfb97c1fc54a44a3457f8d914c3843c325a7709f31cf741e4e3"
+    },
+    {
+      "file": "runs/webgpu-fixed-baseline-01/sill-default.png",
+      "bytes": 463902,
+      "sha256": "37b9e14aed34c3776ff5c734cd2519f9a4fdb868b2ce1d4387f8af667bf021fd"
+    },
+    {
+      "file": "runs/webgpu-fixed-baseline-01/whole-default.png",
+      "bytes": 438569,
+      "sha256": "ba87243624e926b4378eb1cf51d9322d2ef79824d5bbe1b607896b3b76162333"
+    },
+    {
+      "file": "runs/webgpu-fixed-baseline-01/whole-lower.png",
+      "bytes": 437366,
+      "sha256": "66adb91de515f5ece96c67c1dc461db93c1d63c15de31f45c5d6d17fe8099a3c"
+    },
+    {
+      "file": "runs/webgpu-fixed-pcf-01/close-default.png",
+      "bytes": 402699,
+      "sha256": "c9e6e5956566befea8d0e0b968d4394c37ac35dbe1296bb1fbca95f5054cca88"
+    },
+    {
+      "file": "runs/webgpu-fixed-pcf-01/close-lower.png",
+      "bytes": 400095,
+      "sha256": "978b84aad7a501e7379787a7503461261d9b8dfede54fec555c5cae83d962194"
+    },
+    {
+      "file": "runs/webgpu-fixed-pcf-01/native-close-default.png",
+      "bytes": 695982,
+      "sha256": "637a06ed3ae2487fb3a6f834575180a631471a075b084dd0a9c6c89c8c7e6a5f"
+    },
+    {
+      "file": "runs/webgpu-fixed-pcf-01/native-close-lower.png",
+      "bytes": 707434,
+      "sha256": "e8213a33f872f2e0a5481ad537a3dc661e992d5f19341ba343d7322d02a577fc"
+    },
+    {
+      "file": "runs/webgpu-fixed-pcf-01/native-sill-default.png",
+      "bytes": 783952,
+      "sha256": "ab7284e08c7f195f0250268230dbb210e5b30c7ebefd2cedc27eeb14185b1109"
+    },
+    {
+      "file": "runs/webgpu-fixed-pcf-01/native-whole-default.png",
+      "bytes": 590439,
+      "sha256": "ecdb42e13048aae5a3bedb6c39bd06f6ac7b221b355c4b2fc43b1f8d9daf6563"
+    },
+    {
+      "file": "runs/webgpu-fixed-pcf-01/native-whole-lower.png",
+      "bytes": 583899,
+      "sha256": "5fdbe8371d5a701cf20bfde4a3b43697d39d93f23f0ca4c6261bc297cb94d9a3"
+    },
+    {
+      "file": "runs/webgpu-fixed-pcf-01/receipt.json",
+      "bytes": 329164,
+      "sha256": "53a1e17de7077af0b190dde8851b66b6f85480b58dd41ae5a522a7ad7536876d"
+    },
+    {
+      "file": "runs/webgpu-fixed-pcf-01/sill-default.png",
+      "bytes": 469240,
+      "sha256": "81b29659974bb4557aa7a6369046a4a1fb36faa73472b780c21046203c3d5fd6"
+    },
+    {
+      "file": "runs/webgpu-fixed-pcf-01/whole-default.png",
+      "bytes": 437982,
+      "sha256": "773d5dd02b483a9745c48e4f8247df4013d8a9abcc1f78110e26ee02c1eb4f2c"
+    },
+    {
+      "file": "runs/webgpu-fixed-pcf-01/whole-lower.png",
+      "bytes": 437265,
+      "sha256": "24702bcbb9bf8d64e664f1be4cf092a04f4f39a5a35fcb63f4232f547c2cd678"
+    },
+    {
+      "file": "runs/webgpu-pcf-01/close-default.png",
+      "bytes": 401889,
+      "sha256": "7c836f126d324ba0f4a60ef6b9df986138ced3c147e3b686d056f2882e1277d3"
+    },
+    {
+      "file": "runs/webgpu-pcf-01/close-lower.png",
+      "bytes": 399422,
+      "sha256": "f83795615c8b8398557dfd67db8ed7e287ab7c316500af1e01539bd07977d10c"
+    },
+    {
+      "file": "runs/webgpu-pcf-01/native-close-default.png",
+      "bytes": 694365,
+      "sha256": "6dedb36941d98aef0065c539df09a370a54bf49cdd77aa10a983cb738786eaa3"
+    },
+    {
+      "file": "runs/webgpu-pcf-01/native-close-lower.png",
+      "bytes": 706676,
+      "sha256": "ef03f77984d7d6fe827baec405439c24d71921db90afba77e621409df8443c93"
+    },
+    {
+      "file": "runs/webgpu-pcf-01/native-sill-default.png",
+      "bytes": 783952,
+      "sha256": "ab7284e08c7f195f0250268230dbb210e5b30c7ebefd2cedc27eeb14185b1109"
+    },
+    {
+      "file": "runs/webgpu-pcf-01/native-whole-default.png",
+      "bytes": 590439,
+      "sha256": "ecdb42e13048aae5a3bedb6c39bd06f6ac7b221b355c4b2fc43b1f8d9daf6563"
+    },
+    {
+      "file": "runs/webgpu-pcf-01/native-whole-lower.png",
+      "bytes": 583899,
+      "sha256": "5fdbe8371d5a701cf20bfde4a3b43697d39d93f23f0ca4c6261bc297cb94d9a3"
+    },
+    {
+      "file": "runs/webgpu-pcf-01/receipt.json",
+      "bytes": 329105,
+      "sha256": "c8a330da44ac80bd56b1e1f4218953912b5a16fb6469ce6c51a80236ecea4085"
+    },
+    {
+      "file": "runs/webgpu-pcf-01/sill-default.png",
+      "bytes": 469240,
+      "sha256": "81b29659974bb4557aa7a6369046a4a1fb36faa73472b780c21046203c3d5fd6"
+    },
+    {
+      "file": "runs/webgpu-pcf-01/whole-default.png",
+      "bytes": 437982,
+      "sha256": "773d5dd02b483a9745c48e4f8247df4013d8a9abcc1f78110e26ee02c1eb4f2c"
+    },
+    {
+      "file": "runs/webgpu-pcf-01/whole-lower.png",
+      "bytes": 437265,
+      "sha256": "24702bcbb9bf8d64e664f1be4cf092a04f4f39a5a35fcb63f4232f547c2cd678"
+    },
+    {
+      "file": "same-camera.mjs.txt",
+      "bytes": 31860,
+      "sha256": "51d5b2106dedb69db112b158237b08c371756d7e9c1c3d294088a70cc6ce74d0"
+    },
+    {
+      "file": "verification.json",
+      "bytes": 999,
+      "sha256": "139cbb8929451fe0aedd784128b6eda1db7bc6494074a419a34386487fb3635c"
+    }
+  ]
+}
