@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "0.1.0",
+  "reference": "8192 map with original frustum; finite-resolution, not ground truth",
+  "views": {
+    "whole-default": {
+      "cameraLightGeometryBindingsExact": true,
+      "consideredPixels": 15395,
+      "baselineMeanError": 4.8541,
+      "candidateMeanError": 3.9807,
+      "candidateCloser": 8796,
+      "baselineCloser": 5779
+    },
+    "close-default": {
+      "cameraLightGeometryBindingsExact": false,
+      "excludedReason": "Camera, light, geometry or bindings differ across runs."
+    },
+    "close-lower": {
+      "cameraLightGeometryBindingsExact": false,
+      "excludedReason": "Camera, light, geometry or bindings differ across runs."
+    },
+    "whole-lower": {
+      "cameraLightGeometryBindingsExact": true,
+      "consideredPixels": 10101,
+      "baselineMeanError": 4.4722,
+      "candidateMeanError": 2.8392,
+      "candidateCloser": 6685,
+      "baselineCloser": 2808
+    },
+    "sill-default": {
+      "cameraLightGeometryBindingsExact": true,
+      "consideredPixels": 24756,
+      "baselineMeanError": 5.5625,
+      "candidateMeanError": 4.0289,
+      "candidateCloser": 16904,
+      "baselineCloser": 6626
+    }
+  }
+}
