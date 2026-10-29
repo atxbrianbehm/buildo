@@ -1,0 +1,129 @@
+{
+  "schemaVersion": "0.1.0",
+  "backends": {
+    "webgl": {
+      "activeBaselineFilter": 1,
+      "activeCandidateFilter": 1,
+      "views": {
+        "whole-default": {
+          "checks": {
+            "drawCamera": true,
+            "drawLights": true,
+            "compiler": true,
+            "bindings": true,
+            "channels": true
+          },
+          "changedPixels": 0,
+          "meanAbsoluteChannelDelta": 0.0,
+          "maxChannelDelta": 0
+        },
+        "close-default": {
+          "checks": {
+            "drawCamera": false,
+            "drawLights": true,
+            "compiler": true,
+            "bindings": true,
+            "channels": true
+          },
+          "excludedReason": "Independent close-view camera differs."
+        },
+        "close-lower": {
+          "checks": {
+            "drawCamera": false,
+            "drawLights": true,
+            "compiler": true,
+            "bindings": true,
+            "channels": true
+          },
+          "excludedReason": "Independent close-view camera differs."
+        },
+        "whole-lower": {
+          "checks": {
+            "drawCamera": true,
+            "drawLights": true,
+            "compiler": true,
+            "bindings": true,
+            "channels": true
+          },
+          "changedPixels": 1,
+          "meanAbsoluteChannelDelta": 0.0,
+          "maxChannelDelta": 1
+        },
+        "sill-default": {
+          "checks": {
+            "drawCamera": true,
+            "drawLights": true,
+            "compiler": true,
+            "bindings": true,
+            "channels": true
+          },
+          "changedPixels": 0,
+          "meanAbsoluteChannelDelta": 0.0,
+          "maxChannelDelta": 0
+        }
+      }
+    },
+    "webgpu": {
+      "activeBaselineFilter": 2,
+      "activeCandidateFilter": 1,
+      "views": {
+        "whole-default": {
+          "checks": {
+            "drawCamera": true,
+            "drawLights": true,
+            "compiler": true,
+            "bindings": true,
+            "channels": true
+          },
+          "changedPixels": 22852,
+          "meanAbsoluteChannelDelta": 0.071879,
+          "maxChannelDelta": 39
+        },
+        "close-default": {
+          "checks": {
+            "drawCamera": false,
+            "drawLights": true,
+            "compiler": true,
+            "bindings": true,
+            "channels": true
+          },
+          "excludedReason": "Independent close-view camera differs."
+        },
+        "close-lower": {
+          "checks": {
+            "drawCamera": false,
+            "drawLights": true,
+            "compiler": true,
+            "bindings": true,
+            "channels": true
+          },
+          "excludedReason": "Independent close-view camera differs."
+        },
+        "whole-lower": {
+          "checks": {
+            "drawCamera": true,
+            "drawLights": true,
+            "compiler": true,
+            "bindings": true,
+            "channels": true
+          },
+          "changedPixels": 11810,
+          "meanAbsoluteChannelDelta": 0.035696,
+          "maxChannelDelta": 43
+        },
+        "sill-default": {
+          "checks": {
+            "drawCamera": true,
+            "drawLights": true,
+            "compiler": true,
+            "bindings": true,
+            "channels": true
+          },
+          "changedPixels": 34380,
+          "meanAbsoluteChannelDelta": 0.118658,
+          "maxChannelDelta": 36
+        }
+      }
+    }
+  }
+}
