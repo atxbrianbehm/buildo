@@ -60,6 +60,7 @@ import {
 import { createVisualQaPacket, type VisualQaPacket } from "../qa/visualQaPacket";
 import type { AssemblyHallFixture } from "./assemblyHallFixture";
 import { resolveConstructionFrameFromIntersections, resolveConstructionFrameFromPath } from "../renderer-three/constructionFrameSelection";
+import { fitConstructionShadowFrustum } from "../renderer-three/constructionShadowFrustum";
 
 import type { BuildingFixtureViewerPreparer, PreparedBuildingFixtureView } from "../state/buildingRunController";
 
@@ -135,6 +136,7 @@ interface PreparedAssemblyScene {
   defaultKeyLightOffset: Vector3;
   defaultFillLightOffset: Vector3;
   maxDimension: number;
+  constructionShadowBounds: Box3 | null;
   dispose(): void;
 }
 
@@ -448,6 +450,8 @@ function prepareScene(root: Object3D, lighting: "building" | "bay" | "constructi
   }
   scene.add(keyLight);
   scene.add(keyLight.target);
+  const constructionShadowBounds = construction ? new Box3().setFromObject(root) : null;
+  if (constructionShadowBounds) fitConstructionShadowFrustum(keyLight, constructionShadowBounds);
 
   const fillLight = new DirectionalLight("#cde4f0", bay ? 0.35 : 0.72);
   fillLight.name = "assembly-hall.fill-light";
@@ -525,6 +529,7 @@ function prepareScene(root: Object3D, lighting: "building" | "bay" | "constructi
     defaultKeyLightOffset: defaultKeyLightOffset.clone(),
     defaultFillLightOffset: defaultFillLightOffset.clone(),
     maxDimension,
+    constructionShadowBounds,
     dispose: () => {
       if (disposed) return;
       disposed = true;
@@ -1154,6 +1159,7 @@ export function AssemblyHall({
         prepared.keyLight.position.copy(prepared.orbitTarget).add(lightOffset);
         prepared.keyLight.target.position.copy(prepared.orbitTarget);
         prepared.keyLight.target.updateMatrixWorld();
+        if (prepared.constructionShadowBounds) fitConstructionShadowFrustum(prepared.keyLight, prepared.constructionShadowBounds);
         // Keep fill roughly opposite so clay form stays readable.
         prepared.fillLight.position
           .copy(prepared.orbitTarget)
@@ -1185,6 +1191,7 @@ export function AssemblyHall({
         preparedScene.keyLight.target.position.copy(preparedScene.orbitTarget);
         preparedScene.fillLight.target.position.copy(preparedScene.orbitTarget);
         preparedScene.keyLight.target.updateMatrixWorld();
+        if (preparedScene.constructionShadowBounds) fitConstructionShadowFrustum(preparedScene.keyLight, preparedScene.constructionShadowBounds);
         preparedScene.fillLight.target.updateMatrixWorld();
         lightOffset.copy(preparedScene.defaultKeyLightOffset);
         lightSpherical.setFromVector3(lightOffset);

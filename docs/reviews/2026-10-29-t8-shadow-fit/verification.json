@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "construction-shadow-fit-verification",
+  "parentCommit": "fffa7a41cb7a09ea2727f3626a7b866fc4dc0939",
+  "checkedSourceSha256": {
+    "src/features/building-family/ui/AssemblyHall.tsx": "ae7e36ad3719992ebdc0a9df1a8870c0e3c509bec13057758eca8c307e31775c",
+    "src/features/building-family/renderer-three/constructionShadowFrustum.ts": "434fabfd17c1cac0ca6aa9a8ee09ccc7198189af60339c34e63cf3805862a912",
+    "src/features/building-family/tests/constructionShadowFrustum.test.ts": "30a6b0bdf7e9ba73d94acccaf6477896d5d79ad6a61c734121a76cfda034b71b",
+    "eslint.config.js": "d96745e751c52da6a98b739ccbc37a89abc0d9c423beffc7ed616be9ef814c82"
+  },
+  "checks": {
+    "typecheck": 0,
+    "lint": 0,
+    "test": 0,
+    "build": 0,
+    "test:e2e": 0
+  },
+  "testFiles": 132,
+  "tests": 1927,
+  "e2eWorkflows": 8,
+  "nativeBackends": [
+    "webgl",
+    "webgpu"
+  ],
+  "viewsPerBackend": 5,
+  "boundsShapes": 4,
+  "lightDirections": 4,
+  "groundRayCoverage": "default light only",
+  "materialAndGeometryPreserved": true,
+  "providerAndMaterialCallsAfterOpen": 0,
+  "closeReferenceViewsExcluded": 2,
+  "visualAcceptance": "pending",
+  "c9VisualDecision": "pending"
+}
