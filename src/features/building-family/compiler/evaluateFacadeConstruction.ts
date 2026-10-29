@@ -8,6 +8,8 @@ import { BayConstructionGraphSchema, type BayConstructionGraph, type BayConstruc
 import { RuntimeBuildingIRSchema, type MeshBatchIR, type RuntimeBuildingIR } from "../contracts/runtimeBuildingIR";
 import { hashCanonicalJson } from "../core/contentHash";
 import { buildBoxPrimitive, combinePrimitiveGeometry, emptyBounds, expandBounds, type Bounds3, type PrimitiveGeometry } from "./primitiveGeometry";
+import { resolveConstructionParapetSilhouette } from "../core/constructionParapetSilhouette";
+import { buildRaisedParapetCenter, buildSteppedParapetCoping } from "./constructionSteppedParapetGeometry";
 import { expandBayWallPrimitives, MIN_FACADE_PIER_WIDTH_M, type FacadeBayScope } from "./facadeWallSubdivision";
 import { extrudeProfileSolidAlongX } from "./profileSweepGeometry";
 import { evaluateBayConstruction, DEFAULT_BAY_MATERIALS, type BayConstructionMaterials, type BayConstructionResult, type BayConstructionTrace } from "./evaluateBayConstruction";
@@ -48,7 +50,7 @@ function front(primitive: PrimitiveGeometry): PrimitiveGeometry {
 export async function evaluateFacadeConstruction(input: unknown, materials: BayConstructionMaterials = DEFAULT_BAY_MATERIALS,
   previewNodeId?: string): Promise<BayConstructionResult> {
   const graph = structuredClone(BayConstructionGraphSchema.parse(input));
-  if (!["0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0"].includes(graph.schemaVersion)) throw new Error("Facade construction requires graph version 0.2.0 or 0.3.0.");
+  if (!["0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0"].includes(graph.schemaVersion)) throw new Error("Facade construction requires graph version 0.2.0 or 0.3.0.");
   const nodes = new Map(graph.nodes.map(node => [node.id, node]));
   if (previewNodeId && !nodes.has(previewNodeId)) throw new Error("The preview node is missing.");
   const values = new Map<string, Promise<Value>>(), trace: BayConstructionTrace[] = [];
@@ -194,10 +196,13 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
         const cornice = buildConstructionCorniceGeometry(cornicePlan);
         const parapet = ring([{y:h,offset:-.22},{y:h,offset:0},{y:h+p.parapetHeightM,offset:0},{y:h+p.parapetHeightM,offset:-.22}]);
         const top=h+p.parapetHeightM,c=p.copingProjectionM;
-        const coping = ring([{y:top,offset:-.22-c},{y:top,offset:c-.015},{y:top+.025,offset:c},{y:top+.075,offset:c},{y:top+.095,offset:c-.015},{y:top+.095,offset:-.22-c}]);
+        const silhouette = p.parapetSilhouette === 1 ? resolveConstructionParapetSilhouette({ schemaVersion: "0.1.0", kind: "construction-parapet-silhouette-request",
+          treatment: "raised-center", building: { widthM: w, depthM: d, heightM: h }, parapet: { heightM: p.parapetHeightM, copingProjectionM: c } }) : null;
+        // globalMesh mirrors Z; pre-mirror asymmetric geometry so the raised treatment lands on the front.
+        const coping = silhouette ? front(buildSteppedParapetCoping(silhouette)) : ring([{y:top,offset:-.22-c},{y:top,offset:c-.015},{y:top+.025,offset:c},{y:top+.075,offset:c},{y:top+.095,offset:c-.015},{y:top+.095,offset:-.22-c}]);
         const deck=buildBoxPrimitive({center:[0,h-.1,0],size:[w-.44,.16,d-.44]});
         for(let i=0;i<deck.positions.length/3;i++){deck.uvs[i*2]=deck.positions[i*3];deck.uvs[i*2+1]=deck.positions[i*3+2];}
-        value = { kind: "geometry", parts: [globalMesh(node,"roof",[deck],"roof","roof.primary"),globalMesh(node,"parapet",[parapet],"roof",materials.wall),globalMesh(node,"cornice",[cornice.backing,coping,...cornice.units],"roof",materials.trim)] };break;
+        value = { kind: "geometry", parts: [globalMesh(node,"roof",[deck],"roof","roof.primary"),globalMesh(node,"parapet",silhouette ? [parapet,front(buildRaisedParapetCenter(silhouette))] : [parapet],"roof",materials.wall),globalMesh(node,"cornice",[cornice.backing,coping,...cornice.units],"roof",materials.trim)] };break;
       }
       case "FacadeScope": {
         const { widthM, heightM, wallDepthM } = node.parameters;
@@ -239,7 +244,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
       }
       case "EmitWall": {
         const cells = await scopes(node.input.nodeId);
-        if (["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0"].includes(graph.schemaVersion) && cells.every(cell=>cell.building)) {
+        if (["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0"].includes(graph.schemaVersion) && cells.every(cell=>cell.building)) {
           const faces = new Map<string,Cell[]>(); for(const cell of cells) faces.set(cell.root,[...(faces.get(cell.root)??[]),cell]);
           value = { kind: "geometry", parts: node.bypassed ? [] : [...faces.values()].map(group=>{
             const cell={...group[0],key:group[0].root},part=makeMesh(node,cell,"wall",[constructionFacadeSolid(group.map(cell=>cell.scope))],"facade",materials.wall);

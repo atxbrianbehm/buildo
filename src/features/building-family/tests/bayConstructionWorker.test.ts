@@ -7,6 +7,7 @@ import { withConstructionStorefront } from "../core/constructionStorefrontGraph"
 import { withConstructionOpeningWidth } from "../core/constructionOpeningEditGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
 import { withConstructionCorniceLayout } from "../core/constructionCorniceVocabulary";
+import { withConstructionParapetSilhouette } from "../core/constructionParapetVocabulary";
 
 class Endpoint implements BayConstructionWorkerEndpoint {
   messages: unknown[] = [];
@@ -25,6 +26,16 @@ class Endpoint implements BayConstructionWorkerEndpoint {
   }
 }
 describe("owned construction worker client", () => {
+  it("sends parapet protocol 0.9 and accepts the compiled raised silhouette", async () => {
+    const endpoint = new Endpoint(), client = new BayConstructionClient(endpoint);
+    const graph = withConstructionParapetSilhouette(withConstructionCorniceLayout(createBuildingConstructionGraph(), 2), 1);
+    const pending = client.evaluate(graph), request = BayConstructionWorkerRequestSchema.parse(endpoint.messages[0]);
+    expect(request.schemaVersion).toBe("0.9.0"); expect(request.graph).toEqual(graph);
+    const result = await evaluateConstruction(request.graph);
+    endpoint.emit({ schemaVersion: "0.9.0", type: "bay-result", requestId: request.requestId, result });
+    expect(await pending).toEqual(result);
+    client.dispose(); expect(endpoint.terminated).toBe(1);
+  });
   it("sends cornice protocol0.8 and accepts the actual closed detail geometry", async () => {
     const endpoint = new Endpoint(), client = new BayConstructionClient(endpoint);
     const graph = withConstructionCorniceLayout(createBuildingConstructionGraph(), 2);

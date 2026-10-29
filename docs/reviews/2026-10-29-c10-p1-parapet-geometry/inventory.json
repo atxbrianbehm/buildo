@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "0.1.0",
+  "files": [
+    {
+      "file": "checks/focused-01.log",
+      "bytes": 247,
+      "sha256": "8da8775e4d95b39866305c7fcd6ddf84911f5b5ed42cc9fc97e08c9acf592ef9"
+    },
+    {
+      "file": "checks/focused-02.log",
+      "bytes": 247,
+      "sha256": "4d850ab55c6ca6a6be9b23dc8d28733ef7c402641257acabf03e42e458483edf"
+    },
+    {
+      "file": "checks/focused-final-02.log",
+      "bytes": 247,
+      "sha256": "875d0061d5709d288ceef8a722380a4322aff5a6d9d60a6254edfdb924f39d3e"
+    },
+    {
+      "file": "checks/focused-final-03.log",
+      "bytes": 247,
+      "sha256": "5aab6319bf1b37e64bf28957c29e755f306e13a034901c506dcd3c1ba84622a5"
+    },
+    {
+      "file": "checks/focused-final.log",
+      "bytes": 247,
+      "sha256": "03ec9f34b1f4a81c95165266c14bdeecf7d004258d55979f422bcc4b947ef3b2"
+    },
+    {
+      "file": "checks/lint-01.log",
+      "bytes": 37,
+      "sha256": "a21c6d2dedb756f860b052cb2d84cd603fbbe38ee53e1ad76ab9c5803f028958"
+    },
+    {
+      "file": "checks/lint-final-02.log",
+      "bytes": 37,
+      "sha256": "a21c6d2dedb756f860b052cb2d84cd603fbbe38ee53e1ad76ab9c5803f028958"
+    },
+    {
+      "file": "checks/lint-final-03.log",
+      "bytes": 37,
+      "sha256": "a21c6d2dedb756f860b052cb2d84cd603fbbe38ee53e1ad76ab9c5803f028958"
+    },
+    {
+      "file": "checks/lint-final.log",
+      "bytes": 37,
+      "sha256": "a21c6d2dedb756f860b052cb2d84cd603fbbe38ee53e1ad76ab9c5803f028958"
+    },
+    {
+      "file": "checks/typecheck-01.log",
+      "bytes": 49,
+      "sha256": "1927639a5b89b1406e25b817bb2c8efb1e16fccc181e86591db136d628e7f5e6"
+    },
+    {
+      "file": "checks/typecheck-final-02.log",
+      "bytes": 49,
+      "sha256": "1927639a5b89b1406e25b817bb2c8efb1e16fccc181e86591db136d628e7f5e6"
+    },
+    {
+      "file": "checks/typecheck-final-03.log",
+      "bytes": 49,
+      "sha256": "1927639a5b89b1406e25b817bb2c8efb1e16fccc181e86591db136d628e7f5e6"
+    },
+    {
+      "file": "checks/typecheck-final.log",
+      "bytes": 49,
+      "sha256": "1927639a5b89b1406e25b817bb2c8efb1e16fccc181e86591db136d628e7f5e6"
+    },
+    {
+      "file": "geometry-preview-02/flat.json",
+      "bytes": 184,
+      "sha256": "1b3c1a74da8ef9428141b8275ef1bf28c79d045a82f011b65c368b8ce49347fc"
+    },
+    {
+      "file": "geometry-preview-02/flat.png",
+      "bytes": 48127,
+      "sha256": "374aec34f275485f40ec31c4386eb49c69cdcaced418fb7610dc217464a42348"
+    },
+    {
+      "file": "geometry-preview-02/raised.json",
+      "bytes": 184,
+      "sha256": "8eb213bb39aa71c74b9253c537fef47fdd02dabc4b0c76e0c779cd2d69445bce"
+    },
+    {
+      "file": "geometry-preview-02/raised.png",
+      "bytes": 49392,
+      "sha256": "9feb04e2662a4670e4f677684bab5e629826e044f58e499d32397c38ccda0613"
+    },
+    {
+      "file": "geometry-preview-02.mjs.txt",
+      "bytes": 3600,
+      "sha256": "ce4a2316101ea82e102047e0563596f895912b48d8b631c2b42b04cb9de0329d"
+    },
+    {
+      "file": "geometry-preview.mjs.txt",
+      "bytes": 3565,
+      "sha256": "65645a9a823abfd96a5e8efc14753c91d79aa17b90e676e1ae05f961bf81aa3b"
+    },
+    {
+      "file": "README.md",
+      "bytes": 2056,
+      "sha256": "3f6ddac8932bd0f857f9d90db50da8fbeb3ef54b25892476a17d5d5e51997610"
+    },
+    {
+      "file": "verification.json",
+      "bytes": 2182,
+      "sha256": "76c034c7b8da109d8a1ddbf762b9160a414a57db82e1308d394ce4088676a0ca"
+    }
+  ]
+}

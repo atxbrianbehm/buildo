@@ -23,7 +23,7 @@ export const BayConstructionNodeSchema = z.discriminatedUnion("type", [
   z.object({ id, type: z.literal("PlaceStorefront"), input: scopeInput, bypassed: z.boolean().optional(), parameters: ConstructionStorefrontParametersSchema.omit({ entranceWidthM: true }).extend({ mode: z.union([z.literal(0), z.literal(1)]) }).strict() }).strict(),
   z.object({ id, type: z.literal("EditOpeningWidth"), input: scopeInput, bypassed: z.boolean().optional(),
     overrides: z.array(ConstructionOpeningWidthOverrideSchema).max(220) }).strict(),
-  z.object({ id, type: z.literal("BuildingRoof"), input: scopeInput, bypassed: z.boolean().optional(), parameters: z.object({ parapetHeightM: z.number().finite().min(0.2).max(1.2), copingProjectionM: z.number().finite().min(0.02).max(0.2), corniceHeightM: z.number().finite().min(0.1).max(0.6), corniceProjectionM: z.number().finite().min(0.08).max(0.4), corniceAssembly: ConstructionCorniceLayoutSchema.optional() }).strict() }).strict(),
+  z.object({ id, type: z.literal("BuildingRoof"), input: scopeInput, bypassed: z.boolean().optional(), parameters: z.object({ parapetHeightM: z.number().finite().min(0.2).max(1.2), copingProjectionM: z.number().finite().min(0.02).max(0.2), corniceHeightM: z.number().finite().min(0.1).max(0.6), corniceProjectionM: z.number().finite().min(0.08).max(0.4), corniceAssembly: ConstructionCorniceLayoutSchema.optional(), parapetSilhouette: z.union([z.literal(0), z.literal(1)]).optional() }).strict() }).strict(),
   z.object({ id, type: z.literal("FacadeScope"),
     parameters: z.object({ widthM: metres, heightM: metres, wallDepthM: metres }).strict()
   }).strict(),
@@ -57,7 +57,7 @@ export const BayConstructionNodeSchema = z.discriminatedUnion("type", [
 export type BayConstructionNode = z.infer<typeof BayConstructionNodeSchema>;
 
 const shape = z.object({
-  schemaVersion: z.enum(["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0"]),
+  schemaVersion: z.enum(["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0"]),
   kind: z.literal("bay-construction"),
   documentId: id,
   nodes: z.array(BayConstructionNodeSchema).min(2).max(128),
@@ -67,15 +67,15 @@ const shape = z.object({
   const issue = (message: string, path: Array<string | number> = ["nodes"]) =>
     context.addIssue({ code: "custom", message, path });
   for (const node of graph.nodes) {
-    if (node.type === "PlaceStorefront" && !["0.6.0", "0.7.0", "0.8.0"].includes(graph.schemaVersion)) issue("Storefront operators require construction graph version 0.6.0.");
+    if (node.type === "PlaceStorefront" && !["0.6.0", "0.7.0", "0.8.0", "0.9.0"].includes(graph.schemaVersion)) issue("Storefront operators require construction graph version 0.6.0.");
     if (node.type === "EditOpeningWidth") {
-      if (!["0.7.0", "0.8.0"].includes(graph.schemaVersion)) issue("Scoped opening edits require construction graph version 0.7.0.");
+      if (!["0.7.0", "0.8.0", "0.9.0"].includes(graph.schemaVersion)) issue("Scoped opening edits require construction graph version 0.7.0.");
       const targets = node.overrides.map(({ target }) => JSON.stringify([target.documentId, target.storeysNodeId, target.face, target.floorIndex, target.bayIndex]));
       if (new Set(targets).size !== targets.length) issue("Opening width targets must be unique.");
       if (node.overrides.some(({ target }) => target.documentId !== graph.documentId)) issue("Opening width targets must belong to the construction document.");
     }
-    if (["Footprint", "Storeys", "PlaceDoor", "AssembleDoor", "BuildingRoof"].includes(node.type) && !["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0"].includes(graph.schemaVersion)) issue("Whole-building operators require construction graph version 0.4.0.");
-    if (["JoinGeometry", "SetSurface"].includes(node.type) && !["0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0"].includes(graph.schemaVersion)) issue("Surface operators require construction graph version 0.3.0.");
+    if (["Footprint", "Storeys", "PlaceDoor", "AssembleDoor", "BuildingRoof"].includes(node.type) && !["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0"].includes(graph.schemaVersion)) issue("Whole-building operators require construction graph version 0.4.0.");
+    if (["JoinGeometry", "SetSurface"].includes(node.type) && !["0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0"].includes(graph.schemaVersion)) issue("Surface operators require construction graph version 0.3.0.");
     if (node.type === "SetSurface") {
       if (node.composition.documentId !== graph.documentId) issue("Surface composition must belong to the construction document.");
       for (const layer of node.composition.layers) {
@@ -89,12 +89,14 @@ const shape = z.object({
       issue("Facade operators and bypass require construction graph version 0.2.0.");
     }
     if (node.type === "BuildingRoof") {
-      if (graph.schemaVersion === "0.8.0" && node.parameters.corniceAssembly === undefined) issue("Cornice vocabulary graphs require an explicit cornice assembly.");
-      if (graph.schemaVersion !== "0.8.0" && node.parameters.corniceAssembly !== undefined) issue("Cornice assembly layouts require construction graph version 0.8.0.");
+      if (["0.8.0", "0.9.0"].includes(graph.schemaVersion) && node.parameters.corniceAssembly === undefined) issue("Cornice vocabulary graphs require an explicit cornice assembly.");
+      if (!["0.8.0", "0.9.0"].includes(graph.schemaVersion) && node.parameters.corniceAssembly !== undefined) issue("Cornice assembly layouts require construction graph version 0.8.0.");
+      if (graph.schemaVersion === "0.9.0" && node.parameters.parapetSilhouette === undefined) issue("Parapet vocabulary graphs require an explicit silhouette.");
+      if (graph.schemaVersion !== "0.9.0" && node.parameters.parapetSilhouette !== undefined) issue("Parapet silhouettes require construction graph version 0.9.0.");
     }
     if (node.type === "AssembleWindow") {
-      if (["0.5.0", "0.6.0", "0.7.0", "0.8.0"].includes(graph.schemaVersion) && node.parameters.layout === undefined) issue("Window vocabulary graphs require an explicit assembly layout.");
-      if (!["0.5.0", "0.6.0", "0.7.0", "0.8.0"].includes(graph.schemaVersion) && node.parameters.layout !== undefined) issue("Window assembly layouts require construction graph version 0.5.0.");
+      if (["0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0"].includes(graph.schemaVersion) && node.parameters.layout === undefined) issue("Window vocabulary graphs require an explicit assembly layout.");
+      if (!["0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0"].includes(graph.schemaVersion) && node.parameters.layout !== undefined) issue("Window assembly layouts require construction graph version 0.5.0.");
     }
     if (nodes.has(node.id)) issue("Node IDs must be unique.");
     nodes.set(node.id, node);

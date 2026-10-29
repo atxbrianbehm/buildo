@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "stepped-parapet-geometry-verification",
+  "parentCommit": "d72a9538819c8d6bc79adbce75ed58e65c3b3c15",
+  "priorPins": 356,
+  "priorChanged": [
+    "src/features/building-family/compiler/bayConstructionWorkerProtocol.ts",
+    "src/features/building-family/compiler/evaluateConstruction.ts",
+    "src/features/building-family/compiler/evaluateFacadeConstruction.ts",
+    "src/features/building-family/contracts/bayConstructionGraph.ts",
+    "src/features/building-family/tests/bayConstructionWorker.test.ts"
+  ],
+  "sourceHashes": {
+    "src/features/building-family/compiler/bayConstructionWorkerProtocol.ts": "02b68a9e0b580ba5fabbbb506998027b021d908c098ab7e06b74f4422face652",
+    "src/features/building-family/compiler/evaluateConstruction.ts": "9b3a3d082b36fa39ce9729fcf9f6fdeb4dc0d470990f6a3f7908b880c2f903b0",
+    "src/features/building-family/compiler/evaluateFacadeConstruction.ts": "56c1c55abad22fd4bb351ff1de7facb5f15e46d7faac6d5b85d3ccd78836d110",
+    "src/features/building-family/contracts/bayConstructionGraph.ts": "eb84dca92d9cd29e83a2ac738a0261933aa54cfc5efa34520f5dc103ca998827",
+    "src/features/building-family/tests/bayConstructionWorker.test.ts": "e17ffbd7d6f24e854fbb39cf56cf2388b1326da1d68c4aa3793c51c47f04150e",
+    "src/features/building-family/compiler/constructionSteppedParapetGeometry.ts": "fb03b3cad2105d1554854226cc690bd9a1043547ba2152c4979cf41c993d4e52",
+    "src/features/building-family/core/constructionParapetVocabulary.ts": "f24ec2f6d0c9cfe6d94c7b5d2f8f6a87d1dc689fbc771973f2ca722af9c85b36",
+    "src/features/building-family/tests/constructionSteppedParapetGeometry.test.ts": "f6aeb4ac297ae37594d7313262abaffbefd22850dea12cad58667cbc21e6992c"
+  },
+  "checks": {
+    "focused": 0,
+    "typecheck": 0,
+    "lint": 0
+  },
+  "focusedFiles": 5,
+  "focusedTests": 68,
+  "graphVersion": "0.9.0",
+  "workerProtocolVersion": "0.9.0",
+  "preview": "independent clay diagnostic, not product capture",
+  "productControlsImplemented": false,
+  "initialPreviewFailure": "optional instance role missing in harness",
+  "intermediateTestFailure": "IR mesh batch does not expose bounds"
+}
