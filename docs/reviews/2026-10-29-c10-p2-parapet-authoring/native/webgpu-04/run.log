@@ -1,0 +1,10 @@
+6:16:15 PM [vite] (client) [optimizer] scanning dependencies...
+6:16:17 PM [vite] (client) [optimizer] bundling dependencies...
+{"api":"webgpu","state":"flat"}
+{"api":"webgpu","state":"raised"}
+{"api":"webgpu","state":"undo"}
+{"api":"webgpu","state":"redo"}
+{"api":"webgpu","state":"restored"}
+{"api":"webgpu","state":"room-return"}
+{"api":"webgpu","state":"cold"}
+{"api":"webgpu","states":7,"captures":10,"errors":[]}

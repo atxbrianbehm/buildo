@@ -15,13 +15,13 @@ export function withConstructionCorniceLayout(input: unknown, layout: Constructi
   const roof = graph.nodes.find(node => node.id === "roof");
   if (roof?.type !== "BuildingRoof") throw new Error("Cornice treatments require the registered whole-building roof.");
   roof.parameters.corniceAssembly = value;
-  return BayConstructionGraphSchema.parse({...graph,schemaVersion:"0.8.0"});
+  return BayConstructionGraphSchema.parse({...graph,schemaVersion:original.schemaVersion === "0.9.0" ? "0.9.0" : "0.8.0"});
 }
 
 /** Cornice treatment follows preserve-authored only; opening locks do not lock the roof. */
 export function retainConstructionCorniceVocabulary(currentInput: unknown, generatedInput: unknown, preserve: boolean) {
   const current = BayConstructionGraphSchema.parse(currentInput);
-  if (current.schemaVersion !== "0.8.0") return BayConstructionGraphSchema.parse(generatedInput);
+  if (!["0.8.0", "0.9.0"].includes(current.schemaVersion)) return BayConstructionGraphSchema.parse(generatedInput);
   const authored = current.nodes.find(node => node.id === "roof" && node.type === "BuildingRoof");
   if (authored?.type !== "BuildingRoof") throw new Error("The registered roof operator is missing.");
   return withConstructionCorniceLayout(generatedInput, preserve ? authored.parameters.corniceAssembly! : 0);

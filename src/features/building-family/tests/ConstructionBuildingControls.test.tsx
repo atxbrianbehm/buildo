@@ -1,5 +1,6 @@
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { withConstructionCorniceLayout } from "../core/constructionCorniceVocabulary";
+import { withConstructionParapetSilhouette } from "../core/constructionParapetVocabulary";
 import { groupedStorefrontCount } from "../ui/constructionBuildingBindings";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
@@ -8,6 +9,15 @@ import { supportsGroupedConstruction, groupedWindowCount } from "../ui/construct
 import { createBuildingConstructionGraph } from "../contracts/bayConstructionGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
 afterEach(cleanup);
+
+it("offers the front parapet choice while preserving the grouped graph", () => {
+  const graph = withConstructionParapetSilhouette(withConstructionCorniceLayout(createBuildingConstructionGraph(), 2), 1);
+  const view = mount(graph); expect(supportsGroupedConstruction(graph)).toBe(true);
+  fireEvent.click(screen.getByText("Roof & trim", { selector: "summary" }));
+  const select = screen.getByRole("combobox", { name: "Parapet silhouette" });
+  expect(select).toHaveValue("1"); expect([...select.querySelectorAll("option")].map(item => item.textContent)).toEqual(["Flat parapet", "Raised center"]);
+  fireEvent.change(select, { target: { value: "0" } }); expect(view.onFieldChange).toHaveBeenCalledWith("roof", "parapetSilhouette", "0");
+});
 
 it("offers one named four-elevation cornice choice and respects bypass/custom boundaries",()=>{
   const graph=withConstructionCorniceLayout(createBuildingConstructionGraph(),2),before=structuredClone(graph),view=mount(graph);

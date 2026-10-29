@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildRaisedParapetCenter, buildSteppedParapetCoping } from "../compiler/constructionSteppedParapetGeometry";
+import { buildSteppedParapetSolid, buildSteppedParapetCoping } from "../compiler/constructionSteppedParapetGeometry";
 import type { PrimitiveGeometry } from "../compiler/primitiveGeometry";
 import { resolveConstructionParapetSilhouette } from "../core/constructionParapetSilhouette";
 import { withConstructionParapetSilhouette } from "../core/constructionParapetVocabulary";
@@ -45,11 +45,15 @@ function inspectClosed(g: PrimitiveGeometry) {
 }
 
 describe("stepped parapet geometry", () => {
-  it.each([[3, 3, 2.5, 0.2, 0.02], [12, 10, 11, 0.8, 0.08], [100, 100, 100, 1.2, 0.2]])("builds closed outward center and continuous coping for %s × %s", (w, d, h, parapet, coping) => {
-    const p = plan(w, d, h, parapet, coping), center = buildRaisedParapetCenter(p), cap = buildSteppedParapetCoping(p);
-    inspectClosed(center); inspectClosed(cap);
-    expect(center.bounds.min[1]).toBeCloseTo(p.lowTopM); expect(center.bounds.max[1]).toBeCloseTo(p.highTopM);
-    expect(center.bounds.min[0]).toBeCloseTo(-w / 4); expect(center.bounds.max[0]).toBeCloseTo(w / 4);
+  it.each([[3, 3, 2.5, 0.2, 0.02], [12, 10, 11, 0.8, 0.08], [100, 100, 100, 1.2, 0.2]])("builds one closed outward parapet and continuous coping for %s × %s", (w, d, h, parapet, coping) => {
+    const p = plan(w, d, h, parapet, coping), solid = buildSteppedParapetSolid(p), cap = buildSteppedParapetCoping(p);
+    inspectClosed(solid); inspectClosed(cap);
+    expect(solid.bounds.min[1]).toBeCloseTo(p.baseM); expect(solid.bounds.max[1]).toBeCloseTo(p.highTopM);
+    expect(solid.bounds.min[0]).toBeCloseTo(-w / 2); expect(solid.bounds.max[0]).toBeCloseTo(w / 2);
+    for (let i = 0; i < solid.positions.length / 3; i++) if (solid.normals[i * 3 + 2] === -1 && solid.positions[i * 3 + 2] === -d / 2) {
+      expect(solid.uvs[i * 2]).toBe(solid.positions[i * 3]);
+      expect(solid.uvs[i * 2 + 1]).toBe(solid.positions[i * 3 + 1]);
+    }
     expect(cap.bounds.max[1]).toBeCloseTo(p.highTopM + 0.095);
     expect(cap.bounds.min[2]).toBeCloseTo(-d / 2 - coping);
     expect(buildSteppedParapetCoping(p)).toEqual(cap);

@@ -1,11 +1,27 @@
 import { BayConstructionGraphSchema, type BayConstructionGraph } from "../contracts/bayConstructionGraph";
+import { withConstructionCorniceLayout } from "./constructionCorniceVocabulary";
+
+export const CONSTRUCTION_PARAPET_SILHOUETTES = Object.freeze([
+  Object.freeze({ value: 0 as const, label: "Flat parapet" }),
+  Object.freeze({ value: 1 as const, label: "Raised center" })
+]);
 
 /** Explicit upgrade of an already admitted cornice graph; old source is never rewritten on read. */
 export function withConstructionParapetSilhouette(input: unknown, silhouette: 0 | 1): BayConstructionGraph {
-  const graph = structuredClone(BayConstructionGraphSchema.parse(input));
-  if (graph.schemaVersion !== "0.8.0" && graph.schemaVersion !== "0.9.0") throw new Error("Parapet treatment requires a cornice vocabulary graph.");
+  const original = BayConstructionGraphSchema.parse(input);
+  const graph = original.schemaVersion === "0.9.0" ? structuredClone(original) : withConstructionCorniceLayout(original,
+    original.nodes.find(node => node.type === "BuildingRoof")?.parameters.corniceAssembly ?? 0);
   const roof = graph.nodes.find(node => node.id === "roof");
   if (roof?.type !== "BuildingRoof") throw new Error("Parapet treatments require the registered whole-building roof.");
   roof.parameters.parapetSilhouette = silhouette;
   return BayConstructionGraphSchema.parse({ ...graph, schemaVersion: "0.9.0" });
+}
+
+/** Parapet is an authored roof choice, independent of opening locks. */
+export function retainConstructionParapetVocabulary(currentInput: unknown, generatedInput: unknown, preserve: boolean): BayConstructionGraph {
+  const current = BayConstructionGraphSchema.parse(currentInput);
+  if (current.schemaVersion !== "0.9.0") return BayConstructionGraphSchema.parse(generatedInput);
+  const roof = current.nodes.find(node => node.id === "roof");
+  if (roof?.type !== "BuildingRoof") throw new Error("The registered roof operator is missing.");
+  return withConstructionParapetSilhouette(generatedInput, preserve ? roof.parameters.parapetSilhouette! : 0);
 }
