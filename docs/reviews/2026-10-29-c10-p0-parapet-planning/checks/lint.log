@@ -1,0 +1,10 @@
+
+> buildo@0.0.0 lint
+> eslint .
+
+
+C:\Users\behmb\Documents\Cascade Projects\buildo\src\features\building-family\tests\constructionParapetSilhouette.test.ts
+  35:3  error  Unexpected newline between function and ( of function call  no-unexpected-multiline
+
+✖ 1 problem (1 error, 0 warnings)
+

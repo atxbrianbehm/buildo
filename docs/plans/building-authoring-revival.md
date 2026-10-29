@@ -1392,6 +1392,17 @@ The next bounded vocabulary success case is the same building switching among th
 | **C9.P2 — engineering complete** | One grouped treatment choice, authored-generation retention and portable0.9 continuation. [PR14](https://github.com/atxbrianbehm/buildo/pull/14). | All five checks:1,921 tests/131 files and eight E2E workflows. Both backends:15 workflow states/21 captures plus four close states/12 captures; exact source/history/material/cold continuation and zero cold calls. [Evidence](../reviews/2026-10-27-c9-p2-cornice-authoring/README.md). [Phone publication](../reviews/2026-10-27-c9-p2-publication/README.md):12 new images,144 total; all132 older images retained. |
 | **C9 visual review — accepted** | User: “Accept the three cornice treatments as the baseline and continue to the next packet.” | [October 29 decision](../reviews/2026-10-29-c9-accepted/README.md). Historical UTDG coverage, artist studies, shadow quality and family/block performance remain separate. |
 
+### C10 — parapet silhouette vocabulary
+
+The next bounded building-vocabulary sequence adds a raised-center front parapet and coping to the existing construction roof while preserving the accepted flat default and three cornice treatments. [Implementation sequence and invariants](parapet-silhouette-vocabulary.md).
+
+| Packet | Bounded result | Required verification |
+| --- | --- | --- |
+| **C10.P0 — complete** | Strict, deterministic raised-center front parapet and coping plan; no production graph, compiler or UI change. | Owned/versioned source, contiguous balanced spans and path, dimension and fit boundaries and tamper rejection; seven focused tests, typecheck and lint pass. [Evidence](../reviews/2026-10-29-c10-p0-parapet-planning/README.md). |
+| **C10.P1 — ready** | Real closed procedural stepped parapet and coping on the existing roof; preserve flat output and accepted cornices. | Geometry, UV, material and legacy/protocol invariants; see detailed plan. |
+| **C10.P2 — queued** | Grouped authoring and versioned source/continuation for the new silhouette. | All five checks, native textured/clay views and source/material/history/cold continuity; see detailed plan. |
+| **C10 visual review — queued** | Review actual silhouettes before family expansion. | Explicit human decision; historical UTDG and performance remain separate. |
+
 Do not remove advanced graph access or implement a fake targeted editor. [Selected-opening packet plan](selected-opening-authoring.md) defines the admitted task and sequential milestones after both October26 decisions. Continue P1 after P0 and P2 after P1 without another intermediate human gate. Human task review and artist evidence precede broad UI migration; historical UTDG coverage and release readiness remain unproven.
 
 ### C6 — architectural variety, then deeper assemblies and materials
