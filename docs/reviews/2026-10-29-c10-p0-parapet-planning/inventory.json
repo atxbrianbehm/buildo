@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "0.1.0",
+  "files": [
+    {
+      "file": "checks/focused-02.log",
+      "bytes": 243,
+      "sha256": "c0addc1f96b2be73fdb6e1ae82f7de2713370059007170b2f35254a06d2afb88"
+    },
+    {
+      "file": "checks/focused.log",
+      "bytes": 243,
+      "sha256": "6543e24f07c4567b063242cbb6cdb8cf7277f65ce058fcaf9bab26586a4e1e17"
+    },
+    {
+      "file": "checks/lint-02.log",
+      "bytes": 37,
+      "sha256": "a21c6d2dedb756f860b052cb2d84cd603fbbe38ee53e1ad76ab9c5803f028958"
+    },
+    {
+      "file": "checks/lint.log",
+      "bytes": 303,
+      "sha256": "3a3954b42dc3cc34e41b81717f551ebfb78f6af22fb1d2282d997ea9e0748f03"
+    },
+    {
+      "file": "checks/typecheck-02.log",
+      "bytes": 49,
+      "sha256": "1927639a5b89b1406e25b817bb2c8efb1e16fccc181e86591db136d628e7f5e6"
+    },
+    {
+      "file": "checks/typecheck.log",
+      "bytes": 49,
+      "sha256": "1927639a5b89b1406e25b817bb2c8efb1e16fccc181e86591db136d628e7f5e6"
+    },
+    {
+      "file": "README.md",
+      "bytes": 1312,
+      "sha256": "5db3baad095df36337d4f19255ed79a4000192c6d8611afa107f4f26645ed491"
+    },
+    {
+      "file": "verification.json",
+      "bytes": 803,
+      "sha256": "cc539933d934583032fe69c70d0c2afdbb955458b25f4441800585762bebcb59"
+    }
+  ]
+}

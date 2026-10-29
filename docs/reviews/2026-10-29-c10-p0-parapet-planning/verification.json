@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "parapet-plan-verification",
+  "parentCommit": "ef1fd2a27aaec5d226fd83a9164ba5e892f9eb0b",
+  "priorPinsExact": 356,
+  "sourceHashes": {
+    "src/features/building-family/contracts/constructionParapetSilhouette.ts": "b8a848899ab57dcc751adf56a4f7310f7635a6bc104ae59c55bb8dabad9419e2",
+    "src/features/building-family/core/constructionParapetSilhouette.ts": "1de5233e6c66c1cb1fa58d50cf31ff0e89eafc18ce2549b8596711a611f0901f",
+    "src/features/building-family/tests/constructionParapetSilhouette.test.ts": "63878e1ef1dfd21afaa0899e95958b891bdbfc153e828c145e6df4f3f9b805a0"
+  },
+  "checks": {
+    "focused": 0,
+    "typecheck": 0,
+    "lint": 0
+  },
+  "focusedTests": 7,
+  "initialLintFailureRetained": true,
+  "runtimeFeatureImplemented": false
+}
