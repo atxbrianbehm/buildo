@@ -1,0 +1,26 @@
+import { chromium } from '@playwright/test';
+import { createServer } from 'vite';
+import { mkdir, writeFile } from 'node:fs/promises';
+const output='test-results/c10-p1-2026-10-29/geometry-preview-01';await mkdir(output,{recursive:false});
+const server=await createServer({server:{host:'127.0.0.1',port:0}});let browser;
+try {
+ await server.listen();browser=await chromium.launch({channel:'chromium'});const page=await browser.newPage({viewport:{width:1200,height:900}});await page.goto(server.resolvedUrls.local[0]);
+ for (const mode of [0,1]) {
+  const result=await page.evaluate(async mode=>{
+   const THREE=await import('/node_modules/three/build/three.module.js');
+   const {createBuildingConstructionGraph}=await import('/src/features/building-family/contracts/bayConstructionGraph.ts');
+   const {withConstructionCorniceLayout}=await import('/src/features/building-family/core/constructionCorniceVocabulary.ts');
+   const {withConstructionParapetSilhouette}=await import('/src/features/building-family/core/constructionParapetVocabulary.ts');
+   const {evaluateConstruction}=await import('/src/features/building-family/compiler/evaluateConstruction.ts');
+   const graph=withConstructionParapetSilhouette(withConstructionCorniceLayout(createBuildingConstructionGraph(),2),mode), result=await evaluateConstruction(graph);
+   document.body.replaceChildren();document.body.style.margin='0';const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setSize(1200,900);renderer.setClearColor(0xdfe4df);document.body.appendChild(renderer.domElement);
+   const scene=new THREE.Scene();scene.add(new THREE.HemisphereLight(0xffffff,0x7d807c,2));const key=new THREE.DirectionalLight(0xffffff,2.5);key.position.set(8,18,-18);scene.add(key);
+   const materials=new Map();function material(role){if(!materials.has(role))materials.set(role,new THREE.MeshStandardMaterial({color:role.includes('glass')?0x476273:role.includes('wall')?0xb4a99a:0xd9d2c2,roughness:.8}));return materials.get(role)}
+   function geom(b){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(b.positions,3));g.setAttribute('normal',new THREE.BufferAttribute(b.normals,3));g.setAttribute('uv',new THREE.BufferAttribute(b.uvs,2));g.setIndex(new THREE.BufferAttribute(b.indices,1));return g}
+   for(const b of result.ir.meshBatches)if(b.positions?.length)scene.add(new THREE.Mesh(geom(b),material(b.role)));
+   for(const b of result.ir.instanceBatches){const prototype=result.prototypes.find(p=>p.batchId===b.recipeId);if(!prototype)throw Error('prototype missing '+b.recipeId);const mesh=new THREE.InstancedMesh(geom(prototype),material(b.role),b.count);for(let i=0;i<b.count;i++)mesh.setMatrixAt(i,new THREE.Matrix4().fromArray(b.transforms,i*16));scene.add(mesh)}
+   const box=new THREE.Box3().setFromObject(scene),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());const max=Math.max(...size.toArray());const camera=new THREE.PerspectiveCamera(38,1200/900,.1,max*20);camera.position.set(center.x+max*.65,center.y+max*.55,center.z-max*1.8);camera.lookAt(center.x,center.y+size.y*.22,center.z);renderer.render(scene,camera);
+   return {bounds:result.ir.bounds,meshCount:result.ir.meshBatches.length,instanceCount:result.ir.instanceBatches.length};
+  },mode);await page.screenshot({path:output+'/'+(mode?'raised':'flat')+'.png'});await writeFile(output+'/'+(mode?'raised':'flat')+'.json',JSON.stringify(result,null,2));console.log(mode,result);
+ }
+}finally{await browser?.close();await server.close()}
