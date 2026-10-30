@@ -19,6 +19,16 @@ import { BayConstructionWorkerRequestSchema, BayConstructionWorkerReplySchema } 
 
 const directive = { pierWidthM: 0.28, projectionM: 0.18, endHeightM: 0.15, clearanceM: 0.04 };
 describe("facade pier graph and worker", () => {
+  it("adds awnings and support rods to a pier graph without dropping its facade detail", async () => {
+    const graph = withConstructionFacadePiers(withConstructionStorefront(createBuildingConstructionGraph("pier_awning"), 1), directive);
+    const awning = withConstructionAwnings(graph, [{ bayIndex: 0, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }]);
+    const supported = withConstructionAwningSupports(awning, [{ bayIndex: 0, anchorRiseM: 0.15, thicknessM: 0.03 }]);
+    expect(supported.schemaVersion).toBe("0.15.0"); expect(supported.facadePiers).toEqual(directive);
+    const result = await evaluateConstruction(supported);
+    expect(result.ir.meshBatches.some(batch => batch.role === "facade-pier")).toBe(true);
+    expect(result.ir.meshBatches.some(batch => batch.role === "awning.support")).toBe(true);
+    expect(() => withConstructionAwningSupports(graph, [{ bayIndex: 0, anchorRiseM: 0.15, thicknessM: 0.03 }])).toThrow(/Add awnings/);
+  });
   it("edits grouped windows while retaining facade piers and rejects a collision", async () => {
     const graph = withConstructionFacadePiers(createBuildingConstructionGraph("pier_group"), directive), original = structuredClone(graph);
     const group = { storeysNodeId: "facade", floorIndex: 1, bayIndex: 0, memberCount: 2, memberWidthM: 0.55, pierWidthM: 0.24 };

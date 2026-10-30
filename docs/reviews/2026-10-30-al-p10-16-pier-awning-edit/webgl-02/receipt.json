@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "0.1.0",
+  "api": "webgl",
+  "pierRetained": true,
+  "awningAndRods": true,
+  "removedTogether": true,
+  "materialsRetained": true,
+  "undo": true,
+  "reopened": true
+}
