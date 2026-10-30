@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { CubeTexture, DataTexture, DirectionalLight, LinearFilter, LinearMipmapLinearFilter, Vector3, type Camera, type Scene } from "three";
 import { vi } from "vitest";
 import { BayConstructionWorkbench, type BayConstructionSession } from "../ui/BayConstructionWorkbench";
@@ -182,6 +182,18 @@ describe("live construction controls and ownership", () => {
   }
   async function ready() { await waitFor(() => expect(screen.getByRole("button", { name: "Apply construction" })).toBeEnabled(), { timeout: 10000 }); }
 
+  async function generatedFamilySource() {
+    const generated = await resolveWorkbenchGeneration(createBuildingConstructionGraph("family_origin"), null, defaultConstructionGenerationControls);
+    const generatedMaterials = await fixtures.createReferenceConstructionMaterials(base, generated.source, new AbortController().signal, base.spec);
+    const lineage = { schemaVersion: "0.1.0" as const, kind: "construction-generation-lineage" as const, source: generated.source,
+      resolution: generated.resolution, materialPlan: generatedMaterials.plan, materialSourceHash: generatedMaterials.materials.file.contentHash };
+    const plan = resolveConstructionFamilyPlan({ schemaVersion: "0.1.0", kind: "construction-family-request", familyId: "family_test", familySeed: "seed", graph: generated.graph });
+    const family = await resolveConstructionFamily(plan, lineage, defaultConstructionGenerationControls);
+    return { schemaVersion: "0.2.0" as const, kind: "construction-family-source" as const, familyId: "family_test", sourceDocumentId: generated.graph.documentId,
+      familySeed: "seed", sourceGraph: generated.graph, sourceGeneration: lineage, materialSource: generatedMaterials.materials.file, contentHash: "a".repeat(64),
+      members: family.members.map(member => ({ documentId: member.documentId, graph: member.construction.graph, generation: member.lineage })) };
+  }
+
   it("retains the current building when an invalid family file is opened", async () => {
     const view = mount({ graph: createBuildingConstructionGraph(), materials });
     try {
@@ -217,15 +229,7 @@ describe("live construction controls and ownership", () => {
   }, 30000);
 
   it("disposes both prepared family owners when viewer activation fails", async () => {
-    const generated = await resolveWorkbenchGeneration(createBuildingConstructionGraph("family_origin"), null, defaultConstructionGenerationControls);
-    const generatedMaterials = await fixtures.createReferenceConstructionMaterials(base, generated.source, new AbortController().signal, base.spec);
-    const lineage = { schemaVersion: "0.1.0" as const, kind: "construction-generation-lineage" as const, source: generated.source,
-      resolution: generated.resolution, materialPlan: generatedMaterials.plan, materialSourceHash: generatedMaterials.materials.file.contentHash };
-    const plan = resolveConstructionFamilyPlan({ schemaVersion: "0.1.0", kind: "construction-family-request", familyId: "family_test", familySeed: "seed", graph: generated.graph });
-    const family = await resolveConstructionFamily(plan, lineage, defaultConstructionGenerationControls);
-    const source = { schemaVersion: "0.2.0" as const, kind: "construction-family-source" as const, familyId: "family_test", sourceDocumentId: generated.graph.documentId,
-      familySeed: "seed", sourceGraph: generated.graph, sourceGeneration: lineage, materialSource: generatedMaterials.materials.file, contentHash: "a".repeat(64),
-      members: family.members.map(member => ({ documentId: member.documentId, graph: member.construction.graph, generation: member.lineage })) };
+    const source = await generatedFamilySource();
     const read = vi.spyOn(familySources, "readConstructionFamilySource").mockResolvedValueOnce(source);
     const original = vi.spyOn(fixtures, "prepareBayConstructionFixture"), preparedFamily = vi.spyOn(fixtures, "prepareConstructionFamilyFixture");
     const view = mount({ graph: createBuildingConstructionGraph(), materials });
@@ -239,6 +243,54 @@ describe("live construction controls and ownership", () => {
       expect((await original.mock.results.at(-1)!.value as fixtures.BayConstructionFixture).familyRuntime.disposed).toBe(true);
       expect((await preparedFamily.mock.results.at(-1)!.value as fixtures.BayConstructionFixture).familyRuntime.disposed).toBe(true);
     } finally { view.unmount(); read.mockRestore(); original.mockRestore(); preparedFamily.mockRestore(); }
+  }, 180000);
+
+  it("edits one family member with independent undo while preserving siblings", async () => {
+    const source = await generatedFamilySource(), read = vi.spyOn(familySources, "readConstructionFamilySource").mockResolvedValueOnce(source);
+    const actualPrepare = fixtures.prepareConstructionFamilyFixture;
+    const prepared = vi.spyOn(fixtures, "prepareConstructionFamilyFixture"), view = mount({ graph: createBuildingConstructionGraph(), materials });
+    try {
+      await ready();
+      fireEvent.change(screen.getByLabelText("Open family file"), { target: { files: [new File(["{}"], "family.json")] } });
+      await waitFor(() => expect(screen.getByRole("button", { name: "Edit selected building" })).toBeEnabled(), { timeout: 120000 });
+      fireEvent.change(screen.getByLabelText("Family member"), { target: { value: "1" } });
+      fireEvent.click(screen.getByRole("button", { name: "Edit selected building" }));
+      await waitFor(() => expect(screen.getByRole("button", { name: "Back to family" })).toBeEnabled(), { timeout: 30000 });
+      const memberWorkspace = view.container.querySelector<HTMLElement>(".construction-workspace:not([hidden])")!;
+      fireEvent.click(within(memberWorkspace).getByText("Shape", { selector: "summary" }));
+      const width = within(memberWorkspace).getByLabelText("Width (m)", { exact: true }) as HTMLInputElement;
+      const old = width.value, next = String(Number(old) + 0.4);
+      fireEvent.change(width, { target: { value: next } });
+      expect(screen.getByRole("button", { name: "Back to family" })).toBeDisabled();
+      fireEvent.click(screen.getByRole("button", { name: "Apply construction" }));
+      await waitFor(() => expect(screen.getByRole("button", { name: "Undo construction" })).toBeEnabled(), { timeout: 30000 });
+      fireEvent.click(screen.getByRole("button", { name: "Undo construction" }));
+      await waitFor(() => expect(width.value).toBe(old), { timeout: 30000 });
+      fireEvent.click(screen.getByRole("button", { name: "Redo construction" }));
+      await waitFor(() => expect(width.value).toBe(next), { timeout: 30000 });
+      rendererState.reject = true;
+      fireEvent.click(screen.getByRole("button", { name: "Back to family" }));
+      await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("Candidate renderer rejected"), { timeout: 120000 });
+      expect(width.value).toBe(next);
+      expect((await prepared.mock.results.at(-1)!.value as fixtures.BayConstructionFixture).familyRuntime.disposed).toBe(true);
+      fireEvent.click(screen.getByRole("button", { name: "Back to family" }));
+      await waitFor(() => expect(screen.getByRole("button", { name: "Edit selected building" })).toBeEnabled(), { timeout: 120000 });
+      expect(screen.getByRole("button", { name: "Return to building" })).toBeDisabled();
+      expect(screen.getByRole("button", { name: "Open family" })).toBeDisabled();
+      const results = prepared.mock.calls.at(-1)![1];
+      expect(results[1].graph.nodes.find(node => node.type === "Footprint")!.parameters.widthM).toBe(Number(next));
+      for (const index of [0, 2, 3, 4, 5]) expect(results[index].graph).toEqual(source.members[index].graph);
+      expect(view.onSessionChange.mock.calls.at(-1)![0].graph).toEqual(source.sourceGraph);
+      fireEvent.click(screen.getByRole("button", { name: "Edit selected building" }));
+      await waitFor(() => expect(screen.getByRole("button", { name: "Back to family" })).toBeEnabled(), { timeout: 30000 });
+      let release!: () => void, candidate: fixtures.BayConstructionFixture | undefined;
+      const hold = new Promise<void>(resolve => { release = resolve; });
+      prepared.mockImplementationOnce(async (...args) => { candidate = await actualPrepare(...args); await hold; return candidate; });
+      fireEvent.click(screen.getByRole("button", { name: "Back to family" }));
+      await waitFor(() => expect(candidate).toBeDefined(), { timeout: 120000 });
+      view.unmount(); release();
+      await waitFor(() => expect(candidate!.familyRuntime.disposed).toBe(true), { timeout: 30000 });
+    } finally { view.unmount(); read.mockRestore(); prepared.mockRestore(); }
   }, 180000);
 
   it("undoes and redoes accepted construction, excludes previews and failures, and releases historical GPU owners", async () => {
@@ -731,6 +783,7 @@ it("generates, edits, locks and rerolls through the actual workbench with saved 
       fireEvent.change(screen.getByRole("combobox",{name:"Window to edit"}),{target:{value:path}});
       expect(screen.getByLabelText("Selected width (m)")).toHaveValue(1.22);
       fireEvent.change(screen.getByLabelText("Selected width (m)"),{target:{value:"1.8"}});
+      expect(screen.getByRole("button", { name: "Apply window width" })).toBeEnabled();
       expect(screen.getByRole("button",{name:"Save construction"})).toBeDisabled();
       expect(screen.getByRole("button",{name:"Apply construction"})).toBeDisabled();
       fireEvent.click(screen.getByRole("button",{name:"Apply window width"}));
