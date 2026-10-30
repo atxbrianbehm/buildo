@@ -10,6 +10,10 @@ import { withConstructionWindowLayout } from "../core/constructionWindowVocabula
 import { AssemblyHall } from "../ui/AssemblyHall";
 import { createAssemblyHallFixture, type AssemblyHallFixture } from "../ui/assemblyHallFixture";
 import * as fixtures from "../ui/bayConstructionFixture";
+import * as familySources from "../state/constructionFamilySource";
+import { defaultConstructionGenerationControls, resolveWorkbenchGeneration } from "../state/constructionGenerationState";
+import { resolveConstructionFamilyPlan } from "../core/constructionFamilyPlan";
+import { resolveConstructionFamily } from "../state/constructionFamilyGeneration";
 import { defaultBuildingPromptControls } from "../state/buildingStore";
 import { createBayConstructionProject, readBayConstructionProject } from "../state/bayConstructionProject";
 import { createBayConstructionGraph, repeatBayAsFacade, createBuildingConstructionGraph } from "../contracts/bayConstructionGraph";
@@ -177,6 +181,65 @@ describe("live construction controls and ownership", () => {
     return { ...view, onSessionChange, releaseBase };
   }
   async function ready() { await waitFor(() => expect(screen.getByRole("button", { name: "Apply construction" })).toBeEnabled(), { timeout: 10000 }); }
+
+  it("retains the current building when an invalid family file is opened", async () => {
+    const view = mount({ graph: createBuildingConstructionGraph(), materials });
+    try {
+      await ready();
+      const workspace = view.container.querySelector<HTMLElement>(".construction-workspace")!;
+      const before = workspace.dataset.constructionHash;
+      expect(screen.getByRole("button", { name: "Save family" })).toBeDisabled();
+      fireEvent.change(screen.getByLabelText("Open family file"), { target: { files: [new File(["{}"], "invalid.json", { type: "application/json" })] } });
+      await waitFor(() => expect(screen.getByRole("alert")).toBeInTheDocument(), { timeout: 15000 });
+      expect(workspace.dataset.constructionHash).toBe(before);
+      expect(workspace.dataset.constructionPreview).toBe("output");
+      expect(view.onSessionChange).toHaveBeenCalledTimes(1);
+    } finally { view.unmount(); }
+  }, 30000);
+
+  it("ignores an older family load after a newer load fails", async () => {
+    let rejectOld!: (reason: Error) => void;
+    const old = new Promise<Awaited<ReturnType<typeof familySources.readConstructionFamilySource>>>((_resolve, reject) => { rejectOld = reject; });
+    const read = vi.spyOn(familySources, "readConstructionFamilySource").mockImplementationOnce(() => old).mockRejectedValueOnce(new Error("New family failed"));
+    const view = mount({ graph: createBuildingConstructionGraph(), materials });
+    try {
+      await ready();
+      const workspace = view.container.querySelector<HTMLElement>(".construction-workspace")!, before = workspace.dataset.constructionHash;
+      fireEvent.change(screen.getByLabelText("Open family file"), { target: { files: [new File(["{}"], "old.json")] } });
+      await waitFor(() => expect(read).toHaveBeenCalledTimes(1));
+      fireEvent.change(screen.getByLabelText("Open family file"), { target: { files: [new File(["{}"], "new.json")] } });
+      await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("New family failed"));
+      rejectOld(new Error("Old family failed"));
+      await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("New family failed"));
+      expect(workspace.dataset.constructionHash).toBe(before);
+      expect(view.onSessionChange).toHaveBeenCalledTimes(1);
+    } finally { view.unmount(); read.mockRestore(); }
+  }, 30000);
+
+  it("disposes both prepared family owners when viewer activation fails", async () => {
+    const generated = await resolveWorkbenchGeneration(createBuildingConstructionGraph("family_origin"), null, defaultConstructionGenerationControls);
+    const generatedMaterials = await fixtures.createReferenceConstructionMaterials(base, generated.source, new AbortController().signal, base.spec);
+    const lineage = { schemaVersion: "0.1.0" as const, kind: "construction-generation-lineage" as const, source: generated.source,
+      resolution: generated.resolution, materialPlan: generatedMaterials.plan, materialSourceHash: generatedMaterials.materials.file.contentHash };
+    const plan = resolveConstructionFamilyPlan({ schemaVersion: "0.1.0", kind: "construction-family-request", familyId: "family_test", familySeed: "seed", graph: generated.graph });
+    const family = await resolveConstructionFamily(plan, lineage, defaultConstructionGenerationControls);
+    const source = { schemaVersion: "0.2.0" as const, kind: "construction-family-source" as const, familyId: "family_test", sourceDocumentId: generated.graph.documentId,
+      familySeed: "seed", sourceGraph: generated.graph, sourceGeneration: lineage, materialSource: generatedMaterials.materials.file, contentHash: "a".repeat(64),
+      members: family.members.map(member => ({ documentId: member.documentId, graph: member.construction.graph, generation: member.lineage })) };
+    const read = vi.spyOn(familySources, "readConstructionFamilySource").mockResolvedValueOnce(source);
+    const original = vi.spyOn(fixtures, "prepareBayConstructionFixture"), preparedFamily = vi.spyOn(fixtures, "prepareConstructionFamilyFixture");
+    const view = mount({ graph: createBuildingConstructionGraph(), materials });
+    try {
+      await ready(); const workspace = view.container.querySelector<HTMLElement>(".construction-workspace")!, before = workspace.dataset.constructionHash;
+      rendererState.reject = true;
+      fireEvent.change(screen.getByLabelText("Open family file"), { target: { files: [new File(["{}"], "family.json")] } });
+      await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("Candidate renderer rejected"), { timeout: 120000 });
+      expect(workspace.dataset.constructionHash).toBe(before);
+      expect(view.onSessionChange).toHaveBeenCalledTimes(1);
+      expect((await original.mock.results.at(-1)!.value as fixtures.BayConstructionFixture).familyRuntime.disposed).toBe(true);
+      expect((await preparedFamily.mock.results.at(-1)!.value as fixtures.BayConstructionFixture).familyRuntime.disposed).toBe(true);
+    } finally { view.unmount(); read.mockRestore(); original.mockRestore(); preparedFamily.mockRestore(); }
+  }, 180000);
 
   it("undoes and redoes accepted construction, excludes previews and failures, and releases historical GPU owners", async () => {
     const created = vi.spyOn(fixtures, "prepareBayConstructionFixture"), view = mount();
