@@ -9,6 +9,7 @@ import { createConstructionCheckpoint, readConstructionCheckpoint } from "../sta
 import { hashCanonicalJson } from "../core/contentHash";
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { withConstructionStorefrontDivision } from "../core/constructionStorefrontDivisionGraph";
+import { withConstructionAwningSupports } from "../core/constructionAwningSupportGraph";
 import { withConstructionAwnings } from "../core/constructionAwningGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
 
@@ -38,6 +39,15 @@ it("stores a separate fabric source without changing the saved atlas during stru
     const awningGraph = withConstructionAwnings(storefront, [{ bayIndex: 0, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }]);
     const awningProject = await createBayConstructionProject(awningGraph, materials.file, undefined, fabric);
     expect(awningProject.schemaVersion).toBe("0.15.0");
+    const supported = withConstructionAwningSupports(awningGraph, [{ bayIndex: 0, anchorRiseM: 0.15, thicknessM: 0.03 }]);
+    const supportProject = await createBayConstructionProject(supported, materials.file, undefined, fabric);
+    expect(supportProject.schemaVersion).toBe("0.16.0");
+    expect((await readBayConstructionProject(JSON.parse(JSON.stringify(supportProject)))).project).toEqual(supportProject);
+    expect((await evaluateConstruction(supportProject.graph)).ir.meshBatches.filter(batch => batch.role === "awning.support")).toHaveLength(1);
+    const supportCheckpoint = await createConstructionCheckpoint("support-workspace", supported, materials.file, undefined, fabric);
+    expect((await readConstructionCheckpoint(JSON.parse(JSON.stringify(supportCheckpoint)))).project).toEqual(supportProject);
+    await expect(createBayConstructionProject(supported, materials.file)).rejects.toThrow(/versions must agree/);
+    await expect(readBayConstructionProject({ ...supportProject, schemaVersion: "0.15.0" })).rejects.toThrow();
     const awningReopened = (await readBayConstructionProject(JSON.parse(JSON.stringify(awningProject)))).project;
     expect(awningReopened).toEqual(awningProject);
     const awningCheckpoint = await createConstructionCheckpoint("awning-workspace", awningGraph, materials.file, undefined, fabric);

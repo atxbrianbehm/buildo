@@ -46,6 +46,7 @@ export function useConstructionWorkspace(documentId: string) {
         if (!writer) { update({ status: { state: "busy" } }); return; }
         const parsed = await writer.read();
         if (!active) return;
+        if (parsed?.project.graph.schemaVersion === "0.14.0") throw new Error("Awning support recovery is not yet supported.");
         const session: BayConstructionSession | null = parsed ? { graph: parsed.project.graph, materials: parsed.materials, ...(parsed.project.generation ? { generation: parsed.project.generation } : {}) } : null;
         queue = new ConstructionCheckpointQueue(writer, event => {
           if (!active) return;
