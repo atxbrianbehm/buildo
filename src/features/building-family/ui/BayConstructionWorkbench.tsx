@@ -562,7 +562,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   }
   async function changeFamilyFabric(pattern: "solid" | "striped" | null, primary?: [number, number, number], secondary?: [number, number, number]) {
     const source = familySource.current, original = current.current, member = source?.members[memberIndex];
-    if (!source || !original || !member || !("awningFabric" in source) || !source.awningFabric || !familyPreview) return;
+    if (!source || !original || !member || source.schemaVersion === "0.13.0" || !("awningFabric" in source) || !source.awningFabric || !familyPreview) return;
     const inheritedFabric = source.awningFabric;
     await perform(async (token, signal) => {
       const isCurrent = () => alive.current && sequence.current === token && !signal.aborted && current.current === original && familySource.current === source;
@@ -616,6 +616,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       const previous = current.current;
       const isCurrent = () => alive.current && sequence.current === token && !signal.aborted && current.current === previous;
       const source = await readConstructionFamilySource(JSON.parse(await file.text()));
+      if (source.schemaVersion === "0.13.0") throw new Error("Facade pier families are not yet supported in the family workspace.");
       if (!isCurrent()) return;
       const parsed = await parseBuildingSourceFile(source.materialSource);
       const materials = { ...parsed, file: source.materialSource, ...(source.schemaVersion === "0.8.0" || source.schemaVersion === "0.9.0" || source.schemaVersion === "0.10.0" || source.schemaVersion === "0.11.0" || source.schemaVersion === "0.12.0" && source.awningFabric ? { awningFabric: source.awningFabric } : {}) };
