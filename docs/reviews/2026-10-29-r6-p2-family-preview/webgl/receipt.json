@@ -1,0 +1,37 @@
+{
+  "state": {
+    "ids": [
+      "preview_family_v01",
+      "preview_family_v02",
+      "preview_family_v03",
+      "preview_family_v04",
+      "preview_family_v05",
+      "preview_family_v06"
+    ],
+    "metrics": {
+      "buildingCount": 6,
+      "meshCount": 84,
+      "instanceBatchCount": 60,
+      "instanceCount": 846,
+      "triangleCount": 187152,
+      "drawCallCount": 144,
+      "sharedMaterialCount": 19,
+      "textureCount": 72,
+      "preferredBackend": "webgpu"
+    },
+    "positions": [
+      -36.4,
+      -21.839999999999996,
+      -7.279999999999999,
+      7.279999999999999,
+      21.839999999999996,
+      36.4
+    ],
+    "shared": true,
+    "atlas": "411e7f6f28e1908e43898ae7e5ff0092c348768a9d2efc40d804e1751fb8d75f"
+  },
+  "disposed": true,
+  "previewMs": 2671,
+  "reopenedSourceHash": "d60505da39b6b294668f844c5163af244e0b12fac9b2da094f0faa53a4edf49a",
+  "errors": []
+}

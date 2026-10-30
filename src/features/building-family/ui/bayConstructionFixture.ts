@@ -23,6 +23,17 @@ export interface BayConstructionMaterials {
 }
 export type BayConstructionFixture = AssemblyHallFixture & { construction: BayConstructionResult };
 
+function configureConstructionSurface(surface: BuildingSurfaceRuntime) {
+  for (const material of surface.listMaterials()) {
+    const slot = material.userData.atlasSlot;
+    material.userData.isolatedMeterTile = { widthM: slot.physicalSizeM.width, heightM: slot.physicalSizeM.height };
+    for (const texture of [material.map, material.normalMap, material.roughnessMap, material.metalnessMap, material.alphaMap]) if (texture) {
+      texture.wrapS = slot.periodicity === "x" || slot.periodicity === "xy" || slot.uvMode === "repeat" || slot.uvMode === "cap-repeat-cap" ? RepeatWrapping : ClampToEdgeWrapping;
+      texture.wrapT = slot.periodicity === "xy" || slot.uvMode === "repeat" ? RepeatWrapping : ClampToEdgeWrapping; texture.needsUpdate = true;
+    }
+  }
+}
+
 /** Preparation owns resources until the caller can atomically publish the new view. */
 export async function prepareBayConstructionFixture(base: AssemblyHallFixture, result: BayConstructionResult,
   materials: BayConstructionMaterials, signal?: AbortSignal): Promise<BayConstructionFixture> {
@@ -34,14 +45,7 @@ export async function prepareBayConstructionFixture(base: AssemblyHallFixture, r
     if (result.surfaceComposition) {
       const baseAppearances = await createConstructionSurfaceBases(); check();
       surface = await prepareBuildingSurfaceRuntime({ composition: result.surfaceComposition, ir: result.ir, atlas: materials.packedAtlas, baseAppearances }); check();
-      if(constructionUsesOperator(result.graph,"Footprint",result.previewNodeId ?? result.graph.outputNodeId)) for(const material of surface.listMaterials()) {
-        const slot=material.userData.atlasSlot;
-        material.userData.isolatedMeterTile={widthM:slot.physicalSizeM.width,heightM:slot.physicalSizeM.height};
-        for(const texture of [material.map,material.normalMap,material.roughnessMap,material.metalnessMap,material.alphaMap])if(texture){
-          texture.wrapS=slot.periodicity === "x" || slot.periodicity === "xy" || slot.uvMode === "repeat" || slot.uvMode === "cap-repeat-cap" ? RepeatWrapping : ClampToEdgeWrapping;
-          texture.wrapT=slot.periodicity === "xy" || slot.uvMode === "repeat" ? RepeatWrapping : ClampToEdgeWrapping;texture.needsUpdate=true;
-        }
-      }
+      if (constructionUsesOperator(result.graph, "Footprint", result.previewNodeId ?? result.graph.outputNodeId)) configureConstructionSurface(surface);
       const baseTextureCount = fixture.familyRuntime.metrics.textureCount;
       fixture.buildingRuntime = fixture.familyRuntime.createOrReplaceBuilding({ ir: result.ir, catalog: fixture.catalog,
         componentGallery: fixture.componentGallery, compiledInstanceGeometry: new Map(result.prototypes?.map(prototype => [prototype.batchId, prototype])), surfaceRuntime: surface });
@@ -54,6 +58,40 @@ export async function prepareBayConstructionFixture(base: AssemblyHallFixture, r
     }
     return fixture;
   } catch (error) { try { fixture.familyRuntime.dispose(); } finally { surface?.dispose(); } throw error; }
+}
+
+/** Prepare a temporary family view; every member shares one atlas and material registry. */
+export async function prepareConstructionFamilyFixture(base: AssemblyHallFixture, results: BayConstructionResult[],
+  materials: BayConstructionMaterials, signal?: AbortSignal): Promise<BayConstructionFixture> {
+  if (results.length !== 6) throw new Error("A family preview requires six buildings.");
+  const check = () => { if (signal?.aborted) throw new DOMException("Family preview was cancelled.", "AbortError"); };
+  const fixture = await prepareBayConstructionFixture(base, results[0], materials, signal);
+  const surfaces: BuildingSurfaceRuntime[] = [];
+  try {
+    const extraTextureCount = fixture.familyRuntime.metrics.textureCount - Object.keys(fixture.familyRuntime.textureSet.textures).length
+      - (fixture.buildingRuntime.surfaceRuntime?.listTextures().length ?? 0);
+    const widths = results.map(result => result.ir.bounds.max[0] - result.ir.bounds.min[0]);
+    const spacing = Math.max(...widths) + 3;
+    fixture.buildingRuntime.root.position.x = -2.5 * spacing;
+    const bases = await createConstructionSurfaceBases(); check();
+    for (const [index, result] of results.slice(1).entries()) {
+      check();
+      let surface: BuildingSurfaceRuntime | undefined;
+      if (result.surfaceComposition) {
+        surface = await prepareBuildingSurfaceRuntime({ composition: result.surfaceComposition, ir: result.ir, atlas: materials.packedAtlas, baseAppearances: bases });
+        surfaces.push(surface); check(); configureConstructionSurface(surface);
+      }
+      const runtime = fixture.familyRuntime.createOrReplaceBuilding({ ir: result.ir, catalog: fixture.catalog,
+        compiledInstanceGeometry: new Map(result.prototypes?.map(prototype => [prototype.batchId, prototype])), surfaceRuntime: surface });
+      runtime.root.position.x = (index - 1.5) * spacing;
+    }
+    check();
+    fixture.familyRuntime.metrics.textureCount += extraTextureCount;
+    const originalDispose = fixture.familyRuntime.dispose;
+    fixture.familyRuntime.dispose = () => { try { return originalDispose(); } finally { for (const surface of surfaces) surface.dispose(); } };
+    fixture.metrics = { ...fixture.metrics, ...fixture.familyRuntime.metrics };
+    return fixture;
+  } catch (error) { try { fixture.familyRuntime.dispose(); } finally { for (const surface of surfaces) surface.dispose(); } throw error; }
 }
 
 /** New-project initialization only. Graph edits reuse the resulting immutable artifacts. */

@@ -1,0 +1,13 @@
+# R6.P2 — related building preview
+
+The construction inspector can preview six deterministic variations of the current generated building. They use the existing construction compiler, a single family runtime and one shared material registry and atlas. The authored source remains separately owned; returning to it discards the temporary family and leaves the saved project unchanged. Local finish bindings are prepared against each member, and a missing target fails rather than silently disappearing.
+
+The captured source is the accepted C10 raised-parapet project (`raised-v10.json` in the local C10 review artifacts), using family seed `building-family-1`, the ordinary textured construction view and its default camera/light. The images are real 1800 × 1100 workbench captures from Chromium using the named WebGPU and WebGL backends; the family-only images crop to the actual canvas. This is a row for visual comparison, not a block generator.
+
+Both runs found six distinct semantic identities in the rendered family and the same atlas and material registry. Each measured 84 mesh batches, 60 instance batches, 846 instances, 187,152 triangles and 144 draw calls. After returning, the family runtime was disposed and Save/Open preserved the original project hash and material source. Focused tests exercise cancellation and ensure original material bytes remain unchanged. The [WebGPU receipt](webgpu/receipt.json) and [WebGL receipt](webgl/receipt.json) contain the observed IDs, positions and hashes.
+
+All five checks passed: typecheck, lint, build, 1,959 tests across 137 files, and the end-to-end smoke suite. A focused cancellation test was also rerun after the full suite. The final visual control styling was checked again with typecheck, lint and WebGPU capture. The existing build emitted its large-chunk warning.
+
+On this Ryzen Threadripper PRO 7975WX workstation with 512 GB RAM, preview preparation took approximately 2.7 seconds on WebGL and 3.1 seconds on WebGPU in single observed runs, while other checks were also active. These are not frame-rate measurements or a representative-machine performance gate. GPU model and representative artist-machine behavior remain unverified. The [capture script](verify.mjs) requires the locally retained C10 project and an installed Chromium.
+
+The family visibly shares the accepted roof, window, storefront and material vocabulary. Differences here are mostly building proportions; whether that is believable enough diversity remains for the user to review. Individual family members cannot yet be edited or saved as a persistent family from this view. Checklist rows 1–8, shadow quality, historical UTDG coverage, block work and representative performance are not signed off by these captures.

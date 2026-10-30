@@ -64,6 +64,31 @@ afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 afterAll(() => { base?.familyRuntime.dispose(); generate.mockRestore(); });
 
 describe("construction material and project authority", () => {
+  it("owns a six-building preview with one material registry and disposes it on return", async () => {
+    const results = await Promise.all(Array.from({ length: 6 }, (_, index) => evaluateConstruction(createBuildingConstructionGraph(`preview_${index}`))));
+    const before = await pixelHashes(materials.packedAtlas);
+    const family = await fixtures.prepareConstructionFamilyFixture(base, results, materials);
+    const runtimes = [...family.familyRuntime.buildingRuntimes.values()];
+    try {
+      expect(runtimes).toHaveLength(6);
+      expect(new Set(runtimes.map(runtime => runtime.root.position.x)).size).toBe(6);
+      expect(runtimes.every(runtime => runtime.materialRegistry === family.familyRuntime.materialRegistry)).toBe(true);
+      expect(family.familyRuntime.metrics.buildingCount).toBe(6);
+      expect(await pixelHashes(materials.packedAtlas)).toEqual(before);
+      expect(generate).toHaveBeenCalledTimes(sourceCalls);
+    } finally { family.familyRuntime.dispose(); }
+    expect(family.familyRuntime.disposed).toBe(true);
+    expect(runtimes.every(runtime => runtime.disposed)).toBe(true);
+    expect(family.familyRuntime.dispose().buildingRuntimesDisposed).toBe(0);
+    const controller = new AbortController(); controller.abort();
+    await expect(fixtures.prepareConstructionFamilyFixture(base, results, materials, controller.signal)).rejects.toMatchObject({ name: "AbortError" });
+    const pending = new AbortController();
+    const preparing = fixtures.prepareConstructionFamilyFixture(base, results, materials, pending.signal);
+    pending.abort();
+    await expect(preparing).rejects.toMatchObject({ name: "AbortError" });
+    expect(await pixelHashes(materials.packedAtlas)).toEqual(before);
+  }, 30000);
+
   it("allocates an adequate source budget and isolated, aligned mipmapped tiles without changing source or IR", async () => {
     expect(materials.packedAtlas.manifest.widthPx).toBe(1024);
     expect(generate.mock.calls.some(([request]) => request.widthPx === 256)).toBe(true);
