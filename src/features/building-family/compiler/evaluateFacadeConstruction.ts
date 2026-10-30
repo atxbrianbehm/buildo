@@ -17,7 +17,7 @@ import { buildBayDoorGeometry } from "./bayWindowGeometry";
 import { constructionFacePose, constructionFacadeSolid, constructionProfileRing, poseMatrix, posedBounds, posedPoint, type ConstructionBuilding, type ConstructionFacePose, type ConstructionFootprint } from "./buildingShellGeometry";
 import { constructionSurfaceAt } from "./constructionSurfaceProgram";
 import { resolveConstructionRoundHead } from "../core/constructionRoundHead";
-import { buildConstructionRoundHeadWindow } from "./constructionRoundHeadGeometry";
+import { buildConstructionRoundHeadSash, buildConstructionRoundHeadWindow } from "./constructionRoundHeadGeometry";
 
 type Cell = { localOpeningWidth?: boolean; storefrontPlan?: ConstructionStorefrontPlan; root: string; key: string; floorSplit: boolean; baySplit: boolean; scope: FacadeBayScope; face?: "front" | "right" | "rear" | "left"; pose?: ConstructionFacePose; building?: ConstructionBuilding };
 type Stage = "facade" | "openings" | "trim" | "roof";
@@ -63,7 +63,6 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
     const windows = graph.nodes.filter(node => node.type === "AssembleWindow" && !node.bypassed);
     if (!opening?.roundHead || cell.face !== "front" || windows.length !== 1 || windows[0].type !== "AssembleWindow") throw new Error("Round-headed openings require one active front window assembly.");
     const p = windows[0].parameters, scope = cell.scope;
-    if ((p.layout ?? 0) !== 0) throw new Error("Round-headed openings do not yet support casement layouts.");
     if (p.recessM + 0.08 > scope.sizeM[2]) throw new Error("Round-headed frame depth exceeds its wall.");
     return resolveConstructionRoundHead({ schemaVersion: "0.1.0", kind: "construction-round-head-request",
       scope: { id: cell.key, face: "front", floorIndex: scope.floorIndex, bayIndex: scope.bayIndex, originM: scope.originM, sizeM: scope.sizeM },
@@ -285,13 +284,15 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
               const actual = roundPlan(cell), source = structuredClone(actual.source);
               source.scope.id = "round-head-template"; source.scope.originM = [-source.scope.sizeM[0] / 2, 0, source.scope.originM[2]];
               const plan = resolveConstructionRoundHead(source), geometry = buildConstructionRoundHeadWindow(plan);
-              const sill = buildBoxPrimitive({ center: [0, sillM - 0.045, (p.sillProjectionM - p.recessM) / 2], size: [opening.widthM + 0.12, 0.09, p.sillProjectionM + p.recessM] });
+              // Keep the sill outside the wall: sharing its top plane with the
+              // masonry below the aperture produces visible coplanar flicker.
+              const sill = buildBoxPrimitive({ center: [0, sillM - 0.045, p.sillProjectionM / 2], size: [opening.widthM + 0.12, 0.09, p.sillProjectionM] });
               for (let i = 0; i < sill.positions.length / 3; i++) {
                 const pos = i * 3, nx = Math.abs(sill.normals[pos]), ny = Math.abs(sill.normals[pos + 1]);
                 sill.uvs[i*2] = nx > .9 ? sill.positions[pos+2] - sill.bounds.min[2] : sill.positions[pos] - sill.bounds.min[0];
                 sill.uvs[i*2+1] = ny > .9 ? sill.positions[pos+2] - sill.bounds.min[2] : sill.positions[pos+1] - sill.bounds.min[1];
               }
-              const pieces = { frame: [geometry.frame], glass: [geometry.glass], trim: [sill] };
+              const pieces = { frame: [geometry.frame, ...buildConstructionRoundHeadSash(plan, p.layout ?? 0)], glass: [geometry.glass], trim: [sill] };
               const batches = (["frame", "glass", "trim"] as const).map(role => {
                 const combined = combinePrimitiveGeometry(pieces[role].map(front));
                 return { batchId: "round-head." + role, role, materialSlotId: materials[role], positions: combined.positions, normals: combined.normals, uvs: combined.uvs, indices: combined.indices };

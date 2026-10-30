@@ -1,5 +1,6 @@
 import { CONSTRUCTION_CORNICE_LAYOUTS, withConstructionCorniceLayout } from "../core/constructionCorniceVocabulary";
 import { CONSTRUCTION_PARAPET_SILHOUETTES, withConstructionParapetSilhouette } from "../core/constructionParapetVocabulary";
+import { withConstructionRoundHead } from "../core/constructionRoundHeadVocabulary";
 import { withConstructionStorefront, constructionHasStorefront, CONSTRUCTION_FRONTAGE_OPTIONS } from "../core/constructionStorefrontGraph";
 import { CONSTRUCTION_WINDOW_LAYOUTS, upgradeConstructionWindowVocabulary } from "../core/constructionWindowVocabulary";
 import { ConstructionBuildingControls } from "./ConstructionBuildingControls";
@@ -541,7 +542,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
               </select>
             </label> : null}
             {"input" in node && node.type !== "Storeys" ? <label className="control-panel__field-wide construction-contribution"><input type="checkbox" aria-label="Bypass selected node" checked={Boolean(node.bypassed)}
-              onChange={event => { setDraft(graph => ({ ...graph, schemaVersion: ["0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0"].includes(graph.schemaVersion) ? graph.schemaVersion : "0.2.0" })); replace({ ...node, bypassed: event.currentTarget.checked }); }} /><span>Bypass this node</span></label> : null}
+              onChange={event => { setDraft(graph => ({ ...graph, schemaVersion: ["0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0"].includes(graph.schemaVersion) ? graph.schemaVersion : "0.2.0" })); replace({ ...node, bypassed: event.currentTarget.checked }); }} /><span>Bypass this node</span></label> : null}
             {"inputs" in node ? draft.nodes.filter(value => value.id !== node.id && constructionOutputSocket(value.type) === "geometry").map(value =>
               <label className="control-panel__field-wide construction-contribution" key={value.id}>
                 <input type="checkbox" aria-label={`Include ${displayName(value)}`} checked={node.inputs.some(link => link.nodeId === value.id)}
@@ -591,7 +592,10 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       {buildingMode && !advancedOpen && accepted ? <ConstructionBuildingControls graph={draft} fields={fields} windowCount={groupedWindowCount(accepted.construction.graph,accepted.ir)} storefrontCount={groupedStorefrontCount(accepted.construction.graph,accepted.ir)} localWidthCount={constructionOpeningOptions(accepted.construction.graph,accepted.ir).filter(option=>option.overridden).length}
         disabled={disabled || !viewerReady || Boolean(previewNode)} dirty={buildingDirty}
         onFieldChange={(id,key,text) => {
-          if (key === "parapetSilhouette") {
+          if (key === "upperFrontRoundHead") {
+            const migrated = withConstructionRoundHead(draft, draft.nodes.find(node => node.type === "PlaceOpening")?.parameters.upperFrontRoundHead ?? 0);
+            setDraft(migrated);setFields(all => ({...fieldsFor(migrated),...all,[id]:{...fieldsFor(migrated)[id],...all[id],[key]:text}}));
+          } else if (key === "parapetSilhouette") {
             const migrated = withConstructionParapetSilhouette(draft, draft.nodes.find(node => node.type === "BuildingRoof")?.parameters.parapetSilhouette ?? 0);
             setDraft(migrated);setFields(all => ({...fieldsFor(migrated),...all,[id]:{...fieldsFor(migrated)[id],...all[id],[key]:text}}));
           } else if (key === "corniceAssembly") {

@@ -71,6 +71,11 @@ it("compiles upper front round heads through a versioned graph with a real chang
   // First upper-front bay: the shoulder is masonry, but the curved opening remains empty.
   expect(covers(-4.2 + 0.49, 6.29 + 0.48)).toBe(true);
   expect(covers(-4.2 + 0.49, 6.29 + 0.25)).toBe(false);
+  const sillEntry = compiled.ir.semanticIndex.find(item => item.semanticPath.includes("/facade/floor/1/bay/0/trim"))!;
+  const sillBatch = compiled.ir.instanceBatches.find(item => item.batchId === sillEntry.batchId)!;
+  const sill = compiled.prototypes!.find(item => item.batchId === sillBatch.recipeId)!;
+  const z = [...sill.positions!].filter((_, index) => index % 3 === 2);
+  expect(Math.max(...z)).toBeLessThanOrEqual(0); expect(Math.min(...z)).toBeLessThan(-0.1);
   expect(compiled.ir.sourceGraphHash).not.toBe(original.ir.sourceGraphHash);
   expect(BayConstructionWorkerRequestSchema.safeParse({ schemaVersion: "0.10.0", type: "evaluate-bay", requestId: 1, graph }).success).toBe(true);
   expect(BayConstructionWorkerRequestSchema.safeParse({ schemaVersion: "0.9.0", type: "evaluate-bay", requestId: 1, graph }).success).toBe(false);
@@ -88,12 +93,20 @@ it("keeps rectangular geometry literal when the new head choice is disabled", as
   expect(current.ir.semanticIndex).toEqual(legacy.ir.semanticIndex);
 });
 
-it("rejects silently unsupported casements and old-version round-head fields", async () => {
+it("compiles each sash layout while rejecting old-version round-head fields", async () => {
   const base = withConstructionParapetSilhouette(createBuildingConstructionGraph(), 0);
   const nodes = base.nodes.map(node => node.type === "PlaceOpening" ? { ...node, parameters: { ...node.parameters, upperFrontRoundHead: 1 as const } } :
     node.type === "AssembleWindow" ? { ...node, parameters: { ...node.parameters, layout: 1 as const } } : node);
   expect(BayConstructionGraphSchema.safeParse({ ...base, nodes }).success).toBe(false);
-  await expect(evaluateConstruction({ ...base, schemaVersion: "0.10.0", nodes })).rejects.toThrow(/do not yet support casement/);
+  const casement = await evaluateConstruction({ ...base, schemaVersion: "0.10.0", nodes });
+  expect(casement.prototypes?.some(batch => batch.role === "frame")).toBe(true);
+  const other = await evaluateConstruction({ ...base, schemaVersion: "0.10.0", nodes: nodes.map(node => node.type === "AssembleWindow" ? { ...node, parameters: { ...node.parameters, layout: 2 } } : node) });
+  const upperFrame = (result: typeof casement) => {
+    const entry = result.ir.semanticIndex.find(item => item.semanticPath.includes("/facade/floor/1/bay/0/frame"))!;
+    const batch = result.ir.instanceBatches.find(item => item.batchId === entry.batchId)!;
+    return result.prototypes?.find(item => item.batchId === batch.recipeId)?.positions;
+  };
+  expect(upperFrame(casement)).not.toEqual(upperFrame(other));
 });
 
 it("retains an individually narrowed round-headed opening through wall and window scopes", async () => {
