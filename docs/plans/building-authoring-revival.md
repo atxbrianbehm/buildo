@@ -1421,6 +1421,10 @@ The accepted building now has window, storefront, cornice and parapet vocabulary
 
 Do not remove advanced graph access or implement a fake targeted editor. [Selected-opening packet plan](selected-opening-authoring.md) defines the admitted task and sequential milestones after both October26 decisions. The family visual direction is accepted. Checklist coverage and representative-machine evidence remain open; do not claim performance or full R6 exit from this decision. Human task review and artist evidence precede broad UI migration; historical UTDG coverage and release readiness remain unproven.
 
+### R7 — authored street segment (prepared; implementation gated)
+
+The [street-segment packet plan](authored-street-segment.md) maps the current fixed-six comparison, source and renderer seams to separate parcel, procedural corner, runtime, authoring and review milestones. It preserves the intended 4–12 building outcome and existing family files. This is planning only: Phase F implementation remains gated by checklist items 1–7 on a representative machine with a stored visual QA packet. The accepted family direction and local high-end workstation measurements do not by themselves clear that gate.
+
 ### C6 — architectural variety, then deeper assemblies and materials
 
 C5 proved the path; the next work must broaden visible capability without replacing the accepted graph/compiler or collapsing everything into one milestone. The immediate C6 success case is the same authored building moving among three named procedural recipes: the accepted restrained baseline, deep reveals with thicker wall/frame/sill construction, and a projecting cornice/profile treatment. These are geometric design recipes, not sourced historical styles. Existing material/reference coverage labels remain literal.
