@@ -2,6 +2,7 @@ import { CONSTRUCTION_CORNICE_LAYOUTS, withConstructionCorniceLayout } from "../
 import { CONSTRUCTION_PARAPET_SILHOUETTES, withConstructionParapetSilhouette } from "../core/constructionParapetVocabulary";
 import { withConstructionRoundHead } from "../core/constructionRoundHeadVocabulary";
 import { withConstructionStorefront, constructionHasStorefront, CONSTRUCTION_FRONTAGE_OPTIONS } from "../core/constructionStorefrontGraph";
+import { withConstructionStorefrontDivision } from "../core/constructionStorefrontDivisionGraph";
 import { CONSTRUCTION_WINDOW_LAYOUTS, upgradeConstructionWindowVocabulary } from "../core/constructionWindowVocabulary";
 import { ConstructionBuildingControls } from "./ConstructionBuildingControls";
 import { ConstructionOpeningControls } from "./ConstructionOpeningControls";
@@ -256,6 +257,11 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
           if (!text.trim() || !Number.isFinite(value)) throw new Error(`Enter a finite value for ${labels[key] ?? key}.`);
           if (text !== displayNumber((node.parameters as Record<string,number>)[key])) Object.assign(node.parameters, { [key]: value });
         }
+      }
+      if (graph.schemaVersion === "0.12.0" && !constructionHasStorefront(graph)) {
+        const { storefrontDivision: _removed, ...prior } = graph; void _removed;
+        await publish(BayConstructionGraphSchema.parse({ ...prior, schemaVersion: "0.11.0" }), materials, token, signal);
+        return;
       }
       await publish(BayConstructionGraphSchema.parse(graph), materials, token, signal);
     });
@@ -645,6 +651,14 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         onDraftChange={value => { setGroupDirty(value); if (!value) setError(null); }} onApply={edit => void applyGroupedBay(edit)} /> : null}
       {buildingMode && !advancedOpen && accepted ? <ConstructionBuildingControls graph={draft} fields={fields} windowCount={groupedWindowCount(accepted.construction.graph,accepted.ir)} storefrontCount={groupedStorefrontCount(accepted.construction.graph,accepted.ir)} localWidthCount={constructionOpeningOptions(accepted.construction.graph,accepted.ir).filter(option=>option.overridden).length}
         disabled={disabled || !viewerReady || Boolean(previewNode)} dirty={buildingDirty}
+        onStorefrontDivisionChange={(field, value) => {
+          const division = { displayLights: 1, transomLights: 1, ...draft.storefrontDivision, [field]: value };
+          if (division.displayLights === 1 && division.transomLights === 1 && draft.schemaVersion === "0.12.0") {
+            const { storefrontDivision: _removed, ...prior } = draft; void _removed;
+            setDraft(BayConstructionGraphSchema.parse({ ...prior, schemaVersion: "0.11.0" }));
+          } else setDraft(withConstructionStorefrontDivision(draft, division));
+          setDirty(true);
+        }}
         onFieldChange={(id,key,text) => {
           if (key === "upperFrontRoundHead") {
             const migrated = withConstructionRoundHead(draft, draft.nodes.find(node => node.type === "PlaceOpening")?.parameters.upperFrontRoundHead ?? 0);

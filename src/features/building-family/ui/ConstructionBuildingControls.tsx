@@ -25,9 +25,10 @@ const frontageProportions = [
   ["frontage", "recessM", "Storefront recess (m)", "Distance from masonry face to the storefront frame."]
 ] as const;
 
-export function ConstructionBuildingControls({ graph, fields, windowCount, storefrontCount = 0, localWidthCount = 0, disabled, dirty, onFieldChange, onApply, onRevert, onAdvanced }: {
+export function ConstructionBuildingControls({ graph, fields, windowCount, storefrontCount = 0, localWidthCount = 0, disabled, dirty, onFieldChange, onStorefrontDivisionChange, onApply, onRevert, onAdvanced }: {
   graph: BayConstructionGraph; fields: Fields; windowCount: number; storefrontCount?: number; localWidthCount?: number; disabled: boolean; dirty: boolean;
   onFieldChange: (nodeId: string, field: string, text: string) => void; onApply: () => void; onRevert: () => void; onAdvanced: () => void;
+  onStorefrontDivisionChange: (field: "displayLights" | "transomLights", value: number) => void;
 }) {
   const [active, setActive] = useState<string | null>("openings"), prefix = useId();
   if (!supportsGroupedConstruction(graph)) return <div className="construction-grouped__custom"><p>This construction has custom connections or added nodes. Edit its actual branches in the advanced recipe graph.</p>
@@ -79,6 +80,17 @@ export function ConstructionBuildingControls({ graph, fields, windowCount, store
               </select>
             </label>
             {frontageChosen ? <>
+              {storefront ? <>
+                <label className="construction-grouped__field construction-grouped__assembly"><span><strong>Display lights</strong><small>Separate panes across each front display window.</small></span>
+                  <select aria-label="Display lights" value={graph.storefrontDivision?.displayLights ?? 1} onChange={event => onStorefrontDivisionChange("displayLights", Number(event.currentTarget.value))}>
+                    <option value={1}>One pane</option><option value={2}>Two panes</option>
+                  </select></label>
+                <label className="construction-grouped__field construction-grouped__assembly"><span><strong>Transom lights</strong><small>Separate panes above each display and the entrance.</small></span>
+                  <select aria-label="Transom lights" value={graph.storefrontDivision?.transomLights ?? 1} onChange={event => onStorefrontDivisionChange("transomLights", Number(event.currentTarget.value))}>
+                    <option value={1}>One pane</option><option value={2}>Two panes</option><option value={3}>Three panes</option>
+                  </select></label>
+                {graph.storefrontDivision ? <p>Building and family generation are temporarily unavailable for divided storefronts; the current building can still be edited and saved.</p> : null}
+              </> : <p>Apply the storefront first to choose its glazing divisions.</p>}
               <label className="construction-grouped__field"><span><strong>Entrance bay</strong><small id={prefix+"entrance"}>Front bays are numbered from left to right.</small></span>
                 <select aria-label="Entrance bay" aria-describedby={prefix+"entrance"} value={fields.entrance?.bayIndex ?? "1"} disabled={frontageBypassed} onChange={event => onFieldChange("entrance","bayIndex",event.currentTarget.value)}>
                   {Array.from({length:bayCount},(_,index) => <option key={index} value={index}>Bay {index+1}</option>)}

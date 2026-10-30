@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "0.1.0",
+  "api": "webgl",
+  "beforeHash": "746d77cdef2d9fd0db5c3c0f04aa1d2354171ab2be11ab02e6e9990c13243ac5",
+  "afterHash": "51616a4e35366a5e036021e00f9ffbd0e255b81abc9a15de18b1879675b2bd83",
+  "materialHash": "3feae06c59d16ea57029d815b13900184c8cb94b29369c58fe806168e3ee2d9c",
+  "providerCallsDelta": 0,
+  "undoRedo": true,
+  "freshPageOpen": true,
+  "errors": []
+}

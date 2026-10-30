@@ -1,0 +1,7 @@
+# AL.P6.2a: Storefront authoring
+
+The Ground floor inspector exposes one or two display panes and one, two or three transom panes across the front storefront row, including entrance transoms. Apply publishes actual geometry through the normal construction history; choosing one pane for both returns to the prior graph vocabulary. Switching to punched frontage also removes the division choice. Divided-storefront generation remains explicitly unavailable until retention is implemented.
+
+The focused inspector and graph tests passed 13 tests. Both [WebGPU](webgpu-04/receipt.json) and [WebGL](webgl-04/receipt.json) exercised the two-display/three-transom choice, undo/redo, save and explicit fresh-page reopen, with unchanged material source and zero new provider calls. The expanded workflow also checks reverting to one pane and switching to punched frontage. [WebGPU textured view](webgpu-02/divided-textured.png), [WebGL textured view](webgl-02/divided-textured.png), [clay view](webgpu-02/divided-clay.png) and [inspector](webgpu-02/controls.png) are actual application captures from the same code. The closer view clips part of the base; a dark line below sills remains visible and static captures do not establish the absence of flicker or every texture intersection. These buildings still have repetitive overall massing. No user acceptance or historical correctness is inferred.
+
+Full repository validation is pending. The capture script uses the locally retained C10 project in `test-results/c10-p2-2026-10-29/webgpu-04/raised-v10.json`.
