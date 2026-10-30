@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { createBuildingConstructionGraph } from "../contracts/bayConstructionGraph";
 import { resolveConstructionFamilyPlan } from "../core/constructionFamilyPlan";
 import { resolveConstructionFamilyComposition } from "../core/constructionFamilyComposition";
+import { resolveConstructionFamilyPierVariation } from "../core/constructionFamilyPierVariation";
 import { withConstructionOpeningWidth } from "../core/constructionOpeningEditGraph";
 import { resolveConstructionFamily } from "../state/constructionFamilyGeneration";
 import { defaultConstructionGenerationControls, resolveWorkbenchGeneration, type ConstructionGenerationLineage } from "../state/constructionGenerationState";
@@ -15,7 +16,7 @@ import { withConstructionGroupedBays } from "../core/constructionGroupedBayGraph
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { withConstructionStorefrontDivision } from "../core/constructionStorefrontDivisionGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
-import { withConstructionFacadePiers } from "../core/constructionFacadePierGraph";
+import { withConstructionFacadePiers, withoutConstructionFacadePiers } from "../core/constructionFacadePierGraph";
 import { withConstructionAwningSupports } from "../core/constructionAwningSupportGraph";
 import { withConstructionAwnings } from "../core/constructionAwningGraph";
 import { createConstructionFamilyFabricAssignments } from "../materials/constructionFamilyFabric";
@@ -105,6 +106,21 @@ describe("persistent construction family source", () => {
         members: individualInput.members.map(member => ({ ...member, graph: withConstructionFacadePiers(member.graph, pierDirective) })) };
       const pierFamily = await createConstructionFamilySource(pierInput);
       expect(await readConstructionFamilySource(JSON.parse(JSON.stringify(pierFamily)))).toEqual(pierFamily);
+      const variation = resolveConstructionFamilyPierVariation({ schemaVersion: "0.1.0", kind: "construction-family-pier-variation-request", familySeed: "seed", enabled: true, openingLock: false });
+      const variationInput = { ...pierInput, schemaVersion: "0.14.0", initialPierVariation: variation };
+      const variationFamily = await createConstructionFamilySource(variationInput);
+      expect(await readConstructionFamilySource(JSON.parse(JSON.stringify(variationFamily)))).toEqual(variationFamily);
+      const { contentHash: _variationHash, ...variationPayload } = variationFamily; void _variationHash;
+      const variationMembers = variationPayload.members.map((member, index) => index === 0 ? { ...member, graph: withoutConstructionFacadePiers(member.graph) } : member);
+      const changedVariation = withUpdatedConstructionFamilyMembers(variationPayload, variationMembers);
+      expect(changedVariation.schemaVersion).toBe("0.14.0");
+      const changedSaved = await createConstructionFamilySource(changedVariation);
+      expect(changedSaved.members[0].graph.facadePiers).toBeUndefined();
+      expect(changedSaved.schemaVersion === "0.14.0" && changedSaved.initialPierVariation).toEqual(variation);
+      await expect(createConstructionFamilySource({ ...variationInput, familySeed: "other" })).rejects.toThrow(/pier variation must retain/);
+      const tamperedVariation = structuredClone(variation); tamperedVariation.members[0].treatment = tamperedVariation.members[0].treatment === "none" ? "slender" : "none";
+      await expect(createConstructionFamilySource({ ...variationInput, initialPierVariation: tamperedVariation })).rejects.toThrow(/source and seed/);
+      await expect(createConstructionFamilySource({ ...variationInput, schemaVersion: "0.13.0" })).rejects.toThrow();
       expect((await evaluateConstruction(pierFamily.members[0].graph)).ir.meshBatches.filter(batch => batch.role === "facade-pier")).toHaveLength(10);
       const { awningFabric: _pierFabric, ...pierMissingFabric } = pierInput; void _pierFabric;
       await expect(createConstructionFamilySource(pierMissingFabric)).rejects.toThrow(/require their inherited fabric/);
@@ -231,5 +247,5 @@ describe("persistent construction family source", () => {
       await expect(createConstructionFamilySource({ ...input, familySeed: "seed", schemaVersion: "0.3.0", initialComposition: changed,
         members: composedSource.members })).rejects.toThrow(/do not match/);
     } finally { vi.restoreAllMocks(); base.familyRuntime.dispose(); }
-  }, 180000);
+  }, 240000);
 });
