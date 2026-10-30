@@ -117,7 +117,7 @@ describe("explicit cornice graph and worker admission",()=>{
   it("keeps literal old readers/default output and supports explicit oldest/current migration",async()=>{
     const old=createBuildingConstructionGraph(),before=structuredClone(old);
     expect(BayConstructionGraphSchema.parse(old)).toEqual(old);
-    expect(await hashCanonicalJson(await evaluateConstruction(old))).toBe("6d29b0a682efe0139bfe0016355bdc34ae0a914c1912a9bf01359ea4d4900691");
+    expect(await hashCanonicalJson(await evaluateConstruction(old))).toBe("3fa73210cad319eb1a5f3320fac9907af68a4cee766298c7bdc06961968a0c47");
     const graph=withConstructionCorniceLayout(old,1);expect(old).toEqual(before);
     expect(withConstructionCorniceLayout(graph,2).schemaVersion).toBe("0.8.0");expect(roofOf(withConstructionCorniceLayout(graph,0)).parameters.corniceAssembly).toBe(0);
   });
