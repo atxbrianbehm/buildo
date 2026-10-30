@@ -71,7 +71,8 @@ function describeFamilyMember(graph: BayConstructionGraph) {
   const roof = graph.nodes.find(node => node.type === "BuildingRoof")?.parameters;
   const groups = graph.upperBayGroups ?? [];
   const grouped = groups.length ? groups.map(group => `${group.memberCount === 2 ? "Pair" : "Three windows"} at storey ${group.floorIndex+1}, bay ${group.bayIndex+1} (${group.memberWidthM} m)`).join("; ") : "Single openings";
-  return `${opening ? "Round head" : "Flat head"} · ${["Double-hung", "Twin casement", "Six-light casement"][sash]} · ${grouped} · ${frontage ? "Storefront" : "Punched ground floor"} · ${["Moulded", "Dentil", "Bracket"][roof?.corniceAssembly ?? 0]} cornice · ${roof?.parapetSilhouette ? "Raised parapet" : "Flat parapet"}`;
+  const lights = graph.storefrontDivision ?? { displayLights: 1, transomLights: 1 };
+  return `${opening ? "Round head" : "Flat head"} · ${["Double-hung", "Twin casement", "Six-light casement"][sash]} · ${grouped} · ${frontage ? `Storefront (${lights.displayLights} display / ${lights.transomLights} transom)` : "Punched ground floor"} · ${["Moulded", "Dentil", "Bracket"][roof?.corniceAssembly ?? 0]} cornice · ${roof?.parapetSilhouette ? "Raised parapet" : "Flat parapet"}`;
 }
 function fieldsFor(graph: BayConstructionGraph): Record<string, Record<string, string>> {
   return Object.fromEntries(graph.nodes.map(node => [node.id, "parameters" in node
@@ -116,7 +117,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   const [familyPreview, setFamilyPreview] = useState(false);
   const [familyDirty, setFamilyDirty] = useState(false);
   const [familySeed, setFamilySeed] = useState("building-family-1");
-  const [familyVariation, setFamilyVariation] = useState({ openings: false, frontage: false, roof: false, groupedBays: false });
+  const [familyVariation, setFamilyVariation] = useState({ openings: false, frontage: false, roof: false, groupedBays: false, storefrontLights: false });
   const [familyDetails, setFamilyDetails] = useState<string[]>([]);
   const familySource = useRef<ConstructionFamilyPayload | null>(null);
   const [memberIndex, setMemberIndex] = useState(0);
@@ -391,8 +392,9 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       const isCurrent = () => alive.current && sequence.current === token && !signal.aborted && current.current === source;
       const plan = resolveConstructionFamilyPlan({ schemaVersion: "0.1.0", kind: "construction-family-request",
         familyId: "preview_family", familySeed, graph: source.fixture.construction.graph });
-      const composition = Object.values(familyVariation).some(Boolean) ? resolveConstructionFamilyComposition(familyVariation.groupedBays
-        ? { schemaVersion: "0.2.0", kind: "construction-family-composition-request", familySeed, policy: familyVariation, openingLock: generationControls.lockOpenings }
+      const composition = Object.values(familyVariation).some(Boolean) ? resolveConstructionFamilyComposition(familyVariation.storefrontLights
+        ? { schemaVersion: "0.3.0", kind: "construction-family-composition-request", familySeed, policy: familyVariation, openingLock: generationControls.lockOpenings }
+        : familyVariation.groupedBays ? { schemaVersion: "0.2.0", kind: "construction-family-composition-request", familySeed, policy: { openings: familyVariation.openings, frontage: familyVariation.frontage, roof: familyVariation.roof, groupedBays: true }, openingLock: generationControls.lockOpenings }
         : { schemaVersion: "0.1.0", kind: "construction-family-composition-request", familySeed,
           policy: { openings: familyVariation.openings, frontage: familyVariation.frontage, roof: familyVariation.roof }, openingLock: generationControls.lockOpenings }) : null;
       const family = await resolveConstructionFamily(plan, source.generation, generationControls, signal, composition ?? undefined);
@@ -410,7 +412,8 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
           sourceDocumentId: source.fixture.construction.graph.documentId, familySeed: plan.source.familySeed,
           sourceGraph: source.fixture.construction.graph, sourceGeneration: source.generation!, materialSource: source.materials.file,
           members: family.members.map(member => ({ documentId: member.documentId, graph: member.construction.graph, generation: member.lineage })) };
-        familySource.current = [familyBase.sourceGraph, ...familyBase.members.map(member => member.graph)].some(graph => graph.schemaVersion === "0.12.0")
+        familySource.current = composition?.schemaVersion === "0.3.0" ? { ...familyBase, schemaVersion: "0.6.0", initialComposition: composition }
+          : [familyBase.sourceGraph, ...familyBase.members.map(member => member.graph)].some(graph => graph.schemaVersion === "0.12.0")
           ? { ...familyBase, schemaVersion: "0.5.0", ...(composition ? { initialComposition: composition } : {}) }
           : composition?.schemaVersion === "0.2.0" ? { ...familyBase, schemaVersion: "0.4.0", initialComposition: composition }
           : composition ? { ...familyBase, schemaVersion: "0.3.0", initialComposition: composition } : { ...familyBase, schemaVersion: "0.2.0" };
@@ -429,7 +432,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     if (canonicalJson(currentMember.graph) !== canonicalJson(session.graph) || canonicalJson(currentMember.generation) !== canonicalJson(session.generation)) {
       const members = source.members.map(member => member.documentId === id
         ? { documentId: id, graph: session.graph, generation: session.generation! } : member);
-      familySource.current = session.graph.schemaVersion === "0.12.0" ? { ...source, schemaVersion: "0.5.0", members } : { ...source, members };
+      familySource.current = session.graph.schemaVersion === "0.12.0" && source.schemaVersion !== "0.6.0" ? { ...source, schemaVersion: "0.5.0", members } : { ...source, members };
       setFamilyDetails(familySource.current.members.map(member => describeFamilyMember(member.graph)));
       setFamilyDirty(true);
     }
@@ -513,7 +516,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         setSelected(source.sourceGraph.nodes[0].id); setGeneration(source.sourceGeneration);
         setGenerationControls(controls => ({ ...controls, ...controlsFrom(source.sourceGeneration) }));
         const composition = "initialComposition" in source ? source.initialComposition : undefined;
-        setFamilySeed(source.familySeed); setFamilyVariation(composition ? { ...composition.source.policy, groupedBays: "groupedBays" in composition.source.policy ? composition.source.policy.groupedBays : false } : { openings: false, frontage: false, roof: false, groupedBays: false }); setFamilyDetails(source.members.map(member => describeFamilyMember(member.graph))); setPreviewNode(null); setFamilyPreview(true); setFamilyDirty(false); chooseFrame(null);
+        setFamilySeed(source.familySeed); setFamilyVariation(composition ? { ...composition.source.policy, groupedBays: "groupedBays" in composition.source.policy ? composition.source.policy.groupedBays : false, storefrontLights: "storefrontLights" in composition.source.policy ? composition.source.policy.storefrontLights : false } : { openings: false, frontage: false, roof: false, groupedBays: false, storefrontLights: false }); setFamilyDetails(source.members.map(member => describeFamilyMember(member.graph))); setPreviewNode(null); setFamilyPreview(true); setFamilyDirty(false); chooseFrame(null);
         setDirty(false); setOpeningDirty(false); setError(null); referenceSequence.current++; setReferenceDraft(null);
         const { contentHash: _hash, ...payload } = source; void _hash; familySource.current = payload;
         memberHistories.current.clear(); setMemberIndex(0);
@@ -724,9 +727,10 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
           <label><input type="checkbox" checked={familyVariation.openings} onChange={event => { const checked = event.currentTarget.checked; setFamilyVariation(value => ({ ...value, openings: checked })); }} /> Opening heads and sash</label>
           <label><input type="checkbox" checked={familyVariation.groupedBays} onChange={event => { const checked = event.currentTarget.checked; setFamilyVariation(value => ({ ...value, groupedBays: checked })); }} /> Grouped upper windows</label>
           <label><input type="checkbox" checked={familyVariation.frontage} onChange={event => { const checked = event.currentTarget.checked; setFamilyVariation(value => ({ ...value, frontage: checked })); }} /> Ground frontage</label>
+          <label><input type="checkbox" checked={familyVariation.storefrontLights} onChange={event => { const checked = event.currentTarget.checked; setFamilyVariation(value => ({ ...value, storefrontLights: checked })); }} /> Storefront pane divisions</label>
           <label><input type="checkbox" checked={familyVariation.roof} onChange={event => { const checked = event.currentTarget.checked; setFamilyVariation(value => ({ ...value, roof: checked })); }} /> Cornice and parapet</label>
         </fieldset>
-        {generationControls.lockOpenings && (familyVariation.openings || familyVariation.frontage || familyVariation.groupedBays) ? <p>Unlock openings to vary opening heads, grouped windows, sash or ground frontage.</p> : null}
+        {generationControls.lockOpenings && (familyVariation.openings || familyVariation.frontage || familyVariation.groupedBays || familyVariation.storefrontLights) ? <p>Unlock openings to vary opening heads, grouped windows, sash or storefronts.</p> : null}
         <div className="control-panel__actions">{familyPreview ? <button type="button" disabled={pending || saving || !viewerReady || familyDirty} onClick={() => void preview(null)}>Return to building</button>
           : <button type="button" disabled={disabled || dirty || !viewerReady || !generation || Boolean(previewNode) || !familySeed.trim()} onClick={() => void previewFamily()}>Preview family</button>}</div>
         <div className="control-panel__actions"><button type="button" disabled={pending || saving || !familyPreview} onClick={() => void saveFamily()}>Save family</button>

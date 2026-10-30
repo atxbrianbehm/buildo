@@ -41,11 +41,14 @@ export async function resolveConstructionFamily(input: unknown, lineageInput: un
   abort(signal);
   const original = await readConstructionGenerationLineage(lineage); abort(signal);
   const composition = compositionInput === undefined ? null : readConstructionFamilyCompositionPlan(compositionInput);
+  const varyStorefrontLights = composition?.schemaVersion === "0.3.0" && composition.source.policy.storefrontLights;
+  if (varyStorefrontLights && plan.source.graph.storefrontDivision)
+    throw new Error("Storefront variation cannot overwrite authored divisions. Reset them or turn off storefront-light variation.");
   if (plan.source.graph.storefrontDivision && composition?.source.policy.frontage)
     throw new Error("Ground-frontage variation cannot currently coexist with retained storefront divisions. Disable that variation or reset the divisions.");
   if (plan.source.graph.upperBayGroups?.length && composition?.source.policy.openings)
     throw new Error("Opening-head variation cannot currently coexist with retained grouped bays. Disable that variation or explicitly remove the groups.");
-  const varyGroups = composition?.schemaVersion === "0.2.0" && composition.source.policy.groupedBays;
+  const varyGroups = (composition?.schemaVersion === "0.2.0" || composition?.schemaVersion === "0.3.0") && composition.source.policy.groupedBays;
   if (varyGroups && !composition.source.policy.openings && plan.source.graph.nodes.find(node => node.type === "PlaceOpening")?.parameters.upperFrontRoundHead === 1)
     throw new Error("Grouped family variation needs flat upper-front heads. Choose flat heads or enable coordinated opening variation.");
   if (composition) {
@@ -54,6 +57,7 @@ export async function resolveConstructionFamily(input: unknown, lineageInput: un
     const affected = [
       ...(composition.source.policy.openings ? ["construction/opening/upperFrontRoundHead", "construction/window/layout"] : []),
       ...(varyGroups ? ["construction/opening", "construction/window", "construction/upperBayGroups"] : []),
+      ...(varyStorefrontLights ? ["construction/opening", "construction/window", "construction/frontage", "construction/storefrontDivision"] : []),
       ...(composition.source.policy.frontage ? ["construction/frontage/mode"] : []),
       ...(composition.source.policy.roof ? ["construction/roof/corniceAssembly", "construction/roof/parapetSilhouette"] : [])
     ];
