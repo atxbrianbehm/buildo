@@ -15,6 +15,7 @@ import { createConstructionSurfaceBases } from "../materials/surfaceBaseAppearan
 import { createFamilySurfacePixelCache, disposeFamilySurfacePixelCache, prepareBuildingSurfaceRuntime, type BuildingSurfaceRuntime, type FamilySurfacePixelCache } from "../renderer-three/surfaceMaterialRuntime";
 
 import { generateConstructionReferenceAtlas } from "../materials/constructionReferenceMaterials";
+import { readConstructionFamilyFabricAssignments } from "../materials/constructionFamilyFabric";
 import type { ConstructionAwningFabricArtifact } from "../contracts/constructionAwningFabric";
 import { CONSTRUCTION_AWNING_FABRIC_SLOT, prepareConstructionAwningFabricRuntime, type ConstructionAwningFabricRuntime } from "../renderer-three/constructionAwningFabricRuntime";
 
@@ -71,19 +72,32 @@ export async function prepareBayConstructionFixture(base: AssemblyHallFixture, r
   } catch (error) { try { fixture?.familyRuntime.dispose(); } finally { surface?.dispose(); if (!sharedAwningOwner) owner?.dispose(); } throw error; }
 }
 
-/** Prepare a temporary family view; every member shares one atlas and material registry. */
+/** Prepare a temporary family view, sharing identical fabric resources by content hash. */
 export async function prepareConstructionFamilyFixture(base: AssemblyHallFixture, results: BayConstructionResult[],
-  materials: BayConstructionMaterials, signal?: AbortSignal): Promise<BayConstructionFixture> {
-  if (results.length !== 6) throw new Error("A family preview requires six buildings.");
+  materials: BayConstructionMaterials, signal?: AbortSignal, assignmentsInput?: unknown): Promise<BayConstructionFixture> {
+  if (results.length !== 6 || new Set(results.map(result => result.ir.buildingId)).size !== 6) throw new Error("A family preview requires six distinct buildings.");
   const check = () => { if (signal?.aborted) throw new DOMException("Family preview was cancelled.", "AbortError"); };
-  const hasAwning = results.some(result => result.ir.meshBatches.some(batch => batch.materialSlotId === CONSTRUCTION_AWNING_FABRIC_SLOT));
-  if (hasAwning && !materials.awningFabric) throw new Error("Awning geometry requires its saved fabric source.");
-  const awningOwner = hasAwning ? await prepareConstructionAwningFabricRuntime(materials.awningFabric) : undefined;
+  const assignments = assignmentsInput === undefined ? undefined : await readConstructionFamilyFabricAssignments(assignmentsInput); check();
+  if (assignments && (assignments.inheritedFabric.contentHash !== materials.awningFabric?.contentHash ||
+      assignments.members.some(member => !results.some(result => result.ir.buildingId === member.documentId))))
+    throw new Error("Family fabric assignments do not match the preview buildings and inherited fabric.");
+  const fabricFor = (result: BayConstructionResult) => {
+    if (!assignments) return materials.awningFabric;
+    const member = assignments.members.find(value => value.documentId === result.ir.buildingId)!;
+    return member.mode === "override" ? member.fabric : assignments.inheritedFabric;
+  };
+  const hasAwning = (result: BayConstructionResult) => result.ir.meshBatches.some(batch => batch.materialSlotId === CONSTRUCTION_AWNING_FABRIC_SLOT);
+  const owners = new Map<string, ConstructionAwningFabricRuntime>();
   const cache = createFamilySurfacePixelCache();
   let fixture: BayConstructionFixture | undefined;
   const surfaces: BuildingSurfaceRuntime[] = [];
   try {
-    fixture = await prepareBayConstructionFixture(base, results[0], materials, signal, cache, awningOwner);
+    for (const result of results) if (hasAwning(result)) {
+      const fabric = fabricFor(result); if (!fabric) throw new Error("Awning geometry requires its saved fabric source.");
+      if (!owners.has(fabric.contentHash)) { const owner = await prepareConstructionAwningFabricRuntime(fabric); owners.set(fabric.contentHash, owner); check(); }
+    }
+    const firstFabric = fabricFor(results[0]), firstOwner = hasAwning(results[0]) && firstFabric ? owners.get(firstFabric.contentHash) : undefined;
+    fixture = await prepareBayConstructionFixture(base, results[0], { ...materials, awningFabric: firstFabric }, signal, cache, firstOwner);
     const extraTextureCount = fixture.familyRuntime.metrics.textureCount - Object.keys(fixture.familyRuntime.textureSet.textures).length
       - (fixture.buildingRuntime.surfaceRuntime?.listTextures().length ?? 0) - (fixture.buildingRuntime.awningFabricLease ? 1 : 0);
     const widths = results.map(result => result.ir.bounds.max[0] - result.ir.bounds.min[0]);
@@ -91,24 +105,22 @@ export async function prepareConstructionFamilyFixture(base: AssemblyHallFixture
     fixture.buildingRuntime.root.position.x = -2.5 * spacing;
     const bases = await createConstructionSurfaceBases(); check();
     for (const [index, result] of results.slice(1).entries()) {
-      check();
+      check(); const fabric = fabricFor(result), owner = hasAwning(result) && fabric ? owners.get(fabric.contentHash) : undefined;
       let surface: BuildingSurfaceRuntime | undefined;
       if (result.surfaceComposition) {
-        const hasMemberAwning = result.ir.meshBatches.some(batch => batch.materialSlotId === CONSTRUCTION_AWNING_FABRIC_SLOT);
-        surface = await prepareBuildingSurfaceRuntime({ composition: result.surfaceComposition, ir: result.ir, atlas: materials.packedAtlas, baseAppearances: bases, ...(hasMemberAwning ? { awningFabric: materials.awningFabric } : {}) }, cache);
+        surface = await prepareBuildingSurfaceRuntime({ composition: result.surfaceComposition, ir: result.ir, atlas: materials.packedAtlas, baseAppearances: bases, ...(hasAwning(result) ? { awningFabric: fabric } : {}) }, cache);
         surfaces.push(surface); check(); configureConstructionSurface(surface);
       }
       const runtime = fixture.familyRuntime.createOrReplaceBuilding({ ir: result.ir, catalog: fixture.catalog,
-        compiledInstanceGeometry: new Map(result.prototypes?.map(prototype => [prototype.batchId, prototype])), surfaceRuntime: surface, awningFabricRuntime: awningOwner });
+        compiledInstanceGeometry: new Map(result.prototypes?.map(prototype => [prototype.batchId, prototype])), surfaceRuntime: surface, awningFabricRuntime: owner });
       runtime.root.position.x = (index - 1.5) * spacing;
     }
-    check();
-    fixture.familyRuntime.metrics.textureCount += extraTextureCount;
+    check(); fixture.familyRuntime.metrics.textureCount += extraTextureCount;
     const originalDispose = fixture.familyRuntime.dispose;
-    fixture.familyRuntime.dispose = () => { try { return originalDispose(); } finally { for (const surface of surfaces) surface.dispose(); awningOwner?.dispose(); } };
+    fixture.familyRuntime.dispose = () => { try { return originalDispose(); } finally { for (const surface of surfaces) surface.dispose(); for (const owner of owners.values()) owner.dispose(); } };
     fixture.metrics = { ...fixture.metrics, ...fixture.familyRuntime.metrics };
     return fixture;
-  } catch (error) { try { fixture?.familyRuntime.dispose(); } finally { for (const surface of surfaces) surface.dispose(); awningOwner?.dispose(); } throw error; }
+  } catch (error) { try { fixture?.familyRuntime.dispose(); } finally { for (const surface of surfaces) surface.dispose(); for (const owner of owners.values()) owner.dispose(); } throw error; }
   finally { disposeFamilySurfacePixelCache(cache); }
 }
 

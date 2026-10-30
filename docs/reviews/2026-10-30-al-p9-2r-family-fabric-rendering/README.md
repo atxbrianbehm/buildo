@@ -1,0 +1,5 @@
+# AL.P9.2r: Per-member fabric renderer ownership
+
+The family fixture accepts a validated assignment, matches its member identities and inherited fabric to the preview inputs, and binds each building to its inherited or overridden fabric. Identical content hashes share a renderer material and texture; different artifacts use independent owners. On disposal or preparation failure, resources are released, and the legacy shared-fabric path remains available. Family source validation separately checks the owning family identity.
+
+The [textured fixture study](family-fabrics.png) shows green stripes, blue stripes and solid red on different buildings. It is an isolated renderer fixture, not the editor workflow or historical evidence; overall massing remains repetitive. Focused fixture tests verify assignment mismatch, shared versus distinct material identity and one-time disposal. All five repository checks passed: 2,068 tests across 162 files, standard browser smoke, typecheck, lint and build. The build retains its large-chunk warning.
