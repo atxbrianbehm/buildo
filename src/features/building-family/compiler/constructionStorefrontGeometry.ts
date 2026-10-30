@@ -2,6 +2,8 @@ import type { ConstructionStorefrontPlan } from "../contracts/constructionStoref
 import { readConstructionStorefrontPlan } from "../core/constructionStorefront";
 import { buildBoxPrimitive, type PrimitiveGeometry } from "./primitiveGeometry";
 import { buildConstructionTimberRail as timberRail } from "./bayWindowGeometry";
+import { readConstructionStorefrontDivision } from "../core/constructionStorefrontDivision";
+import type { ConstructionStorefrontDivisionPlan } from "../contracts/constructionStorefrontDivision";
 
 /** Boxes use physical metres on every face, including pane edges and leaf panels. */
 function box(center: [number, number, number], size: [number, number, number]): PrimitiveGeometry {
@@ -63,4 +65,18 @@ export function buildConstructionStorefrontGeometry(input: ConstructionStorefron
   // The header bounds must remain entirely inside the authored aperture.
   if (top <= bottom || !frame.length) throw new Error("Storefront frame is empty.");
   return { frame, glass, leaf, hardware, trim };
+}
+
+/** Build individual display/transom panes and structural mullions from one replayed plan. */
+export function buildConstructionDividedStorefrontGeometry(input: ConstructionStorefrontDivisionPlan, thresholdProjectionM = 0.15) {
+  const plan = readConstructionStorefrontDivision(input), storefront = plan.source.storefront;
+  const base = buildConstructionStorefrontGeometry(storefront, thresholdProjectionM), p = storefront.source.parameters;
+  const centerX = storefront.aperture.leftM + storefront.aperture.widthM / 2, baseY = storefront.source.scope.originM[1];
+  const pane = (region: typeof storefront.transomClearRegion) => box(
+    [region.leftM + region.widthM / 2 - centerX, region.bottomM + region.heightM / 2 - baseY, -p.recessM - 0.055],
+    [region.widthM, region.heightM, 0.006]);
+  const mullion = (region: typeof storefront.transomClearRegion) => timberRail(region.heightM, region.widthM, 0.08,
+    [region.leftM + region.widthM / 2 - centerX, region.bottomM + region.heightM / 2 - baseY, -p.recessM - 0.04], true, true);
+  return { ...base, frame: [...base.frame, ...plan.transom.mullions.map(mullion), ...(plan.display?.mullions.map(mullion) ?? [])],
+    glass: [...plan.transom.panes.map(pane), ...(plan.display ? plan.display.panes.map(pane) : base.glass.slice(1))] };
 }
