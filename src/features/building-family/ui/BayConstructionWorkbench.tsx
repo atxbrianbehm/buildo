@@ -175,6 +175,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
 
   const publish = useCallback(async (graph: BayConstructionGraph, materials: BayConstructionMaterials, token: number, signal: AbortSignal,
     historyAction: "edit" | "open" | "undo" | "redo" = "edit", lineage?: ConstructionGenerationLineage | null) => {
+    if (graph.schemaVersion === "0.15.0") throw new Error("Facade pier graphs are not yet supported in the construction workspace.");
     const isCurrent = () => alive.current && sequence.current === token && !signal.aborted;
     if (!isCurrent()) return;
     const previous = current.current;

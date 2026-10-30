@@ -1,0 +1,7 @@
+# AL.P10.2 — façade pier graph and worker
+
+Construction graph and worker protocol 0.15 carry a strict upper-front pier directive. The graph compiler derives clearances from actual opening and wall scopes and emits separately addressed pier geometry. Explicit migration preserves grouped bays, storefront divisions, awnings and support rods. Prior graph versions reject the directive and the worker requires matching protocol. Graph source hashing includes the directive. Node-specific previews are currently rejected for pier graphs.
+
+Focused tests cover graph ownership, deterministic geometry parity with the experimental study, worker schema matching and mismatches, retained support/awning geometry, and explicit single-building and family generation guards. A real browser worker transported a graph with grouped openings, an awning, rods and ten pier meshes, matching direct compiled buffers and semantic paths. A wider grouped opening initially failed the clearance guard; the fitted 0.6 m member case passed. The textured graph fixture is byte-identical to the preceding experimental fixture.
+
+Project persistence, editor opening, node preview, artist controls and family generation are not yet supported. This is a plain demo treatment, not historical evidence or artist acceptance. All five checks passed: 2,079 unit tests across 167 files, browser smoke, typecheck, lint and build. The build retains its existing chunk-size warning.
