@@ -1,0 +1,9 @@
+# R6.P3.0 — owned family source
+
+The versioned family source records six member graphs and their generation lineages with one encoded material-source artifact. It owns input before asynchronous work, validates material bytes and the existing single-building generation/manifest relationship for each member, requires distinct member IDs and building seeds, retains pinned reference and material inputs, and content-hashes the complete source. Readback rechecks the hash and material/lineage admission. Graphs must have connected footprint, storey and wall operators; this is a structural admission check, not a render-quality claim.
+
+Eleven tests across the family-plan, generation and source suites pass; typecheck and lint pass. The source test generates a real material source and family, preserves a rebased local window-width edit in all six members, round-trips the family, and independently admits each member through the existing construction-project creator. It rejects duplicate IDs, mismatched graphs or material lineage, disconnected graph structure, unexpected fields and hash tampering, and confirms no material-provider calls during family capture/read.
+
+The first negative-test attempt assumed a changed document ID would pass graph admission and fail only at the hash; graph validation correctly rejected the mismatched surface document first. A later roof-only test exposed that roof graphs can still reference storeys; the final admission additionally requires the connected wall operator, and the final regression passed. The final local log supersedes those earlier runs.
+
+No workbench controls or file actions are added here. Family Save/Open, per-member editing, stale-load/disposal handling and real browser recovery remain P3.1/P3.2. Architectural UTDG coverage and representative-machine performance remain open.
