@@ -3,6 +3,7 @@ import { retainConstructionParapetVocabulary, withConstructionParapetSilhouette 
 import { retainConstructionRoundHead, withConstructionRoundHead } from "../core/constructionRoundHeadVocabulary";
 import { withConstructionGroupedBays } from "../core/constructionGroupedBayGraph";
 import { withConstructionStorefrontDivision } from "../core/constructionStorefrontDivisionGraph";
+import { withConstructionAwningSupports } from "../core/constructionAwningSupportGraph";
 import { withConstructionAwnings } from "../core/constructionAwningGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
 import { retainConstructionStorefront, withConstructionStorefront } from "../core/constructionStorefrontGraph";
@@ -76,11 +77,10 @@ function assertTopology(current: BayConstructionGraph, generated: BayConstructio
 export async function resolveWorkbenchGeneration(currentInput: unknown, previousInput: ConstructionGenerationLineage | null,
   controlsInput: ConstructionGenerationControls, reroll = false, referenceInput?: unknown) {
   const inputGraph = structuredClone(BayConstructionGraphSchema.parse(currentInput));
-  if (inputGraph.awningSupports) throw new Error("Awning support graphs cannot yet be regenerated without losing support choices.");
-  const authoredAwnings = inputGraph.awnings;
+  const authoredSupports = inputGraph.awningSupports, authoredAwnings = inputGraph.awnings;
   let current = inputGraph;
   if (authoredAwnings) {
-    const { awnings: _removed, ...prior } = inputGraph; void _removed;
+    const { awnings: _removed, awningSupports: _supports, ...prior } = inputGraph; void _removed; void _supports;
     current = BayConstructionGraphSchema.parse({ ...prior, schemaVersion: "0.12.0" });
   }
   const previous = previousInput ? structuredClone(ConstructionGenerationLineageSchema.parse(previousInput)) : null;
@@ -171,6 +171,7 @@ export async function resolveWorkbenchGeneration(currentInput: unknown, previous
   }
   if (authoredAwnings && keepStorefront) {
     graph = withConstructionAwnings(graph, authoredAwnings);
+    if (authoredSupports) graph = withConstructionAwningSupports(graph, authoredSupports);
     try { await evaluateConstruction(graph); }
     catch (failure) { throw new Error(`A retained awning does not fit the generated building: ${failure instanceof Error ? failure.message : "invalid construction"}`, { cause: failure }); }
   }
