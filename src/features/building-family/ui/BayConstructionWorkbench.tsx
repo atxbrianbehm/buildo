@@ -5,6 +5,8 @@ import { withConstructionStorefront, constructionHasStorefront, CONSTRUCTION_FRO
 import { CONSTRUCTION_WINDOW_LAYOUTS, upgradeConstructionWindowVocabulary } from "../core/constructionWindowVocabulary";
 import { ConstructionBuildingControls } from "./ConstructionBuildingControls";
 import { ConstructionOpeningControls } from "./ConstructionOpeningControls";
+import { ConstructionGroupedBayControls, type GroupedBayEdit } from "./ConstructionGroupedBayControls";
+import { withConstructionGroupedBays } from "../core/constructionGroupedBayGraph";
 import { withConstructionOpeningWidth, withoutConstructionOpeningWidth } from "../core/constructionOpeningEditGraph";
 import { constructionOpeningOptions, supportsGroupedConstruction, groupedWindowCount, groupedStorefrontCount } from "./constructionBuildingBindings";
 import { ConstructionReferenceSnapshotSchema, type ConstructionReferenceSnapshot } from "../contracts/constructionGeneration";
@@ -101,7 +103,8 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   const [accepted, setAccepted] = useState<BayConstructionFixture | null>(null);
   const [pending, setPending] = useState(true), [saving, setSaving] = useState(false), [buildingDirty, setDirty] = useState(false);
   const [openingDirty, setOpeningDirty] = useState(false);
-  const dirty = buildingDirty || openingDirty;
+  const [groupDirty, setGroupDirty] = useState(false);
+  const dirty = buildingDirty || openingDirty || groupDirty;
   const [error, setError] = useState<string | null>(null), [viewerReady, setViewerReady] = useState(false);
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [selectedFrame, setSelectedFrame] = useState<string | null>(null);
@@ -163,7 +166,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     const nextGeneration = lineage === undefined ? previous?.generation ?? null : lineage;
     if (previous && shown.current === previous.fixture && JSON.stringify(previous.fixture.construction.graph) === JSON.stringify(graph) &&
         previous.materials.file.contentHash === materials.file.contentHash && canonicalJson(previous.generation) === canonicalJson(nextGeneration)) {
-      setDraft(graph); setFields(fieldsFor(graph)); setDirty(false); setOpeningDirty(false); setError(null);
+      setDraft(graph); setFields(fieldsFor(graph)); setDirty(false); setOpeningDirty(false); setGroupDirty(false); setError(null);
       if (historyAction === "open") { history.record(graph, materials.file.contentHash, true, nextGeneration); onSessionChange({ graph, materials, history: history.snapshot(), generation: nextGeneration }); }
       return;
     }
@@ -194,7 +197,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       memberHistories.current.clear();
       setAccepted(candidate); setDraft(result.graph); setFields(fieldsFor(result.graph));
       setSelected(id => result.graph.nodes.some(node => node.id === id) ? id : result.graph.nodes[0].id);
-      setDirty(false); setOpeningDirty(false); setError(null);
+      setDirty(false); setOpeningDirty(false); setGroupDirty(false); setError(null);
       if (historyAction === "undo" || historyAction === "redo") history.acceptTraversal(historyAction, result.graph);
       else history.record(result.graph, materials.file.contentHash, historyAction === "open", nextGeneration);
       onSessionChange({ graph: result.graph, materials, history: history.snapshot(), generation: nextGeneration });
@@ -273,6 +276,33 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       await publish(graph,source.materials,token,signal);
     });
   }
+  async function applyGroupedBay(edit: GroupedBayEdit) {
+    const source = current.current;
+    if (!source || buildingDirty || openingDirty || previewNode || shown.current !== source.fixture) return;
+    await perform(async (token, signal) => {
+      const original = source.fixture.construction.graph;
+      const groups = (original.upperBayGroups ?? []).filter(group => !(group.storeysNodeId === "facade" && group.floorIndex === edit.floorIndex && group.bayIndex === edit.bayIndex));
+      if (edit.memberCount !== 1) {
+        if (original.nodes.find(node => node.type === "PlaceOpening")?.parameters.upperFrontRoundHead === 1)
+          throw new Error("Grouped windows need flat heads. Change Upper front opening head to Flat head first.");
+        const widthEdits = original.nodes.find(node => node.type === "EditOpeningWidth");
+        if (widthEdits && !widthEdits.bypassed && widthEdits.overrides.some(({ target }) => target.storeysNodeId === "facade" && target.face === "front" && target.floorIndex === edit.floorIndex && target.bayIndex === edit.bayIndex))
+          throw new Error("Reset this bay's selected-window width before grouping it.");
+        if (!edit.memberWidthM.trim() || !edit.pierWidthM.trim() || !Number.isFinite(Number(edit.memberWidthM)) || !Number.isFinite(Number(edit.pierWidthM)))
+          throw new Error("Enter finite window and masonry widths.");
+        groups.push({ storeysNodeId: "facade", floorIndex: edit.floorIndex, bayIndex: edit.bayIndex,
+          memberCount: edit.memberCount, memberWidthM: Number(edit.memberWidthM), pierWidthM: Number(edit.pierWidthM) });
+      }
+      let graph: BayConstructionGraph;
+      if (groups.length) graph = withConstructionGroupedBays(original, groups);
+      else if (original.schemaVersion === "0.11.0") {
+        const { upperBayGroups: _removed, ...prior } = original; void _removed;
+        graph = BayConstructionGraphSchema.parse({ ...prior, schemaVersion: "0.10.0" });
+      } else graph = original;
+      await publish(graph, source.materials, token, signal);
+      if (current.current && canonicalJson(current.current.fixture.construction.graph) === canonicalJson(graph)) chooseFrame(null);
+    });
+  }
   async function generateBuilding(reroll: boolean) {
     const acceptedSource = current.current;
     if (!acceptedSource || dirty) return;
@@ -318,7 +348,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   function revertDraft() {
     const source = current.current; if (!source) return;
     const graph = source.fixture.construction.graph;
-    setDraft(graph); setFields(fieldsFor(graph)); setDirty(false); setOpeningDirty(false); setError(null);
+    setDraft(graph); setFields(fieldsFor(graph)); setDirty(false); setOpeningDirty(false); setGroupDirty(false); setError(null);
     setSelected(id => graph.nodes.some(node => node.id === id) ? id : graph.nodes[0].id);
   }
   async function preview(id: string | null) {
@@ -493,7 +523,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   }
   const node = draft.nodes.find(node => node.id === selected) ?? draft.nodes[0];
   const output = accepted?.construction.trace.find(entry => entry.nodeId === node.id);
-  const disabled = pending || saving || openingDirty || familyPreview || familyReturning;
+  const disabled = pending || saving || openingDirty || groupDirty || familyPreview || familyReturning;
   function replace(next: BayConstructionNode) {
     setDraft(graph => ({ ...graph, nodes: graph.nodes.map(value => value.id === next.id ? next : value) }));
     setDirty(true);
@@ -600,10 +630,14 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       </div>
       {buildingMode && !advancedOpen && accepted && supportsGroupedConstruction(accepted.construction.graph) ? <ConstructionOpeningControls
         key={accepted.ir.sourceGraphHash+":"+selectedFrame} options={constructionOpeningOptions(accepted.construction.graph,accepted.ir)} selectedPath={selectedFrame}
-        disabled={pending || saving || familyPreview || familyReturning || buildingDirty || !viewerReady || Boolean(previewNode)} buildingDirty={buildingDirty}
+        disabled={pending || saving || familyPreview || familyReturning || buildingDirty || groupDirty || !viewerReady || Boolean(previewNode)} buildingDirty={buildingDirty}
         onSelect={path=>{const source=current.current;if(!source || shown.current!==source.fixture)return;
           if(!path || constructionOpeningOptions(source.fixture.construction.graph,source.fixture.ir).some(option=>option.path===path))chooseFrame(path||null);}}
         onApply={text=>void applyOpeningWidth(text)} onReset={()=>void applyOpeningWidth(null)} onDraftChange={value=>{setOpeningDirty(value);if(!value)setError(null);}} /> : null}
+      {buildingMode && !advancedOpen && accepted && supportsGroupedConstruction(accepted.construction.graph) ? <ConstructionGroupedBayControls
+        key={`${accepted.construction.graph.nodes.find(node => node.type === "Storeys")?.parameters.count}:${accepted.construction.graph.nodes.find(node => node.type === "SplitBays")?.parameters.count}`}
+        graph={accepted.construction.graph} dirty={groupDirty} disabled={pending || saving || openingDirty || buildingDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode)}
+        onDraftChange={value => { setGroupDirty(value); if (!value) setError(null); }} onApply={edit => void applyGroupedBay(edit)} /> : null}
       {buildingMode && !advancedOpen && accepted ? <ConstructionBuildingControls graph={draft} fields={fields} windowCount={groupedWindowCount(accepted.construction.graph,accepted.ir)} storefrontCount={groupedStorefrontCount(accepted.construction.graph,accepted.ir)} localWidthCount={constructionOpeningOptions(accepted.construction.graph,accepted.ir).filter(option=>option.overridden).length}
         disabled={disabled || !viewerReady || Boolean(previewNode)} dirty={buildingDirty}
         onFieldChange={(id,key,text) => {

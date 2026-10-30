@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "0.1.0",
+  "api": "webgpu",
+  "beforeHash": "746d77cdef2d9fd0db5c3c0f04aa1d2354171ab2be11ab02e6e9990c13243ac5",
+  "afterHash": "9ca9d2725d81c6d6a420aa93c3dc443bfa8d416064be0ec8918034a4d9dbb854",
+  "tripleHash": "9779a7c86cf7f61f86561efa36c760df5b89119a8810a3fb59fc1c49ae6129d3",
+  "materialHash": "3feae06c59d16ea57029d815b13900184c8cb94b29369c58fe806168e3ee2d9c",
+  "providerCallsDelta": 0,
+  "undoRedo": true,
+  "freshPageOpen": true,
+  "errors": []
+}
