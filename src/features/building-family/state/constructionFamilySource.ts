@@ -30,7 +30,7 @@ export type ConstructionFamilySource = z.infer<typeof ConstructionFamilySourceSc
 export type ConstructionFamilyPayload = z.infer<typeof payload>;
 
 function requireBuildingGraph(graph: z.infer<typeof BayConstructionGraphSchema>) {
-  if (!["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0"].includes(graph.schemaVersion))
+  if (!["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0"].includes(graph.schemaVersion))
     throw new Error("Family buildings must use a whole-building graph version that supports generation lineage.");
   if (!constructionUsesOperator(graph, "Footprint") || !constructionUsesOperator(graph, "Storeys") || !constructionUsesOperator(graph, "EmitWall"))
     throw new Error("Family buildings must retain a connected whole-building graph.");

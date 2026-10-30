@@ -70,6 +70,7 @@ function assertTopology(current: BayConstructionGraph, generated: BayConstructio
 export async function resolveWorkbenchGeneration(currentInput: unknown, previousInput: ConstructionGenerationLineage | null,
   controlsInput: ConstructionGenerationControls, reroll = false, referenceInput?: unknown) {
   const current = structuredClone(BayConstructionGraphSchema.parse(currentInput));
+  if (current.schemaVersion === "0.11.0") throw new Error("Generation does not yet preserve grouped bays. Keep the authored building and remove grouping only if you intend to release it.");
   const previous = previousInput ? structuredClone(ConstructionGenerationLineageSchema.parse(previousInput)) : null;
   const controls = controlsSchema.parse(controlsInput);
   const reference = referenceInput === undefined ? undefined : ConstructionReferenceSnapshotSchema.parse(referenceInput);

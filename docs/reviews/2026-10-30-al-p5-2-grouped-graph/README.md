@@ -1,0 +1,9 @@
+# AL.P5.2: grouped-bay graph and worker
+
+Construction graph 0.11 owns explicit front-upper-bay directives: storeys node, floor, bay, member count, width and pier. The compiler rebuilds each placement from the current evaluated bay, opening and frame parameters, and hashes the saved graph as its actual source. Invalid or removed scopes, narrow trim clearances, conflicting parent-bay width overrides and round-headed groups reject rather than dropping the authored decision. Empty grouping preserves prior geometry. Existing saved graphs remain readable without migration. Cornice and parapet edits retain the new graph and its groups.
+
+Project version 0.12 stores and reopens the graph with its existing material source. The family source codec also round-trips a grouped member and its shared material artifact. Generation/reroll currently rejects graph 0.11 explicitly: it does not yet preserve grouped choices. The existing local-width picker does not expose grouped member paths; member-specific editing and artist controls remain P5.3. New family generation and composition remain P5.4. There is no claim of historical evidence or acceptance of these visual proportions.
+
+Focused tests check dimension changes and member identities, graph hashing/replay, worker protocol admission, legacy geometry parity, roof edit retention, invalid/ambiguous targets, project save/open and family source round trips. [Actual browser worker smoke](worker-smoke.mjs) verifies transferred instance buffers and exact path/hash agreement with direct compilation. The preceding packet has an isolated [clay comparison](../2026-10-30-al-p5-1-grouped-geometry/README.md); it is not an app, texture or artist-workflow review.
+
+Verification: all 2,027 tests across 147 files, typecheck, lint, build, browser worker transport and standard browser E2E passed. The build retained its large-chunk warning.
