@@ -1,0 +1,7 @@
+# AL.P9.2g: Shared awning fabric authoring
+
+The original building can choose solid or striped fabric and primary and stripe colors. This explicitly rebuilds the independently validated fabric source; it does not change the construction graph or the building atlas. The material applies to all awnings in the building and its generated family. Construction undo remains structural and does not undo fabric edits, as disclosed in the controls. Fabric changes are disabled in a family-member editor because the family has a single shared source.
+
+Actual app captures show [solid red WebGL](webgl-solid.png), [blue stripes WebGL](webgl-striped.png), [blue stripes WebGPU](webgpu-striped.png), and a [six-member family with shared red fabric](webgl-family.png). Both single-building renderer workflows exercise pattern and color changes, unchanged graph and atlas, recovery, save/reopen and no additional atlas-provider calls. A WebGL family workflow verifies custom fabric inheritance, the disabled member control, member isolation, save/reopen and no additional atlas-provider calls. The scripts use the locally retained P6.2 project at `docs/reviews/2026-10-30-al-p6-2-storefront-authoring/webgpu-02/divided.json`.
+
+This remains a shared demo material, with no individual member fabric, support arms or cloth deformation. The family is visually repetitive and is not a historical reconstruction or street-ready result. All five repository checks passed: 2,063 tests across 159 files, standard browser smoke, typecheck, lint and build. The build retains its large-chunk warning.

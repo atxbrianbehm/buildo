@@ -109,6 +109,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   const [fields, setFields] = useState(() => fieldsFor(draft));
   const [selected, setSelected] = useState(draft.nodes[0].id);
   const [accepted, setAccepted] = useState<BayConstructionFixture | null>(null);
+  const [awningFabric, setAwningFabric] = useState<BayConstructionMaterials["awningFabric"]>(startingSession?.materials.awningFabric);
   const [pending, setPending] = useState(true), [saving, setSaving] = useState(false), [buildingDirty, setDirty] = useState(false);
   const [openingDirty, setOpeningDirty] = useState(false);
   const [groupDirty, setGroupDirty] = useState(false);
@@ -195,6 +196,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       const finalize = prepared?.commit();
       const previousShown = shown.current; shown.current = candidate;
       current.current = { fixture: candidate, materials, generation: nextGeneration };
+      setAwningFabric(materials.awningFabric);
       setGeneration(nextGeneration);
       if (historyAction === "open" || historyAction === "undo" || historyAction === "redo") { referenceSequence.current++; setReferenceDraft(null); }
       if (nextGeneration) setGenerationControls(controls => ({ ...controls, ...controlsFrom(nextGeneration) }));
@@ -334,6 +336,15 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       const fabric = source.materials.awningFabric ?? await createConstructionAwningFabric({ schemaVersion: "0.1.0", kind: "construction-awning-fabric-request", seed: "buildo-awning-demo-v1", pattern: "striped", primary: [224, 213, 187], secondary: [69, 99, 78], physicalSizeM: [1, 1] });
       if (signal.aborted) return;
       await publish(graph, { ...source.materials, awningFabric: fabric }, token, signal);
+    });
+  }
+  async function changeAwningFabric(pattern: "solid" | "striped", primary: [number, number, number], secondary: [number, number, number]) {
+    const source = current.current;
+    if (!source || !source.materials.awningFabric || familyMemberMode || dirty || previewNode || shown.current !== source.fixture) return;
+    await perform(async (token, signal) => {
+      const fabric = await createConstructionAwningFabric({ ...source.materials.awningFabric!.source, pattern, primary, secondary });
+      if (signal.aborted) return;
+      await publish(source.fixture.construction.graph, { ...source.materials, awningFabric: fabric }, token, signal);
     });
   }
   async function generateBuilding(reroll: boolean) {
@@ -546,6 +557,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         if (!isCurrent()) { prepared?.discard(); retire(candidate); retire(original); return; }
         const finalize = prepared?.commit(), previousShown = shown.current;
         current.current = { fixture: original, materials, generation: source.sourceGeneration };
+        setAwningFabric(materials.awningFabric);
         shown.current = candidate; setAccepted(candidate); setDraft(source.sourceGraph); setFields(fieldsFor(source.sourceGraph));
         setSelected(source.sourceGraph.nodes[0].id); setGeneration(source.sourceGeneration);
         setGenerationControls(controls => ({ ...controls, ...controlsFrom(source.sourceGeneration) }));
@@ -693,6 +705,8 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       {buildingMode && !advancedOpen && accepted && supportsGroupedConstruction(accepted.construction.graph) && constructionHasStorefront(accepted.construction.graph) ? <ConstructionAwningControls
         graph={accepted.construction.graph} disabled={pending || saving || openingDirty || buildingDirty || groupDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode) || (familyMemberMode && !startingSession?.materials.awningFabric)}
         unavailableReason={familyMemberMode && !startingSession?.materials.awningFabric ? "Add an awning to the original building before creating this family." : undefined}
+        fabric={awningFabric} fabricDisabled={familyMemberMode}
+        onFabricChange={(pattern, primary, secondary) => void changeAwningFabric(pattern, primary, secondary)}
         onChange={(bay, enabled, dimensions) => void changeAwning(bay, enabled, dimensions)} /> : null}
       {buildingMode && !advancedOpen && accepted ? <ConstructionBuildingControls graph={draft} fields={fields} windowCount={groupedWindowCount(accepted.construction.graph,accepted.ir)} storefrontCount={groupedStorefrontCount(accepted.construction.graph,accepted.ir)} localWidthCount={constructionOpeningOptions(accepted.construction.graph,accepted.ir).filter(option=>option.overridden).length}
         disabled={disabled || !viewerReady || Boolean(previewNode)} dirty={buildingDirty}
