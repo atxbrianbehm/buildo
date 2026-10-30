@@ -1,0 +1,37 @@
+import type { ComponentCatalog } from "../components/componentCatalogBuilder";
+import type { RuntimeBuildingIR } from "../contracts/runtimeBuildingIR";
+import type { BuildingSurfaceRuntime } from "../renderer-three/surfaceMaterialRuntime";
+import { resolveConstructionStorefront } from "../core/constructionStorefront";
+import { resolveConstructionAwning } from "../core/constructionAwning";
+import { buildConstructionAwningGeometry } from "../compiler/constructionAwningGeometry";
+import { createConstructionAwningFabric } from "../materials/constructionAwningFabric";
+import { createAtlasMaterialRegistry } from "../renderer-three/buildingAtlasMaterialFactory";
+import { CONSTRUCTION_AWNING_FABRIC_SLOT, prepareConstructionAwningFabricRuntime } from "../renderer-three/constructionAwningFabricRuntime";
+import { createBuildingSceneRuntime, disposeBuildingSceneRuntime } from "../renderer-three/buildingSceneAdapter";
+
+it("binds separately owned fabric to semantic awning meshes and releases it with the scene", async () => {
+  const storefront = resolveConstructionStorefront({ schemaVersion: "0.1.0", kind: "construction-storefront-request", assembly: "display", scope: { id: "front/0/1", face: "front", floorIndex: 0, bayIndex: 1, originM: [1, 0, -0.36], sizeM: [2.8, 4, 0.36] }, parameters: { pierWidthM: 0.16, bulkheadHeightM: 0.55, headHeightM: 0.45, transomBaseM: 2.35, frameWidthM: 0.075, recessM: 0.14, entranceWidthM: 1.22 } });
+  const plan = resolveConstructionAwning({ schemaVersion: "0.1.0", kind: "construction-awning-request", storefront, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 });
+  const geometry = buildConstructionAwningGeometry(plan);
+  const meshBatches = ([['canopy', geometry.roof], ['valance', geometry.valance]] as const).map(([name, part]) => ({ batchId: `awning.${name}`, role: `awning.${name}`, materialSlotId: CONSTRUCTION_AWNING_FABRIC_SLOT, positions: new Float32Array(part.positions), normals: new Float32Array(part.normals), uvs: new Float32Array(part.uvs), indices: new Uint32Array(part.indices) }));
+  const ir: RuntimeBuildingIR = { schemaVersion: "0.1.0", buildingId: "demo", familyId: "demo", sourceGraphHash: "demo", bounds: { min: [0, 0, 0], max: [4, 4, 2] }, meshBatches, instanceBatches: [], semanticIndex: meshBatches.map(batch => ({ semanticPath: `building/demo/node/storefront/floor/0/bay/1/${batch.role}`, batchId: batch.batchId, stage: "openings" })), metrics: { vertexCount: 48, triangleCount: 24, instanceCount: 0 } };
+  const fabric = await createConstructionAwningFabric({ schemaVersion: "0.1.0", kind: "construction-awning-fabric-request", seed: "scene-fabric", pattern: "striped", primary: [220, 210, 190], secondary: [60, 90, 70], physicalSizeM: [0.5, 2] });
+  const owner = await prepareConstructionAwningFabricRuntime(fabric), registry = createAtlasMaterialRegistry({ atlasId: "atlas", atlasContentHash: "atlas-hash" });
+  const input = { ir, catalog: {} as ComponentCatalog, materialRegistry: registry };
+  expect(() => createBuildingSceneRuntime(input)).toThrow(/needs its supplemental material/);
+  expect(() => createBuildingSceneRuntime({ ...input, awningFabricRuntime: owner, surfaceRuntime: {} as BuildingSurfaceRuntime })).toThrow(/cannot yet use surface composition/);
+  const invalid = { ...ir, semanticIndex: ir.semanticIndex.slice(1) };
+  expect(() => createBuildingSceneRuntime({ ...input, ir: invalid, awningFabricRuntime: owner })).toThrow(/semantic opening address/);
+  const duplicate = { ...ir, semanticIndex: [...ir.semanticIndex, { ...ir.semanticIndex[0], batchId: "other" }] };
+  expect(() => createBuildingSceneRuntime({ ...input, ir: duplicate, awningFabricRuntime: owner })).toThrow(/semantic opening address/);
+  const wrongSlot = { ...ir, meshBatches: ir.meshBatches.map(batch => ({ ...batch, materialSlotId: "wall.primary" })) };
+  expect(() => createBuildingSceneRuntime({ ...input, ir: wrongSlot, awningFabricRuntime: owner })).toThrow(/require the supplemental fabric slot/);
+  const scene = createBuildingSceneRuntime({ ...input, awningFabricRuntime: owner });
+  const canopy = scene.objectsByBatchId.get("awning.canopy")!, material = canopy.material, dispose = vi.fn();
+  material.addEventListener("dispose", dispose);
+  expect(material.userData.fabricContentHash).toBe(fabric.contentHash);
+  expect(scene.semanticLookup.get(ir.semanticIndex[0].semanticPath)?.object).toBe(canopy);
+  expect(scene.objectsByBatchId.get("awning.valance")!.material).toBe(material);
+  expect(registry.listMaterialSlotIds()).not.toContain(CONSTRUCTION_AWNING_FABRIC_SLOT);
+  owner.dispose(); expect(dispose).not.toHaveBeenCalled(); disposeBuildingSceneRuntime(scene); expect(dispose).toHaveBeenCalledOnce();
+});

@@ -20,6 +20,7 @@ import type { MeshBatchIR, RuntimeBuildingIR } from "../contracts/runtimeBuildin
 import type { AssemblyStage } from "../contracts/shared";
 import type { AtlasMaterialRegistry } from "./buildingAtlasMaterialFactory";
 import type { BuildingSurfaceLease, BuildingSurfaceRuntime } from "./surfaceMaterialRuntime";
+import { CONSTRUCTION_AWNING_FABRIC_SLOT, type ConstructionAwningFabricLease, type ConstructionAwningFabricRuntime } from "./constructionAwningFabricRuntime";
 import { createRecipeBufferGeometry } from "./recipeGeometryFactory";
 import type { AtlasSlotTextureWindow } from "./buildingAtlasTextureFactory";
 import { createWallAtlasGeometry } from "./wallAtlasGeometry";
@@ -89,6 +90,7 @@ export interface BuildingSceneRuntime {
   materialRegistry: AtlasMaterialRegistry;
   surfaceRuntime?: BuildingSurfaceRuntime;
   surfaceLease?: BuildingSurfaceLease;
+  awningFabricLease?: ConstructionAwningFabricLease;
   metrics: {
     meshCount: number;
     instanceBatchCount: number;
@@ -106,6 +108,7 @@ export interface CreateBuildingSceneRuntimeInput {
   materialRegistry: AtlasMaterialRegistry;
   componentGallery?: ComponentGallery;
   surfaceRuntime?: BuildingSurfaceRuntime;
+  awningFabricRuntime?: ConstructionAwningFabricRuntime;
   /** Compiler-owned procedural prototypes; legacy catalog recipes remain the default. */
   compiledInstanceGeometry?: ReadonlyMap<string, MeshBatchIR>;
 }
@@ -460,11 +463,20 @@ export function createBuildingSceneRuntime(input: CreateBuildingSceneRuntimeInpu
   };
 
   try {
+    const fabricMeshes = input.ir.meshBatches.filter(batch => batch.materialSlotId === CONSTRUCTION_AWNING_FABRIC_SLOT);
+    if (input.ir.instanceBatches.some(batch => batch.materialSlotId === CONSTRUCTION_AWNING_FABRIC_SLOT)) throw new Error("Supplemental awning fabric currently supports mesh batches only.");
+    if (input.ir.meshBatches.some(batch => ["awning.canopy", "awning.valance"].includes(batch.role) && batch.materialSlotId !== CONSTRUCTION_AWNING_FABRIC_SLOT)) throw new Error("Awning surfaces require the supplemental fabric slot.");
+    if (fabricMeshes.length && (!input.awningFabricRuntime || input.surfaceRuntime)) throw new Error("Awning fabric needs its supplemental material and cannot yet use surface composition.");
+    if (fabricMeshes.some(batch => {
+      const entries = input.ir.semanticIndex.filter(entry => entry.batchId === batch.batchId), entry = entries[0];
+      return !["awning.canopy", "awning.valance"].includes(batch.role) || entries.length !== 1 || entry.elementIndex !== undefined || entry.stage !== "openings" || !entry.semanticPath.startsWith(`building/${input.ir.familyId}/`) || input.ir.semanticIndex.filter(other => other.semanticPath === entry.semanticPath).length !== 1 || [...input.ir.meshBatches, ...input.ir.instanceBatches].filter(other => other.batchId === batch.batchId).length !== 1;
+    })) throw new Error("Awning fabric batches require one matching semantic opening address.");
+    if (fabricMeshes.length) runtime.awningFabricLease = input.awningFabricRuntime!.acquire();
     runtime.surfaceLease = input.surfaceRuntime?.acquire(input.ir, input.materialRegistry);
     for (const batch of input.ir.meshBatches) {
       const stage = stageForBatch(input.ir, batch.batchId);
       const materialSlotId = batch.materialSlotId ?? "utility.mask";
-      const material = runtime.surfaceLease?.getMaterial(batch.batchId) ?? input.materialRegistry.getMaterial(materialSlotId);
+      const material = materialSlotId === CONSTRUCTION_AWNING_FABRIC_SLOT ? runtime.awningFabricLease!.material : runtime.surfaceLease?.getMaterial(batch.batchId) ?? input.materialRegistry.getMaterial(materialSlotId);
       const geometry = adaptGeometry(createMeshGeometry(batch), material, "meters");
       const mesh = new Mesh(geometry, material) as BuildingRenderable;
       mesh.name = batch.batchId;
