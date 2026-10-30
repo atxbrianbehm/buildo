@@ -15,11 +15,14 @@ import { createConstructionSurfaceBases } from "../materials/surfaceBaseAppearan
 import { createFamilySurfacePixelCache, disposeFamilySurfacePixelCache, prepareBuildingSurfaceRuntime, type BuildingSurfaceRuntime, type FamilySurfacePixelCache } from "../renderer-three/surfaceMaterialRuntime";
 
 import { generateConstructionReferenceAtlas } from "../materials/constructionReferenceMaterials";
+import type { ConstructionAwningFabricArtifact } from "../contracts/constructionAwningFabric";
+import { CONSTRUCTION_AWNING_FABRIC_SLOT, prepareConstructionAwningFabricRuntime, type ConstructionAwningFabricRuntime } from "../renderer-three/constructionAwningFabricRuntime";
 
 export interface BayConstructionMaterials {
   packedAtlas: PackedAtlas;
   debugExport: AtlasDebugExport;
   file: BuildingSourceFile;
+  awningFabric?: ConstructionAwningFabricArtifact;
 }
 export type BayConstructionFixture = AssemblyHallFixture & { construction: BayConstructionResult };
 
@@ -37,27 +40,31 @@ function configureConstructionSurface(surface: BuildingSurfaceRuntime) {
 /** Preparation owns resources until the caller can atomically publish the new view. */
 export async function prepareBayConstructionFixture(base: AssemblyHallFixture, result: BayConstructionResult,
   materials: BayConstructionMaterials, signal?: AbortSignal, familyCache?: FamilySurfacePixelCache): Promise<BayConstructionFixture> {
-  const fixture = createBayConstructionFixture(base, result, materials);
+  const hasAwning = result.ir.meshBatches.some(batch => batch.materialSlotId === CONSTRUCTION_AWNING_FABRIC_SLOT);
+  if (hasAwning && !materials.awningFabric) throw new Error("Awning geometry requires its saved fabric source.");
+  const owner = hasAwning ? await prepareConstructionAwningFabricRuntime(materials.awningFabric) : undefined;
+  let fixture: BayConstructionFixture | undefined;
   let surface: BuildingSurfaceRuntime | undefined;
   const check = () => { if (signal?.aborted) throw new DOMException("Construction was cancelled.", "AbortError"); };
   try {
-    check();
+    check(); fixture = createBayConstructionFixture(base, result, materials, owner);
+    if (owner) { const dispose = fixture.familyRuntime.dispose; fixture.familyRuntime.dispose = () => { try { return dispose(); } finally { owner.dispose(); } }; }
     if (result.surfaceComposition) {
       const baseAppearances = await createConstructionSurfaceBases(); check();
-      surface = await prepareBuildingSurfaceRuntime({ composition: result.surfaceComposition, ir: result.ir, atlas: materials.packedAtlas, baseAppearances }, familyCache); check();
+      surface = await prepareBuildingSurfaceRuntime({ composition: result.surfaceComposition, ir: result.ir, atlas: materials.packedAtlas, baseAppearances, ...(hasAwning ? { awningFabric: materials.awningFabric } : {}) }, familyCache); check();
       if (constructionUsesOperator(result.graph, "Footprint", result.previewNodeId ?? result.graph.outputNodeId)) configureConstructionSurface(surface);
       const baseTextureCount = fixture.familyRuntime.metrics.textureCount;
       fixture.buildingRuntime = fixture.familyRuntime.createOrReplaceBuilding({ ir: result.ir, catalog: fixture.catalog,
-        componentGallery: fixture.componentGallery, compiledInstanceGeometry: new Map(result.prototypes?.map(prototype => [prototype.batchId, prototype])), surfaceRuntime: surface });
+        componentGallery: fixture.componentGallery, compiledInstanceGeometry: new Map(result.prototypes?.map(prototype => [prototype.batchId, prototype])), surfaceRuntime: surface, awningFabricRuntime: owner });
       fixture.familyRuntime.metrics.textureCount = baseTextureCount + surface.metrics.textureCount;
       fixture.metrics.textureCount = fixture.familyRuntime.metrics.textureCount;
       fixture.metrics.drawCallCount = fixture.familyRuntime.metrics.drawCallCount;
       fixture.variantStress.aggregate.drawCallCount = fixture.familyRuntime.metrics.drawCallCount;
-      const originalDispose = fixture.familyRuntime.dispose, owner = surface;
-      fixture.familyRuntime.dispose = () => { try { return originalDispose(); } finally { owner.dispose(); } };
+      const originalDispose = fixture.familyRuntime.dispose, surfaceOwner = surface;
+      fixture.familyRuntime.dispose = () => { try { return originalDispose(); } finally { surfaceOwner.dispose(); } };
     }
     return fixture;
-  } catch (error) { try { fixture.familyRuntime.dispose(); } finally { surface?.dispose(); } throw error; }
+  } catch (error) { try { fixture?.familyRuntime.dispose(); } finally { surface?.dispose(); owner?.dispose(); } throw error; }
 }
 
 /** Prepare a temporary family view; every member shares one atlas and material registry. */
@@ -206,7 +213,7 @@ function glazingEnvironment(): CubeTexture {
 
 /** Projects only the new evaluated IR into the existing viewer; no fixed building compilation. */
 export function createBayConstructionFixture(
-  base: AssemblyHallFixture, construction: BayConstructionResult, materials: BayConstructionMaterials
+  base: AssemblyHallFixture, construction: BayConstructionResult, materials: BayConstructionMaterials, awningFabricRuntime?: ConstructionAwningFabricRuntime
 ): BayConstructionFixture {
   const { ir, graph } = construction;
   const wholeBuilding=constructionUsesOperator(graph,"Footprint",construction.previewNodeId ?? graph.outputNodeId);
@@ -266,7 +273,7 @@ export function createBayConstructionFixture(
       familyId: ir.familyId, buildingId: ir.buildingId, sourceGraphHash: ir.sourceGraphHash, entries: [], diagnostics: []
     };
     const buildingRuntime = familyRuntime.createOrReplaceBuilding({ ir, catalog, componentGallery,
-      compiledInstanceGeometry: new Map(construction.prototypes?.map(prototype => [prototype.batchId, prototype])) });
+      compiledInstanceGeometry: new Map(construction.prototypes?.map(prototype => [prototype.batchId, prototype])), awningFabricRuntime });
     familyRuntime.metrics.textureCount += extras.length;
     const facade = construction.trace.find(entry => entry.type === "FacadeScope") ?? { bounds: ir.bounds };
     const width = facade.bounds.max[0] - facade.bounds.min[0], height = facade.bounds.max[1] - facade.bounds.min[1];
