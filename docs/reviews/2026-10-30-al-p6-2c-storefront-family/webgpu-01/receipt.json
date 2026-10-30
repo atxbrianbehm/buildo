@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "0.1.0",
+  "api": "webgpu",
+  "lights": [
+    {
+      "displayLights": 1,
+      "transomLights": 2
+    },
+    {
+      "displayLights": 2,
+      "transomLights": 1
+    },
+    {
+      "displayLights": 1,
+      "transomLights": 1
+    },
+    {
+      "displayLights": 2,
+      "transomLights": 2
+    },
+    {
+      "displayLights": 1,
+      "transomLights": 3
+    },
+    {
+      "displayLights": 2,
+      "transomLights": 3
+    }
+  ],
+  "selected": 5,
+  "memberEdit": true,
+  "siblingsAndSourceUnchanged": true,
+  "reopened": true,
+  "materialHash": "e912990f01e37be516a5dc151f66471b16afa14a40fcfe8dd2fa475925d68bca",
+  "providerCallsDelta": 0,
+  "errors": []
+}

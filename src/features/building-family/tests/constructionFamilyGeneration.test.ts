@@ -31,6 +31,23 @@ async function fixture() {
 }
 
 describe("authored construction family generation", () => {
+  it("generates diverse storefront lights and refuses authored divisions and imported opening pins", async () => {
+    const { lineage, graph } = await fixture();
+    const storefront = withConstructionStorefront(graph, 1);
+    const plan = resolveConstructionFamilyPlan({ schemaVersion: "0.1.0", kind: "construction-family-request", familyId: "lights_family", familySeed: "lights-seed", graph: storefront });
+    const composition = resolveConstructionFamilyComposition({ schemaVersion: "0.3.0", kind: "construction-family-composition-request", familySeed: "lights-seed",
+      policy: { openings: false, frontage: false, roof: false, groupedBays: false, storefrontLights: true }, openingLock: false });
+    if (composition.schemaVersion !== "0.3.0") throw new Error("Wrong plan version");
+    const family = await resolveConstructionFamily(plan, lineage, defaultConstructionGenerationControls, undefined, composition);
+    expect(family.members.map(member => member.construction.graph.storefrontDivision ?? { displayLights: 1, transomLights: 1 })).toEqual(composition.members.map(member => member.storefrontLights));
+    const authored = withConstructionStorefrontDivision(storefront, { displayLights: 2, transomLights: 3 });
+    const authoredPlan = resolveConstructionFamilyPlan({ ...plan.source, graph: authored });
+    await expect(resolveConstructionFamily(authoredPlan, lineage, defaultConstructionGenerationControls, undefined, composition)).rejects.toThrow(/cannot overwrite/);
+    const old = lineage.source, pinned = await captureConstructionGenerationSource({ schemaVersion: "0.1.0", kind: "construction-generation-input", documentId: old.documentId,
+      intent: { ...old.intent, locks: [{ semanticPath: "construction/opening/widthM", scope: "building", lockedValue: 1.22, reason: "Imported pin" }] }, recipe: old.recipe, reference: old.reference, intentionalExceptions: old.intentionalExceptions });
+    const pinnedLineage = { ...lineage, source: pinned, resolution: await resolveConstructionGeneration(pinned), materialPlan: await planConstructionReferenceMaterials(lineage.materialPlan.templateSpec, pinned) };
+    await expect(resolveConstructionFamily(plan, pinnedLineage, defaultConstructionGenerationControls, undefined, composition)).rejects.toThrow(/conflicts with the pinned lock/);
+  }, 120000);
   it("retains divided storefronts for all family members and rejects conflicting frontage variation", async () => {
     const { lineage, graph } = await fixture();
     const authored = withConstructionStorefrontDivision(withConstructionStorefront(graph, 1), { displayLights: 2, transomLights: 3 });

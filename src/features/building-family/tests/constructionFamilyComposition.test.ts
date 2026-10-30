@@ -6,12 +6,42 @@ import { withConstructionRoundHead } from "../core/constructionRoundHeadVocabula
 import { withConstructionWindowLayout } from "../core/constructionWindowVocabulary";
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { withConstructionGroupedBays } from "../core/constructionGroupedBayGraph";
+import { withConstructionStorefrontDivision } from "../core/constructionStorefrontDivisionGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
 
 const request = () => ({ schemaVersion: "0.1.0", kind: "construction-family-composition-request", familySeed: "family-one",
   policy: { openings: true, frontage: true, roof: true }, openingLock: false });
 
 describe("family architectural composition", () => {
+  it("replays varied storefront lights, protects authored divisions and coordinates punched frontage", async () => {
+    const input = { schemaVersion: "0.3.0", kind: "construction-family-composition-request", familySeed: "lights-seed",
+      policy: { openings: false, frontage: false, roof: false, groupedBays: false, storefrontLights: true }, openingLock: false };
+    const plan = resolveConstructionFamilyComposition(input);
+    if (plan.schemaVersion !== "0.3.0") throw new Error("Wrong plan version");
+    expect(readConstructionFamilyCompositionPlan(JSON.parse(JSON.stringify(plan)))).toEqual(plan);
+    expect(new Set(plan.members.map(member => JSON.stringify(member.storefrontLights))).size).toBe(6);
+    const base = withConstructionStorefront(createBuildingConstructionGraph(), 1), before = structuredClone(base);
+    for (let ordinal = 1; ordinal <= 6; ordinal++) {
+      const candidate = applyConstructionFamilyComposition(base, plan, ordinal), lights = plan.members[ordinal - 1].storefrontLights!;
+      expect(candidate.storefrontDivision ?? { displayLights: 1, transomLights: 1 }).toEqual(lights);
+      await evaluateConstruction(candidate);
+    }
+    expect(base).toEqual(before);
+    expect(() => applyConstructionFamilyComposition(withConstructionStorefrontDivision(base, { displayLights: 2, transomLights: 3 }), plan, 1)).toThrow(/cannot overwrite/);
+    expect(() => resolveConstructionFamilyComposition({ ...input, openingLock: true })).toThrow(/Unlock openings/);
+    const tampered = structuredClone(plan); tampered.members[0].storefrontLights!.displayLights = tampered.members[0].storefrontLights!.displayLights === 1 ? 2 : 1;
+    expect(() => readConstructionFamilyCompositionPlan(tampered)).toThrow(/do not match/);
+    const coordinated = resolveConstructionFamilyComposition({ ...input, policy: { ...input.policy, frontage: true } });
+    if (coordinated.schemaVersion !== "0.3.0") throw new Error("Wrong plan version");
+    expect(coordinated.members.every(member => member.frontage !== 0 || member.storefrontLights === null)).toBe(true);
+    for (let ordinal = 1; ordinal <= 6; ordinal++) {
+      const candidate = applyConstructionFamilyComposition(base, coordinated, ordinal), chosen = coordinated.members[ordinal - 1];
+      expect(candidate.nodes.find(node => node.type === "PlaceStorefront")!.parameters.mode).toBe(chosen.frontage);
+      if (chosen.frontage === 0) expect(candidate.storefrontDivision).toBeUndefined();
+      else expect(candidate.storefrontDivision ?? { displayLights: 1, transomLights: 1 }).toEqual(chosen.storefrontLights);
+      await evaluateConstruction(candidate);
+    }
+  }, 30000);
   it("gives six explicit repeatable coordinated demo choices with seed-dependent ordering", () => {
     const input = request(), plan = resolveConstructionFamilyComposition(input), before = structuredClone(input);
     expect(readConstructionFamilyCompositionPlan(JSON.parse(JSON.stringify(plan)))).toEqual(plan);
