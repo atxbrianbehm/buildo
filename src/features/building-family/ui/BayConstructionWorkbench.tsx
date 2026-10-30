@@ -180,7 +180,6 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     historyAction: "edit" | "open" | "undo" | "redo" = "edit", lineage?: ConstructionGenerationLineage | null) => {
     const isCurrent = () => alive.current && sequence.current === token && !signal.aborted;
     if (!isCurrent()) return;
-    if (graph.schemaVersion === "0.16.0") throw new Error("Sign-bearing buildings are not yet supported in the construction workspace.");
     const previous = current.current;
     const nextGeneration = lineage === undefined ? previous?.generation ?? null : lineage;
     if (previous && shown.current === previous.fixture && JSON.stringify(previous.fixture.construction.graph) === JSON.stringify(graph) &&
@@ -686,6 +685,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   }
   const labelFor = (key: string) => key === "bayIndex" && node.type === "PlaceDoor" ? "Entrance bay index" : key === "count" ? (node.type === "SplitFloors" || node.type === "Storeys") ? "Floor count" : "Bay count" : labels[key];
   const pierProtected = accepted?.construction.graph.schemaVersion === "0.15.0";
+  const signProtected = accepted?.construction.graph.schemaVersion === "0.16.0";
   const buildingMode = accepted && constructionUsesOperator(accepted.construction.graph,"Footprint");
   const facadeMode = accepted && (constructionUsesOperator(accepted.construction.graph,"SplitFloors") || constructionUsesOperator(accepted.construction.graph,"SplitBays"));
   const displayName = (value: BayConstructionNode) => {
@@ -783,22 +783,22 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       </div>
       {buildingMode && !advancedOpen && accepted && supportsGroupedConstruction(accepted.construction.graph) ? <ConstructionOpeningControls
         key={accepted.ir.sourceGraphHash+":"+selectedFrame} options={constructionOpeningOptions(accepted.construction.graph,accepted.ir)} selectedPath={selectedFrame}
-        disabled={pending || saving || familyPreview || familyReturning || buildingDirty || groupDirty || !viewerReady || Boolean(previewNode)} buildingDirty={buildingDirty}
+        disabled={signProtected || pending || saving || familyPreview || familyReturning || buildingDirty || groupDirty || !viewerReady || Boolean(previewNode)} buildingDirty={buildingDirty}
         onSelect={path=>{const source=current.current;if(!source || shown.current!==source.fixture)return;
           if(!path || constructionOpeningOptions(source.fixture.construction.graph,source.fixture.ir).some(option=>option.path===path))chooseFrame(path||null);}}
         onApply={text=>void applyOpeningWidth(text)} onReset={()=>void applyOpeningWidth(null)} onDraftChange={value=>{setOpeningDirty(value);if(!value)setError(null);}} /> : null}
       {buildingMode && !advancedOpen && accepted && supportsGroupedConstruction(accepted.construction.graph) ? <ConstructionGroupedBayControls
         key={`${accepted.construction.graph.nodes.find(node => node.type === "Storeys")?.parameters.count}:${accepted.construction.graph.nodes.find(node => node.type === "SplitBays")?.parameters.count}`}
-        graph={accepted.construction.graph} dirty={groupDirty} disabled={pending || saving || openingDirty || buildingDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode)}
+        graph={accepted.construction.graph} dirty={groupDirty} disabled={signProtected || pending || saving || openingDirty || buildingDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode)}
         onDraftChange={value => { setGroupDirty(value); if (!value) setError(null); }} onApply={edit => void applyGroupedBay(edit)} /> : null}
       {buildingMode && !advancedOpen && accepted && supportsGroupedConstruction(accepted.construction.graph) && constructionHasStorefront(accepted.construction.graph) ? <ConstructionAwningControls
-        graph={accepted.construction.graph} disabled={pending || saving || openingDirty || buildingDirty || groupDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode) || (familyMemberMode && !startingSession?.materials.awningFabric)}
+        graph={accepted.construction.graph} disabled={signProtected || pending || saving || openingDirty || buildingDirty || groupDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode) || (familyMemberMode && !startingSession?.materials.awningFabric)}
         unavailableReason={familyMemberMode && !startingSession?.materials.awningFabric ? "Add an awning to the original building before creating this family." : undefined}
         supportDisabled={familyMemberMode} onSupportChange={(bay, enabled) => void changeAwningSupport(bay, enabled)}
         fabric={awningFabric} fabricDisabled={familyMemberMode}
         onFabricChange={(pattern, primary, secondary) => void changeAwningFabric(pattern, primary, secondary)}
         onChange={(bay, enabled, dimensions) => void changeAwning(bay, enabled, dimensions)} /> : null}
-      {buildingMode && !advancedOpen && accepted && supportsGroupedConstruction(accepted.construction.graph) ? <section className="construction-generate" aria-label="Upper facade piers">
+      {buildingMode && !advancedOpen && !signProtected && accepted && supportsGroupedConstruction(accepted.construction.graph) ? <section className="construction-generate" aria-label="Upper facade piers">
         <h3>Upper facade piers</h3>
         <p>Place a vertical pier at each front bay edge on upper storeys. The demo proportions require clearance from windows and trim.</p>
         <button type="button" disabled={disabled || dirty || openingDirty || groupDirty || !viewerReady || Boolean(previewNode)}
@@ -850,23 +850,23 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       {buildingMode ? <details className="construction-advanced" open={advancedOpen} onToggle={event => setAdvancedOpen(event.currentTarget.open)}>
         <summary>Advanced recipe graph</summary>
         {advancedOpen ? <><p>Connections change construction logic. Added nodes or custom connections pause recipe generation until restored.</p>
-          {pierProtected ? <p>Advanced graph editing and node previews are unavailable while facade piers are present.</p> : nodeProperties}
-      <ConstructionNodePanel graph={draft} selected={node.id} disabled={pierProtected || disabled} names={names} onSelect={setSelected} onChange={changeGraph} />
+          {pierProtected || signProtected ? <p>Advanced graph editing and node previews are unavailable while facade piers or a sign are present.</p> : nodeProperties}
+      <ConstructionNodePanel graph={draft} selected={node.id} disabled={pierProtected || signProtected || disabled} names={names} onSelect={setSelected} onChange={changeGraph} />
       <div className="control-panel__actions construction-preview-actions">
-        <button type="button" disabled={pierProtected || disabled || dirty || !viewerReady} onClick={() => void preview(node.id)}>Preview selected</button>
+        <button type="button" disabled={pierProtected || signProtected || disabled || dirty || !viewerReady} onClick={() => void preview(node.id)}>Preview selected</button>
         <button type="button" disabled={disabled || !previewNode || !viewerReady} onClick={() => void preview(null)}>Show construction</button>
       </div>
           {!familyMemberMode ? <button type="button" onClick={onReturn}>Advanced generator</button> : null}</> : null}
       </details> : <>
-      <ConstructionNodePanel graph={draft} selected={node.id} disabled={pierProtected || disabled} names={names} onSelect={setSelected} onChange={changeGraph} />
+      <ConstructionNodePanel graph={draft} selected={node.id} disabled={pierProtected || signProtected || disabled} names={names} onSelect={setSelected} onChange={changeGraph} />
       <div className="control-panel__actions construction-preview-actions">
-        <button type="button" disabled={pierProtected || disabled || dirty || !viewerReady} onClick={() => void preview(node.id)}>Preview selected</button>
+        <button type="button" disabled={pierProtected || signProtected || disabled || dirty || !viewerReady} onClick={() => void preview(node.id)}>Preview selected</button>
         <button type="button" disabled={disabled || !previewNode || !viewerReady} onClick={() => void preview(null)}>Show construction</button>
       </div></>}
 
-      {accepted ? <ConstructionSurfacePanel graph={draft} atlas={accepted.packedAtlas} selectedPath={selectedFrame} selectedNode={selected} disabled={pierProtected || disabled || Boolean(previewNode)}
+      {accepted ? <ConstructionSurfacePanel graph={draft} atlas={accepted.packedAtlas} selectedPath={selectedFrame} selectedNode={selected} disabled={pierProtected || signProtected || disabled || Boolean(previewNode)}
         onChange={(graph, id) => { changeGraph(graph); setSelected(id); }} /> : null}
-      {buildingMode && !familyMemberMode ? <details className="construction-generate"><summary>Generate & vary</summary><ConstructionGenerationPanel controls={generationControls} lineage={generation} reference={referenceDraft} onReferenceFile={file => void importReference(file)} disabled={disabled || dirty || !viewerReady}
+      {buildingMode && !familyMemberMode ? <details className="construction-generate"><summary>Generate & vary</summary><ConstructionGenerationPanel controls={generationControls} lineage={generation} reference={referenceDraft} onReferenceFile={file => void importReference(file)} disabled={signProtected || disabled || dirty || !viewerReady}
         onChange={setGenerationControls} onGenerate={reroll => void generateBuilding(reroll)} /></details> : null}
       {buildingMode && !familyMemberMode ? <section className="construction-generate" aria-label="Building family preview"><h3>Related buildings</h3>
         <p>Preview six related buildings using this building's material. Choose which architectural details may vary; unchecked groups keep your authored choices. The current choices use a small demo catalog.</p>
@@ -886,7 +886,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         {familyPierVariation ? <p>Vary demo piers across the family. Existing authored piers are retained; openings need enough clearance.</p> : null}
         {generationControls.lockOpenings && (familyVariation.openings || familyVariation.frontage || familyVariation.groupedBays || familyVariation.storefrontLights || familyVariation.awnings || familyVariation.entranceBay || familyPierVariation) ? <p>Unlock openings to vary opening heads, grouped windows, sash, storefronts, entrances, awnings or piers.</p> : null}
         <div className="control-panel__actions">{familyPreview ? <button type="button" disabled={pending || saving || !viewerReady || familyDirty} onClick={() => void preview(null)}>Return to building</button>
-          : <button type="button" disabled={disabled || dirty || !viewerReady || !generation || Boolean(previewNode) || !familySeed.trim()} onClick={() => void previewFamily()}>Preview family</button>}</div>
+          : <button type="button" disabled={signProtected || disabled || dirty || !viewerReady || !generation || Boolean(previewNode) || !familySeed.trim()} onClick={() => void previewFamily()}>Preview family</button>}</div>
         <div className="control-panel__actions"><button type="button" disabled={pending || saving || !familyPreview} onClick={() => void saveFamily()}>Save family</button>
           <button type="button" disabled={pending || saving || dirty || familyDirty || !viewerReady} onClick={() => familyInput.current?.click()}>Open family</button>
           <input ref={familyInput} type="file" accept=".json,application/json" hidden aria-label="Open family file"
