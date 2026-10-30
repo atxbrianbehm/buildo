@@ -782,7 +782,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       </div>
       {buildingMode && !advancedOpen && accepted && supportsGroupedConstruction(accepted.construction.graph) ? <ConstructionOpeningControls
         key={accepted.ir.sourceGraphHash+":"+selectedFrame} options={constructionOpeningOptions(accepted.construction.graph,accepted.ir)} selectedPath={selectedFrame}
-        disabled={pierProtected || pending || saving || familyPreview || familyReturning || buildingDirty || groupDirty || !viewerReady || Boolean(previewNode)} buildingDirty={buildingDirty}
+        disabled={pending || saving || familyPreview || familyReturning || buildingDirty || groupDirty || !viewerReady || Boolean(previewNode)} buildingDirty={buildingDirty}
         onSelect={path=>{const source=current.current;if(!source || shown.current!==source.fixture)return;
           if(!path || constructionOpeningOptions(source.fixture.construction.graph,source.fixture.ir).some(option=>option.path===path))chooseFrame(path||null);}}
         onApply={text=>void applyOpeningWidth(text)} onReset={()=>void applyOpeningWidth(null)} onDraftChange={value=>{setOpeningDirty(value);if(!value)setError(null);}} /> : null}

@@ -11,12 +11,24 @@ import { resolveWorkbenchGeneration, defaultConstructionGenerationControls } fro
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { withConstructionRoundHead } from "../core/constructionRoundHeadVocabulary";
 import { withConstructionFacadePiers, withoutConstructionFacadePiers } from "../core/constructionFacadePierGraph";
+import { withConstructionOpeningWidth, withoutConstructionOpeningWidth } from "../core/constructionOpeningEditGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
 import { evaluateConstructionFacadePierStudy } from "../compiler/evaluateConstructionFacadePierStudy";
 import { BayConstructionWorkerRequestSchema, BayConstructionWorkerReplySchema } from "../compiler/bayConstructionWorkerProtocol";
 
 const directive = { pierWidthM: 0.28, projectionM: 0.18, endHeightM: 0.15, clearanceM: 0.04 };
 describe("facade pier graph and worker", () => {
+  it("edits a local window while retaining piers and rejects a conflicting width", async () => {
+    const graph = withConstructionFacadePiers(createBuildingConstructionGraph("pier_local"), directive), original = structuredClone(graph);
+    const target = { documentId: graph.documentId, storeysNodeId: "facade", windowNodeId: "window", face: "front" as const, floorIndex: 1, bayIndex: 1 };
+    const edited = withConstructionOpeningWidth(graph, { target, widthM: 1 });
+    expect(edited.schemaVersion).toBe("0.15.0"); expect(edited.facadePiers).toEqual(directive);
+    expect((await evaluateConstruction(edited)).ir.meshBatches.some(batch => batch.role === "facade-pier")).toBe(true);
+    expect(withoutConstructionOpeningWidth(edited, target)).toEqual(original);
+    const conflicting = withConstructionOpeningWidth(graph, { target, widthM: 2.4 });
+    await expect(evaluateConstruction(conflicting)).rejects.toThrow(/conflicts with an opening clearance/);
+    expect(graph).toEqual(original);
+  });
   it("retains authored piers, awnings and supports or explicitly releases them", async () => {
     const awning = withConstructionAwnings(withConstructionStorefront(createBuildingConstructionGraph("pier_graph"), 1), [{ bayIndex: 0, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }]);
     const supported = withConstructionAwningSupports(awning, [{ bayIndex: 0, anchorRiseM: 0.15, thicknessM: 0.03 }]);
