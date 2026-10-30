@@ -340,14 +340,13 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     if (!acceptedSource || dirty) return;
     const controls = structuredClone(generationControls), reference = referenceDraft ? structuredClone(referenceDraft) : undefined;
     await perform(async (token, signal) => {
-      if (acceptedSource.materials.awningFabric) throw new Error("Generation cannot yet retain supplemental awning fabric. Save the current building before generating a separate one.");
       const result = await resolveWorkbenchGeneration(acceptedSource.fixture.construction.graph, acceptedSource.generation, controls, reroll, reference);
       if (signal.aborted) return;
       const templateSpec = acceptedSource.generation?.materialPlan.templateSpec ?? base.spec;
       let plan = await planConstructionReferenceMaterials(templateSpec, result.source), materials = acceptedSource.materials;
       if (acceptedSource.generation?.materialPlan.materialInputsHash !== plan.materialInputsHash) {
         const generated = await createReferenceConstructionMaterials(base, result.source, signal, templateSpec);
-        plan = generated.plan; materials = generated.materials;
+        plan = generated.plan; materials = { ...generated.materials, ...(acceptedSource.materials.awningFabric ? { awningFabric: acceptedSource.materials.awningFabric } : {}) };
       }
       if (signal.aborted) return;
       const lineage: ConstructionGenerationLineage = { schemaVersion: "0.1.0", kind: "construction-generation-lineage",

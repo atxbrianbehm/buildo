@@ -26,5 +26,13 @@ it("compiles deterministic awning surfaces on selected storefront bays with stab
   expect(withConstructionStorefrontDivision(graph, { displayLights: 1, transomLights: 1 }).awnings).toEqual(graph.awnings);
   expect(withConstructionOpeningEdits(graph).awnings).toEqual(graph.awnings);
   await expect(evaluateConstruction(withConstructionAwnings(base, [{ bayIndex: 19, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }]))).rejects.toThrow(/existing storefront/);
-  await expect(resolveWorkbenchGeneration(graph, null, defaultConstructionGenerationControls)).rejects.toThrow(/cannot yet retain awning/);
+  const kept = await resolveWorkbenchGeneration(graph, null, defaultConstructionGenerationControls);
+  expect(kept.graph.awnings).toEqual(graph.awnings);
+  const locked = await resolveWorkbenchGeneration(graph, null, { ...defaultConstructionGenerationControls, preserveAuthored: false, lockOpenings: true });
+  expect(locked.graph.awnings).toEqual(graph.awnings);
+  const released = await resolveWorkbenchGeneration(graph, null, { ...defaultConstructionGenerationControls, preserveAuthored: false, lockOpenings: false });
+  expect(released.graph.awnings).toBeUndefined();
+  const wide = structuredClone(base); wide.nodes.find(node => node.type === "SplitBays")!.parameters.count = 6;
+  const distant = withConstructionAwnings(wide, [{ bayIndex: 5, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }]);
+  await expect(resolveWorkbenchGeneration(distant, null, { ...defaultConstructionGenerationControls, bayCount: 3, preserveAuthored: false, lockOpenings: true })).rejects.toThrow(/retained awning does not fit/);
 });
