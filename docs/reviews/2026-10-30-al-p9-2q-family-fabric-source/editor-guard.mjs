@@ -51,8 +51,7 @@ try {
   await writeFile(`${out}/individual-family.json`, JSON.stringify(individual));
   await page.getByRole("button", { name: "Return to building" }).click();
   await page.waitForFunction(() => document.querySelector('.construction-workspace:not([hidden])')?.dataset.constructionPreview !== "family", undefined, { timeout: 180000 }); await ready();
-  const priorHash = await hash(); await page.getByLabel("Open family file").setInputFiles(`${out}/individual-family.json`);
-  await root().getByRole("alert").filter({ hasText: /Families with individual fabrics cannot yet be opened/i }).waitFor({ timeout: 180000 });
-  assert.equal(await hash(), priorHash); assert.deepEqual(errors, []);
-  console.log(JSON.stringify({ familyVersion: individual.schemaVersion, members: individual.members.length, retainedBuilding: true, editorGuard: true })); await context.close();
+  await open("Open family file", `${out}/individual-family.json`);
+  assert.deepEqual(await save("Save family", "reopened-individual"), individual); assert.deepEqual(errors, []);
+  console.log(JSON.stringify({ familyVersion: individual.schemaVersion, members: individual.members.length, reopened: true })); await context.close();
 } finally { await browser?.close(); await server.close(); }

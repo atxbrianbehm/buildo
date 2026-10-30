@@ -494,8 +494,10 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   }
   const updateFamilyMember = useCallback((session: BayConstructionSession) => {
     const source = familySource.current, id = memberEditId.current;
-    if (!source || source.schemaVersion === "0.11.0" || !id || session.graph.documentId !== id || !session.generation || session.materials.file.contentHash !== source.materialSource.contentHash ||
-        session.materials.awningFabric?.contentHash !== (source.schemaVersion === "0.8.0" || source.schemaVersion === "0.9.0" || source.schemaVersion === "0.10.0" ? source.awningFabric.contentHash : undefined)) return;
+    if (!source || !id || session.graph.documentId !== id || !session.generation || session.materials.file.contentHash !== source.materialSource.contentHash) return;
+    const assignment = source.schemaVersion === "0.11.0" ? source.fabricAssignments.members.find(member => member.documentId === id) : undefined;
+    const expectedFabric = assignment?.mode === "override" ? assignment.fabric : source.schemaVersion === "0.8.0" || source.schemaVersion === "0.9.0" || source.schemaVersion === "0.10.0" || source.schemaVersion === "0.11.0" ? source.awningFabric : undefined;
+    if (session.materials.awningFabric?.contentHash !== expectedFabric?.contentHash) return;
     const currentMember = source.members.find(member => member.documentId === id);
     if (!currentMember) return;
     if (canonicalJson(currentMember.graph) !== canonicalJson(session.graph) || canonicalJson(currentMember.generation) !== canonicalJson(session.generation)) {
@@ -511,8 +513,10 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     const source = familySource.current, materials = current.current?.materials, member = source?.members[memberIndex];
     if (!source || !materials || !member || pending || saving) return;
     memberEditId.current = member.documentId;
+    const assignment = source.schemaVersion === "0.11.0" ? source.fabricAssignments.members.find(value => value.documentId === member.documentId) : undefined;
+    const memberMaterials = assignment?.mode === "override" ? { ...materials, awningFabric: assignment.fabric } : materials;
     setMemberEdit({ documentId: member.documentId, number: memberIndex + 1, session: { graph: member.graph, generation: member.generation,
-      materials, history: memberHistories.current.get(member.documentId) ?? null } });
+      materials: memberMaterials, history: memberHistories.current.get(member.documentId) ?? null } });
   }
   async function returnToFamily() {
     const source = familySource.current, original = current.current;
@@ -522,7 +526,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       compiler.current ??= new BayConstructionClient(new Worker(new URL("../compiler/bayConstruction.worker.ts", import.meta.url), { type: "module" }));
       const results = [];
       for (const member of source.members) { results.push(await compiler.current.evaluate(member.graph)); if (!isCurrent()) return; }
-      const candidate = await prepareConstructionFamilyFixture(base, results, original.materials, signal);
+      const candidate = await prepareConstructionFamilyFixture(base, results, original.materials, signal, source.schemaVersion === "0.11.0" ? source.fabricAssignments : undefined);
       if (!isCurrent()) { candidate.familyRuntime.dispose(); return; }
       owners.current.set(candidate, { fixture: candidate, leases: 0, retired: false });
       let prepared: PreparedBuildingFixtureView | undefined;
@@ -560,9 +564,8 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       const isCurrent = () => alive.current && sequence.current === token && !signal.aborted && current.current === previous;
       const source = await readConstructionFamilySource(JSON.parse(await file.text()));
       if (!isCurrent()) return;
-      if (source.schemaVersion === "0.11.0") throw new Error("Families with individual fabrics cannot yet be opened here. The current building is retained.");
       const parsed = await parseBuildingSourceFile(source.materialSource);
-      const materials = { ...parsed, file: source.materialSource, ...(source.schemaVersion === "0.8.0" || source.schemaVersion === "0.9.0" || source.schemaVersion === "0.10.0" ? { awningFabric: source.awningFabric } : {}) };
+      const materials = { ...parsed, file: source.materialSource, ...(source.schemaVersion === "0.8.0" || source.schemaVersion === "0.9.0" || source.schemaVersion === "0.10.0" || source.schemaVersion === "0.11.0" ? { awningFabric: source.awningFabric } : {}) };
       if (!isCurrent()) return;
       compiler.current ??= new BayConstructionClient(new Worker(new URL("../compiler/bayConstruction.worker.ts", import.meta.url), { type: "module" }));
       const originalResult = await compiler.current.evaluate(source.sourceGraph);
@@ -575,7 +578,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         original = await prepareBayConstructionFixture(base, originalResult, materials, signal);
         if (!isCurrent()) { original.familyRuntime.dispose(); return; }
         owners.current.set(original, { fixture: original, leases: 0, retired: false });
-        candidate = await prepareConstructionFamilyFixture(base, results, materials, signal);
+        candidate = await prepareConstructionFamilyFixture(base, results, materials, signal, source.schemaVersion === "0.11.0" ? source.fabricAssignments : undefined);
         if (!isCurrent()) { candidate.familyRuntime.dispose(); retire(original); return; }
         owners.current.set(candidate, { fixture: candidate, leases: 0, retired: false });
         if (viewer.current) prepared = await viewer.current(candidate, { signal });
