@@ -3,6 +3,7 @@ import { retainConstructionParapetVocabulary, withConstructionParapetSilhouette 
 import { retainConstructionRoundHead, withConstructionRoundHead } from "../core/constructionRoundHeadVocabulary";
 import { withConstructionGroupedBays } from "../core/constructionGroupedBayGraph";
 import { withConstructionStorefrontDivision } from "../core/constructionStorefrontDivisionGraph";
+import { withConstructionAwnings } from "../core/constructionAwningGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
 import { retainConstructionStorefront, withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { retainConstructionOpeningEdits, withConstructionOpeningEdits } from "../core/constructionOpeningEditGraph";
@@ -74,8 +75,13 @@ function assertTopology(current: BayConstructionGraph, generated: BayConstructio
 /** Reroll only the existing registered topology. Preserve authored finishes and numeric edits. */
 export async function resolveWorkbenchGeneration(currentInput: unknown, previousInput: ConstructionGenerationLineage | null,
   controlsInput: ConstructionGenerationControls, reroll = false, referenceInput?: unknown) {
-  const current = structuredClone(BayConstructionGraphSchema.parse(currentInput));
-  if (current.awnings) throw new Error("Generation cannot yet retain awning directives; keep the current building or remove them before generating.");
+  const inputGraph = structuredClone(BayConstructionGraphSchema.parse(currentInput));
+  const authoredAwnings = inputGraph.awnings;
+  let current = inputGraph;
+  if (authoredAwnings) {
+    const { awnings: _removed, ...prior } = inputGraph; void _removed;
+    current = BayConstructionGraphSchema.parse({ ...prior, schemaVersion: "0.12.0" });
+  }
   const previous = previousInput ? structuredClone(ConstructionGenerationLineageSchema.parse(previousInput)) : null;
   const controls = controlsSchema.parse(controlsInput);
   const reference = referenceInput === undefined ? undefined : ConstructionReferenceSnapshotSchema.parse(referenceInput);
@@ -161,6 +167,11 @@ export async function resolveWorkbenchGeneration(currentInput: unknown, previous
     graph = withConstructionStorefrontDivision(graph, current.storefrontDivision);
     try { await evaluateConstruction(graph); }
     catch (failure) { throw new Error(`The retained storefront divisions do not fit the generated building: ${failure instanceof Error ? failure.message : "invalid construction"}`, { cause: failure }); }
+  }
+  if (authoredAwnings && keepStorefront) {
+    graph = withConstructionAwnings(graph, authoredAwnings);
+    try { await evaluateConstruction(graph); }
+    catch (failure) { throw new Error(`A retained awning does not fit the generated building: ${failure instanceof Error ? failure.message : "invalid construction"}`, { cause: failure }); }
   }
   for (const node of graph.nodes) if (node.type === "SetSurface") {
     const authored = current.nodes.find(item => item.id === node.id);
