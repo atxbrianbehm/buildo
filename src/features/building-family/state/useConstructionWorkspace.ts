@@ -45,6 +45,7 @@ export function useConstructionWorkspace(documentId: string) {
         if (!active) return;
         if (!writer) { update({ status: { state: "busy" } }); return; }
         const parsed = await writer.read();
+        if (parsed?.project.graph.schemaVersion === "0.15.0") throw new Error("Facade pier graphs are not yet supported in construction recovery.");
         if (!active) return;
         const session: BayConstructionSession | null = parsed ? { graph: parsed.project.graph, materials: parsed.materials, ...(parsed.project.generation ? { generation: parsed.project.generation } : {}) } : null;
         queue = new ConstructionCheckpointQueue(writer, event => {
