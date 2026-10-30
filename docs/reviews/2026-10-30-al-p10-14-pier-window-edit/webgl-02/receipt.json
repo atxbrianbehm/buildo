@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "0.1.0",
+  "api": "webgl",
+  "pierRetained": true,
+  "windowWidth": 1,
+  "materialsRetained": true,
+  "undoRedo": true,
+  "reopened": true
+}
