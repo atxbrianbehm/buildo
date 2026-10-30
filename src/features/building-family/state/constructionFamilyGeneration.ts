@@ -14,6 +14,7 @@ import { applyConstructionFamilyAwningVariation, applyConstructionFamilyComposit
 import { BayConstructionGraphSchema } from "../contracts/bayConstructionGraph";
 import { withConstructionAwningSupports } from "../core/constructionAwningSupportGraph";
 import { withConstructionAwnings } from "../core/constructionAwningGraph";
+import { constructionHasStorefront } from "../core/constructionStorefrontGraph";
 
 const controlsSchema = z.object({ recipeId: z.string().min(1).max(512).optional(), floorCount: z.number().int().min(2).max(6),
   bayCount: z.number().int().min(3).max(6), buildingSeed: z.string().trim().min(1).max(256),
@@ -44,10 +45,17 @@ export async function resolveConstructionFamily(input: unknown, lineageInput: un
   abort(signal);
   const original = await readConstructionGenerationLineage(lineage); abort(signal);
   const composition = compositionInput === undefined ? null : readConstructionFamilyCompositionPlan(compositionInput);
-  if (composition?.schemaVersion === "0.6.0") throw new Error("Entrance variation is not yet supported in family generation.");
-  const varyStorefrontLights = (composition?.schemaVersion === "0.3.0" || composition?.schemaVersion === "0.4.0" || composition?.schemaVersion === "0.5.0") && composition.source.policy.storefrontLights;
-  const varyMassing = (composition?.schemaVersion === "0.4.0" || composition?.schemaVersion === "0.5.0") && composition.source.policy.massing;
-  const varyAwnings = composition?.schemaVersion === "0.5.0" && composition.source.policy.awnings;
+  const varyStorefrontLights = (composition?.schemaVersion === "0.3.0" || composition?.schemaVersion === "0.4.0" || composition?.schemaVersion === "0.5.0" || composition?.schemaVersion === "0.6.0") && composition.source.policy.storefrontLights;
+  const varyMassing = (composition?.schemaVersion === "0.4.0" || composition?.schemaVersion === "0.5.0" || composition?.schemaVersion === "0.6.0") && composition.source.policy.massing;
+  const varyAwnings = (composition?.schemaVersion === "0.5.0" || composition?.schemaVersion === "0.6.0") && composition.source.policy.awnings;
+  const varyEntrance = composition?.schemaVersion === "0.6.0" && composition.source.policy.entranceBay;
+  if (varyEntrance) {
+    if (!constructionHasStorefront(plan.source.graph)) throw new Error("Entrance variation requires an active storefront.");
+    if (plan.source.graph.awnings?.length) throw new Error("Entrance variation cannot currently coexist with authored awnings.");
+    const door = plan.source.graph.nodes.find(node => node.type === "PlaceDoor"), prior = original.resolution.graph.nodes.find(node => node.type === "PlaceDoor");
+    if (!door || !prior || door.parameters.bayIndex !== prior.parameters.bayIndex)
+      throw new Error("Entrance variation cannot overwrite an authored entrance bay.");
+  }
   if (varyMassing) {
     if (controls.lockFootprint || controls.lockStoreys) throw new Error("Unlock footprint and storeys to vary family massing.");
     const sourceStoreys = plan.source.graph.nodes.find(node => node.type === "Storeys"), priorStoreys = original.resolution.graph.nodes.find(node => node.type === "Storeys");
@@ -72,6 +80,7 @@ export async function resolveConstructionFamily(input: unknown, lineageInput: un
       ...(varyGroups ? ["construction/opening", "construction/window", "construction/upperBayGroups"] : []),
       ...(varyStorefrontLights ? ["construction/opening", "construction/window", "construction/frontage", "construction/storefrontDivision"] : []),
       ...(varyAwnings ? ["construction/opening/awning", "construction/frontage", "construction/awning"] : []),
+      ...(varyEntrance ? ["construction/opening/entrance/bayIndex", "construction/entrance/bayIndex", "construction/door/bayIndex", "construction/frontage/mode"] : []),
       ...(varyMassing ? ["construction/facade/count", "construction/bays/count", "construction/footprint"] : []),
       ...(composition.source.policy.frontage ? ["construction/frontage/mode"] : []),
       ...(composition.source.policy.roof ? ["construction/roof/corniceAssembly", "construction/roof/parapetSilhouette"] : [])
@@ -102,7 +111,7 @@ export async function resolveConstructionFamily(input: unknown, lineageInput: un
     for (let attempt = 0; attempt < 12; attempt++) {
       abort(signal);
       const buildingSeed = createSeedTree(member.buildingSeed).fork(`candidate/${attempt}`).root;
-      const massing = composition?.schemaVersion === "0.4.0" || composition?.schemaVersion === "0.5.0" ? composition.members[member.ordinal - 1].massing : null;
+      const massing = composition?.schemaVersion === "0.4.0" || composition?.schemaVersion === "0.5.0" || composition?.schemaVersion === "0.6.0" ? composition.members[member.ordinal - 1].massing : null;
       const generated = await resolveWorkbenchGeneration(member.graph, baseLineage, { ...controls, buildingSeed,
         ...(massing ? { floorCount: massing.floorCount, bayCount: massing.bayCount } : {}) }, false); abort(signal);
       if (massing && (generated.graph.nodes.find(node => node.type === "Storeys")?.parameters.count !== massing.floorCount ||

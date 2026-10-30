@@ -4,6 +4,7 @@ import { resolveConstructionFamilyPlan } from "../core/constructionFamilyPlan";
 import { withConstructionParapetSilhouette } from "../core/constructionParapetVocabulary";
 import { withConstructionCorniceLayout } from "../core/constructionCorniceVocabulary";
 import { withConstructionWindowLayout } from "../core/constructionWindowVocabulary";
+import { withConstructionAwnings } from "../core/constructionAwningGraph";
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { withConstructionOpeningWidth } from "../core/constructionOpeningEditGraph";
 import { withConstructionGroupedBays } from "../core/constructionGroupedBayGraph";
@@ -31,6 +32,30 @@ async function fixture() {
 }
 
 describe("authored construction family generation", () => {
+  it("generates seeded entrance positions while protecting authored and pinned choices", async () => {
+    const { lineage, graph } = await fixture();
+    const storefront = withConstructionStorefront(graph, 1);
+    const plan = resolveConstructionFamilyPlan({ schemaVersion: "0.1.0", kind: "construction-family-request", familyId: "entrance_family", familySeed: "entrance-seed", graph: storefront });
+    const composition = resolveConstructionFamilyComposition({ schemaVersion: "0.6.0", kind: "construction-family-composition-request", familySeed: "entrance-seed", openingLock: false,
+      policy: { openings: false, frontage: false, roof: false, groupedBays: false, storefrontLights: false, massing: false, awnings: false, entranceBay: true } });
+    if (composition.schemaVersion !== "0.6.0") throw new Error("Wrong plan version");
+    const family = await resolveConstructionFamily(plan, lineage, defaultConstructionGenerationControls, undefined, composition);
+    for (const [index, member] of family.members.entries()) {
+      const graph = member.construction.graph, bays = graph.nodes.find(node => node.type === "SplitBays")!.parameters.count;
+      expect(graph.nodes.find(node => node.type === "PlaceDoor")!.parameters.bayIndex).toBe(composition.members[index].entranceOffset! % bays);
+      expect(member.lineage.materialSourceHash).toBe(lineage.materialSourceHash);
+      expect(member.lineage.materialPlan.materialInputsHash).toBe(lineage.materialPlan.materialInputsHash);
+    }
+    expect(new Set(family.members.map(member => member.construction.graph.nodes.find(node => node.type === "PlaceDoor")!.parameters.bayIndex)).size).toBeGreaterThan(1);
+    const edited = structuredClone(storefront); edited.nodes.find(node => node.type === "PlaceDoor")!.parameters.bayIndex = 0;
+    await expect(resolveConstructionFamily(resolveConstructionFamilyPlan({ ...plan.source, graph: edited }), lineage, defaultConstructionGenerationControls, undefined, composition)).rejects.toThrow(/authored entrance/);
+    const awning = withConstructionAwnings(storefront, [{ bayIndex: 0, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }]);
+    await expect(resolveConstructionFamily(resolveConstructionFamilyPlan({ ...plan.source, graph: awning }), lineage, defaultConstructionGenerationControls, undefined, composition)).rejects.toThrow(/authored awnings/);
+    const old = lineage.source, pinned = await captureConstructionGenerationSource({ schemaVersion: "0.1.0", kind: "construction-generation-input", documentId: old.documentId,
+      intent: { ...old.intent, locks: [{ semanticPath: "construction/entrance/bayIndex", scope: "building", lockedValue: 1, reason: "Imported pin" }] }, recipe: old.recipe, reference: old.reference, intentionalExceptions: old.intentionalExceptions });
+    const pinnedLineage = { ...lineage, source: pinned, resolution: await resolveConstructionGeneration(pinned), materialPlan: await planConstructionReferenceMaterials(lineage.materialPlan.templateSpec, pinned) };
+    await expect(resolveConstructionFamily(plan, pinnedLineage, defaultConstructionGenerationControls, undefined, composition)).rejects.toThrow(/conflicts with the pinned lock/);
+  }, 120000);
   it("generates massing through each member's source and respects count constraints", async () => {
     const { lineage, graph } = await fixture();
     const plan = resolveConstructionFamilyPlan({ schemaVersion: "0.1.0", kind: "construction-family-request", familyId: "massing_family", familySeed: "massing-seed", graph });
