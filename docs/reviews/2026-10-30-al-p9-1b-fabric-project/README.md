@@ -4,4 +4,4 @@ Project version 0.14 can explicitly contain the independently validated awning-f
 
 The focused fabric, project and legacy-project tests pass, including artifact tampering, save/read replay and checkpoint protection. The [actual browser guard](editor-guard.mjs) opens a project with the supplemental source and verifies that the current editor reports it cannot retain the fabric while keeping the current building unchanged. Checkpoint recovery is likewise guarded. These guards are deliberately temporary: graph, renderer, workspace session/history and family source must own the artifact before opening such a project can be enabled.
 
-Full repository validation is pending. The browser guard uses the locally retained P6.2a project in `docs/reviews/2026-10-30-al-p6-2-storefront-authoring/webgpu-02/divided.json`.
+All five repository checks passed: 2,053 tests across 153 files, the standard browser smoke suite, typecheck, lint and build. The build retains its large-chunk warning. The browser guard uses the locally retained P6.2a project in `docs/reviews/2026-10-30-al-p6-2-storefront-authoring/webgpu-02/divided.json`.
