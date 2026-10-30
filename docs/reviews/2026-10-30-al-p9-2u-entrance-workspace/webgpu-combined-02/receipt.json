@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "0.1.0",
+  "api": "webgpu",
+  "entranceBays": [
+    2,
+    4,
+    1,
+    3,
+    2,
+    3
+  ],
+  "materialPreserved": true,
+  "memberEdit": true,
+  "siblingsUnchanged": true,
+  "reopened": true,
+  "providerCallsDelta": 0,
+  "retainedFabric": true,
+  "varyMassing": true
+}
