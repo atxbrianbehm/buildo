@@ -6,4 +6,4 @@ The [WebGPU](webgpu-01/receipt.json) and [WebGL](webgl-01/receipt.json) app work
 
 The family still looks repetitive: all six inherit the same grouped bay, and the material and massing language are narrow. This is preservation, not seeded group variation or street readiness. P5.4b will introduce explicit family grouping choices without erasing authored groups or locks. No historical evidence or visual acceptance is implied.
 
-Verification at initial review: focused generation, pinned-lock and six-member source tests, typecheck, lint, build, standard E2E and both renderer workflows passed; the full suite was running. The production build retains its large-chunk warning.
+Verification: all 2,029 tests across 147 files, typecheck, lint, build, standard E2E and both renderer workflows passed, including the focused generation, pinned-lock and six-member source tests. The production build retains its large-chunk warning.
