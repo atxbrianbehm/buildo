@@ -299,11 +299,11 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       await publish(graph, source.materials, token, signal);
     });
   }
-  async function changeStorefrontSign(enabled: boolean, bayIndex: number) {
+  async function changeStorefrontSign(enabled: boolean, bayIndex: number, dimensions?: { heightM: number; projectionM: number; frameWidthM: number }) {
     const source = current.current;
     if (!source || dirty || previewNode || shown.current !== source.fixture) return;
     await perform(async (token, signal) => {
-      const graph = enabled ? withConstructionStorefrontSign(source.fixture.construction.graph, { bayIndex, heightM: 0.18, projectionM: 0.08, frameWidthM: 0.035 })
+      const graph = enabled ? withConstructionStorefrontSign(source.fixture.construction.graph, { bayIndex, ...(dimensions ?? { heightM: 0.18, projectionM: 0.08, frameWidthM: 0.035 }) })
         : withoutConstructionStorefrontSign(source.fixture.construction.graph);
       await publish(graph, source.materials, token, signal);
     });
@@ -818,6 +818,15 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
           {Array.from({ length: accepted.construction.graph.nodes.find(node => node.type === "SplitBays")?.parameters.count ?? 0 }, (_, index) => <option key={index} value={index}>Bay {index + 1}</option>)}
         </select></label>
         <button type="button" disabled={disabled || dirty || openingDirty || groupDirty || !viewerReady || Boolean(previewNode)} onClick={() => void changeStorefrontSign(!signProtected, effectiveSignBay)}>{signProtected ? "Remove sign" : "Add sign"}</button>
+        {accepted.construction.graph.storefrontSign ? <form key={JSON.stringify(accepted.construction.graph.storefrontSign)} onSubmit={event => {
+          event.preventDefault(); const fields = new FormData(event.currentTarget);
+          void changeStorefrontSign(true, effectiveSignBay, { heightM: Number(fields.get("height")), projectionM: Number(fields.get("projection")), frameWidthM: Number(fields.get("frame")) });
+        }}>
+          <label>Height (m) <input aria-label="Sign height" name="height" type="number" min="0.16" max="0.8" step="any" required defaultValue={accepted.construction.graph.storefrontSign.heightM} disabled={disabled || dirty || !viewerReady} /></label>
+          <label>Projection (m) <input aria-label="Sign projection" name="projection" type="number" min="0.04" max="0.3" step="any" required defaultValue={accepted.construction.graph.storefrontSign.projectionM} disabled={disabled || dirty || !viewerReady} /></label>
+          <label>Frame width (m) <input aria-label="Sign frame width" name="frame" type="number" min="0.02" max="0.12" step="any" required defaultValue={accepted.construction.graph.storefrontSign.frameWidthM} disabled={disabled || dirty || !viewerReady} /></label>
+          <button type="submit" disabled={disabled || dirty || !viewerReady}>Apply sign dimensions</button>
+        </form> : null}
       </section> : null}
       {buildingMode && !advancedOpen && !signProtected && accepted && supportsGroupedConstruction(accepted.construction.graph) ? <section className="construction-generate" aria-label="Upper facade piers">
         <h3>Upper facade piers</h3>
