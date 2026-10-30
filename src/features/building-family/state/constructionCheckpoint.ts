@@ -35,6 +35,7 @@ export async function readConstructionCheckpoint(input: unknown) {
   const record = ConstructionCheckpointSchema.parse(input), { contentHash, ...payload } = record;
   if (await hashCanonicalJson(payload) !== contentHash) throw new Error("Construction checkpoint content does not match its saved hash.");
   const restored = await readBayConstructionProject(record.project);
+  if (restored.project.awningFabric) throw new Error("This checkpoint contains supplemental awning fabric that the editor cannot yet retain.");
   return { record, project: restored.project, materials: { ...restored.materials, file: restored.project.materialSource } };
 }
 export interface ConstructionCheckpointPersistence {

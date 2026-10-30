@@ -6,27 +6,31 @@ import { ConstructionGenerationLineageSchema, readConstructionGenerationLineage 
 import { hashCanonicalJson } from "../core/contentHash";
 import { BuildingSourceFileSchema, parseBuildingSourceFile } from "./buildingSourceFile";
 import { validateConstructionSurfaceSources } from "../core/constructionSurfaceAuthoring";
+import { ConstructionAwningFabricArtifactSchema } from "../contracts/constructionAwningFabric";
+import { readConstructionAwningFabric } from "../materials/constructionAwningFabric";
 
 const payloadSchema = z.object({
-  schemaVersion: z.enum(["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0"]), kind: z.literal("bay-construction-project"),
+  schemaVersion: z.enum(["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0", "0.14.0"]), kind: z.literal("bay-construction-project"),
   appearancePreset: z.enum(["restrained-bay-v1", "restrained-building-v1"]),
-  graph: BayConstructionGraphSchema, materialSource: BuildingSourceFileSchema, generation: ConstructionGenerationLineageSchema.optional()
+  graph: BayConstructionGraphSchema, materialSource: BuildingSourceFileSchema, generation: ConstructionGenerationLineageSchema.optional(),
+  awningFabric: ConstructionAwningFabricArtifactSchema.optional()
 }).strict();
 export const BayConstructionProjectSchema = z.unknown().superRefine((input, context) => {
   const issue = findBuildingDocumentJsonIssue(input);
   if (issue) context.addIssue({ code: "custom", path: issue.path, message: issue.message });
 }).pipe(payloadSchema.extend({ contentHash: z.string().regex(/^[a-f0-9]{64}$/) }).strict()).superRefine((project, context) => {
   if (project.appearancePreset !== (["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0"].includes(project.graph.schemaVersion) ? "restrained-building-v1" : "restrained-bay-v1")) context.addIssue({ code: "custom", message: "Construction appearance preset must match its graph version." });
-  if (project.schemaVersion === "0.13.0" ? project.graph.schemaVersion !== "0.12.0" : project.schemaVersion === "0.12.0" ? project.graph.schemaVersion !== "0.11.0" : project.schemaVersion === "0.11.0" ? project.graph.schemaVersion !== "0.10.0" : project.schemaVersion === "0.10.0" ? project.graph.schemaVersion !== "0.9.0" : project.schemaVersion === "0.9.0" ? project.graph.schemaVersion !== "0.8.0" : project.schemaVersion === "0.8.0" ? project.graph.schemaVersion !== "0.7.0" : project.schemaVersion === "0.7.0" ? project.graph.schemaVersion !== "0.6.0" : project.schemaVersion === "0.6.0" ? project.graph.schemaVersion !== "0.5.0" : project.schemaVersion === "0.5.0" ? project.graph.schemaVersion !== "0.4.0" || !project.generation : project.schemaVersion !== project.graph.schemaVersion || project.generation !== undefined) context.addIssue({ code: "custom", message: "Construction project and graph versions must agree." });
+  if (project.schemaVersion === "0.14.0" ? !project.awningFabric || !["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0"].includes(project.graph.schemaVersion) : project.awningFabric !== undefined || (project.schemaVersion === "0.13.0" ? project.graph.schemaVersion !== "0.12.0" : project.schemaVersion === "0.12.0" ? project.graph.schemaVersion !== "0.11.0" : project.schemaVersion === "0.11.0" ? project.graph.schemaVersion !== "0.10.0" : project.schemaVersion === "0.10.0" ? project.graph.schemaVersion !== "0.9.0" : project.schemaVersion === "0.9.0" ? project.graph.schemaVersion !== "0.8.0" : project.schemaVersion === "0.8.0" ? project.graph.schemaVersion !== "0.7.0" : project.schemaVersion === "0.7.0" ? project.graph.schemaVersion !== "0.6.0" : project.schemaVersion === "0.6.0" ? project.graph.schemaVersion !== "0.5.0" : project.schemaVersion === "0.5.0" ? project.graph.schemaVersion !== "0.4.0" || !project.generation : project.schemaVersion !== project.graph.schemaVersion || project.generation !== undefined)) context.addIssue({ code: "custom", message: "Construction project, graph and supplemental material versions must agree." });
 });
 export type BayConstructionProject = z.infer<typeof BayConstructionProjectSchema>;
 
-export async function createBayConstructionProject(graph: unknown, materialSource: unknown, generation?: unknown): Promise<BayConstructionProject> {
+export async function createBayConstructionProject(graph: unknown, materialSource: unknown, generation?: unknown, awningFabric?: unknown): Promise<BayConstructionProject> {
   if (generation === null) generation = undefined;
   // Capture graph and every encoded material channel before yielding.
   const ownedGraph = BayConstructionGraphSchema.parse(graph);
-  const payload = structuredClone(payloadSchema.parse({ schemaVersion: ownedGraph.schemaVersion === "0.12.0" ? "0.13.0" : ownedGraph.schemaVersion === "0.11.0" ? "0.12.0" : ownedGraph.schemaVersion === "0.10.0" ? "0.11.0" : ownedGraph.schemaVersion === "0.9.0" ? "0.10.0" : ownedGraph.schemaVersion === "0.8.0" ? "0.9.0" : ownedGraph.schemaVersion === "0.7.0" ? "0.8.0" : ownedGraph.schemaVersion === "0.6.0" ? "0.7.0" : ownedGraph.schemaVersion === "0.5.0" ? "0.6.0" : generation === undefined ? ownedGraph.schemaVersion : "0.5.0", kind: "bay-construction-project",
-    appearancePreset: ["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0"].includes(ownedGraph.schemaVersion) ? "restrained-building-v1" : "restrained-bay-v1", graph: ownedGraph, materialSource, ...(generation === undefined ? {} : { generation }) }));
+  const payload = structuredClone(payloadSchema.parse({ schemaVersion: awningFabric !== undefined ? "0.14.0" : ownedGraph.schemaVersion === "0.12.0" ? "0.13.0" : ownedGraph.schemaVersion === "0.11.0" ? "0.12.0" : ownedGraph.schemaVersion === "0.10.0" ? "0.11.0" : ownedGraph.schemaVersion === "0.9.0" ? "0.10.0" : ownedGraph.schemaVersion === "0.8.0" ? "0.9.0" : ownedGraph.schemaVersion === "0.7.0" ? "0.8.0" : ownedGraph.schemaVersion === "0.6.0" ? "0.7.0" : ownedGraph.schemaVersion === "0.5.0" ? "0.6.0" : generation === undefined ? ownedGraph.schemaVersion : "0.5.0", kind: "bay-construction-project",
+    appearancePreset: ["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0"].includes(ownedGraph.schemaVersion) ? "restrained-building-v1" : "restrained-bay-v1", graph: ownedGraph, materialSource, ...(generation === undefined ? {} : { generation }), ...(awningFabric === undefined ? {} : { awningFabric }) }));
+  if (payload.awningFabric) await readConstructionAwningFabric(payload.awningFabric);
   const materials = await parseBuildingSourceFile(payload.materialSource);
   validateConstructionSurfaceSources(ownedGraph, materials.packedAtlas);
   await validateGeneration(payload, materials.packedAtlas.manifest);
@@ -38,6 +42,7 @@ export async function readBayConstructionProject(input: unknown) {
   if (project.generation && canonicalJson(project) !== canonicalJson(input)) throw new Error("Generation project admission would change serialized fields.");
   const { contentHash, ...payload } = project;
   if (await hashCanonicalJson(payload) !== contentHash) throw new Error("Construction project content does not match its saved hash.");
+  if (project.awningFabric) await readConstructionAwningFabric(project.awningFabric);
   const materials = await parseBuildingSourceFile(project.materialSource);
   validateConstructionSurfaceSources(project.graph, materials.packedAtlas);
   await validateGeneration(project, materials.packedAtlas.manifest);

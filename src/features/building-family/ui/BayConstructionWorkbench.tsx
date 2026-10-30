@@ -271,6 +271,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   async function open(file: File) {
     await perform(async (token, signal) => {
       const { project, materials } = await readBayConstructionProject(JSON.parse(await file.text()));
+      if (project.awningFabric) throw new Error("This project contains supplemental awning fabric that the editor cannot yet retain. The current building is unchanged.");
       await publish(project.graph, { ...materials, file: project.materialSource }, token, signal, "open", project.generation ?? null);
     });
   }
