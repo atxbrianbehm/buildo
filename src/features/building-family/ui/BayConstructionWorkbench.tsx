@@ -7,6 +7,9 @@ import { CONSTRUCTION_WINDOW_LAYOUTS, upgradeConstructionWindowVocabulary } from
 import { ConstructionBuildingControls } from "./ConstructionBuildingControls";
 import { ConstructionOpeningControls } from "./ConstructionOpeningControls";
 import { ConstructionGroupedBayControls, type GroupedBayEdit } from "./ConstructionGroupedBayControls";
+import { ConstructionAwningControls } from "./ConstructionAwningControls";
+import { withConstructionAwnings } from "../core/constructionAwningGraph";
+import { createConstructionAwningFabric } from "../materials/constructionAwningFabric";
 import { withConstructionGroupedBays } from "../core/constructionGroupedBayGraph";
 import { withConstructionOpeningWidth, withoutConstructionOpeningWidth } from "../core/constructionOpeningEditGraph";
 import { constructionOpeningOptions, supportsGroupedConstruction, groupedWindowCount, groupedStorefrontCount } from "./constructionBuildingBindings";
@@ -311,6 +314,25 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       } else graph = original;
       await publish(graph, source.materials, token, signal);
       if (current.current && canonicalJson(current.current.fixture.construction.graph) === canonicalJson(graph)) chooseFrame(null);
+    });
+  }
+  async function changeAwning(bayIndex: number, enabled: boolean) {
+    const source = current.current;
+    if (!source || dirty || previewNode || shown.current !== source.fixture) return;
+    await perform(async (token, signal) => {
+      const original = source.fixture.construction.graph;
+      const awnings = (original.awnings ?? []).filter(awning => awning.bayIndex !== bayIndex);
+      if (enabled) awnings.push({ bayIndex, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 });
+      awnings.sort((a, b) => a.bayIndex - b.bayIndex);
+      let graph: BayConstructionGraph;
+      if (awnings.length) graph = withConstructionAwnings(original, awnings);
+      else if (original.schemaVersion === "0.13.0") {
+        const { awnings: _removed, ...prior } = original; void _removed;
+        graph = BayConstructionGraphSchema.parse({ ...prior, schemaVersion: "0.12.0" });
+      } else return;
+      const fabric = source.materials.awningFabric ?? await createConstructionAwningFabric({ schemaVersion: "0.1.0", kind: "construction-awning-fabric-request", seed: "buildo-awning-demo-v1", pattern: "striped", primary: [224, 213, 187], secondary: [69, 99, 78], physicalSizeM: [1, 1] });
+      if (signal.aborted) return;
+      await publish(graph, { ...source.materials, awningFabric: fabric }, token, signal);
     });
   }
   async function generateBuilding(reroll: boolean) {
@@ -661,6 +683,9 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         key={`${accepted.construction.graph.nodes.find(node => node.type === "Storeys")?.parameters.count}:${accepted.construction.graph.nodes.find(node => node.type === "SplitBays")?.parameters.count}`}
         graph={accepted.construction.graph} dirty={groupDirty} disabled={pending || saving || openingDirty || buildingDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode)}
         onDraftChange={value => { setGroupDirty(value); if (!value) setError(null); }} onApply={edit => void applyGroupedBay(edit)} /> : null}
+      {buildingMode && !advancedOpen && accepted && supportsGroupedConstruction(accepted.construction.graph) && constructionHasStorefront(accepted.construction.graph) ? <ConstructionAwningControls
+        graph={accepted.construction.graph} disabled={pending || saving || openingDirty || buildingDirty || groupDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode)}
+        onChange={(bay, enabled) => void changeAwning(bay, enabled)} /> : null}
       {buildingMode && !advancedOpen && accepted ? <ConstructionBuildingControls graph={draft} fields={fields} windowCount={groupedWindowCount(accepted.construction.graph,accepted.ir)} storefrontCount={groupedStorefrontCount(accepted.construction.graph,accepted.ir)} localWidthCount={constructionOpeningOptions(accepted.construction.graph,accepted.ir).filter(option=>option.overridden).length}
         disabled={disabled || !viewerReady || Boolean(previewNode)} dirty={buildingDirty}
         onStorefrontDivisionChange={(field, value) => {
