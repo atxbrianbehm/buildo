@@ -32,9 +32,9 @@ it("offers one named four-elevation cornice choice and respects bypass/custom bo
 });
 function mount(graph = createBuildingConstructionGraph(), dirty = false, counts = { window: 47, storefront: 0 }) {
   const fields = Object.fromEntries(graph.nodes.filter(node => "parameters" in node).map(node => [node.id,Object.fromEntries(Object.entries(node.parameters).map(([key,value]) => [key,String(value)]))]));
-  const onFieldChange=vi.fn(),onApply=vi.fn(),onRevert=vi.fn(),onAdvanced=vi.fn();
-  const view=render(<ConstructionBuildingControls graph={graph} fields={fields} windowCount={counts.window} storefrontCount={counts.storefront} disabled={false} dirty={dirty} onFieldChange={onFieldChange} onApply={onApply} onRevert={onRevert} onAdvanced={onAdvanced}/>);
-  return {...view,fields,onFieldChange,onApply,onRevert,onAdvanced};
+  const onFieldChange=vi.fn(),onStorefrontDivisionChange=vi.fn(),onApply=vi.fn(),onRevert=vi.fn(),onAdvanced=vi.fn();
+  const view=render(<ConstructionBuildingControls graph={graph} fields={fields} windowCount={counts.window} storefrontCount={counts.storefront} disabled={false} dirty={dirty} onFieldChange={onFieldChange} onStorefrontDivisionChange={onStorefrontDivisionChange} onApply={onApply} onRevert={onRevert} onAdvanced={onAdvanced}/>);
+  return {...view,fields,onFieldChange,onStorefrontDivisionChange,onApply,onRevert,onAdvanced};
 }
 it("reports real generated window frames, excludes the entrance and follows scope filtering",async()=>{
   const graph=createBuildingConstructionGraph();expect(groupedWindowCount(graph,(await evaluateConstruction(graph)).ir)).toBe(47);
@@ -88,6 +88,10 @@ it("separates regular windows from the four real front-ground bays and binds art
   expect(screen.getByText("Applies to 44 regular windows. Display glazing is controlled under Ground floor.")).toBeInTheDocument();
   fireEvent.click(screen.getByText("Ground floor", { selector: "summary" }));
   expect(screen.getByRole("combobox", { name: "Ground frontage" })).toHaveValue("1");
+  fireEvent.change(screen.getByRole("combobox", { name: "Display lights" }), { target: { value: "2" } });
+  expect(view.onStorefrontDivisionChange).toHaveBeenCalledWith("displayLights", 2);
+  fireEvent.change(screen.getByRole("combobox", { name: "Transom lights" }), { target: { value: "3" } });
+  expect(view.onStorefrontDivisionChange).toHaveBeenCalledWith("transomLights", 3);
   expect(screen.getByText("Applies to 4 front ground-floor bays, including the entrance.")).toBeInTheDocument();
   expect(screen.getByRole("option", { name: "Bay 2" })).toHaveValue("1");
   fireEvent.change(screen.getByRole("combobox", { name: "Entrance bay" }), { target: { value: "2" } });
