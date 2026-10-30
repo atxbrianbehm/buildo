@@ -316,14 +316,14 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       if (current.current && canonicalJson(current.current.fixture.construction.graph) === canonicalJson(graph)) chooseFrame(null);
     });
   }
-  async function changeAwning(bayIndex: number, enabled: boolean) {
+  async function changeAwning(bayIndex: number, enabled: boolean, dimensions?: { projectionM: number; dropM: number; valanceHeightM: number }) {
     const source = current.current;
     if (!source || dirty || previewNode || shown.current !== source.fixture) return;
     await perform(async (token, signal) => {
       if (familyMemberMode && !source.materials.awningFabric) throw new Error("Add awnings to the original building before creating this family.");
       const original = source.fixture.construction.graph;
       const awnings = (original.awnings ?? []).filter(awning => awning.bayIndex !== bayIndex);
-      if (enabled) awnings.push({ bayIndex, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 });
+      if (enabled) awnings.push({ bayIndex, ...(dimensions ?? { projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }) });
       awnings.sort((a, b) => a.bayIndex - b.bayIndex);
       let graph: BayConstructionGraph;
       if (awnings.length) graph = withConstructionAwnings(original, awnings);
@@ -693,7 +693,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       {buildingMode && !advancedOpen && accepted && supportsGroupedConstruction(accepted.construction.graph) && constructionHasStorefront(accepted.construction.graph) ? <ConstructionAwningControls
         graph={accepted.construction.graph} disabled={pending || saving || openingDirty || buildingDirty || groupDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode) || (familyMemberMode && !startingSession?.materials.awningFabric)}
         unavailableReason={familyMemberMode && !startingSession?.materials.awningFabric ? "Add an awning to the original building before creating this family." : undefined}
-        onChange={(bay, enabled) => void changeAwning(bay, enabled)} /> : null}
+        onChange={(bay, enabled, dimensions) => void changeAwning(bay, enabled, dimensions)} /> : null}
       {buildingMode && !advancedOpen && accepted ? <ConstructionBuildingControls graph={draft} fields={fields} windowCount={groupedWindowCount(accepted.construction.graph,accepted.ir)} storefrontCount={groupedStorefrontCount(accepted.construction.graph,accepted.ir)} localWidthCount={constructionOpeningOptions(accepted.construction.graph,accepted.ir).filter(option=>option.overridden).length}
         disabled={disabled || !viewerReady || Boolean(previewNode)} dirty={buildingDirty}
         onStorefrontDivisionChange={(field, value) => {
