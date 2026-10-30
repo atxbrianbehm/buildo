@@ -80,6 +80,25 @@ describe("persistent construction family source", () => {
         sourceDocumentId: supportInput.sourceDocumentId, inheritedFabric: fabric,
         members: supportInput.members.map((member, index) => index === 0 ? { documentId: member.documentId, mode: "override", fabric: redFabric } : { documentId: member.documentId, mode: "inherit" }) });
       const individualInput = { ...supportInput, schemaVersion: "0.11.0" as const, fabricAssignments };
+      const entranceChoices = resolveConstructionFamilyComposition({ schemaVersion: "0.6.0", kind: "construction-family-composition-request", familySeed: "seed", openingLock: false,
+        policy: { openings: false, frontage: false, roof: false, groupedBays: false, storefrontLights: false, massing: false, awnings: false, entranceBay: true } });
+      const entranceInput = { ...individualInput, schemaVersion: "0.12.0", initialComposition: entranceChoices };
+      const entranceFamily = await createConstructionFamilySource(entranceInput);
+      expect(await readConstructionFamilySource(JSON.parse(JSON.stringify(entranceFamily)))).toEqual(entranceFamily);
+      expect(entranceFamily.schemaVersion === "0.12.0" && entranceFamily.fabricAssignments).toEqual(fabricAssignments);
+      const { awningFabric: _entranceFabric, ...missingEntranceFabric } = entranceInput; void _entranceFabric;
+      await expect(createConstructionFamilySource(missingEntranceFabric)).rejects.toThrow(/require their inherited fabric/);
+      await expect(createConstructionFamilySource({ ...entranceInput, familySeed: "other" })).rejects.toThrow(/retain the family seed/);
+      await expect(createConstructionFamilySource({ ...entranceInput, awningFabric: redFabric })).rejects.toThrow(/owning family/);
+      const alteredEntrance = structuredClone(entranceFamily); if (alteredEntrance.schemaVersion !== "0.12.0") throw new Error("Wrong family version");
+      alteredEntrance.initialComposition.members[0].entranceOffset = (alteredEntrance.initialComposition.members[0].entranceOffset! + 1) % 20;
+      await expect(readConstructionFamilySource(alteredEntrance)).rejects.toThrow(/does not match/);
+      const { contentHash: _entranceHash, ...entrancePayload } = entranceFamily; void _entranceHash;
+      expect(withUpdatedConstructionFamilyMembers(entrancePayload, entrancePayload.members).schemaVersion).toBe("0.12.0");
+      const noFabricInput = { ...input, familySeed: "seed", schemaVersion: "0.12.0", initialComposition: entranceChoices };
+      const noFabric = await createConstructionFamilySource(noFabricInput);
+      expect(await readConstructionFamilySource(JSON.parse(JSON.stringify(noFabric)))).toEqual(noFabric);
+      await expect(createConstructionFamilySource({ ...noFabricInput, schemaVersion: "0.7.0" })).rejects.toThrow();
       const individualFamily = await createConstructionFamilySource(individualInput);
       expect(await readConstructionFamilySource(JSON.parse(JSON.stringify(individualFamily)))).toEqual(individualFamily);
       await expect(createConstructionFamilySource({ ...individualInput, familyId: "wrong" })).rejects.toThrow(/owning family/);
