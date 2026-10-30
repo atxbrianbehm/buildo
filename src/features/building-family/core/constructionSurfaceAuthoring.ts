@@ -7,13 +7,13 @@ export function emptyConstructionComposition(documentId: string): BuildingSurfac
 /** The ordered compositor is authored in the same graph/history/checkpoint as geometry. */
 export function setConstructionSurface(input: BayConstructionGraph, composition: BuildingSurfaceComposition): BayConstructionGraph {
   const graph = BayConstructionGraphSchema.parse(input), existing = graph.nodes.find(node => node.type === "SetSurface");
-  if (existing) return BayConstructionGraphSchema.parse({ ...graph, schemaVersion: ["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0"].includes(graph.schemaVersion) ? graph.schemaVersion : "0.3.0", nodes: graph.nodes.map(node => node.id === existing.id ? { ...existing, composition } : node) });
+  if (existing) return BayConstructionGraphSchema.parse({ ...graph, schemaVersion: ["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0", "0.14.0"].includes(graph.schemaVersion) ? graph.schemaVersion : "0.3.0", nodes: graph.nodes.map(node => node.id === existing.id ? { ...existing, composition } : node) });
   const output = graph.nodes.find(node => node.id === graph.outputNodeId);
   if (!output || output.type !== "Output") throw new Error("Connect a construction output before adding a finish.");
   const ids = new Set(graph.nodes.map(node => node.id));
   const unique = (stem: string) => { let value = stem, index = 1; while (ids.has(value)) value = `${stem}_${index++}`; ids.add(value); return value; };
   const joinId = unique("join"), surfaceId = unique("surface");
-  return BayConstructionGraphSchema.parse({ ...graph, schemaVersion: ["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0"].includes(graph.schemaVersion) ? graph.schemaVersion : "0.3.0", nodes: [
+  return BayConstructionGraphSchema.parse({ ...graph, schemaVersion: ["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0", "0.14.0"].includes(graph.schemaVersion) ? graph.schemaVersion : "0.3.0", nodes: [
     ...graph.nodes.map(node => node.id === output.id ? { ...output, inputs: [{ nodeId: surfaceId, socket: "geometry" }] } : node),
     { id: joinId, type: "JoinGeometry", inputs: output.inputs },
     { id: surfaceId, type: "SetSurface", input: { nodeId: joinId, socket: "geometry" }, composition }
@@ -37,7 +37,7 @@ export function validateConstructionSurfaceSources(graph: BayConstructionGraph, 
 /** Explicit bounded conversion of the retained standard facade; custom branches remain untouched on rejection. */
 export function completeFacadeAsBuilding(input: BayConstructionGraph): BayConstructionGraph {
   const graph=BayConstructionGraphSchema.parse(input);
-  if(["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0"].includes(graph.schemaVersion)) return graph;
+  if(["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0", "0.14.0"].includes(graph.schemaVersion)) return graph;
   const facade=graph.nodes.find(node=>node.type === "FacadeScope"),floors=graph.nodes.find(node=>node.type === "SplitFloors"),bays=graph.nodes.find(node=>node.type === "SplitBays"),opening=graph.nodes.find(node=>node.type === "PlaceOpening"),window=graph.nodes.find(node=>node.type === "AssembleWindow"),selection=graph.nodes.find(node=>node.type === "SelectScopes"),bands=graph.nodes.find(node=>node.type === "ProfileTrim"),roof=graph.nodes.find(node=>node.type === "RoofCap"),surface=graph.nodes.find(node=>node.type === "SetSurface");
   const expected:Record<string,string>={facade:"FacadeScope",floors:"SplitFloors",bays:"SplitBays",opening:"PlaceOpening",selection:"SelectScopes",wall:"EmitWall",window:"AssembleWindow",bands:"ProfileTrim",roof:"RoofCap",join:"JoinGeometry",surface:"SetSurface",output:"Output"};
   const links:Record<string,string>={floors:"facade",bays:"floors",opening:"bays",selection:"opening",wall:"opening",window:"selection",bands:"floors",roof:"facade"};

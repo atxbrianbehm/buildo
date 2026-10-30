@@ -1,0 +1,5 @@
+# AL.P9.2k: Support workspace continuity
+
+Support projects can be opened and automatically recovered in the construction workspace. Supported graph versions retain their directives through ordinary structural changes, grouped and opening helpers, history and save/reopen. Awning-specific controls and generation remain explicitly guarded until they can preserve support choices. Family documents do not yet admit support graphs.
+
+Actual [WebGL](webgl-after.png) and [WebGPU](webgpu-after.png) app captures show the existing awning fabric and a pair of thin rods, without attachment plates. Both workflows open a version 0.16 project, change building width, undo/redo, recover and reopen it, and verify support directives and material sources remain unchanged with no new material-provider calls. The browser script uses the locally retained P6.2 project at `docs/reviews/2026-10-30-al-p6-2-storefront-authoring/webgpu-02/divided.json`. This is not an accepted historical treatment or a street-ready building. All five repository checks passed: 2,066 tests across 161 files, standard browser smoke, typecheck, lint and build. The build retains its large-chunk warning.

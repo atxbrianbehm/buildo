@@ -1,5 +1,8 @@
 import { createBuildingConstructionGraph, BayConstructionGraphSchema } from "../contracts/bayConstructionGraph";
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
+import { withConstructionGroupedBays } from "../core/constructionGroupedBayGraph";
+import { withConstructionStorefrontDivision } from "../core/constructionStorefrontDivisionGraph";
+import { withConstructionOpeningEdits } from "../core/constructionOpeningEditGraph";
 import { withConstructionAwnings } from "../core/constructionAwningGraph";
 import { withConstructionAwningSupports } from "../core/constructionAwningSupportGraph";
 import { defaultConstructionGenerationControls, resolveWorkbenchGeneration } from "../state/constructionGenerationState";
@@ -10,6 +13,9 @@ it("compiles opt-in scoped support rods with deterministic identities and preser
   const base = withConstructionAwnings(withConstructionStorefront(createBuildingConstructionGraph(), 1), [{ bayIndex: 0, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }]);
   const before = await evaluateConstruction(base);
   const graph = withConstructionAwningSupports(base, [{ bayIndex: 0, anchorRiseM: 0.15, thicknessM: 0.03 }]);
+  expect(withConstructionOpeningEdits(graph).awningSupports).toEqual(graph.awningSupports);
+  expect(withConstructionGroupedBays(graph, []).awningSupports).toEqual(graph.awningSupports);
+  expect(withConstructionStorefrontDivision(graph, { displayLights: 1, transomLights: 1 }).awningSupports).toEqual(graph.awningSupports);
   const result = await evaluateConstruction(graph), replay = await evaluateConstruction(JSON.parse(JSON.stringify(graph)));
   const rods = result.ir.meshBatches.filter(batch => batch.role === "awning.support");
   expect(rods).toHaveLength(1); expect(rods[0].materialSlotId).toBe("ornament.primary");

@@ -276,7 +276,6 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   async function open(file: File) {
     await perform(async (token, signal) => {
       const { project, materials } = await readBayConstructionProject(JSON.parse(await file.text()));
-      if (project.graph.schemaVersion === "0.14.0") throw new Error("Awning support projects cannot yet be edited here. The current building is retained.");
       await publish(project.graph, { ...materials, file: project.materialSource, ...(project.awningFabric ? { awningFabric: project.awningFabric } : {}) }, token, signal, "open", project.generation ?? null);
     });
   }
@@ -310,7 +309,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
           memberCount: edit.memberCount, memberWidthM: Number(edit.memberWidthM), pierWidthM: Number(edit.pierWidthM) });
       }
       let graph: BayConstructionGraph;
-      if (groups.length || ["0.12.0", "0.13.0"].includes(original.schemaVersion)) graph = withConstructionGroupedBays(original, groups);
+      if (groups.length || ["0.12.0", "0.13.0", "0.14.0"].includes(original.schemaVersion)) graph = withConstructionGroupedBays(original, groups);
       else if (original.schemaVersion === "0.11.0") {
         const { upperBayGroups: _removed, ...prior } = original; void _removed;
         graph = BayConstructionGraphSchema.parse({ ...prior, schemaVersion: "0.10.0" });
@@ -652,7 +651,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
               </select>
             </label> : null}
             {"input" in node && node.type !== "Storeys" ? <label className="control-panel__field-wide construction-contribution"><input type="checkbox" aria-label="Bypass selected node" checked={Boolean(node.bypassed)}
-              onChange={event => { setDraft(graph => ({ ...graph, schemaVersion: ["0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0"].includes(graph.schemaVersion) ? graph.schemaVersion : "0.2.0" })); replace({ ...node, bypassed: event.currentTarget.checked }); }} /><span>Bypass this node</span></label> : null}
+              onChange={event => { setDraft(graph => ({ ...graph, schemaVersion: ["0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0", "0.14.0"].includes(graph.schemaVersion) ? graph.schemaVersion : "0.2.0" })); replace({ ...node, bypassed: event.currentTarget.checked }); }} /><span>Bypass this node</span></label> : null}
             {"inputs" in node ? draft.nodes.filter(value => value.id !== node.id && constructionOutputSocket(value.type) === "geometry").map(value =>
               <label className="control-panel__field-wide construction-contribution" key={value.id}>
                 <input type="checkbox" aria-label={`Include ${displayName(value)}`} checked={node.inputs.some(link => link.nodeId === value.id)}
@@ -704,8 +703,8 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         graph={accepted.construction.graph} dirty={groupDirty} disabled={pending || saving || openingDirty || buildingDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode)}
         onDraftChange={value => { setGroupDirty(value); if (!value) setError(null); }} onApply={edit => void applyGroupedBay(edit)} /> : null}
       {buildingMode && !advancedOpen && accepted && supportsGroupedConstruction(accepted.construction.graph) && constructionHasStorefront(accepted.construction.graph) ? <ConstructionAwningControls
-        graph={accepted.construction.graph} disabled={pending || saving || openingDirty || buildingDirty || groupDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode) || (familyMemberMode && !startingSession?.materials.awningFabric)}
-        unavailableReason={familyMemberMode && !startingSession?.materials.awningFabric ? "Add an awning to the original building before creating this family." : undefined}
+        graph={accepted.construction.graph} disabled={pending || saving || openingDirty || buildingDirty || groupDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode) || accepted.construction.graph.schemaVersion === "0.14.0" || (familyMemberMode && !startingSession?.materials.awningFabric)}
+        unavailableReason={accepted.construction.graph.schemaVersion === "0.14.0" ? "Awning controls are not yet available for support projects." : familyMemberMode && !startingSession?.materials.awningFabric ? "Add an awning to the original building before creating this family." : undefined}
         fabric={awningFabric} fabricDisabled={familyMemberMode}
         onFabricChange={(pattern, primary, secondary) => void changeAwningFabric(pattern, primary, secondary)}
         onChange={(bay, enabled, dimensions) => void changeAwning(bay, enabled, dimensions)} /> : null}

@@ -15,13 +15,13 @@ function address(target: ConstructionOpeningTarget) { return canonicalJson(targe
 export function withConstructionOpeningEdits(input: unknown): BayConstructionGraph {
   const original = BayConstructionGraphSchema.parse(input);
   const base = withConstructionStorefront(createBuildingConstructionGraph(original.documentId), 0);
-  const expected = ["0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0"].includes(original.schemaVersion) ? BayConstructionGraphSchema.parse({ ...base, schemaVersion: "0.7.0",
+  const expected = ["0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0", "0.14.0"].includes(original.schemaVersion) ? BayConstructionGraphSchema.parse({ ...base, schemaVersion: "0.7.0",
     nodes: [...base.nodes.map(node => "input" in node && node.input.nodeId === "frontage" ? { ...node, input: { ...node.input, nodeId: "openingEdits" } } : node),
       { id: "openingEdits", type: "EditOpeningWidth", input: { nodeId: "frontage", socket: "scope" }, overrides: [] }] }) : base;
   const comparison = ["0.4.0", "0.5.0"].includes(original.schemaVersion)
     ? withConstructionStorefront(original, 0) : original;
   if (topology(comparison) !== topology(expected)) throw new Error("Local opening edits require the registered whole-building connections.");
-  if (["0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0"].includes(original.schemaVersion)) return structuredClone(original);
+  if (["0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0", "0.14.0"].includes(original.schemaVersion)) return structuredClone(original);
   if (!["0.4.0", "0.5.0", "0.6.0"].includes(original.schemaVersion)) throw new Error("Local opening edits require a whole-building construction.");
   const graph = original.schemaVersion === "0.6.0" ? structuredClone(original) : withConstructionStorefront(original, 0);
   return BayConstructionGraphSchema.parse({ ...graph, schemaVersion: "0.7.0", nodes: [
@@ -50,7 +50,7 @@ export function withoutConstructionOpeningWidth(input: unknown, targetInput: unk
 /** Preserve explicit local widths over the immutable recipe, or release every override. */
 export function retainConstructionOpeningEdits(currentInput: unknown, generatedInput: unknown, preserve: boolean) {
   const current = BayConstructionGraphSchema.parse(currentInput);
-  if (!["0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0"].includes(current.schemaVersion)) return BayConstructionGraphSchema.parse(generatedInput);
+  if (!["0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0", "0.14.0"].includes(current.schemaVersion)) return BayConstructionGraphSchema.parse(generatedInput);
   const graph = withConstructionOpeningEdits(generatedInput);
   const source = current.nodes.find(node => node.type === "EditOpeningWidth")!;
   const operation = graph.nodes.find(node => node.type === "EditOpeningWidth")!;
