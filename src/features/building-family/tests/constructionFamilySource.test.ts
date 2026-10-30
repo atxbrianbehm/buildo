@@ -5,7 +5,7 @@ import { resolveConstructionFamilyComposition } from "../core/constructionFamily
 import { withConstructionOpeningWidth } from "../core/constructionOpeningEditGraph";
 import { resolveConstructionFamily } from "../state/constructionFamilyGeneration";
 import { defaultConstructionGenerationControls, resolveWorkbenchGeneration, type ConstructionGenerationLineage } from "../state/constructionGenerationState";
-import { createConstructionFamilySource, readConstructionFamilySource } from "../state/constructionFamilySource";
+import { createConstructionFamilySource, readConstructionFamilySource, withUpdatedConstructionFamilyMembers } from "../state/constructionFamilySource";
 import { createBayConstructionProject } from "../state/bayConstructionProject";
 import { createAssemblyHallFixture } from "../ui/assemblyHallFixture";
 import { createReferenceConstructionMaterials } from "../ui/bayConstructionFixture";
@@ -68,6 +68,12 @@ describe("persistent construction family source", () => {
       const rods = [{ bayIndex: 0, anchorRiseM: 0.15, thicknessM: 0.03 }];
       const supportInput = { ...awningInput, schemaVersion: "0.10.0" as const, sourceGraph: withConstructionAwningSupports(awningInput.sourceGraph, rods),
         members: awningInput.members.map(member => ({ ...member, graph: withConstructionAwningSupports(member.graph, rods) })) };
+      const oneMemberSupport = { ...supportInput, sourceGraph: awningInput.sourceGraph,
+        members: awningInput.members.map((member, index) => index === 0 ? supportInput.members[0] : member) };
+      const oneMemberFamily = await createConstructionFamilySource(oneMemberSupport);
+      const { contentHash: _supportHash, ...oneMemberPayload } = oneMemberFamily; void _supportHash;
+      const removedLast = withUpdatedConstructionFamilyMembers(oneMemberPayload, awningInput.members);
+      expect(removedLast.schemaVersion).toBe("0.8.0"); expect((await createConstructionFamilySource(removedLast)).schemaVersion).toBe("0.8.0");
       const supportFamily = await createConstructionFamilySource(supportInput);
       expect(await readConstructionFamilySource(JSON.parse(JSON.stringify(supportFamily)))).toEqual(supportFamily);
       expect((await evaluateConstruction(supportFamily.members[0].graph)).ir.meshBatches.filter(batch => batch.role === "awning.support")).toHaveLength(1);
@@ -80,6 +86,14 @@ describe("persistent construction family source", () => {
       expect(awningMembers.members.every(member => JSON.stringify(member.construction.graph.awnings) === JSON.stringify(awnings))).toBe(true);
       const awningChoices = resolveConstructionFamilyComposition({ schemaVersion: "0.5.0", kind: "construction-family-composition-request", familySeed: "seed", openingLock: false,
         policy: { openings: false, frontage: false, roof: false, groupedBays: false, storefrontLights: false, massing: false, awnings: true } });
+      const withV5 = await createConstructionFamilySource({ ...oneMemberSupport, initialComposition: awningChoices });
+      const { contentHash: _v5Hash, ...v5Payload } = withV5; void _v5Hash;
+      const downgradedV5 = withUpdatedConstructionFamilyMembers(v5Payload, awningInput.members);
+      expect(downgradedV5.schemaVersion).toBe("0.9.0"); expect((await createConstructionFamilySource(downgradedV5)).schemaVersion).toBe("0.9.0");
+      const supportPlan = resolveConstructionFamilyPlan({ schemaVersion: "0.1.0", kind: "construction-family-request", familyId: "support_family", familySeed: "seed", graph: supportInput.sourceGraph });
+      const supportMembers = await resolveConstructionFamily(supportPlan, lineage, defaultConstructionGenerationControls, undefined, awningChoices);
+      expect(supportMembers.members.every(member => JSON.stringify(member.construction.graph.awningSupports) === JSON.stringify(rods))).toBe(true);
+      expect(new Set(supportMembers.members.map(member => member.construction.graph.awnings!.length))).toEqual(new Set([1, 2, 3]));
       const variedAwnings = await resolveConstructionFamily(awningPlan, lineage, defaultConstructionGenerationControls, undefined, awningChoices);
       expect(new Set(variedAwnings.members.map(member => member.construction.graph.awnings!.length))).toEqual(new Set([1, 2, 3]));
       const variedSource = await createConstructionFamilySource({ ...awningInput, schemaVersion: "0.9.0", initialComposition: awningChoices,
