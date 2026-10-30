@@ -1,5 +1,18 @@
-import { emptyBounds, expandBounds, type PrimitiveGeometry, type Vec3 } from "./primitiveGeometry";
+import { buildBoxPrimitive, emptyBounds, expandBounds, type PrimitiveGeometry, type Vec3 } from "./primitiveGeometry";
 import type { ProfileDefinition } from "./profileLibrary";
+
+/** Stone seat spans the open reveal from the facade plane to the recessed frame. */
+export function buildConstructionSillSeat(widthM: number, bottomM: number, recessM: number): PrimitiveGeometry {
+  if (![widthM, bottomM, recessM].every(Number.isFinite) || widthM <= 0 || recessM <= 0)
+    throw new Error("A sill seat needs a finite opening width, bottom and positive recess.");
+  const seat = buildBoxPrimitive({ center: [0, bottomM + 0.01, -recessM / 2], size: [widthM, 0.02, recessM] });
+  for (let i = 0; i < seat.positions.length / 3; i++) {
+    const p = i * 3, nx = Math.abs(seat.normals[p]), ny = Math.abs(seat.normals[p + 1]);
+    seat.uvs[i * 2] = nx > 0.9 ? seat.positions[p + 2] - seat.bounds.min[2] : seat.positions[p] - seat.bounds.min[0];
+    seat.uvs[i * 2 + 1] = ny > 0.9 ? seat.positions[p + 2] - seat.bounds.min[2] : seat.positions[p + 1] - seat.bounds.min[1];
+  }
+  return seat;
+}
 
 /** Closed metre-space loft for construction openings; monotone profiles admit exact strip caps. */
 export function extrudeConstructionOpeningTrim(input: { profile: ProfileDefinition; center: Vec3; runLengthM: number }): PrimitiveGeometry {

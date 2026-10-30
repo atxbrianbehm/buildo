@@ -75,7 +75,7 @@ it("compiles upper front round heads through a versioned graph with a real chang
   const sillBatch = compiled.ir.instanceBatches.find(item => item.batchId === sillEntry.batchId)!;
   const sill = compiled.prototypes!.find(item => item.batchId === sillBatch.recipeId)!;
   const z = [...sill.positions!].filter((_, index) => index % 3 === 2);
-  expect(Math.max(...z)).toBeLessThanOrEqual(0); expect(Math.min(...z)).toBeLessThan(-0.1);
+  expect(Math.max(...z)).toBeCloseTo(graph.nodes.find(node => node.type === "AssembleWindow")!.parameters.recessM); expect(Math.min(...z)).toBeLessThan(-0.1);
   expect(compiled.ir.sourceGraphHash).not.toBe(original.ir.sourceGraphHash);
   expect(BayConstructionWorkerRequestSchema.safeParse({ schemaVersion: "0.10.0", type: "evaluate-bay", requestId: 1, graph }).success).toBe(true);
   expect(BayConstructionWorkerRequestSchema.safeParse({ schemaVersion: "0.9.0", type: "evaluate-bay", requestId: 1, graph }).success).toBe(false);
