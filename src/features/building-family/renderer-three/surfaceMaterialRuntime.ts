@@ -14,6 +14,9 @@ import { resolveBuildingSurfaceBindings } from "../materials/resolveSurfaceBindi
 import { ConstantSurfaceBaseAppearanceSchema, type ConstantSurfaceBaseAppearance } from "../contracts/surfaceBaseAppearance";
 import { surfaceBaseRgba, verifyConstantSurfaceBaseAppearance } from "../materials/surfaceBaseAppearance";
 import type { AtlasMaterialRegistry } from "./buildingAtlasMaterialFactory";
+import { ConstructionAwningFabricArtifactSchema } from "../contracts/constructionAwningFabric";
+import { readConstructionAwningFabric } from "../materials/constructionAwningFabric";
+import { CONSTRUCTION_AWNING_FABRIC_SLOT } from "./constructionAwningFabricRuntime";
 
 export class BuildingSurfaceRuntimeError extends Error {
   readonly name = "BuildingSurfaceRuntimeError";
@@ -117,6 +120,7 @@ export interface BuildingSurfaceLease {
   release(): void;
 }
 export interface BuildingSurfaceRuntime {
+  readonly supplementalAwningFabricHash?: string;
   readonly metrics: { evaluatedRecipes: number; materialCount: number; textureCount: number; leases: number };
   readonly disposed: boolean;
   acquire(ir: RuntimeBuildingIR, registry: AtlasMaterialRegistry): BuildingSurfaceLease;
@@ -172,10 +176,29 @@ export async function prepareBuildingSurfaceRuntime(input: unknown, familyCache?
   const shared = familyCache === undefined ? undefined : familyPixelCaches.get(familyCache);
   if (familyCache !== undefined && !shared) fail("surfaceRuntime.invalidInput", "Family surface cache is unavailable.");
   const keys = Object.keys(record(input)).sort().join(",");
-  if (keys !== "atlas,composition,ir" && keys !== "atlas,baseAppearances,composition,ir")
-    fail("surfaceRuntime.invalidInput", "Expected composition, IR, atlas and optional base appearances.");
+  if (!["atlas,composition,ir", "atlas,baseAppearances,composition,ir", "atlas,awningFabric,composition,ir", "atlas,awningFabric,baseAppearances,composition,ir"].includes(keys))
+    fail("surfaceRuntime.invalidInput", "Expected composition, IR, atlas and optional base appearances or awning fabric.");
   const composition = BuildingSurfaceCompositionSchema.parse(field(input, "composition"));
   const ir = field(input, "ir") as RuntimeBuildingIR, context = contextKey(ir), atlas = ownAtlas(field(input, "atlas"));
+  const fabric = keys.includes("awningFabric") ? structuredClone(ConstructionAwningFabricArtifactSchema.parse(field(input, "awningFabric"))) : undefined;
+  const supplemental = ir.meshBatches.filter(batch => batch.materialSlotId === CONSTRUCTION_AWNING_FABRIC_SLOT);
+  if (ir.instanceBatches.some(batch => batch.materialSlotId === CONSTRUCTION_AWNING_FABRIC_SLOT) || (!!fabric !== !!supplemental.length) ||
+      (supplemental.length > 0 && atlas.manifest.slots.some(slot => slot.id === CONSTRUCTION_AWNING_FABRIC_SLOT)))
+    fail("surfaceRuntime.invalidInput", "Supplemental awning material must match separate mesh batches and cannot alias an atlas slot.");
+  const supplementalIds = new Set(supplemental.map(batch => batch.batchId));
+  const supplementalEntries = ir.semanticIndex.filter(entry => supplementalIds.has(entry.batchId));
+  if (supplemental.some(batch => !["awning.canopy", "awning.valance"].includes(batch.role) ||
+      ir.meshBatches.filter(other => other.batchId === batch.batchId).length !== 1 || ir.instanceBatches.some(other => other.batchId === batch.batchId) ||
+      supplementalEntries.filter(entry => entry.batchId === batch.batchId && entry.elementIndex === undefined && entry.stage === "openings" && entry.semanticPath.startsWith(`building/${ir.familyId}/`)).length !== 1 ||
+      supplementalEntries.filter(entry => entry.batchId === batch.batchId).length !== 1) ||
+      supplementalEntries.some(entry => ir.semanticIndex.filter(other => other.semanticPath === entry.semanticPath).length !== 1))
+    fail("surfaceRuntime.invalidInput", "Supplemental awning batches require distinct semantic opening addresses.");
+  const prefix = `building/${ir.familyId}/`;
+  if (composition.layers.some(layer => layer.target.kind === "slot" ? layer.target.slotId === CONSTRUCTION_AWNING_FABRIC_SLOT :
+    layer.target.kind === "element" && supplementalEntries.some(entry => entry.semanticPath.slice(prefix.length) === (layer.target as { relativePath: string }).relativePath)))
+    fail("surfaceRuntime.invalidInput", "Surface layers cannot yet target supplemental awning fabric.");
+  const atlasIr = supplemental.length ? { ...ir, meshBatches: ir.meshBatches.filter(batch => !supplementalIds.has(batch.batchId)),
+    semanticIndex: ir.semanticIndex.filter(entry => !supplementalIds.has(entry.batchId)) } : ir;
   const rawBases = keys.includes("baseAppearances") ? array(field(input, "baseAppearances")) : [];
   if (rawBases.length > 32) fail("surfaceRuntime.invalidInput", "Too many surface base appearances.");
   const bases = new Map<string, ConstantSurfaceBaseAppearance>();
@@ -188,8 +211,9 @@ export async function prepareBuildingSurfaceRuntime(input: unknown, familyCache?
     bases.set(base.slotId, base);
   }
   // Own all metadata and atlas planes before validation yields.
-  const pendingBindings = resolveBuildingSurfaceBindings({ composition, ir, atlas });
+  const pendingBindings = resolveBuildingSurfaceBindings({ composition, ir: atlasIr, atlas });
   void pendingBindings.catch(() => undefined);
+  if (fabric) await readConstructionAwningFabric(fabric);
   for (const base of bases.values()) {
     try { await verifyConstantSurfaceBaseAppearance(base); }
     catch { fail("surfaceRuntime.invalidInput", "Surface base appearance does not match its content hash."); }
@@ -290,13 +314,13 @@ export async function prepareBuildingSurfaceRuntime(input: unknown, familyCache?
   return createOwner({ context, atlasId: atlas.atlasId, atlasContentHash: atlas.contentHash,
     baseAppearances: [...bases.values()],
     slotIds: [...new Set(bindings.bindings.map(binding => binding.baseSlot.slotId))],
-    evaluatedRecipes, materials, textures, byAddress });
+    evaluatedRecipes, materials, textures, byAddress, supplementalAwningFabricHash: fabric?.contentHash });
 }
 function createOwner(input: {
   context: string; atlasId: string; atlasContentHash: string; slotIds: string[];
   baseAppearances: ConstantSurfaceBaseAppearance[];
   evaluatedRecipes: number; materials: Map<string, MeshStandardMaterial>;
-  textures: DataTexture[]; byAddress: Map<string, MeshStandardMaterial>;
+  textures: DataTexture[]; byAddress: Map<string, MeshStandardMaterial>; supplementalAwningFabricHash?: string;
 }): BuildingSurfaceRuntime {
   const { context, atlasId, atlasContentHash, slotIds, evaluatedRecipes, materials, textures, byAddress } = input;
   let closed = false, freed = false, leases = 0;
@@ -307,6 +331,7 @@ function createOwner(input: {
     for (const texture of textures) { texture.dispose(); texture.userData.disposed = true; }
   }
   return {
+    supplementalAwningFabricHash: input.supplementalAwningFabricHash,
     get metrics() { return { evaluatedRecipes, materialCount: freed ? 0 : materials.size, textureCount: freed ? 0 : textures.length, leases }; },
     get disposed() { return closed; },
     listMaterials: () => freed ? [] : [...materials.values()],
