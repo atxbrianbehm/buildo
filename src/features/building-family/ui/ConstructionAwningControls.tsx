@@ -1,9 +1,12 @@
 import { useState } from "react";
 import type { BayConstructionGraph } from "../contracts/bayConstructionGraph";
+import type { ConstructionAwningFabricArtifact } from "../contracts/constructionAwningFabric";
 
 /** A single explicit front-bay scope; multiple bays can be authored one at a time. */
-export function ConstructionAwningControls({ graph, disabled, unavailableReason, onChange }: {
+export function ConstructionAwningControls({ graph, disabled, unavailableReason, onChange, fabric, fabricDisabled, onFabricChange }: {
   graph: BayConstructionGraph; disabled: boolean; unavailableReason?: string; onChange: (bayIndex: number, enabled: boolean, dimensions?: { projectionM: number; dropM: number; valanceHeightM: number }) => void;
+  fabric?: ConstructionAwningFabricArtifact; fabricDisabled?: boolean;
+  onFabricChange?: (pattern: "solid" | "striped", primary: [number, number, number], secondary: [number, number, number]) => void;
 }) {
   const [bayIndex, setBay] = useState(0);
   const count = graph.nodes.find(node => node.type === "SplitBays")?.parameters.count ?? 0;
@@ -13,7 +16,7 @@ export function ConstructionAwningControls({ graph, disabled, unavailableReason,
   if (!count) return null;
   return <section className="construction-grouped-bay" aria-label="Storefront awnings">
     <h3>Storefront awnings</h3>
-    <p>Choose a front bay. The first awning uses a striped demo fabric; its source is retained for undo and saving.</p>
+    <p>Choose a front bay. The first awning starts with striped demo fabric; its source is saved separately.</p>
     {unavailableReason ? <p>{unavailableReason}</p> : null}
     <fieldset disabled={disabled}>
       <label>Bay <select aria-label="Awning bay" value={selected} onChange={event => setBay(Number(event.currentTarget.value))}>
@@ -29,6 +32,22 @@ export function ConstructionAwningControls({ graph, disabled, unavailableReason,
         <label>Valance height (m) <input aria-label="Awning valance height" name="valance" type="number" min="0.08" max="0.4" step="any" required defaultValue={awning.valanceHeightM} /></label>
         <button type="submit">Apply awning dimensions</button>
       </form> : null}
+      {fabric && onFabricChange ? <div>
+        <p>Fabric applies to all awnings in this building and its generated family. Fabric changes are separate from construction undo.</p>
+        {fabricDisabled ? <p>To change shared fabric, return to the original building.</p> : null}
+        <fieldset disabled={fabricDisabled}>
+          <form key={fabric.contentHash} onSubmit={event => {
+            event.preventDefault(); const fields = new FormData(event.currentTarget);
+            const color = (name: string): [number, number, number] => { const value = String(fields.get(name)); return [1, 3, 5].map(offset => parseInt(value.slice(offset, offset + 2), 16)) as [number, number, number]; };
+            onFabricChange(fields.get("pattern") === "solid" ? "solid" : "striped", color("primary"), color("secondary"));
+          }}>
+            <label>Fabric pattern <select aria-label="Awning fabric pattern" name="pattern" defaultValue={fabric.source.pattern}><option value="striped">Striped</option><option value="solid">Solid</option></select></label>
+            <label>Primary color <input aria-label="Awning primary color" name="primary" type="color" defaultValue={`#${fabric.source.primary.map(value => value.toString(16).padStart(2, "0")).join("")}`} /></label>
+            <label>Stripe color <input aria-label="Awning stripe color" name="secondary" type="color" defaultValue={`#${fabric.source.secondary.map(value => value.toString(16).padStart(2, "0")).join("")}`} /></label>
+            <button type="submit">Apply awning fabric</button>
+          </form>
+        </fieldset>
+      </div> : null}
       <p>{present ? "This bay has an awning." : "This bay has no awning."} The current treatment has a rigid canopy and no support arms.</p>
     </fieldset>
   </section>;
