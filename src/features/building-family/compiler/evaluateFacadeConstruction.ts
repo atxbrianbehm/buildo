@@ -1,6 +1,9 @@
 import { resolveConstructionFacadePiers } from "../core/constructionFacadePier";
 import { buildConstructionFacadePierGeometry } from "./constructionFacadePierGeometry";
 import { ConstructionFacadePierStudyRequestSchema, type ConstructionFacadePierStudyRequest } from "../contracts/constructionFacadePierStudy";
+import { ConstructionStorefrontSignStudyRequestSchema, type ConstructionStorefrontSignStudyRequest } from "../contracts/constructionStorefrontSignStudy";
+import { resolveConstructionStorefrontSign } from "../core/constructionStorefrontSign";
+import { buildConstructionStorefrontSignGeometry } from "./constructionStorefrontSignGeometry";
 import { resolveConstructionAwningSupports } from "../core/constructionAwningSupports";
 import { buildConstructionAwningSupportGeometry } from "./constructionAwningSupportGeometry";
 import { resolveConstructionStorefront } from "../core/constructionStorefront";
@@ -62,8 +65,12 @@ function front(primitive: PrimitiveGeometry): PrimitiveGeometry {
 
 /** Scope collections feed the same wall subtractor and accepted C1 window geometry. */
 export async function evaluateFacadeConstruction(input: unknown, materials: BayConstructionMaterials = DEFAULT_BAY_MATERIALS,
-  previewNodeId?: string, groupedInput: readonly unknown[] = [], pierStudyInput?: ConstructionFacadePierStudyRequest): Promise<BayConstructionResult> {
+  previewNodeId?: string, groupedInput: readonly unknown[] = [], pierStudyInput?: ConstructionFacadePierStudyRequest, signStudyInput?: ConstructionStorefrontSignStudyRequest): Promise<BayConstructionResult> {
   const graph = structuredClone(BayConstructionGraphSchema.parse(input));
+  const signStudy = signStudyInput === undefined ? undefined : ConstructionStorefrontSignStudyRequestSchema.parse(signStudyInput);
+  if (signStudy && pierStudyInput) throw new Error("Use graph-authored piers instead of combining two experimental studies.");
+  if (signStudy && (previewNodeId || groupedInput.length || canonicalJson(signStudy.graph) !== canonicalJson(graph)))
+    throw new Error("Storefront sign study requires its complete matching graph and no experimental grouping request.");
   if (pierStudyInput && graph.facadePiers) throw new Error("Use either the graph pier directive or an experimental pier study.");
   const pierStudy = pierStudyInput === undefined ? graph.facadePiers ? ConstructionFacadePierStudyRequestSchema.parse({ schemaVersion: "0.1.0", kind: "construction-facade-pier-study-request", graph, ...graph.facadePiers }) : undefined : ConstructionFacadePierStudyRequestSchema.parse(pierStudyInput);
   if (pierStudy && (previewNodeId || groupedInput.length || canonicalJson(pierStudy.graph) !== canonicalJson(graph)))
@@ -137,6 +144,16 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
     return [makeMesh(node, cell, "awning.canopy", [translate(geometry.roof)], "openings", CONSTRUCTION_AWNING_FABRIC_SLOT),
       makeMesh(node, cell, "awning.valance", [translate(geometry.valance)], "openings", CONSTRUCTION_AWNING_FABRIC_SLOT),
       ...(support ? [makeMesh(node, cell, "awning.support", rods.map(translate), "openings", "ornament.primary")] : [])];
+  }
+  function signParts(node: BayConstructionNode, cell: Cell): Part[] {
+    if (!signStudy || cell.face !== "front" || cell.scope.floorIndex !== 0 || cell.scope.bayIndex !== signStudy.bayIndex || !cell.storefrontPlan) return [];
+    const plan = resolveConstructionStorefrontSign({ schemaVersion: "0.1.0", kind: "construction-storefront-sign-request", storefront: cell.storefrontPlan,
+      heightM: signStudy.heightM, projectionM: signStudy.projectionM, frameWidthM: signStudy.frameWidthM,
+      awningPresent: Boolean(graph.awnings?.some(awning => awning.bayIndex === cell.scope.bayIndex)) });
+    const geometry = buildConstructionStorefrontSignGeometry(plan), shift: [number, number, number] = [cell.scope.originM[0], cell.scope.originM[1], 0];
+    const translate = (part: PrimitiveGeometry): PrimitiveGeometry => ({ ...part, positions: part.positions.map((value, index) => value + shift[index % 3]), bounds: shifted(part.bounds, shift) });
+    return [makeMesh(node, cell, "sign.panel", [translate(geometry.panel)], "openings", "ornament.primary"),
+      makeMesh(node, cell, "sign.frame", geometry.frame.map(translate), "trim", materials.trim)];
   }
   const samePlane = (a: Cell, b: Cell) => JSON.stringify(a.pose ? [a.pose.cosine,a.pose.sine,a.pose.x,a.pose.z] : [1,0,0,0]) === JSON.stringify(b.pose ? [b.pose.cosine,b.pose.sine,b.pose.x,b.pose.z] : [1,0,0,0]);
   const wallCells = (parts: Part[]) => parts.filter(part => part.role === "wall").flatMap(part => part.wallCells ?? (part.cell ? [part.cell] : []));
@@ -242,6 +259,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
             positions: primitive.positions.map((v,i)=>i%3===0?v+opening.centerAlongM:v), bounds: shifted(primitive.bounds,[opening.centerAlongM,0,0]) }));
           parts.push(makeMesh(node,cell,"frame",shiftedGeometry(geometry.frame),"openings",materials.frame),makeMesh(node,cell,"leaf",shiftedGeometry(geometry.leaf),"openings","door.primary"),makeMesh(node,cell,"hardware",shiftedGeometry(geometry.hardware),"openings","ornament.primary"),makeMesh(node,cell,"glass",shiftedGeometry(geometry.glass),"openings",materials.glass),makeMesh(node,cell,"trim",shiftedGeometry(geometry.trim),"trim",materials.trim));
           parts.push(...awningParts(node, cell));
+          parts.push(...signParts(node, cell));
         }
         value = { kind: "geometry", parts }; break;
       }
@@ -442,6 +460,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
               prototype, translation, pose: cell.pose, bounds: posedBounds(shifted(batchBounds(batch), translation),cell.pose), stage: batch.role === "trim" ? "trim" : "openings" });
           }
           parts.push(...awningParts(node, cell));
+          parts.push(...signParts(node, cell));
         }
         value = { kind: "geometry", parts }; break;
       }
@@ -513,12 +532,27 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
   const full = await evaluate(graph.outputNodeId);
   if (full.kind !== "geometry" || !full.parts.length) throw new Error("Construction output is empty.");
   if (pierStudy && (!pierCount || full.parts.filter(part => part.role === "facade-pier").length !== pierCount)) throw new Error("Facade piers must reach the complete building output.");
+  if (signStudy && (full.parts.filter(part => part.role === "sign.panel").length !== 1 || full.parts.filter(part => part.role === "sign.frame").length !== 1))
+    throw new Error("The sign must reach one existing front storefront and the final building output.");
+  if (signStudy) {
+    const signs = full.parts.filter(part => part.role === "sign.panel" || part.role === "sign.frame");
+    const bands = full.parts.filter(part => part.role.startsWith("band."));
+    if (signs.some(sign => bands.some(band => [0, 1, 2].every(axis => sign.bounds.min[axis] < band.bounds.max[axis] + 0.01 && sign.bounds.max[axis] > band.bounds.min[axis] - 0.01))))
+      throw new Error("The sign needs clearance from the storey trim band.");
+  }
   if (usedGroups.size !== grouped.length) throw new Error("A grouped bay is missing from the executed opening scopes.");
   for (const node of graph.nodes) if (node.type === "EditOpeningWidth" && !node.bypassed) for (const { target } of node.overrides) {
     const path = `building/${graph.documentId}/node/${target.windowNodeId}/${target.storeysNodeId}/floor/${target.floorIndex}/bay/${target.bayIndex}/frame`;
     if (!editedOpenings.has(path)) throw new Error("The selected opening edit is not connected to the final output.");
   }
   const fullWalls = full.parts.flatMap(part => part.wallCells ?? (part.role === "wall" && part.cell ? [part.cell] : []));
+  if (signStudy) {
+    const sign = full.parts.find(part => part.role === "sign.panel")!, cell = sign.cell!;
+    if (fullWalls.filter(wall => wall.key === cell.key && layoutOf(wall) === layoutOf(cell)).length !== 1 ||
+        full.parts.filter(part => part.cell?.key === cell.key && part.cell.storefrontPlan && part.role === "frame").length !== 1 ||
+        full.parts.filter(part => part.cell?.key === cell.key && part.cell.storefrontPlan && part.role === "glass").length !== 1)
+      throw new Error("The sign requires its matching storefront wall, frame and glazing in the final output.");
+  }
   for (const awning of graph.awnings ?? []) {
     const matching = full.parts.filter(part => part.cell?.face === "front" && part.cell.scope.floorIndex === 0 && part.cell.scope.bayIndex === awning.bayIndex);
     if (matching.filter(part => part.role === "awning.canopy").length !== 1 || matching.filter(part => part.role === "awning.valance").length !== 1)
@@ -576,7 +610,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
     materialSlotId: group[0].prototype!.materialSlotId!, count: group.length,
     transforms: new Float32Array(group.flatMap(part => poseMatrix(part.translation!,part.pose))) }));
   const ir = RuntimeBuildingIRSchema.parse({ schemaVersion: "0.1.0", buildingId: graph.documentId, familyId: graph.documentId,
-    sourceGraphHash: await hashCanonicalJson(pierStudyInput ?? (groupedInput.length ? { schemaVersion: "0.1.0", kind: "construction-grouped-geometry-request", graph, groups: grouped } : graph)), bounds: union(parts.map(p => p.bounds)), meshBatches, instanceBatches, semanticIndex,
+    sourceGraphHash: await hashCanonicalJson(signStudyInput ?? pierStudyInput ?? (groupedInput.length ? { schemaVersion: "0.1.0", kind: "construction-grouped-geometry-request", graph, groups: grouped } : graph)), bounds: union(parts.map(p => p.bounds)), meshBatches, instanceBatches, semanticIndex,
     metrics: { vertexCount: [...meshBatches, ...prototypes.values()].reduce((sum, batch) => sum + batch.positions!.length / 3, 0),
       triangleCount: parts.reduce((sum, part) => sum + (part.mesh ?? part.prototype)!.indices!.length / 3, 0),
       instanceCount: instanceBatches.reduce((sum, batch) => sum + batch.count, 0) } });
