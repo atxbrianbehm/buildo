@@ -41,7 +41,7 @@ function ArrangementControls({ saved, floorIndex, bayIndex, dirty, onDraftChange
       </select></label>
       {memberCount > 1 ? <><label>Window width (m) <input aria-label="Grouped window width" type="number" step="0.01" value={memberWidthM} onChange={event => { setWidth(event.currentTarget.value); onDraftChange(true); }} /></label>
         <label>Masonry between windows (m) <input aria-label="Grouped window pier width" type="number" step="0.01" value={pierWidthM} onChange={event => { setPier(event.currentTarget.value); onDraftChange(true); }} /></label></> : null}
-      <p>Grouped windows currently use flat heads; existing selected-window width edits must be reset first. Rerolling is unavailable while groups are present.</p>
+      <p>Grouped windows currently use flat heads. Reset any selected-window width edit on this bay before grouping it. Keep edited assemblies or lock openings to retain groups when generating.</p>
       <button type="button" disabled={!dirty} onClick={() => onApply({ floorIndex, bayIndex, memberCount, memberWidthM, pierWidthM })}>Apply window arrangement</button>
       {dirty ? <button type="button" onClick={reset}>Discard window arrangement draft</button> : null}
   </>;

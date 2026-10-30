@@ -26,6 +26,15 @@ describe("persistent construction family source", () => {
       const edited = withConstructionOpeningWidth(generated.graph, { target, widthM: 1.8 });
       const plan = resolveConstructionFamilyPlan({ schemaVersion: "0.1.0", kind: "construction-family-request", familyId: "family", familySeed: "seed", graph: edited });
       const family = await resolveConstructionFamily(plan, lineage, defaultConstructionGenerationControls);
+      const groupedOriginal = withConstructionGroupedBays(edited, [{ storeysNodeId: "facade", floorIndex: 1, bayIndex: 0,
+        memberCount: 2, memberWidthM: 0.55, pierWidthM: 0.24 }]);
+      const groupedPlan = resolveConstructionFamilyPlan({ schemaVersion: "0.1.0", kind: "construction-family-request", familyId: "grouped_family", familySeed: "seed", graph: groupedOriginal });
+      const generatedGrouped = await resolveConstructionFamily(groupedPlan, lineage, defaultConstructionGenerationControls);
+      expect(generatedGrouped.members).toHaveLength(6);
+      expect(generatedGrouped.members.every(member => member.construction.graph.upperBayGroups?.[0].memberCount === 2)).toBe(true);
+      expect(generatedGrouped.members.every(member => member.lineage.materialSourceHash === lineage.materialSourceHash)).toBe(true);
+      const conflicting = resolveConstructionFamilyComposition({ schemaVersion: "0.1.0", kind: "construction-family-composition-request", familySeed: "seed", policy: { openings: true, frontage: false, roof: false }, openingLock: false });
+      await expect(resolveConstructionFamily(groupedPlan, lineage, defaultConstructionGenerationControls, undefined, conflicting)).rejects.toThrow(/cannot currently coexist/);
       const input = { schemaVersion: "0.2.0" as const, kind: "construction-family-source" as const, familyId: "family", sourceDocumentId: "authored", familySeed: "seed",
         sourceGraph: edited, sourceGeneration: lineage, materialSource: generatedMaterials.materials.file,
         members: family.members.map(member => ({ documentId: member.documentId, graph: member.construction.graph, generation: member.lineage })) };

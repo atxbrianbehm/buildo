@@ -41,6 +41,8 @@ export async function resolveConstructionFamily(input: unknown, lineageInput: un
   abort(signal);
   const original = await readConstructionGenerationLineage(lineage); abort(signal);
   const composition = compositionInput === undefined ? null : readConstructionFamilyCompositionPlan(compositionInput);
+  if (plan.source.graph.upperBayGroups?.length && composition?.source.policy.openings)
+    throw new Error("Opening-head variation cannot currently coexist with retained grouped bays. Disable that variation or explicitly remove the groups.");
   if (composition) {
     if (composition.source.familySeed !== plan.source.familySeed || composition.source.openingLock !== controls.lockOpenings)
       throw new Error("Family composition seed and opening-lock state must match the active family request.");

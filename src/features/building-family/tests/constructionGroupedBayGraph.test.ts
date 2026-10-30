@@ -44,10 +44,10 @@ describe("grouped bay graph source", () => {
     await expect(evaluateConstruction(edited)).rejects.toThrow(/missing or ambiguous/);
     await expect(evaluateConstruction(withConstructionRoundHead(graph(), 1))).rejects.toThrow(/does not match/);
   });
-  it("preserves groups during roof edits and refuses generation until it can preserve them", async () => {
+  it("preserves groups during roof edits and generation", async () => {
     const input = graph(), roof = withConstructionParapetSilhouette(withConstructionCorniceLayout(input, 1), 1);
     expect(roof.schemaVersion).toBe("0.11.0"); expect(roof.upperBayGroups).toEqual(input.upperBayGroups);
     expect((await evaluateConstruction(roof)).ir.semanticIndex.some(entry => entry.semanticPath.includes("/bay/0/opening/0/frame"))).toBe(true);
-    await expect(resolveWorkbenchGeneration(input, null, defaultConstructionGenerationControls)).rejects.toThrow(/does not yet preserve grouped bays/);
+    expect((await resolveWorkbenchGeneration(input, null, defaultConstructionGenerationControls)).graph.upperBayGroups).toEqual(input.upperBayGroups);
   });
 });

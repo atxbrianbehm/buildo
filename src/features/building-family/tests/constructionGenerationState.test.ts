@@ -3,6 +3,9 @@ import { withConstructionCorniceLayout } from "../core/constructionCorniceVocabu
 import { withConstructionParapetSilhouette } from "../core/constructionParapetVocabulary";
 import { withConstructionOpeningWidth } from "../core/constructionOpeningEditGraph";
 import { withConstructionWindowLayout } from "../core/constructionWindowVocabulary";
+import { withConstructionGroupedBays } from "../core/constructionGroupedBayGraph";
+import { captureConstructionGenerationSource } from "../core/constructionGenerationSource";
+import { resolveConstructionGeneration } from "../core/constructionGenerationResolver";
 import { describe, expect, it } from "vitest";
 import { createBuildingConstructionGraph } from "../contracts/bayConstructionGraph";
 import { defaultConstructionGenerationControls, resolveWorkbenchGeneration, rebindGenerationSurfaceSources, readConstructionGenerationLineage, type ConstructionGenerationLineage } from "../state/constructionGenerationState";
@@ -21,6 +24,29 @@ async function initial() {
   return { ...result, lineage, template };
 }
 const footprint = (graph: ReturnType<typeof createBuildingConstructionGraph>) => graph.nodes.find(node => node.type === "Footprint")!.parameters;
+
+it("retains grouped windows through generation, respects opening locks, and rejects lost targets", async () => {
+  const a = await initial(), group = { storeysNodeId: "facade", floorIndex: 2, bayIndex: 3, memberCount: 2, memberWidthM: 0.5, pierWidthM: 0.24 };
+  const edited = withConstructionGroupedBays(a.graph, [group]), before = structuredClone(edited);
+  const kept = await resolveWorkbenchGeneration(edited, a.lineage, defaultConstructionGenerationControls, true);
+  expect(edited).toEqual(before); expect(kept.graph.upperBayGroups).toEqual([group]);
+  expect((await evaluateConstruction(kept.graph)).ir.semanticIndex.some(entry => entry.semanticPath.includes("/floor/2/bay/3/opening/0/frame"))).toBe(true);
+  expect((await planConstructionReferenceMaterials(a.template, kept.source)).materialInputsHash).toBe(a.lineage.materialPlan.materialInputsHash);
+  const locked = await resolveWorkbenchGeneration(edited, a.lineage, { ...defaultConstructionGenerationControls, preserveAuthored: false, lockOpenings: true }, true);
+  expect(locked.graph.upperBayGroups).toEqual([group]);
+  const pinnedSource = await captureConstructionGenerationSource({ schemaVersion: "0.1.0", kind: "construction-generation-input",
+    documentId: a.source.documentId, intent: { ...a.source.intent, locks: [{ semanticPath: "construction/opening/widthM", scope: "building", lockedValue: 1.22, reason: "Imported pin" }] },
+    recipe: a.source.recipe, reference: a.source.reference, intentionalExceptions: a.source.intentionalExceptions });
+  const pinnedResolution = await resolveConstructionGeneration(pinnedSource);
+  const pinnedLineage = { ...a.lineage, source: pinnedSource, resolution: pinnedResolution,
+    materialPlan: await planConstructionReferenceMaterials(a.template, pinnedSource) };
+  const pinned = await resolveWorkbenchGeneration(edited, pinnedLineage, { ...defaultConstructionGenerationControls, preserveAuthored: false, lockOpenings: false }, true);
+  expect(pinned.graph.upperBayGroups).toEqual([group]);
+  await expect(resolveWorkbenchGeneration(edited, a.lineage, { ...defaultConstructionGenerationControls, floorCount: 2 }, true)).rejects.toThrow(/retained grouped bay/i);
+  await expect(resolveWorkbenchGeneration(edited, a.lineage, { ...defaultConstructionGenerationControls, bayCount: 3 }, true)).rejects.toThrow(/retained grouped bay/i);
+  const released = await resolveWorkbenchGeneration(edited, a.lineage, { ...defaultConstructionGenerationControls, preserveAuthored: false, lockOpenings: false, floorCount: 2 }, true);
+  expect(released.graph.upperBayGroups).toBeUndefined();
+});
 
 it("retains authored cornice separately from opening locks over immutable recipe and material lineage",async()=>{
   const a=await initial(),target={documentId:a.graph.documentId,storeysNodeId:"facade",windowNodeId:"window",face:"front" as const,floorIndex:1,bayIndex:2};
