@@ -8,7 +8,7 @@ import { composeBuildingSurfaceTile } from "../materials/composeSurfaceTile";
 import { resolveBuildingSurfaceBindings } from "../materials/resolveSurfaceBindings";
 import { sha256Hex } from "../core/contentHash";
 import { ProceduralMaterialProvider } from "../materials/providers/proceduralMaterialProvider";
-import { prepareBuildingSurfaceRuntime } from "../renderer-three/surfaceMaterialRuntime";
+import { createFamilySurfacePixelCache, disposeFamilySurfacePixelCache, prepareBuildingSurfaceRuntime } from "../renderer-three/surfaceMaterialRuntime";
 import { createAssemblyHallFixture } from "../ui/assemblyHallFixture";
 import { prepareBayConstructionFixture, createBayConstructionFixture, createBayConstructionMaterials } from "../ui/bayConstructionFixture";
 import { resolveConstructionFrameFromPath, resolveConstructionFrameFromIntersections } from "../renderer-three/constructionFrameSelection";
@@ -97,6 +97,49 @@ it("uses accepted paint as the local layer base, partitions exact instances and 
     expect(irBytes()).toBe(source); expect(surface.metrics.materialCount).toBe(1); expect(surface.metrics.textureCount).toBe(5);
   } finally { surface.dispose(); target.familyRuntime.dispose(); }
 });
+
+it("reuses family pixel work only after validating each member and preserves separate resources", async () => {
+  const other = await evaluateConstruction(repeatBayAsFacade(createBayConstructionGraph("other-member")));
+  const layers = [wood(0.25, true), { ...wood(0.35, true), id: "wall-finish", target: { kind: "role" as const, role: "wall" as const } }];
+  const firstInput = { composition: composition(layers), ir: result.ir, atlas: materials.packedAtlas, baseAppearances: bases };
+  const otherInput = { ...firstInput, composition: { ...composition(layers), documentId: other.graph.documentId }, ir: other.ir };
+  const cache = createFamilySurfacePixelCache();
+  const first = await prepareBuildingSurfaceRuntime(firstInput, cache);
+  const second = await prepareBuildingSurfaceRuntime(otherInput, cache);
+  const independent = await prepareBuildingSurfaceRuntime(otherInput);
+  try {
+    expect(first.metrics.evaluatedRecipes).toBe(2);
+    expect(second.metrics.evaluatedRecipes).toBe(1);
+    expect(independent.metrics.evaluatedRecipes).toBe(2);
+    const hashes = (value: typeof second) => value.listMaterials().map(material => material.userData.pixelContentHash).sort();
+    expect(hashes(second)).toEqual(hashes(independent));
+    expect(second.listTextures()[0]).not.toBe(first.listTextures()[0]);
+    const textureHashes = async (value: typeof second) => (await Promise.all(value.listTextures().map(async texture => ({
+      name: texture.name, hash: await sha256Hex(new Uint8Array(texture.image.data!)) })))).sort((a, b) => a.name.localeCompare(b.name));
+    expect(await textureHashes(second)).toEqual(await textureHashes(independent));
+    const target = createBayConstructionFixture(base, other, materials);
+    try {
+      const lease = second.acquire(other.ir, target.familyRuntime.materialRegistry); lease.release();
+      expect(() => second.acquire(result.ir, target.familyRuntime.materialRegistry)).toThrow();
+    } finally { target.familyRuntime.dispose(); }
+    const different = { ...otherInput, composition: { ...otherInput.composition, layers: [wood(0.55, true), layers[1]] } };
+    const changed = await prepareBuildingSurfaceRuntime(different, cache);
+    try { expect(hashes(changed)).not.toEqual(hashes(second)); } finally { changed.dispose(); }
+    const corrupt = structuredClone(materials.packedAtlas); corrupt.channels.baseColor.data[0] ^= 1;
+    await expect(prepareBuildingSurfaceRuntime({ ...otherInput, atlas: corrupt }, cache)).rejects.toMatchObject({ code: "surfaceTile.sourceHashMismatch" });
+    const missing = { ...otherInput, composition: { ...otherInput.composition, layers: [{ ...layers[0],
+      target: { kind: "element" as const, relativePath: "node/missing/frame", expectedRole: "frame" as const } }, layers[1]] } };
+    await expect(prepareBuildingSurfaceRuntime(missing, cache)).rejects.toMatchObject({ code: "surface.missingTarget" });
+    const changedManifest = structuredClone(materials.packedAtlas);
+    changedManifest.manifest.slots.find(slot => slot.id === "frame.primary")!.physicalSizeM.width *= 1.1;
+    const differentManifest = await prepareBuildingSurfaceRuntime({ ...otherInput, atlas: changedManifest }, cache);
+    try { expect(differentManifest.metrics.evaluatedRecipes).toBe(2); } finally { differentManifest.dispose(); }
+    disposeFamilySurfacePixelCache(cache);
+    expect(second.listMaterials().length).toBeGreaterThan(0);
+    first.dispose(); expect(second.listTextures().every(texture => !texture.userData.disposed)).toBe(true);
+    await expect(prepareBuildingSurfaceRuntime(otherInput, cache)).rejects.toMatchObject({ code: "surfaceRuntime.invalidInput" });
+  } finally { first.dispose(); second.dispose(); independent.dispose(); disposeFamilySurfacePixelCache(cache); }
+}, 120000);
 
 it("admits same-slot wood color/ORM as a finish instead of treating raw wood as the accepted painted base", async () => {
   const sameSlot = wood(1, true); sameSlot.channels = ["baseColor", "orm"];

@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "surface-reuse-comparison",
+  "backends": {
+    "webgpu": {
+      "baselineReturnMedianMs": 2500,
+      "optimizedReturnMedianMs": 1791,
+      "sourceComparisons": [
+        {
+          "identical": true,
+          "sha256": "322dd247cd87b846c97d5c5f784ada05b2523e016970501e1064268d4f7e6da5"
+        },
+        {
+          "identical": true,
+          "sha256": "a4167a618595faec31aaa5543ad9161edd8fb15b88e7df83fe449f2b9d227b01"
+        },
+        {
+          "identical": true,
+          "sha256": "322dd247cd87b846c97d5c5f784ada05b2523e016970501e1064268d4f7e6da5"
+        }
+      ],
+      "imageComparisons": [
+        {
+          "name": "member-window",
+          "dimensions": [
+            1600,
+            1000
+          ],
+          "identical": true,
+          "pixelSha256": "e9195200203f0379c050efaa51cd4665d8de10b0cc332324c4c79cf9677931fb"
+        },
+        {
+          "name": "family-after",
+          "dimensions": [
+            1600,
+            1000
+          ],
+          "identical": true,
+          "pixelSha256": "f0ec0bff71dd598a8a09e40265816fa0368463a61594556563e820a4b8615f3c"
+        }
+      ]
+    },
+    "webgl": {
+      "baselineReturnMedianMs": 1959,
+      "optimizedReturnMedianMs": 1269,
+      "sourceComparisons": [
+        {
+          "identical": true,
+          "sha256": "322dd247cd87b846c97d5c5f784ada05b2523e016970501e1064268d4f7e6da5"
+        },
+        {
+          "identical": true,
+          "sha256": "a4167a618595faec31aaa5543ad9161edd8fb15b88e7df83fe449f2b9d227b01"
+        },
+        {
+          "identical": true,
+          "sha256": "322dd247cd87b846c97d5c5f784ada05b2523e016970501e1064268d4f7e6da5"
+        }
+      ],
+      "imageComparisons": [
+        {
+          "name": "member-window",
+          "dimensions": [
+            1600,
+            1000
+          ],
+          "identical": true,
+          "pixelSha256": "ae9ca5c722b2014192f105e76ddcf5b07507de7f50aba8d5be1f1a5b2dbc7875"
+        },
+        {
+          "name": "family-after",
+          "dimensions": [
+            1600,
+            1000
+          ],
+          "identical": true,
+          "pixelSha256": "1fd3d63214281846ee652db11fb2407d869c350e8ecf817d7369e219b5981880"
+        }
+      ]
+    }
+  },
+  "compositionChecks": {
+    "baseline": [
+      3,
+      3,
+      3,
+      3,
+      3,
+      3
+    ],
+    "optimized": [
+      3,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  }
+}

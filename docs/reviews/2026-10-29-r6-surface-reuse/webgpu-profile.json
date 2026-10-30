@@ -1,0 +1,762 @@
+{
+  "api": "webgpu",
+  "loadMs": 6044,
+  "samples": [
+    {
+      "openMemberMs": 754,
+      "editMs": 684,
+      "returnMs": 2008,
+      "saveMs": 2305
+    },
+    {
+      "openMemberMs": 607,
+      "editMs": 736,
+      "returnMs": 1962,
+      "saveMs": 2232
+    },
+    {
+      "openMemberMs": 612,
+      "editMs": 716,
+      "returnMs": 1926,
+      "saveMs": 2244
+    }
+  ],
+  "phases": [
+    {
+      "compileMs": 272.59999999403954,
+      "fixtureMs": 871.9000000059605,
+      "viewerMs": 664.5
+    },
+    {
+      "compileMs": 289.19999998807907,
+      "fixtureMs": 848,
+      "viewerMs": 635.7000000178814
+    },
+    {
+      "compileMs": 251.7000000178814,
+      "fixtureMs": 841.9000000059605,
+      "viewerMs": 632.6999999880791
+    }
+  ],
+  "fixturePhases": [
+    {
+      "firstMs": 316,
+      "surfaces": [
+        117.69999998807907,
+        91.80000001192093,
+        90.5,
+        91.09999999403954,
+        88.2999999821186
+      ],
+      "runtimes": [
+        20.5,
+        17.69999998807907,
+        16.900000005960464,
+        15,
+        15.300000011920929
+      ]
+    },
+    {
+      "firstMs": 299.80000001192093,
+      "surfaces": [
+        91.59999999403954,
+        134.19999998807907,
+        90.09999999403954,
+        87.19999998807907,
+        90.09999999403954
+      ],
+      "runtimes": [
+        14.200000017881393,
+        17.200000017881393,
+        16.900000005960464,
+        15.5,
+        14.599999994039536
+      ]
+    },
+    {
+      "firstMs": 337.2000000178814,
+      "surfaces": [
+        88.19999998807907,
+        86.5,
+        87.19999998807907,
+        85.40000000596046,
+        90.39999997615814
+      ],
+      "runtimes": [
+        15.699999988079071,
+        14.700000017881393,
+        14.800000011920929,
+        14,
+        13.399999976158142
+      ]
+    },
+    {
+      "firstMs": 328.2999999821186,
+      "surfaces": [
+        90,
+        85.09999999403954,
+        89.2999999821186,
+        89.19999998807907,
+        86.7000000178814
+      ],
+      "runtimes": [
+        15.699999988079071,
+        14.100000023841858,
+        14.700000017881393,
+        14.199999988079071,
+        14.299999982118607
+      ]
+    }
+  ],
+  "surfacePhases": [
+    {
+      "metadataMs": 4.899999976158142,
+      "bindingMs": 5.4000000059604645,
+      "compositionMs": 50.80000001192093,
+      "resourcesMs": 0.09999999403953552,
+      "evaluatedRecipes": 1
+    },
+    {
+      "metadataMs": 4.5999999940395355,
+      "bindingMs": 4.199999988079071,
+      "compositionMs": 252.80000001192093,
+      "resourcesMs": 2.0999999940395355,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 3.800000011920929,
+      "bindingMs": 3.2999999821186066,
+      "compositionMs": 250.2000000178814,
+      "resourcesMs": 1.7999999821186066,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 4.0999999940395355,
+      "bindingMs": 3.5,
+      "compositionMs": 108.19999998807907,
+      "resourcesMs": 1.800000011920929,
+      "evaluatedRecipes": 1
+    },
+    {
+      "metadataMs": 4.200000017881393,
+      "bindingMs": 3.5,
+      "compositionMs": 82.2999999821186,
+      "resourcesMs": 1.7000000178813934,
+      "evaluatedRecipes": 1
+    },
+    {
+      "metadataMs": 4.300000011920929,
+      "bindingMs": 3.4000000059604645,
+      "compositionMs": 80.90000000596046,
+      "resourcesMs": 1.899999976158142,
+      "evaluatedRecipes": 1
+    },
+    {
+      "metadataMs": 4.200000017881393,
+      "bindingMs": 3.699999988079071,
+      "compositionMs": 81.40000000596046,
+      "resourcesMs": 1.7999999821186066,
+      "evaluatedRecipes": 1
+    },
+    {
+      "metadataMs": 4.5,
+      "bindingMs": 3.2999999821186066,
+      "compositionMs": 78.80000001192093,
+      "resourcesMs": 1.699999988079071,
+      "evaluatedRecipes": 1
+    },
+    {
+      "metadataMs": 3.7000000178813934,
+      "bindingMs": 3,
+      "compositionMs": 246.5,
+      "resourcesMs": 1.7999999821186066,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 4.800000011920929,
+      "bindingMs": 2.9000000059604645,
+      "compositionMs": 244.5,
+      "resourcesMs": 1.699999988079071,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 4.200000017881393,
+      "bindingMs": 3.199999988079071,
+      "compositionMs": 243.40000000596046,
+      "resourcesMs": 1.800000011920929,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 4.300000011920929,
+      "bindingMs": 3.5,
+      "compositionMs": 82,
+      "resourcesMs": 1.7999999821186066,
+      "evaluatedRecipes": 1
+    },
+    {
+      "metadataMs": 3.7999999821186066,
+      "bindingMs": 3,
+      "compositionMs": 125.40000000596046,
+      "resourcesMs": 1.9000000059604645,
+      "evaluatedRecipes": 1
+    },
+    {
+      "metadataMs": 3.899999976158142,
+      "bindingMs": 2.800000011920929,
+      "compositionMs": 81.59999999403954,
+      "resourcesMs": 1.800000011920929,
+      "evaluatedRecipes": 1
+    },
+    {
+      "metadataMs": 5.399999976158142,
+      "bindingMs": 3.300000011920929,
+      "compositionMs": 76.69999998807907,
+      "resourcesMs": 1.800000011920929,
+      "evaluatedRecipes": 1
+    },
+    {
+      "metadataMs": 3.9000000059604645,
+      "bindingMs": 2.9000000059604645,
+      "compositionMs": 81.39999997615814,
+      "resourcesMs": 1.9000000059604645,
+      "evaluatedRecipes": 1
+    },
+    {
+      "metadataMs": 4.200000017881393,
+      "bindingMs": 2.7999999821186066,
+      "compositionMs": 238.40000000596046,
+      "resourcesMs": 1.800000011920929,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 3.7000000178813934,
+      "bindingMs": 4.0999999940395355,
+      "compositionMs": 244.80000001192093,
+      "resourcesMs": 1.7999999821186066,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 4,
+      "bindingMs": 2.9000000059604645,
+      "compositionMs": 279.19999998807907,
+      "resourcesMs": 1.800000011920929,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 3.899999976158142,
+      "bindingMs": 4.100000023841858,
+      "compositionMs": 78.5,
+      "resourcesMs": 1.699999988079071,
+      "evaluatedRecipes": 1
+    },
+    {
+      "metadataMs": 4,
+      "bindingMs": 3,
+      "compositionMs": 77.7000000178814,
+      "resourcesMs": 1.7999999821186066,
+      "evaluatedRecipes": 1
+    },
+    {
+      "metadataMs": 4.4000000059604645,
+      "bindingMs": 3.899999976158142,
+      "compositionMs": 77.2000000178814,
+      "resourcesMs": 1.699999988079071,
+      "evaluatedRecipes": 1
+    },
+    {
+      "metadataMs": 4.5999999940395355,
+      "bindingMs": 3.199999988079071,
+      "compositionMs": 76,
+      "resourcesMs": 1.600000023841858,
+      "evaluatedRecipes": 1
+    },
+    {
+      "metadataMs": 3.7999999821186066,
+      "bindingMs": 3.300000011920929,
+      "compositionMs": 81.5,
+      "resourcesMs": 1.699999988079071,
+      "evaluatedRecipes": 1
+    },
+    {
+      "metadataMs": 4,
+      "bindingMs": 2.9000000059604645,
+      "compositionMs": 237.59999999403954,
+      "resourcesMs": 1.699999988079071,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 4,
+      "bindingMs": 2.699999988079071,
+      "compositionMs": 234.40000000596046,
+      "resourcesMs": 1.699999988079071,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 5,
+      "bindingMs": 3.0999999940395355,
+      "compositionMs": 269.30000001192093,
+      "resourcesMs": 1.800000011920929,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 4.699999988079071,
+      "bindingMs": 4.200000017881393,
+      "compositionMs": 79.09999999403954,
+      "resourcesMs": 2,
+      "evaluatedRecipes": 1
+    },
+    {
+      "metadataMs": 4.0999999940395355,
+      "bindingMs": 3.100000023841858,
+      "compositionMs": 76,
+      "resourcesMs": 1.899999976158142,
+      "evaluatedRecipes": 1
+    },
+    {
+      "metadataMs": 4.199999988079071,
+      "bindingMs": 3.800000011920929,
+      "compositionMs": 79.59999999403954,
+      "resourcesMs": 1.699999988079071,
+      "evaluatedRecipes": 1
+    },
+    {
+      "metadataMs": 4.399999976158142,
+      "bindingMs": 3.600000023841858,
+      "compositionMs": 79.5,
+      "resourcesMs": 1.699999988079071,
+      "evaluatedRecipes": 1
+    },
+    {
+      "metadataMs": 4,
+      "bindingMs": 2.7999999821186066,
+      "compositionMs": 78,
+      "resourcesMs": 1.800000011920929,
+      "evaluatedRecipes": 1
+    }
+  ],
+  "tilePhases": [
+    {
+      "beforeAtlasMs": 6.399999976158142,
+      "atlasHashMs": 23.80000001192093,
+      "prePixelsMs": 0.4000000059604645,
+      "pixelsMs": 16.799999982118607,
+      "finishMs": 2.2000000178813934
+    },
+    {
+      "beforeAtlasMs": 4.9000000059604645,
+      "atlasHashMs": 24.099999994039536,
+      "prePixelsMs": 0.7000000178813934,
+      "pixelsMs": 52.400000005960464,
+      "finishMs": 2.2999999821186066
+    },
+    {
+      "beforeAtlasMs": 5.0999999940395355,
+      "atlasHashMs": 24.200000017881393,
+      "prePixelsMs": 1.5999999940395355,
+      "pixelsMs": 52,
+      "finishMs": 2.0999999940395355
+    },
+    {
+      "beforeAtlasMs": 4.799999982118607,
+      "atlasHashMs": 23.200000017881393,
+      "prePixelsMs": 0.699999988079071,
+      "pixelsMs": 51.599999994039536,
+      "finishMs": 2.0999999940395355
+    },
+    {
+      "beforeAtlasMs": 6,
+      "atlasHashMs": 25.5,
+      "prePixelsMs": 0.5999999940395355,
+      "pixelsMs": 47.5,
+      "finishMs": 5.9000000059604645
+    },
+    {
+      "beforeAtlasMs": 5,
+      "atlasHashMs": 24.900000005960464,
+      "prePixelsMs": 1.800000011920929,
+      "pixelsMs": 49.29999998211861,
+      "finishMs": 2
+    },
+    {
+      "beforeAtlasMs": 4.9000000059604645,
+      "atlasHashMs": 23.400000005960464,
+      "prePixelsMs": 1.5,
+      "pixelsMs": 48.599999994039536,
+      "finishMs": 2
+    },
+    {
+      "beforeAtlasMs": 5.300000011920929,
+      "atlasHashMs": 24.599999994039536,
+      "prePixelsMs": 21.19999998807907,
+      "pixelsMs": 54.400000005960464,
+      "finishMs": 2.2000000178813934
+    },
+    {
+      "beforeAtlasMs": 5.199999988079071,
+      "atlasHashMs": 22.700000017881393,
+      "prePixelsMs": 3.199999988079071,
+      "pixelsMs": 48.30000001192093,
+      "finishMs": 2.199999988079071
+    },
+    {
+      "beforeAtlasMs": 5.800000011920929,
+      "atlasHashMs": 24.099999994039536,
+      "prePixelsMs": 0.5,
+      "pixelsMs": 47.5,
+      "finishMs": 2.300000011920929
+    },
+    {
+      "beforeAtlasMs": 4.800000011920929,
+      "atlasHashMs": 24.5,
+      "prePixelsMs": 0.5999999940395355,
+      "pixelsMs": 46.70000001788139,
+      "finishMs": 4.199999988079071
+    },
+    {
+      "beforeAtlasMs": 5.100000023841858,
+      "atlasHashMs": 23.69999998807907,
+      "prePixelsMs": 0.699999988079071,
+      "pixelsMs": 46.70000001788139,
+      "finishMs": 2
+    },
+    {
+      "beforeAtlasMs": 5.5,
+      "atlasHashMs": 23.900000005960464,
+      "prePixelsMs": 0.5999999940395355,
+      "pixelsMs": 49.599999994039536,
+      "finishMs": 2.199999988079071
+    },
+    {
+      "beforeAtlasMs": 6,
+      "atlasHashMs": 23,
+      "prePixelsMs": 0.5999999940395355,
+      "pixelsMs": 51.69999998807907,
+      "finishMs": 2.2000000178813934
+    },
+    {
+      "beforeAtlasMs": 4.200000017881393,
+      "atlasHashMs": 22.19999998807907,
+      "prePixelsMs": 2.5,
+      "pixelsMs": 49.30000001192093,
+      "finishMs": 2.2999999821186066
+    },
+    {
+      "beforeAtlasMs": 3.9000000059604645,
+      "atlasHashMs": 25,
+      "prePixelsMs": 2.699999988079071,
+      "pixelsMs": 47.5,
+      "finishMs": 2.199999988079071
+    },
+    {
+      "beforeAtlasMs": 4.799999982118607,
+      "atlasHashMs": 23,
+      "prePixelsMs": 1.5,
+      "pixelsMs": 49.80000001192093,
+      "finishMs": 2.0999999940395355
+    },
+    {
+      "beforeAtlasMs": 4.899999976158142,
+      "atlasHashMs": 22.80000001192093,
+      "prePixelsMs": 1.9000000059604645,
+      "pixelsMs": 49.79999998211861,
+      "finishMs": 2
+    },
+    {
+      "beforeAtlasMs": 5.100000023841858,
+      "atlasHashMs": 22.799999982118607,
+      "prePixelsMs": 0.5999999940395355,
+      "pixelsMs": 46.70000001788139,
+      "finishMs": 2
+    },
+    {
+      "beforeAtlasMs": 6.300000011920929,
+      "atlasHashMs": 23.5,
+      "prePixelsMs": 0.5999999940395355,
+      "pixelsMs": 49,
+      "finishMs": 2
+    },
+    {
+      "beforeAtlasMs": 7.399999976158142,
+      "atlasHashMs": 25.400000005960464,
+      "prePixelsMs": 0.5,
+      "pixelsMs": 48.5,
+      "finishMs": 2.0999999940395355
+    },
+    {
+      "beforeAtlasMs": 5.4000000059604645,
+      "atlasHashMs": 24.400000005960464,
+      "prePixelsMs": 0.5999999940395355,
+      "pixelsMs": 46.79999998211861,
+      "finishMs": 4.300000011920929
+    },
+    {
+      "beforeAtlasMs": 5.0999999940395355,
+      "atlasHashMs": 22.599999994039536,
+      "prePixelsMs": 44.599999994039536,
+      "pixelsMs": 50.70000001788139,
+      "finishMs": 2
+    },
+    {
+      "beforeAtlasMs": 4.200000017881393,
+      "atlasHashMs": 23.599999994039536,
+      "prePixelsMs": 2.4000000059604645,
+      "pixelsMs": 48.89999997615814,
+      "finishMs": 2
+    },
+    {
+      "beforeAtlasMs": 4.200000017881393,
+      "atlasHashMs": 22.399999976158142,
+      "prePixelsMs": 0.6000000238418579,
+      "pixelsMs": 46.69999998807907,
+      "finishMs": 2.199999988079071
+    },
+    {
+      "beforeAtlasMs": 4.9000000059604645,
+      "atlasHashMs": 22.899999976158142,
+      "prePixelsMs": 0.7000000178813934,
+      "pixelsMs": 48.5,
+      "finishMs": 4
+    },
+    {
+      "beforeAtlasMs": 5.100000023841858,
+      "atlasHashMs": 22.099999994039536,
+      "prePixelsMs": 0.699999988079071,
+      "pixelsMs": 48.400000005960464,
+      "finishMs": 2.0999999940395355
+    },
+    {
+      "beforeAtlasMs": 6,
+      "atlasHashMs": 20.899999976158142,
+      "prePixelsMs": 0.6000000238418579,
+      "pixelsMs": 49.29999998211861,
+      "finishMs": 2
+    },
+    {
+      "beforeAtlasMs": 5.799999982118607,
+      "atlasHashMs": 22.5,
+      "prePixelsMs": 0.5,
+      "pixelsMs": 49.5,
+      "finishMs": 2.2000000178813934
+    },
+    {
+      "beforeAtlasMs": 4.199999988079071,
+      "atlasHashMs": 22.100000023841858,
+      "prePixelsMs": 0.5999999940395355,
+      "pixelsMs": 53.099999994039536,
+      "finishMs": 4.0999999940395355
+    },
+    {
+      "beforeAtlasMs": 4.699999988079071,
+      "atlasHashMs": 21.599999994039536,
+      "prePixelsMs": 1.300000011920929,
+      "pixelsMs": 49.5,
+      "finishMs": 2.0999999940395355
+    },
+    {
+      "beforeAtlasMs": 4.5,
+      "atlasHashMs": 23.299999982118607,
+      "prePixelsMs": 1.5999999940395355,
+      "pixelsMs": 49.10000002384186,
+      "finishMs": 2.199999988079071
+    },
+    {
+      "beforeAtlasMs": 4.9000000059604645,
+      "atlasHashMs": 22.5,
+      "prePixelsMs": 0.5,
+      "pixelsMs": 47.400000005960464,
+      "finishMs": 1.9000000059604645
+    },
+    {
+      "beforeAtlasMs": 6.300000011920929,
+      "atlasHashMs": 22.799999982118607,
+      "prePixelsMs": 0.5,
+      "pixelsMs": 49.30000001192093,
+      "finishMs": 2.0999999940395355
+    },
+    {
+      "beforeAtlasMs": 6.5,
+      "atlasHashMs": 23.599999994039536,
+      "prePixelsMs": 2,
+      "pixelsMs": 75.2000000178814,
+      "finishMs": 12.399999976158142
+    },
+    {
+      "beforeAtlasMs": 4.9000000059604645,
+      "atlasHashMs": 21.19999998807907,
+      "prePixelsMs": 0.5999999940395355,
+      "pixelsMs": 47.5,
+      "finishMs": 3.7000000178813934
+    },
+    {
+      "beforeAtlasMs": 4.5999999940395355,
+      "atlasHashMs": 23.599999994039536,
+      "prePixelsMs": 0.699999988079071,
+      "pixelsMs": 46.30000001192093,
+      "finishMs": 2
+    },
+    {
+      "beforeAtlasMs": 4.799999982118607,
+      "atlasHashMs": 22.099999994039536,
+      "prePixelsMs": 0.6000000238418579,
+      "pixelsMs": 45.79999998211861,
+      "finishMs": 3.5
+    },
+    {
+      "beforeAtlasMs": 4.399999976158142,
+      "atlasHashMs": 22.600000023841858,
+      "prePixelsMs": 0.5999999940395355,
+      "pixelsMs": 45.79999998211861,
+      "finishMs": 2
+    },
+    {
+      "beforeAtlasMs": 4.300000011920929,
+      "atlasHashMs": 23.599999994039536,
+      "prePixelsMs": 0.7000000178813934,
+      "pixelsMs": 47,
+      "finishMs": 4.899999976158142
+    },
+    {
+      "beforeAtlasMs": 5.0999999940395355,
+      "atlasHashMs": 22.80000001192093,
+      "prePixelsMs": 0.5999999940395355,
+      "pixelsMs": 48.099999994039536,
+      "finishMs": 2.2000000178813934
+    },
+    {
+      "beforeAtlasMs": 5.9000000059604645,
+      "atlasHashMs": 20.099999994039536,
+      "prePixelsMs": 0.5999999940395355,
+      "pixelsMs": 49.19999998807907,
+      "finishMs": 2.100000023841858
+    },
+    {
+      "beforeAtlasMs": 6.800000011920929,
+      "atlasHashMs": 21.69999998807907,
+      "prePixelsMs": 0.699999988079071,
+      "pixelsMs": 48.900000005960464,
+      "finishMs": 2.0999999940395355
+    },
+    {
+      "beforeAtlasMs": 5.199999988079071,
+      "atlasHashMs": 22.900000005960464,
+      "prePixelsMs": 0.7000000178813934,
+      "pixelsMs": 46.79999998211861,
+      "finishMs": 3.4000000059604645
+    },
+    {
+      "beforeAtlasMs": 4.300000011920929,
+      "atlasHashMs": 21,
+      "prePixelsMs": 1.300000011920929,
+      "pixelsMs": 49.19999998807907,
+      "finishMs": 2.0999999940395355
+    },
+    {
+      "beforeAtlasMs": 4.299999982118607,
+      "atlasHashMs": 21,
+      "prePixelsMs": 1.300000011920929,
+      "pixelsMs": 48.099999994039536,
+      "finishMs": 2.0999999940395355
+    },
+    {
+      "beforeAtlasMs": 4.5,
+      "atlasHashMs": 21.299999982118607,
+      "prePixelsMs": 1.800000011920929,
+      "pixelsMs": 69.09999999403954,
+      "finishMs": 8.699999988079071
+    },
+    {
+      "beforeAtlasMs": 5,
+      "atlasHashMs": 20.30000001192093,
+      "prePixelsMs": 1.2999999821186066,
+      "pixelsMs": 53.400000005960464,
+      "finishMs": 2.199999988079071
+    },
+    {
+      "beforeAtlasMs": 6.5,
+      "atlasHashMs": 20.900000005960464,
+      "prePixelsMs": 1.699999988079071,
+      "pixelsMs": 49.599999994039536,
+      "finishMs": 2.0999999940395355
+    },
+    {
+      "beforeAtlasMs": 5.0999999940395355,
+      "atlasHashMs": 22.80000001192093,
+      "prePixelsMs": 0.5999999940395355,
+      "pixelsMs": 46.5,
+      "finishMs": 3.5999999940395355
+    },
+    {
+      "beforeAtlasMs": 4.699999988079071,
+      "atlasHashMs": 21.5,
+      "prePixelsMs": 0.6000000238418579,
+      "pixelsMs": 46.599999994039536,
+      "finishMs": 2
+    },
+    {
+      "beforeAtlasMs": 4.9000000059604645,
+      "atlasHashMs": 22.099999994039536,
+      "prePixelsMs": 0.699999988079071,
+      "pixelsMs": 46.70000001788139,
+      "finishMs": 4.699999988079071
+    },
+    {
+      "beforeAtlasMs": 5.199999988079071,
+      "atlasHashMs": 24.099999994039536,
+      "prePixelsMs": 0.6000000238418579,
+      "pixelsMs": 46.89999997615814,
+      "finishMs": 2.2000000178813934
+    },
+    {
+      "beforeAtlasMs": 4.5999999940395355,
+      "atlasHashMs": 21.900000005960464,
+      "prePixelsMs": 0.5999999940395355,
+      "pixelsMs": 46.29999998211861,
+      "finishMs": 3.5
+    }
+  ],
+  "recipeKeys": {
+    "preview_family_v01": [
+      "1b91d35f5592e7665d358257dff55c91f09de6d162e8ce0983c7188c2e4befb7",
+      "5278eb66464c8392275a2ea800dc5ba9bc7846f2486bae38feec3085b3ebbf03",
+      "ad55fe86e8a5c5cc24bd8728df059c3d8cb73675b845a18e7a2a663c52095648",
+      "b37b8087d14a54b69643b9ab1e046265c4e13b267f8e00d232b6c82af27ab111",
+      "c940fcdc0cb2fdf6e33e493dff38668027ec05b3c93656bede71bc195237b328",
+      "df2d68c8135e49374728614ff6e0b0baf6fd19572c90a2044cba91e7f9be25d5"
+    ],
+    "preview_family_v02": [
+      "5278eb66464c8392275a2ea800dc5ba9bc7846f2486bae38feec3085b3ebbf03",
+      "ad55fe86e8a5c5cc24bd8728df059c3d8cb73675b845a18e7a2a663c52095648",
+      "b37b8087d14a54b69643b9ab1e046265c4e13b267f8e00d232b6c82af27ab111"
+    ],
+    "preview_family_v03": [
+      "5278eb66464c8392275a2ea800dc5ba9bc7846f2486bae38feec3085b3ebbf03",
+      "ad55fe86e8a5c5cc24bd8728df059c3d8cb73675b845a18e7a2a663c52095648",
+      "b37b8087d14a54b69643b9ab1e046265c4e13b267f8e00d232b6c82af27ab111"
+    ],
+    "preview_family_v04": [
+      "5278eb66464c8392275a2ea800dc5ba9bc7846f2486bae38feec3085b3ebbf03",
+      "ad55fe86e8a5c5cc24bd8728df059c3d8cb73675b845a18e7a2a663c52095648",
+      "b37b8087d14a54b69643b9ab1e046265c4e13b267f8e00d232b6c82af27ab111"
+    ],
+    "preview_family_v05": [
+      "5278eb66464c8392275a2ea800dc5ba9bc7846f2486bae38feec3085b3ebbf03",
+      "ad55fe86e8a5c5cc24bd8728df059c3d8cb73675b845a18e7a2a663c52095648",
+      "b37b8087d14a54b69643b9ab1e046265c4e13b267f8e00d232b6c82af27ab111"
+    ],
+    "preview_family_v06": [
+      "5278eb66464c8392275a2ea800dc5ba9bc7846f2486bae38feec3085b3ebbf03",
+      "ad55fe86e8a5c5cc24bd8728df059c3d8cb73675b845a18e7a2a663c52095648",
+      "b37b8087d14a54b69643b9ab1e046265c4e13b267f8e00d232b6c82af27ab111"
+    ]
+  },
+  "system": {
+    "hardwareConcurrency": 64,
+    "deviceMemory": 32,
+    "adapter": {
+      "vendor": "nvidia",
+      "architecture": "lovelace",
+      "description": ""
+    }
+  },
+  "errors": []
+}
