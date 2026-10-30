@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "0.1.0",
+  "recordedAt": "2026-10-30T04:34:44.609Z",
+  "revision": "ec6014f4bb8597fcabeaacda19599ec36b3c3b0c",
+  "trackedChanges": "M docs/plans/building-authoring-revival.md",
+  "scriptSha256": "c17efdb479552454d14897b0247d8b3bdadff06f7a1016330013fcb0eb0fb1d8",
+  "sourceSha256": "ede689d64d92f9a977f688982498d0157d64a4884970ed5c92fd59ccbe845ad0",
+  "api": "webgl",
+  "chromiumVersion": "149.0.7827.55",
+  "system": {
+    "platform": "win32",
+    "release": "10.0.26200",
+    "architecture": "x64",
+    "cpu": "AMD Ryzen Threadripper PRO 7975WX 32-Cores     ",
+    "logicalProcessors": 64,
+    "totalMemoryBytes": 549234024448,
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.0.0 Safari/537.36",
+    "hardwareConcurrency": 64,
+    "deviceMemory": 32,
+    "webgpuAdapter": null
+  },
+  "viewport": {
+    "width": 1600,
+    "height": 1000
+  },
+  "loadMs": 4704,
+  "samples": [
+    {
+      "openMemberMs": 575,
+      "editMs": 608,
+      "returnMs": 1217,
+      "saveMs": 1120
+    },
+    {
+      "openMemberMs": 618,
+      "editMs": 552,
+      "returnMs": 1265,
+      "saveMs": 1098
+    },
+    {
+      "openMemberMs": 571,
+      "editMs": 544,
+      "returnMs": 1240,
+      "saveMs": 1099
+    }
+  ],
+  "errors": []
+}
