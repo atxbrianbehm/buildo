@@ -6,4 +6,4 @@ Project version 0.12 stores and reopens the graph with its existing material sou
 
 Focused tests check dimension changes and member identities, graph hashing/replay, worker protocol admission, legacy geometry parity, roof edit retention, invalid/ambiguous targets, project save/open and family source round trips. [Actual browser worker smoke](worker-smoke.mjs) verifies transferred instance buffers and exact path/hash agreement with direct compilation. The preceding packet has an isolated [clay comparison](../2026-10-30-al-p5-1-grouped-geometry/README.md); it is not an app, texture or artist-workflow review.
 
-Verification at initial review: focused graph, project and family tests, typecheck, lint, build, browser worker transport and standard browser E2E passed. The full suite was still running. The build retained its large-chunk warning.
+Verification: all 2,027 tests across 147 files, typecheck, lint, build, browser worker transport and standard browser E2E passed. The build retained its large-chunk warning.
