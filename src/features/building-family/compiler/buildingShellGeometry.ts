@@ -1,5 +1,7 @@
 import type { FacadeBayScope } from "./facadeWallSubdivision";
 import { emptyBounds, expandBounds, type Bounds3, type PrimitiveGeometry, type Vec3 } from "./primitiveGeometry";
+import type { ConstructionRoundHeadPlan } from "../contracts/constructionRoundHead";
+import { buildConstructionRoundHeadSpandrel } from "./constructionRoundHeadGeometry";
 
 export interface ConstructionFootprint { widthM: number; depthM: number; wallDepthM: number }
 export interface ConstructionBuilding extends ConstructionFootprint { heightM: number; floorTopsM: number[] }
@@ -44,10 +46,13 @@ function builder() {
     const offset = positions.length / 3;
     vertices.forEach((vertex, index) => { positions.push(...vertex); normals.push(...cross.map(v => v / length)); uvs.push(...(texture?.[index] ?? [vertex[0], vertex[1]])); });
     indices.push(offset, offset + 1, offset + 2, offset, offset + 2, offset + 3);
+  }, add(mesh: PrimitiveGeometry) {
+    const offset = positions.length / 3;
+    positions.push(...mesh.positions); normals.push(...mesh.normals); uvs.push(...mesh.uvs); indices.push(...mesh.indices.map(index => index + offset));
   }, finish(): PrimitiveGeometry { return { positions, normals, uvs, indices, bounds: geometryBounds(positions) }; } };
 }
 /** One continuous facade solid with real reveals; interior cell caps never reach the renderer. */
-export function constructionFacadeSolid(scopes: FacadeBayScope[]): PrimitiveGeometry {
+export function constructionFacadeSolid(scopes: FacadeBayScope[], roundHeads: ConstructionRoundHeadPlan[] = []): PrimitiveGeometry {
   if (!scopes.length) throw new Error("A facade solid needs wall scopes.");
   const left = Math.min(...scopes.map(s => s.originM[0])), right = Math.max(...scopes.map(s => s.originM[0] + s.sizeM[0]));
   const bottom = Math.min(...scopes.map(s => s.originM[1])), top = Math.max(...scopes.map(s => s.originM[1] + s.sizeM[1])), depth = scopes[0].sizeM[2];
@@ -57,7 +62,7 @@ export function constructionFacadeSolid(scopes: FacadeBayScope[]): PrimitiveGeom
   const snap = (v: number) => Math.round(v * 1e9) / 1e9;
   const coordinates = (values: number[]) => [...new Set(values.map(snap))].sort((a, b) => a - b);
   const xs = coordinates([left, right, ...scopes.flatMap(s => [s.originM[0], s.originM[0] + s.sizeM[0]]), ...holes.flatMap(h => [h.x0, h.x1])]);
-  const ys = coordinates([bottom, top, ...scopes.flatMap(s => [s.originM[1], s.originM[1] + s.sizeM[1]]), ...holes.flatMap(h => [h.y0, h.y1])]);
+  const ys = coordinates([bottom, top, ...scopes.flatMap(s => [s.originM[1], s.originM[1] + s.sizeM[1]]), ...holes.flatMap(h => [h.y0, h.y1]), ...roundHeads.map(p => p.aperture.springY)]);
   if (xs.length * ys.length > 100000) throw new Error("Facade wall grid exceeds its supported budget.");
   const solid = (x: number, y: number) => x >= 0 && x < xs.length - 1 && y >= 0 && y < ys.length - 1 && (() => {
     const cx = (xs[x] + xs[x + 1]) / 2, cy = (ys[y] + ys[y + 1]) / 2;
@@ -65,14 +70,21 @@ export function constructionFacadeSolid(scopes: FacadeBayScope[]): PrimitiveGeom
       !holes.some(h => cx > h.x0 && cx < h.x1 && cy > h.y0 && cy < h.y1);
   })();
   const result = builder();
+  const archSide = (edge: number, low: number, high: number) => roundHeads.some(plan => {
+    const x0 = plan.aperture.pointsM[0][0], x1 = plan.aperture.pointsM[1][0];
+    return (Math.abs(edge-x0)<1e-8 || Math.abs(edge-x1)<1e-8) && low >= plan.aperture.springY-1e-8 && high <= plan.aperture.springY+plan.aperture.radiusM+1e-8;
+  });
+  const archTop = (a: number, b: number, edge: number) => roundHeads.some(plan =>
+    Math.abs(edge-plan.aperture.springY-plan.aperture.radiusM)<1e-8 && a >= plan.aperture.pointsM[0][0]-1e-8 && b <= plan.aperture.pointsM[1][0]+1e-8);
   for (let x = 0; x < xs.length - 1; x++) for (let y = 0; y < ys.length - 1; y++) if (solid(x, y)) {
     const a = xs[x], b = xs[x + 1], c = ys[y], d = ys[y + 1];
     result.quad([[a,c,0],[b,c,0],[b,d,0],[a,d,0]]); result.quad([[b,c,-depth],[a,c,-depth],[a,d,-depth],[b,d,-depth]]);
-    if (!solid(x-1,y)) result.quad([[a,c,-depth],[a,c,0],[a,d,0],[a,d,-depth]]);
-    if (!solid(x+1,y)) result.quad([[b,c,0],[b,c,-depth],[b,d,-depth],[b,d,0]]);
-    if (!solid(x,y-1)) result.quad([[a,c,-depth],[b,c,-depth],[b,c,0],[a,c,0]]);
+    if (!solid(x-1,y) && !archSide(a,c,d)) result.quad([[a,c,-depth],[a,c,0],[a,d,0],[a,d,-depth]]);
+    if (!solid(x+1,y) && !archSide(b,c,d)) result.quad([[b,c,0],[b,c,-depth],[b,d,-depth],[b,d,0]]);
+    if (!solid(x,y-1) && !archTop(a,b,c)) result.quad([[a,c,-depth],[b,c,-depth],[b,c,0],[a,c,0]]);
     if (!solid(x,y+1)) result.quad([[a,d,0],[b,d,0],[b,d,-depth],[a,d,-depth]]);
   }
+  for (const plan of roundHeads) result.add(buildConstructionRoundHeadSpandrel(plan));
   return result.finish();
 }
 /** Closed rectangular sweep: shared corner coordinates form real mitres, with no segment end caps. */

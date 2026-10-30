@@ -30,6 +30,7 @@ export interface OpeningSlot {
   /** Horizontal center of the opening within the facade (world X or Z). */
   centerAlongM: number;
   kind?: "window" | "door";
+  roundHead?: boolean;
 }
 
 export interface FacadeBayScope {

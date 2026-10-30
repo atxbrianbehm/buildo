@@ -16,6 +16,8 @@ import { evaluateBayConstruction, DEFAULT_BAY_MATERIALS, type BayConstructionMat
 import { buildBayDoorGeometry } from "./bayWindowGeometry";
 import { constructionFacePose, constructionFacadeSolid, constructionProfileRing, poseMatrix, posedBounds, posedPoint, type ConstructionBuilding, type ConstructionFacePose, type ConstructionFootprint } from "./buildingShellGeometry";
 import { constructionSurfaceAt } from "./constructionSurfaceProgram";
+import { resolveConstructionRoundHead } from "../core/constructionRoundHead";
+import { buildConstructionRoundHeadWindow } from "./constructionRoundHeadGeometry";
 
 type Cell = { localOpeningWidth?: boolean; storefrontPlan?: ConstructionStorefrontPlan; root: string; key: string; floorSplit: boolean; baySplit: boolean; scope: FacadeBayScope; face?: "front" | "right" | "rear" | "left"; pose?: ConstructionFacePose; building?: ConstructionBuilding };
 type Stage = "facade" | "openings" | "trim" | "roof";
@@ -50,12 +52,24 @@ function front(primitive: PrimitiveGeometry): PrimitiveGeometry {
 export async function evaluateFacadeConstruction(input: unknown, materials: BayConstructionMaterials = DEFAULT_BAY_MATERIALS,
   previewNodeId?: string): Promise<BayConstructionResult> {
   const graph = structuredClone(BayConstructionGraphSchema.parse(input));
-  if (!["0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0"].includes(graph.schemaVersion)) throw new Error("Facade construction requires graph version 0.2.0 or 0.3.0.");
+  if (!["0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0"].includes(graph.schemaVersion)) throw new Error("Facade construction requires graph version 0.2.0 or 0.3.0.");
   const nodes = new Map(graph.nodes.map(node => [node.id, node]));
   if (previewNodeId && !nodes.has(previewNodeId)) throw new Error("The preview node is missing.");
   const values = new Map<string, Promise<Value>>(), trace: BayConstructionTrace[] = [];
   const templates = new Map<string, Promise<{ hash: string; batches: MeshBatchIR[] }>>();
   const editedOpenings = new Map<string, { key: string; layout: string }>();
+  function roundPlan(cell: Cell) {
+    const opening = cell.scope.opening;
+    const windows = graph.nodes.filter(node => node.type === "AssembleWindow" && !node.bypassed);
+    if (!opening?.roundHead || cell.face !== "front" || windows.length !== 1 || windows[0].type !== "AssembleWindow") throw new Error("Round-headed openings require one active front window assembly.");
+    const p = windows[0].parameters, scope = cell.scope;
+    if ((p.layout ?? 0) !== 0) throw new Error("Round-headed openings do not yet support casement layouts.");
+    if (p.recessM + 0.08 > scope.sizeM[2]) throw new Error("Round-headed frame depth exceeds its wall.");
+    return resolveConstructionRoundHead({ schemaVersion: "0.1.0", kind: "construction-round-head-request",
+      scope: { id: cell.key, face: "front", floorIndex: scope.floorIndex, bayIndex: scope.bayIndex, originM: scope.originM, sizeM: scope.sizeM },
+      parameters: { widthM: opening.widthM, heightM: opening.heightM, sillM: opening.centerYM - scope.originM[1] - opening.heightM / 2,
+        frameWidthM: p.frameWidthM, revealDepthM: p.recessM, masonryMarginM: 0.08 } });
+  }
   function makeMesh(node: BayConstructionNode, cell: Cell, role: string, primitives: PrimitiveGeometry[], stage: Stage, slot: string): Part {
     const geometry = combinePrimitiveGeometry(primitives.map(front));
     if (role === "wall") for (let i = 0; i < geometry.positions.length / 3; i++) {
@@ -162,11 +176,12 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
             throw new Error("The exact selected regular-window scope is missing or ambiguous.");
           }
           const cell = matches[0], scope = cell.scope;
+          const { roundHead, ...openingForWidth } = scope.opening!;
           const plan = resolveConstructionOpeningWidth({ schemaVersion: "0.1.0", kind: "construction-opening-width-request",
             target, widthM, frameWidthM: assembly.parameters.frameWidthM,
             scope: { id: cell.key, face: cell.face, floorIndex: scope.floorIndex, bayIndex: scope.bayIndex,
-              originM: scope.originM, sizeM: scope.sizeM, opening: scope.opening } });
-          scope.opening = plan.opening;
+              originM: scope.originM, sizeM: scope.sizeM, opening: openingForWidth } });
+          scope.opening = { ...plan.opening, ...(roundHead ? { roundHead: true } : {}) };
           cell.localOpeningWidth = true;
           editedOpenings.set(`building/${graph.documentId}/node/${target.windowNodeId}/${cell.key}/frame`, { key: cell.key, layout: layoutOf(cell) });
         }
@@ -235,19 +250,22 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
       }
       case "PlaceOpening": {
         const cells = await scopes(node.input.nodeId), { widthM, heightM, sillM } = node.parameters;
-        if (!node.bypassed) for (const { scope } of cells) {
+        if (!node.bypassed && node.parameters.upperFrontRoundHead && !cells.some(cell => cell.building && cell.face === "front" && cell.scope.floorIndex > 0))
+          throw new Error("Round-headed openings require at least one upper front building scope.");
+        if (!node.bypassed) for (const { scope, face } of cells) {
           if (scope.opening) throw new Error(`Node ${node.id}: this scope already has an opening.`);
           if (widthM > scope.sizeM[0] - MIN_FACADE_PIER_WIDTH_M * 2 || sillM + heightM > scope.sizeM[1] - 0.08) throw new Error(`Node ${node.id}: opening exceeds a split scope; retain 80 mm masonry at each edge.`);
-          scope.opening = { kind: "window", widthM, heightM, centerAlongM: scope.originM[0] + scope.sizeM[0] / 2, centerYM: scope.originM[1] + sillM + heightM / 2 };
+          scope.opening = { kind: "window", widthM, heightM, centerAlongM: scope.originM[0] + scope.sizeM[0] / 2, centerYM: scope.originM[1] + sillM + heightM / 2,
+            ...(node.parameters.upperFrontRoundHead && face === "front" && scope.floorIndex > 0 ? { roundHead: true } : {}) };
         }
         value = { kind: "scope", cells }; break;
       }
       case "EmitWall": {
         const cells = await scopes(node.input.nodeId);
-        if (["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0"].includes(graph.schemaVersion) && cells.every(cell=>cell.building)) {
+        if (["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0"].includes(graph.schemaVersion) && cells.every(cell=>cell.building)) {
           const faces = new Map<string,Cell[]>(); for(const cell of cells) faces.set(cell.root,[...(faces.get(cell.root)??[]),cell]);
           value = { kind: "geometry", parts: node.bypassed ? [] : [...faces.values()].map(group=>{
-            const cell={...group[0],key:group[0].root},part=makeMesh(node,cell,"wall",[constructionFacadeSolid(group.map(cell=>cell.scope))],"facade",materials.wall);
+            const cell={...group[0],key:group[0].root},part=makeMesh(node,cell,"wall",[constructionFacadeSolid(group.map(cell=>cell.scope),group.filter(cell=>cell.scope.opening?.roundHead).map(roundPlan))],"facade",materials.wall);
             part.wallCells=group;return part;
           }) };
         } else value = { kind: "geometry", parts: node.bypassed ? [] : cells.map(cell => makeMesh(node, cell, "wall", expandBayWallPrimitives(cell.scope), "facade", materials.wall)) }; break;
@@ -261,8 +279,25 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
           if (!cell.storefrontPlan && (p.frameWidthM * 4 >= Math.min(opening.widthM, opening.heightM) || p.recessM + 0.08 >= cell.scope.sizeM[2])) throw new Error(`Node ${node.id}: frame or recess does not fit the wall.`);
           const sillM = Math.round((opening.centerYM - cell.scope.originM[1] - opening.heightM / 2) * 1e9) / 1e9;
           const metricTimberUvs=Boolean(cell.building);
-          const key = JSON.stringify(cell.storefrontPlan ? [opening.widthM, opening.heightM, sillM, cell.storefrontPlan.source.parameters, "storefront-seated-sill-v2"] : cell.localOpeningWidth ? [opening.widthM,opening.heightM,sillM,p,"local-opening-solid-trim-v1"] : metricTimberUvs ? [opening.widthM, opening.heightM, sillM, p, "metric-timber-uv-closed-trim-v2"] : [opening.widthM, opening.heightM, sillM, p]);
+          const key = JSON.stringify(opening.roundHead ? [opening.widthM, opening.heightM, sillM, cell.scope.sizeM, p, "round-head-v1"] : cell.storefrontPlan ? [opening.widthM, opening.heightM, sillM, cell.storefrontPlan.source.parameters, "storefront-seated-sill-v2"] : cell.localOpeningWidth ? [opening.widthM,opening.heightM,sillM,p,"local-opening-solid-trim-v1"] : metricTimberUvs ? [opening.widthM, opening.heightM, sillM, p, "metric-timber-uv-closed-trim-v2"] : [opening.widthM, opening.heightM, sillM, p]);
           if (!templates.has(key)) templates.set(key, (async () => {
+            if (opening.roundHead) {
+              const actual = roundPlan(cell), source = structuredClone(actual.source);
+              source.scope.id = "round-head-template"; source.scope.originM = [-source.scope.sizeM[0] / 2, 0, source.scope.originM[2]];
+              const plan = resolveConstructionRoundHead(source), geometry = buildConstructionRoundHeadWindow(plan);
+              const sill = buildBoxPrimitive({ center: [0, sillM - 0.045, (p.sillProjectionM - p.recessM) / 2], size: [opening.widthM + 0.12, 0.09, p.sillProjectionM + p.recessM] });
+              for (let i = 0; i < sill.positions.length / 3; i++) {
+                const pos = i * 3, nx = Math.abs(sill.normals[pos]), ny = Math.abs(sill.normals[pos + 1]);
+                sill.uvs[i*2] = nx > .9 ? sill.positions[pos+2] - sill.bounds.min[2] : sill.positions[pos] - sill.bounds.min[0];
+                sill.uvs[i*2+1] = ny > .9 ? sill.positions[pos+2] - sill.bounds.min[2] : sill.positions[pos+1] - sill.bounds.min[1];
+              }
+              const pieces = { frame: [geometry.frame], glass: [geometry.glass], trim: [sill] };
+              const batches = (["frame", "glass", "trim"] as const).map(role => {
+                const combined = combinePrimitiveGeometry(pieces[role].map(front));
+                return { batchId: "round-head." + role, role, materialSlotId: materials[role], positions: combined.positions, normals: combined.normals, uvs: combined.uvs, indices: combined.indices };
+              });
+              return { hash: (await hashCanonicalJson(JSON.parse(key))).slice(0, 20), batches };
+            }
             if (cell.storefrontPlan) {
               const geometry = buildConstructionStorefrontGeometry(cell.storefrontPlan);
               const batches = (["frame", "glass", "trim"] as const).map(role => {
