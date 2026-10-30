@@ -276,6 +276,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   async function open(file: File) {
     await perform(async (token, signal) => {
       const { project, materials } = await readBayConstructionProject(JSON.parse(await file.text()));
+      if (project.graph.schemaVersion === "0.14.0") throw new Error("Awning support projects cannot yet be edited here. The current building is retained.");
       await publish(project.graph, { ...materials, file: project.materialSource, ...(project.awningFabric ? { awningFabric: project.awningFabric } : {}) }, token, signal, "open", project.generation ?? null);
     });
   }
