@@ -30,7 +30,7 @@ export function ConstructionBuildingControls({ graph, fields, windowCount, store
   onFieldChange: (nodeId: string, field: string, text: string) => void; onApply: () => void; onRevert: () => void; onAdvanced: () => void;
   onStorefrontDivisionChange: (field: "displayLights" | "transomLights", value: number) => void;
 }) {
-  const pierProtected = graph.schemaVersion === "0.15.0";
+  const pierProtected = graph.schemaVersion === "0.15.0" || graph.schemaVersion === "0.16.0";
   const [active, setActive] = useState<string | null>("openings"), prefix = useId();
   if (!supportsGroupedConstruction(graph)) return <div className="construction-grouped__custom"><p>This construction has custom connections or added nodes. Edit its actual branches in the advanced recipe graph.</p>
     <button type="button" onClick={onAdvanced}>Edit custom construction</button></div>;
@@ -53,7 +53,7 @@ export function ConstructionBuildingControls({ graph, fields, windowCount, store
         onChange={event => onFieldChange(nodeId,key,event.currentTarget.value)} /></label>;
   };
   return <form className="construction-grouped" noValidate onSubmit={event => { event.preventDefault(); onApply(); }}>
-    {pierProtected ? <p>Facade piers are retained while you edit dimensions. Assembly and local-detail controls will be enabled in a later update.</p> : null}
+    {graph.schemaVersion === "0.16.0" ? <p>The sign is retained while you edit dimensions. Some detail controls remain unavailable.</p> : pierProtected ? <p>Facade piers are retained while you edit dimensions. Some assembly controls remain unavailable.</p> : null}
     <fieldset disabled={disabled}>
       {groups.map(group => <details key={group.id} open={active === group.id} className="construction-grouped__section">
         <summary onClick={event => {event.preventDefault();setActive(value => value === group.id ? null : group.id);}}>{group.label}</summary>
