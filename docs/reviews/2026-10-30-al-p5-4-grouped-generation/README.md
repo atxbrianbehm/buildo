@@ -1,0 +1,9 @@
+# AL.P5.4a: retain grouped choices through generation
+
+Generation and reroll retain authored grouped bays when “Keep edited dimensions and assemblies,” “Lock openings,” or an applicable imported opening lock is active. The directives are rebuilt against the generated building and compiled before publication. If a target disappears, no longer fits, or conflicts with rounded heads, generation fails and retains the accepted building. Explicitly releasing both edited assemblies and opening locks permits release. Family opening-head variation is rejected for a source with retained groups until grouped arches are supported; it never silently discards the groups.
+
+The [WebGPU](webgpu-01/receipt.json) and [WebGL](webgl-01/receipt.json) app workflows opened the grouped building, rerolled it, generated six members, edited one member's grouped width, saved and reopened the family. They checked identical source grouping in generated members, unchanged five siblings and source graph after the local edit, the same material source and zero additional material-provider calls. [Workflow](verify.mjs) requires the local P5.3 saved source. [WebGPU family](webgpu-01/family.png), [WebGL family](webgl-01/family.png) and [edited member](webgl-01/member.png) are actual workspace captures.
+
+The family still looks repetitive: all six inherit the same grouped bay, and the material and massing language are narrow. This is preservation, not seeded group variation or street readiness. P5.4b will introduce explicit family grouping choices without erasing authored groups or locks. No historical evidence or visual acceptance is implied.
+
+Verification at initial review: focused generation, pinned-lock and six-member source tests, typecheck, lint, build, standard E2E and both renderer workflows passed; the full suite was running. The production build retains its large-chunk warning.
