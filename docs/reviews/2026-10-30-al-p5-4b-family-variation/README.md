@@ -6,4 +6,4 @@ Both [WebGPU](webgpu-01/receipt.json) and [WebGL](webgl-02/receipt.json) used th
 
 The first exploratory attempt used an older project containing an authored opening-width lock and was rejected by the lock check; it is excluded from the successful capture. The displayed family has more variation in opening heads, grouped bays, frontage and roof details, but still has similar rectangular masonry masses and restrained ornament. These are bounded demo choices, not verified historical evidence, and they are not a street-readiness or user-approval claim. Grouped arches, richer bay rhythms, massing, storefronts and material interaction remain open.
 
-Verification at initial review: focused composition, authored-group/pinned-lock and family source tests, typecheck, lint, build, standard E2E and both renderer workflows passed; the full suite was running. The build retains its large-chunk warning.
+Verification: all 2,031 tests across 147 files, typecheck, lint, build, standard E2E and both renderer workflows passed, including focused composition, authored-group/pinned-lock and family source tests. The build retains its large-chunk warning.
