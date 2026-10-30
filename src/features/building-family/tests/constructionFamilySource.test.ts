@@ -23,8 +23,9 @@ describe("persistent construction family source", () => {
       const edited = withConstructionOpeningWidth(generated.graph, { target, widthM: 1.8 });
       const plan = resolveConstructionFamilyPlan({ schemaVersion: "0.1.0", kind: "construction-family-request", familyId: "family", familySeed: "seed", graph: edited });
       const family = await resolveConstructionFamily(plan, lineage, defaultConstructionGenerationControls);
-      const input = { schemaVersion: "0.1.0" as const, kind: "construction-family-source" as const, familyId: "family", sourceDocumentId: "authored", familySeed: "seed",
-        materialSource: generatedMaterials.materials.file, members: family.members.map(member => ({ documentId: member.documentId, graph: member.construction.graph, generation: member.lineage })) };
+      const input = { schemaVersion: "0.2.0" as const, kind: "construction-family-source" as const, familyId: "family", sourceDocumentId: "authored", familySeed: "seed",
+        sourceGraph: edited, sourceGeneration: lineage, materialSource: generatedMaterials.materials.file,
+        members: family.members.map(member => ({ documentId: member.documentId, graph: member.construction.graph, generation: member.lineage })) };
       const materialGeneration = vi.spyOn(ProceduralMaterialProvider.prototype, "generate");
       const pending = createConstructionFamilySource(input);
       input.familySeed = "changed-after-call";
@@ -34,6 +35,10 @@ describe("persistent construction family source", () => {
       expect(saved.members.every(member => member.generation.materialSourceHash === saved.materialSource.contentHash)).toBe(true);
       const restored = await readConstructionFamilySource(JSON.parse(JSON.stringify(saved)));
       expect(restored.contentHash).toBe(saved.contentHash);
+      expect(restored.sourceGraph).toEqual(edited);
+      expect(restored.sourceGeneration).toEqual(lineage);
+      const originalProject = await createBayConstructionProject(restored.sourceGraph, restored.materialSource, restored.sourceGeneration);
+      expect(originalProject.graph.documentId).toBe("authored");
       expect(restored.members.map(member => member.graph.documentId)).toEqual(family.members.map(member => member.documentId));
       for (const member of restored.members) {
         expect(member.graph.nodes.find(node => node.type === "EditOpeningWidth")?.overrides).toEqual([{ target: { ...target, documentId: member.documentId }, widthM: 1.8 }]);
@@ -51,6 +56,9 @@ describe("persistent construction family source", () => {
       const wrongGraph = structuredClone(saved); wrongGraph.members[0].graph = structuredClone(wrongGraph.members[1].graph);
       const { contentHash: _graphHash, ...wrongGraphInput } = wrongGraph; void _graphHash;
       await expect(createConstructionFamilySource(wrongGraphInput)).rejects.toThrow(/identity does not match/);
+      const wrongOrigin = structuredClone(saved); wrongOrigin.sourceDocumentId = "different_origin";
+      const { contentHash: _originHash, ...wrongOriginInput } = wrongOrigin; void _originHash;
+      await expect(createConstructionFamilySource(wrongOriginInput)).rejects.toThrow(/original building must match/);
       const roofOnly = structuredClone(saved);
       roofOnly.members[0].graph.nodes.push({ id: "isolated_scope", type: "FacadeScope", parameters: { widthM: 4, heightM: 4, wallDepthM: 0.3 } });
       roofOnly.members[0].graph.nodes.push({ id: "isolated_wall", type: "EmitWall", input: { nodeId: "isolated_scope", socket: "scope" } });
@@ -59,6 +67,7 @@ describe("persistent construction family source", () => {
       const { contentHash: _roofHash, ...roofOnlyInput } = roofOnly; void _roofHash;
       await expect(createConstructionFamilySource(roofOnlyInput).then(() => true)).rejects.toThrow(/connected whole-building/);
       await expect(readConstructionFamilySource({ ...saved, unexpected: true })).rejects.toThrow();
+      await expect(readConstructionFamilySource({ ...saved, schemaVersion: "0.1.0" })).rejects.toThrow(/lacks the original building/);
       expect(materialGeneration).not.toHaveBeenCalled(); materialGeneration.mockRestore();
     } finally { vi.restoreAllMocks(); base.familyRuntime.dispose(); }
   }, 180000);
