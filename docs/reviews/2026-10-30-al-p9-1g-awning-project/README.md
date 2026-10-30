@@ -4,4 +4,4 @@ Project version 0.15 binds an awning graph to its separately validated fabric ar
 
 The [actual editor guard](editor-guard.mjs) verifies that opening this project reports the unsupported supplemental fabric and preserves the current building. Checkpoint recovery remains guarded too. These are deliberate temporary limits: workspace scene ownership, history and recovery must retain the fabric before opening is enabled. The browser guard relies on the locally retained P6.2 project at `docs/reviews/2026-10-30-al-p6-2-storefront-authoring/webgpu-02/divided.json`.
 
-Focused graph and project tests, typecheck and lint passed. Full repository validation is pending.
+Focused graph and project tests, typecheck and lint passed. All five repository checks passed: 2,057 tests across 156 files, the standard browser smoke suite, typecheck, lint and build. The build retains its large-chunk warning.
