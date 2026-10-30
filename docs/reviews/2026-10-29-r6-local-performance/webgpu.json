@@ -1,0 +1,34 @@
+{
+  "api": "webgpu",
+  "loadMs": 5740,
+  "samples": [
+    {
+      "openMemberMs": 676,
+      "editMs": 672,
+      "returnMs": 2529,
+      "saveMs": 2057
+    },
+    {
+      "openMemberMs": 554,
+      "editMs": 671,
+      "returnMs": 2500,
+      "saveMs": 1951
+    },
+    {
+      "openMemberMs": 555,
+      "editMs": 663,
+      "returnMs": 2472,
+      "saveMs": 1955
+    }
+  ],
+  "system": {
+    "hardwareConcurrency": 64,
+    "deviceMemory": 32,
+    "adapter": {
+      "vendor": "nvidia",
+      "architecture": "lovelace",
+      "description": ""
+    }
+  },
+  "errors": []
+}
