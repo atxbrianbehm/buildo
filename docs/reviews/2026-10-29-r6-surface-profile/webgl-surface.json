@@ -1,0 +1,343 @@
+{
+  "api": "webgl",
+  "loadMs": 6316,
+  "samples": [
+    {
+      "openMemberMs": 838,
+      "editMs": 682,
+      "returnMs": 2343,
+      "saveMs": 1286
+    },
+    {
+      "openMemberMs": 582,
+      "editMs": 573,
+      "returnMs": 2033,
+      "saveMs": 1006
+    },
+    {
+      "openMemberMs": 560,
+      "editMs": 537,
+      "returnMs": 1985,
+      "saveMs": 1021
+    }
+  ],
+  "phases": [
+    {
+      "compileMs": 297.5,
+      "fixtureMs": 1758.4000000059605,
+      "viewerMs": 136.2000000178814
+    },
+    {
+      "compileMs": 277.7000000178814,
+      "fixtureMs": 1530.699999988079,
+      "viewerMs": 102
+    },
+    {
+      "compileMs": 235.80000001192093,
+      "fixtureMs": 1514.9000000059605,
+      "viewerMs": 102.7999999821186
+    }
+  ],
+  "fixturePhases": [
+    {
+      "firstMs": 356,
+      "surfaces": [
+        273.30000001192093,
+        267.19999998807907,
+        266.5,
+        311,
+        266.69999998807907
+      ],
+      "runtimes": [
+        17,
+        19.19999998807907,
+        15.600000023841858,
+        16.69999998807907,
+        17.600000023841858
+      ]
+    },
+    {
+      "firstMs": 322.30000001192093,
+      "surfaces": [
+        270.10000002384186,
+        274.90000000596046,
+        257.30000001192093,
+        287.40000000596046,
+        266.5
+      ],
+      "runtimes": [
+        17.19999998807907,
+        15.799999982118607,
+        15,
+        17,
+        14.599999994039536
+      ]
+    },
+    {
+      "firstMs": 285.69999998807907,
+      "surfaces": [
+        240.59999999403954,
+        235.7999999821186,
+        233.69999998807907,
+        237.69999998807907,
+        228.7000000178814
+      ],
+      "runtimes": [
+        15.400000005960464,
+        12.700000017881393,
+        13.5,
+        13.5,
+        13.099999994039536
+      ]
+    },
+    {
+      "firstMs": 282.2999999821186,
+      "surfaces": [
+        253.19999998807907,
+        229.2999999821186,
+        234.7999999821186,
+        228.80000001192093,
+        225.60000002384186
+      ],
+      "runtimes": [
+        14.099999994039536,
+        10.700000017881393,
+        13.300000011920929,
+        10.899999976158142,
+        11.5
+      ]
+    }
+  ],
+  "surfacePhases": [
+    {
+      "metadataMs": 4.199999988079071,
+      "bindingMs": 5.199999988079071,
+      "compositionMs": 43.70000001788139,
+      "resourcesMs": 0,
+      "evaluatedRecipes": 1
+    },
+    {
+      "metadataMs": 4.0999999940395355,
+      "bindingMs": 5.700000017881393,
+      "compositionMs": 278.40000000596046,
+      "resourcesMs": 2.5,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 4,
+      "bindingMs": 3.5,
+      "compositionMs": 271.59999999403954,
+      "resourcesMs": 2.300000011920929,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 5.800000011920929,
+      "bindingMs": 3.699999988079071,
+      "compositionMs": 261.40000000596046,
+      "resourcesMs": 2.300000011920929,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 4.699999988079071,
+      "bindingMs": 3.5999999940395355,
+      "compositionMs": 257.09999999403954,
+      "resourcesMs": 1.7000000178813934,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 3.9000000059604645,
+      "bindingMs": 4.4000000059604645,
+      "compositionMs": 256,
+      "resourcesMs": 2.199999988079071,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 4.199999988079071,
+      "bindingMs": 4.5,
+      "compositionMs": 299.69999998807907,
+      "resourcesMs": 2.600000023841858,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 4.5,
+      "bindingMs": 5.0999999940395355,
+      "compositionMs": 254.80000001192093,
+      "resourcesMs": 2.199999988079071,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 5,
+      "bindingMs": 3.0999999940395355,
+      "compositionMs": 294.59999999403954,
+      "resourcesMs": 2.9000000059604645,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 3.9000000059604645,
+      "bindingMs": 2.699999988079071,
+      "compositionMs": 293.40000000596046,
+      "resourcesMs": 2.0999999940395355,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 3.4000000059604645,
+      "bindingMs": 2.7999999821186066,
+      "compositionMs": 270.7000000178814,
+      "resourcesMs": 1.899999976158142,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 3.5,
+      "bindingMs": 2.5,
+      "compositionMs": 262.30000001192093,
+      "resourcesMs": 1.800000011920929,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 4.4000000059604645,
+      "bindingMs": 3.9000000059604645,
+      "compositionMs": 264.69999998807907,
+      "resourcesMs": 1.9000000059604645,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 3.800000011920929,
+      "bindingMs": 3.0999999940395355,
+      "compositionMs": 248.59999999403954,
+      "resourcesMs": 1.800000011920929,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 3.800000011920929,
+      "bindingMs": 3,
+      "compositionMs": 278.7999999821186,
+      "resourcesMs": 1.800000011920929,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 4.5999999940395355,
+      "bindingMs": 3.5,
+      "compositionMs": 256,
+      "resourcesMs": 2.300000011920929,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 3.4000000059604645,
+      "bindingMs": 2.800000011920929,
+      "compositionMs": 232.09999999403954,
+      "resourcesMs": 1.699999988079071,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 3.4000000059604645,
+      "bindingMs": 2.699999988079071,
+      "compositionMs": 229.40000000596046,
+      "resourcesMs": 1.800000011920929,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 3.399999976158142,
+      "bindingMs": 3.100000023841858,
+      "compositionMs": 231.09999999403954,
+      "resourcesMs": 1.699999988079071,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 3.7999999821186066,
+      "bindingMs": 3.300000011920929,
+      "compositionMs": 231.59999999403954,
+      "resourcesMs": 1.9000000059604645,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 3.399999976158142,
+      "bindingMs": 3.2000000178813934,
+      "compositionMs": 227.5,
+      "resourcesMs": 1.699999988079071,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 3.5999999940395355,
+      "bindingMs": 2.9000000059604645,
+      "compositionMs": 225.69999998807907,
+      "resourcesMs": 1.5,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 3.5,
+      "bindingMs": 3.199999988079071,
+      "compositionMs": 229.30000001192093,
+      "resourcesMs": 1.699999988079071,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 4.200000017881393,
+      "bindingMs": 2.5999999940395355,
+      "compositionMs": 220.30000001192093,
+      "resourcesMs": 1.5999999940395355,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 3.4000000059604645,
+      "bindingMs": 2.7000000178813934,
+      "compositionMs": 219.7999999821186,
+      "resourcesMs": 1.5,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 3.4000000059604645,
+      "bindingMs": 2.5,
+      "compositionMs": 218.19999998807907,
+      "resourcesMs": 1.5999999940395355,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 3.4000000059604645,
+      "bindingMs": 2.699999988079071,
+      "compositionMs": 232.5,
+      "resourcesMs": 1.600000023841858,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 3.5,
+      "bindingMs": 2.699999988079071,
+      "compositionMs": 245.5,
+      "resourcesMs": 1.5,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 3.9000000059604645,
+      "bindingMs": 3.5,
+      "compositionMs": 220.19999998807907,
+      "resourcesMs": 1.699999988079071,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 3.5,
+      "bindingMs": 2.5999999940395355,
+      "compositionMs": 226.90000000596046,
+      "resourcesMs": 1.7999999821186066,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 3.4000000059604645,
+      "bindingMs": 2.699999988079071,
+      "compositionMs": 221.09999999403954,
+      "resourcesMs": 1.5,
+      "evaluatedRecipes": 3
+    },
+    {
+      "metadataMs": 3.300000011920929,
+      "bindingMs": 2.5999999940395355,
+      "compositionMs": 218.09999999403954,
+      "resourcesMs": 1.600000023841858,
+      "evaluatedRecipes": 3
+    }
+  ],
+  "system": {
+    "hardwareConcurrency": 64,
+    "deviceMemory": 32,
+    "adapter": null
+  },
+  "errors": []
+}
