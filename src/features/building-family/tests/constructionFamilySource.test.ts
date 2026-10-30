@@ -15,6 +15,7 @@ import { withConstructionGroupedBays } from "../core/constructionGroupedBayGraph
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { withConstructionStorefrontDivision } from "../core/constructionStorefrontDivisionGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
+import { withConstructionAwningSupports } from "../core/constructionAwningSupportGraph";
 import { withConstructionAwnings } from "../core/constructionAwningGraph";
 import { createConstructionAwningFabric } from "../materials/constructionAwningFabric";
 
@@ -64,6 +65,14 @@ describe("persistent construction family source", () => {
       await expect(createConstructionFamilySource({ ...awningInput, awningFabric: badFabric })).rejects.toThrow(/does not match/);
       const { awningFabric: _fabric, ...withoutFabric } = awningInput; void _fabric;
       await expect(createConstructionFamilySource({ ...withoutFabric, schemaVersion: "0.5.0" })).rejects.toThrow(/Awning family graphs require/);
+      const rods = [{ bayIndex: 0, anchorRiseM: 0.15, thicknessM: 0.03 }];
+      const supportInput = { ...awningInput, schemaVersion: "0.10.0" as const, sourceGraph: withConstructionAwningSupports(awningInput.sourceGraph, rods),
+        members: awningInput.members.map(member => ({ ...member, graph: withConstructionAwningSupports(member.graph, rods) })) };
+      const supportFamily = await createConstructionFamilySource(supportInput);
+      expect(await readConstructionFamilySource(JSON.parse(JSON.stringify(supportFamily)))).toEqual(supportFamily);
+      expect((await evaluateConstruction(supportFamily.members[0].graph)).ir.meshBatches.filter(batch => batch.role === "awning.support")).toHaveLength(1);
+      await expect(createConstructionFamilySource({ ...supportInput, schemaVersion: "0.8.0" })).rejects.toThrow(/Support family graphs require/);
+      await expect(createConstructionFamilySource({ ...supportInput, awningFabric: badFabric })).rejects.toThrow(/does not match/);
       const awningPlan = resolveConstructionFamilyPlan({ schemaVersion: "0.1.0", kind: "construction-family-request", familyId: "awning_family", familySeed: "seed", graph: awningInput.sourceGraph });
       const roofChoices = resolveConstructionFamilyComposition({ schemaVersion: "0.1.0", kind: "construction-family-composition-request", familySeed: "seed", policy: { openings: false, frontage: false, roof: true }, openingLock: false });
       const awningMembers = await resolveConstructionFamily(awningPlan, lineage, defaultConstructionGenerationControls, undefined, roofChoices);
