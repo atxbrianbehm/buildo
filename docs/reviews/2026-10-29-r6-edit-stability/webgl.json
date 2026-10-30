@@ -1,0 +1,45 @@
+{
+  "backend": "webgl",
+  "records": [
+    {
+      "name": "initial",
+      "hash": "d60505da39b6b294668f844c5163af244e0b12fac9b2da094f0faa53a4edf49a",
+      "materialHash": "3feae06c59d16ea57029d815b13900184c8cb94b29369c58fe806168e3ee2d9c",
+      "graphHash": "746d77cdef2d9fd0db5c3c0f04aa1d2354171ab2be11ab02e6e9990c13243ac5",
+      "floor": 3,
+      "bays": 4,
+      "seed": "building-cf24210f8c117dd4ee3366756923241d"
+    },
+    {
+      "name": "floors",
+      "hash": "ff89bf1d67fd8d453d7d5e098cbb31015995a41855e4694ce2444713e93a5f0b",
+      "materialHash": "3feae06c59d16ea57029d815b13900184c8cb94b29369c58fe806168e3ee2d9c",
+      "graphHash": "1c981935d814e8ae9baa6b31e3c264a24f7bbd186ffd824e0624c974f9d615b3",
+      "floor": 4,
+      "bays": 4,
+      "seed": "building-cf24210f8c117dd4ee3366756923241d"
+    },
+    {
+      "name": "bays",
+      "hash": "e622cc4e1c59360b76157da9deec8d3657a933285bdc7136ff99608ad64a086f",
+      "materialHash": "3feae06c59d16ea57029d815b13900184c8cb94b29369c58fe806168e3ee2d9c",
+      "graphHash": "cd6a657c4d5874754df20f53e31fd31a1c2d7a6cbd038a9ea896336a7a97ee79",
+      "floor": 4,
+      "bays": 5,
+      "seed": "building-cf24210f8c117dd4ee3366756923241d"
+    },
+    {
+      "name": "seed-lock",
+      "hash": "9c45c345b125af8be5c47d65be3a060fcff2f30b75ba2d9f8646fbe068295e60",
+      "materialHash": "3feae06c59d16ea57029d815b13900184c8cb94b29369c58fe806168e3ee2d9c",
+      "graphHash": "b4779d3eb23b40b44dec22a2dc6cb4bc3b3ce6aacec3529e7776b792d53d6f19",
+      "floor": 4,
+      "bays": 5,
+      "seed": "review-seed-2"
+    }
+  ],
+  "openingLockPersisted": true,
+  "materialCallsBefore": 24,
+  "materialCallsAfter": 24,
+  "errors": []
+}
