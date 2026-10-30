@@ -7,7 +7,7 @@ import { constructionUsesOperator, validateConstructionSurfaceSources } from "..
 import { BuildingSourceFileSchema, parseBuildingSourceFile } from "./buildingSourceFile";
 import { ConstructionGenerationLineageSchema } from "./constructionGenerationState";
 import { validateGeneration } from "./bayConstructionProject";
-import { ConstructionFamilyCompositionPlanSchema } from "../contracts/constructionFamilyComposition";
+import { ConstructionFamilyCompositionPlanV1Schema, ConstructionFamilyCompositionPlanV2Schema } from "../contracts/constructionFamilyComposition";
 import { readConstructionFamilyCompositionPlan } from "../core/constructionFamilyComposition";
 
 const id = z.string().regex(/^[a-zA-Z][a-zA-Z0-9_.-]{0,79}$/);
@@ -18,13 +18,15 @@ const common = {
   members: z.array(z.object({ documentId: id, graph: BayConstructionGraphSchema, generation: ConstructionGenerationLineageSchema }).strict()).length(6)
 };
 const legacyPayload = z.object({ schemaVersion: z.literal("0.2.0"), ...common }).strict();
-const composedPayload = z.object({ schemaVersion: z.literal("0.3.0"), ...common, initialComposition: ConstructionFamilyCompositionPlanSchema }).strict();
-const payload = z.discriminatedUnion("schemaVersion", [legacyPayload, composedPayload]);
+const composedPayload = z.object({ schemaVersion: z.literal("0.3.0"), ...common, initialComposition: ConstructionFamilyCompositionPlanV1Schema }).strict();
+const groupedPayload = z.object({ schemaVersion: z.literal("0.4.0"), ...common, initialComposition: ConstructionFamilyCompositionPlanV2Schema }).strict();
+const payload = z.discriminatedUnion("schemaVersion", [legacyPayload, composedPayload, groupedPayload]);
 const json = z.unknown().superRefine((value, context) => { const issue = findBuildingDocumentJsonIssue(value);
   if (issue) context.addIssue({ code: "custom", path: issue.path, message: issue.message }); });
 export const ConstructionFamilySourceSchema = json.pipe(z.discriminatedUnion("schemaVersion", [
   legacyPayload.extend({ contentHash: z.string().regex(/^[a-f0-9]{64}$/) }).strict(),
-  composedPayload.extend({ contentHash: z.string().regex(/^[a-f0-9]{64}$/) }).strict()
+  composedPayload.extend({ contentHash: z.string().regex(/^[a-f0-9]{64}$/) }).strict(),
+  groupedPayload.extend({ contentHash: z.string().regex(/^[a-f0-9]{64}$/) }).strict()
 ]));
 export type ConstructionFamilySource = z.infer<typeof ConstructionFamilySourceSchema>;
 export type ConstructionFamilyPayload = z.infer<typeof payload>;
@@ -37,7 +39,7 @@ function requireBuildingGraph(graph: z.infer<typeof BayConstructionGraphSchema>)
 }
 
 async function validate(source: z.infer<typeof payload>) {
-  if (source.schemaVersion === "0.3.0") {
+  if (source.schemaVersion === "0.3.0" || source.schemaVersion === "0.4.0") {
     const composition = readConstructionFamilyCompositionPlan(source.initialComposition);
     if (composition.source.familySeed !== source.familySeed) throw new Error("Family composition must retain the family seed.");
   }

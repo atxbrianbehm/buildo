@@ -5,6 +5,7 @@ import { withConstructionOpeningWidth } from "../core/constructionOpeningEditGra
 import { withConstructionRoundHead } from "../core/constructionRoundHeadVocabulary";
 import { withConstructionWindowLayout } from "../core/constructionWindowVocabulary";
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
+import { withConstructionGroupedBays } from "../core/constructionGroupedBayGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
 
 const request = () => ({ schemaVersion: "0.1.0", kind: "construction-family-composition-request", familySeed: "family-one",
@@ -58,5 +59,37 @@ describe("family architectural composition", () => {
         instances: compiled.ir.instanceBatches.map(batch => Array.from(batch.transforms ?? [])) }));
     }
     expect(new Set(outputs).size).toBe(6); expect(graph).toEqual(original);
+  }, 30000);
+  it("coordinates seeded single, paired and triple additions without overwriting authored scopes", async () => {
+    const input = { schemaVersion: "0.2.0", kind: "construction-family-composition-request", familySeed: "family-one",
+      policy: { openings: false, frontage: false, roof: false, groupedBays: true }, openingLock: false };
+    const plan = resolveConstructionFamilyComposition(input);
+    expect(plan.schemaVersion).toBe("0.2.0");
+    if (plan.schemaVersion !== "0.2.0") throw new Error("Wrong plan version");
+    expect(new Set(plan.members.map(member => member.groupedBays))).toEqual(new Set([0, 2, 3]));
+    expect(readConstructionFamilyCompositionPlan(JSON.parse(JSON.stringify(plan)))).toEqual(plan);
+    const tampered = structuredClone(plan); tampered.members[0].groupedBays = tampered.members[0].groupedBays === 2 ? 3 : 2;
+    expect(() => readConstructionFamilyCompositionPlan(tampered)).toThrow(/do not match/);
+    expect(() => resolveConstructionFamilyComposition({ ...input, openingLock: true })).toThrow(/Unlock openings/);
+    const target = { documentId: "authored-building", storeysNodeId: "facade", windowNodeId: "window", face: "front" as const, floorIndex: 1, bayIndex: 1 };
+    const graph = withConstructionGroupedBays(withConstructionOpeningWidth(createBuildingConstructionGraph(), { target, widthM: 1 }),
+      [{ storeysNodeId: "facade", floorIndex: 1, bayIndex: 0, memberCount: 2, memberWidthM: 0.55, pierWidthM: 0.24 }]);
+    const original = structuredClone(graph);
+    for (let ordinal = 1; ordinal <= 6; ordinal++) {
+      const candidate = applyConstructionFamilyComposition(graph, plan, ordinal), count = plan.members[ordinal-1].groupedBays;
+      expect(candidate.upperBayGroups?.[0]).toEqual(graph.upperBayGroups?.[0]);
+      if (count) expect(candidate.upperBayGroups?.[1]).toMatchObject({ floorIndex: 1, bayIndex: 2, memberCount: count });
+      else expect(candidate.upperBayGroups).toHaveLength(1);
+      await evaluateConstruction(candidate);
+    }
+    expect(graph).toEqual(original);
+    const occupied = withConstructionGroupedBays(graph, [0, 2, 3].map(bayIndex => ({ storeysNodeId: "facade", floorIndex: 1, bayIndex,
+      memberCount: 2, memberWidthM: 0.55, pierWidthM: 0.24 })));
+    const groupedOrdinal = plan.members.findIndex(member => member.groupedBays === 2) + 1;
+    expect(() => applyConstructionFamilyComposition(occupied, plan, groupedOrdinal)).toThrow(/without an authored group or local width edit/);
+    expect(() => applyConstructionFamilyComposition(withConstructionRoundHead(createBuildingConstructionGraph(), 1), plan, groupedOrdinal)).toThrow(/requires flat upper-front openings/);
+    const coordinated = resolveConstructionFamilyComposition({ ...input, policy: { ...input.policy, openings: true } });
+    if (coordinated.schemaVersion !== "0.2.0") throw new Error("Wrong plan version");
+    expect(coordinated.members.every(member => member.head !== 1 || member.groupedBays === 0)).toBe(true);
   }, 30000);
 });

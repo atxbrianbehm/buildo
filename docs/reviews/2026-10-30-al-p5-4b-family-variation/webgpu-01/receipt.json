@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "0.1.0",
+  "api": "webgpu",
+  "counts": [
+    2,
+    0,
+    2,
+    0,
+    3,
+    0
+  ],
+  "selected": 0,
+  "memberEdit": true,
+  "siblingsAndSourceUnchanged": true,
+  "reopened": true,
+  "materialHash": "e912990f01e37be516a5dc151f66471b16afa14a40fcfe8dd2fa475925d68bca",
+  "providerCallsDelta": 0,
+  "errors": []
+}

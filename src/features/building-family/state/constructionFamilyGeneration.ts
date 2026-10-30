@@ -43,15 +43,19 @@ export async function resolveConstructionFamily(input: unknown, lineageInput: un
   const composition = compositionInput === undefined ? null : readConstructionFamilyCompositionPlan(compositionInput);
   if (plan.source.graph.upperBayGroups?.length && composition?.source.policy.openings)
     throw new Error("Opening-head variation cannot currently coexist with retained grouped bays. Disable that variation or explicitly remove the groups.");
+  const varyGroups = composition?.schemaVersion === "0.2.0" && composition.source.policy.groupedBays;
+  if (varyGroups && !composition.source.policy.openings && plan.source.graph.nodes.find(node => node.type === "PlaceOpening")?.parameters.upperFrontRoundHead === 1)
+    throw new Error("Grouped family variation needs flat upper-front heads. Choose flat heads or enable coordinated opening variation.");
   if (composition) {
     if (composition.source.familySeed !== plan.source.familySeed || composition.source.openingLock !== controls.lockOpenings)
       throw new Error("Family composition seed and opening-lock state must match the active family request.");
     const affected = [
       ...(composition.source.policy.openings ? ["construction/opening/upperFrontRoundHead", "construction/window/layout"] : []),
+      ...(varyGroups ? ["construction/opening", "construction/window", "construction/upperBayGroups"] : []),
       ...(composition.source.policy.frontage ? ["construction/frontage/mode"] : []),
       ...(composition.source.policy.roof ? ["construction/roof/corniceAssembly", "construction/roof/parapetSilhouette"] : [])
     ];
-    for (const lock of original.source.intent.locks) if (affected.some(path => path === lock.semanticPath || path.startsWith(lock.semanticPath + "/")))
+    for (const lock of original.source.intent.locks) if (affected.some(path => path === lock.semanticPath || path.startsWith(lock.semanticPath + "/") || lock.semanticPath.startsWith(path + "/")))
       throw new Error(`Family composition conflicts with the pinned lock ${lock.semanticPath}.`);
   }
   if (original.source.documentId !== plan.source.graph.documentId) throw new Error("Family source identity does not match its pinned generation lineage.");
