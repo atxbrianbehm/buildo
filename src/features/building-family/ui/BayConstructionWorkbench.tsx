@@ -1,3 +1,4 @@
+import { withConstructionFacadePiers, withoutConstructionFacadePiers } from "../core/constructionFacadePierGraph";
 import { CONSTRUCTION_CORNICE_LAYOUTS, withConstructionCorniceLayout } from "../core/constructionCorniceVocabulary";
 import { CONSTRUCTION_PARAPET_SILHOUETTES, withConstructionParapetSilhouette } from "../core/constructionParapetVocabulary";
 import { withConstructionRoundHead } from "../core/constructionRoundHeadVocabulary";
@@ -283,6 +284,15 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     await perform(async (token, signal) => {
       const { project, materials } = await readBayConstructionProject(JSON.parse(await file.text()));
       await publish(project.graph, { ...materials, file: project.materialSource, ...(project.awningFabric ? { awningFabric: project.awningFabric } : {}) }, token, signal, "open", project.generation ?? null);
+    });
+  }
+  async function changeFacadePiers(enabled: boolean) {
+    const source = current.current;
+    if (!source || dirty || previewNode || shown.current !== source.fixture) return;
+    await perform(async (token, signal) => {
+      const graph = enabled ? withConstructionFacadePiers(source.fixture.construction.graph, { pierWidthM: 0.28, projectionM: 0.18, endHeightM: 0.15, clearanceM: 0.04 })
+        : withoutConstructionFacadePiers(source.fixture.construction.graph);
+      await publish(graph, source.materials, token, signal);
     });
   }
   async function applyOpeningWidth(text: string | null) {
@@ -782,6 +792,12 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         fabric={awningFabric} fabricDisabled={familyMemberMode}
         onFabricChange={(pattern, primary, secondary) => void changeAwningFabric(pattern, primary, secondary)}
         onChange={(bay, enabled, dimensions) => void changeAwning(bay, enabled, dimensions)} /> : null}
+      {buildingMode && !advancedOpen && accepted && supportsGroupedConstruction(accepted.construction.graph) ? <section className="construction-generate" aria-label="Upper facade piers">
+        <h3>Upper facade piers</h3>
+        <p>Place a vertical pier at each front bay edge on upper storeys. The demo proportions require clearance from windows and trim.</p>
+        <button type="button" disabled={disabled || dirty || openingDirty || groupDirty || !viewerReady || Boolean(previewNode) || familyMemberMode}
+          onClick={() => void changeFacadePiers(!pierProtected)}>{pierProtected ? "Remove facade piers" : "Add facade piers"}</button>
+      </section> : null}
       {buildingMode && !advancedOpen && accepted ? <ConstructionBuildingControls graph={draft} fields={fields} windowCount={groupedWindowCount(accepted.construction.graph,accepted.ir)} storefrontCount={groupedStorefrontCount(accepted.construction.graph,accepted.ir)} localWidthCount={constructionOpeningOptions(accepted.construction.graph,accepted.ir).filter(option=>option.overridden).length}
         disabled={disabled || !viewerReady || Boolean(previewNode)} dirty={buildingDirty}
         onStorefrontDivisionChange={(field, value) => {
