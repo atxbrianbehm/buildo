@@ -1,3 +1,4 @@
+import { withConstructionFacadePiers, withoutConstructionFacadePiers } from "../core/constructionFacadePierGraph";
 import { retainConstructionCorniceVocabulary, withConstructionCorniceLayout } from "../core/constructionCorniceVocabulary";
 import { retainConstructionParapetVocabulary, withConstructionParapetSilhouette } from "../core/constructionParapetVocabulary";
 import { retainConstructionRoundHead, withConstructionRoundHead } from "../core/constructionRoundHeadVocabulary";
@@ -77,11 +78,11 @@ function assertTopology(current: BayConstructionGraph, generated: BayConstructio
 export async function resolveWorkbenchGeneration(currentInput: unknown, previousInput: ConstructionGenerationLineage | null,
   controlsInput: ConstructionGenerationControls, reroll = false, referenceInput?: unknown) {
   const inputGraph = structuredClone(BayConstructionGraphSchema.parse(currentInput));
-  if (inputGraph.schemaVersion === "0.15.0") throw new Error("Facade pier graphs are not yet supported in building generation.");
-  const authoredSupports = inputGraph.awningSupports, authoredAwnings = inputGraph.awnings;
-  let current = inputGraph;
+  const authoredPiers = inputGraph.facadePiers;
+  let current = authoredPiers ? withoutConstructionFacadePiers(inputGraph) : inputGraph;
+  const authoredSupports = current.awningSupports, authoredAwnings = current.awnings;
   if (authoredAwnings) {
-    const { awnings: _removed, awningSupports: _supports, ...prior } = inputGraph; void _removed; void _supports;
+    const { awnings: _removed, awningSupports: _supports, ...prior } = current; void _removed; void _supports;
     current = BayConstructionGraphSchema.parse({ ...prior, schemaVersion: "0.12.0" });
   }
   const previous = previousInput ? structuredClone(ConstructionGenerationLineageSchema.parse(previousInput)) : null;
@@ -175,6 +176,12 @@ export async function resolveWorkbenchGeneration(currentInput: unknown, previous
     if (authoredSupports) graph = withConstructionAwningSupports(graph, authoredSupports);
     try { await evaluateConstruction(graph); }
     catch (failure) { throw new Error(`A retained awning does not fit the generated building: ${failure instanceof Error ? failure.message : "invalid construction"}`, { cause: failure }); }
+  }
+  const keepPiers = keepStorefront;
+  if (authoredPiers && keepPiers) {
+    graph = withConstructionFacadePiers(graph, authoredPiers);
+    try { await evaluateConstruction(graph); }
+    catch (failure) { throw new Error(`Retained facade piers do not fit the generated building: ${failure instanceof Error ? failure.message : "invalid construction"}`, { cause: failure }); }
   }
   for (const node of graph.nodes) if (node.type === "SetSurface") {
     const authored = current.nodes.find(item => item.id === node.id);

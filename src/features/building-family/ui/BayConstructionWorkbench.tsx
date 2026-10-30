@@ -860,7 +860,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
 
       {accepted ? <ConstructionSurfacePanel graph={draft} atlas={accepted.packedAtlas} selectedPath={selectedFrame} selectedNode={selected} disabled={pierProtected || disabled || Boolean(previewNode)}
         onChange={(graph, id) => { changeGraph(graph); setSelected(id); }} /> : null}
-      {buildingMode && !familyMemberMode ? <details className="construction-generate"><summary>Generate & vary</summary><ConstructionGenerationPanel controls={generationControls} lineage={generation} reference={referenceDraft} onReferenceFile={file => void importReference(file)} disabled={pierProtected || disabled || dirty || !viewerReady}
+      {buildingMode && !familyMemberMode ? <details className="construction-generate"><summary>Generate & vary</summary><ConstructionGenerationPanel controls={generationControls} lineage={generation} reference={referenceDraft} onReferenceFile={file => void importReference(file)} disabled={disabled || dirty || !viewerReady}
         onChange={setGenerationControls} onGenerate={reroll => void generateBuilding(reroll)} /></details> : null}
       {buildingMode && !familyMemberMode ? <section className="construction-generate" aria-label="Building family preview"><h3>Related buildings</h3>
         <p>Preview six related buildings using this building's material. Choose which architectural details may vary; unchecked groups keep your authored choices. The current choices use a small demo catalog.</p>
