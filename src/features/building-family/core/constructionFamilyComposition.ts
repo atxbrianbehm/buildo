@@ -8,6 +8,7 @@ import { withConstructionWindowLayout } from "./constructionWindowVocabulary";
 import { withConstructionStorefront } from "./constructionStorefrontGraph";
 import { withConstructionCorniceLayout } from "./constructionCorniceVocabulary";
 import { withConstructionParapetSilhouette } from "./constructionParapetVocabulary";
+import { withConstructionGroupedBays } from "./constructionGroupedBayGraph";
 
 // A bounded demo catalog of coordinated choices, not sourced historical styles.
 const catalog = [
@@ -22,9 +23,10 @@ const catalog = [
 /** An explicit opt-in varies only selected groups; a conflict never weakens a lock. */
 export function resolveConstructionFamilyComposition(input: unknown): ConstructionFamilyCompositionPlan {
   const source = ConstructionFamilyCompositionRequestSchema.parse(input);
-  if (source.openingLock && (source.policy.openings || source.policy.frontage))
+  const varyGroups = source.schemaVersion === "0.2.0" && source.policy.groupedBays;
+  if (source.openingLock && (source.policy.openings || source.policy.frontage || varyGroups))
     throw new Error("Unlock openings or keep opening and frontage variation off.");
-  if (!source.policy.openings && !source.policy.frontage && !source.policy.roof)
+  if (!source.policy.openings && !source.policy.frontage && !source.policy.roof && !varyGroups)
     throw new Error("Choose at least one architectural group to vary.");
   const offset = createSeedTree(source.familySeed).int(0, catalog.length - 1, "family/composition/catalog-offset");
   const members = Array.from({ length: 6 }, (_, index) => {
@@ -32,8 +34,12 @@ export function resolveConstructionFamilyComposition(input: unknown): Constructi
     return { ordinal: index + 1, head: source.policy.openings ? c.head : null, sash: source.policy.openings ? c.sash : null,
       frontage: source.policy.frontage ? c.frontage : null, cornice: source.policy.roof ? c.cornice : null, parapet: source.policy.roof ? c.parapet : null };
   });
-  return ConstructionFamilyCompositionPlanSchema.parse({ schemaVersion: "0.1.0", kind: "construction-family-composition-plan",
+  if (source.schemaVersion === "0.1.0") return ConstructionFamilyCompositionPlanSchema.parse({ schemaVersion: "0.1.0", kind: "construction-family-composition-plan",
     catalog: "commercial-demo-compositions-v1", source, members });
+  const groupCatalog = [2, 3, 3, 0, 2, 0] as const;
+  return ConstructionFamilyCompositionPlanSchema.parse({ schemaVersion: "0.2.0", kind: "construction-family-composition-plan",
+    catalog: "commercial-demo-compositions-v2", source, members: members.map((member, index) => ({ ...member,
+      groupedBays: varyGroups ? (member.head === 1 ? 0 : groupCatalog[(index + offset) % catalog.length]) : null })) });
 }
 
 export function readConstructionFamilyCompositionPlan(input: unknown): ConstructionFamilyCompositionPlan {
@@ -53,5 +59,24 @@ export function applyConstructionFamilyComposition(graphInput: unknown, planInpu
   if (choice.frontage !== null) graph = withConstructionStorefront(graph, choice.frontage);
   if (choice.cornice !== null) graph = withConstructionCorniceLayout(graph, choice.cornice);
   if (choice.parapet !== null) graph = withConstructionParapetSilhouette(graph, choice.parapet);
+  if (plan.schemaVersion === "0.2.0") {
+    const count = plan.members[ordinal - 1].groupedBays;
+    if (count === 2 || count === 3) {
+      const opening = graph.nodes.find(node => node.type === "PlaceOpening"), footprint = graph.nodes.find(node => node.type === "Footprint"),
+        storeys = graph.nodes.find(node => node.type === "Storeys"), bays = graph.nodes.find(node => node.type === "SplitBays"),
+        window = graph.nodes.find(node => node.type === "AssembleWindow"), edits = graph.nodes.find(node => node.type === "EditOpeningWidth");
+      if (!opening || opening.bypassed || opening.parameters.upperFrontRoundHead || !footprint || !storeys || storeys.parameters.count < 2 || !bays || !window || window.bypassed)
+        throw new Error("Grouped family variation requires flat upper-front openings and an active building window assembly.");
+      const existing = graph.upperBayGroups ?? [];
+      const bayIndex = Array.from({ length: bays.parameters.count }, (_, index) => index).find(index =>
+        !existing.some(group => group.storeysNodeId === storeys.id && group.floorIndex === 1 && group.bayIndex === index) &&
+        !(edits && !edits.bypassed && edits.overrides.some(({ target }) => target.storeysNodeId === storeys.id && target.face === "front" && target.floorIndex === 1 && target.bayIndex === index)));
+      if (bayIndex === undefined) throw new Error("Grouped family variation needs an upper-front bay without an authored group or local width edit.");
+      const pierWidthM = 0.24, available = footprint.parameters.widthM / bays.parameters.count;
+      const memberWidthM = Math.floor(Math.min(0.6, (available - 0.26 - (count - 1) * pierWidthM) / count) * 100) / 100;
+      if (memberWidthM <= window.parameters.frameWidthM * 4) throw new Error("The generated bay is too narrow for grouped windows and their frames.");
+      graph = withConstructionGroupedBays(graph, [...existing, { storeysNodeId: storeys.id, floorIndex: 1, bayIndex, memberCount: count, memberWidthM, pierWidthM }]);
+    }
+  }
   return BayConstructionGraphSchema.parse(graph);
 }

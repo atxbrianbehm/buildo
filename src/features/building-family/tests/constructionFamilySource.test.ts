@@ -95,6 +95,16 @@ describe("persistent construction family source", () => {
       const reopened = await readConstructionFamilySource(JSON.parse(JSON.stringify(composedSource)));
       expect(reopened.schemaVersion).toBe("0.3.0");
       if (reopened.schemaVersion === "0.3.0") expect(reopened.initialComposition).toEqual(composition);
+      const groupComposition = resolveConstructionFamilyComposition({ schemaVersion: "0.2.0", kind: "construction-family-composition-request", familySeed: "seed",
+        policy: { openings: false, frontage: false, roof: false, groupedBays: true }, openingLock: false });
+      if (groupComposition.schemaVersion !== "0.2.0") throw new Error("Expected grouped composition");
+      const varied = await resolveConstructionFamily(plan, lineage, defaultConstructionGenerationControls, undefined, groupComposition);
+      const groupSource = await createConstructionFamilySource({ ...input, familySeed: "seed", schemaVersion: "0.4.0", initialComposition: groupComposition,
+        members: varied.members.map(member => ({ documentId: member.documentId, graph: member.construction.graph, generation: member.lineage })) });
+      const groupedReopen = await readConstructionFamilySource(JSON.parse(JSON.stringify(groupSource)));
+      expect(groupedReopen).toEqual(groupSource); expect(groupedReopen.materialSource).toEqual(saved.materialSource);
+      expect(new Set(varied.members.map(member => member.construction.graph.upperBayGroups?.[0]?.memberCount ?? 0))).toEqual(new Set([0, 2, 3]));
+      await expect(createConstructionFamilySource({ ...groupSource, schemaVersion: "0.3.0" })).rejects.toThrow();
       const changed = structuredClone(composition); changed.members[0].head = changed.members[0].head === 0 ? 1 : 0;
       await expect(createConstructionFamilySource({ ...input, familySeed: "seed", schemaVersion: "0.3.0", initialComposition: changed,
         members: composedSource.members })).rejects.toThrow(/do not match/);

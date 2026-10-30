@@ -6,6 +6,9 @@ import { withConstructionCorniceLayout } from "../core/constructionCorniceVocabu
 import { withConstructionWindowLayout } from "../core/constructionWindowVocabulary";
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { withConstructionOpeningWidth } from "../core/constructionOpeningEditGraph";
+import { withConstructionGroupedBays } from "../core/constructionGroupedBayGraph";
+import { captureConstructionGenerationSource } from "../core/constructionGenerationSource";
+import { resolveConstructionGeneration } from "../core/constructionGenerationResolver";
 import { emptyConstructionComposition, setConstructionSurface } from "../core/constructionSurfaceAuthoring";
 import { defaultConstructionGenerationControls, resolveWorkbenchGeneration, type ConstructionGenerationLineage } from "../state/constructionGenerationState";
 import { resolveConstructionFamily } from "../state/constructionFamilyGeneration";
@@ -27,6 +30,25 @@ async function fixture() {
 }
 
 describe("authored construction family generation", () => {
+  it("keeps authored groups while varying an available bay and rejects pinned opening locks", async () => {
+    const { lineage, graph } = await fixture();
+    const authored = withConstructionGroupedBays(graph, [{ storeysNodeId: "facade", floorIndex: 1, bayIndex: 0, memberCount: 2, memberWidthM: 0.5, pierWidthM: 0.24 }]);
+    const plan = resolveConstructionFamilyPlan({ schemaVersion: "0.1.0", kind: "construction-family-request", familyId: "grouped_family", familySeed: "family-one", graph: authored });
+    const composition = resolveConstructionFamilyComposition({ schemaVersion: "0.2.0", kind: "construction-family-composition-request", familySeed: "family-one",
+      policy: { openings: false, frontage: false, roof: false, groupedBays: true }, openingLock: false });
+    const family = await resolveConstructionFamily(plan, lineage, defaultConstructionGenerationControls, undefined, composition);
+    expect(family.members.every(member => member.construction.graph.upperBayGroups?.[0].bayIndex === 0)).toBe(true);
+    expect(family.members.some(member => member.construction.graph.upperBayGroups?.[1]?.bayIndex === 1)).toBe(true);
+    const old = lineage.source, pinned = await captureConstructionGenerationSource({ schemaVersion: "0.1.0", kind: "construction-generation-input",
+      documentId: old.documentId, intent: { ...old.intent, locks: [{ semanticPath: "construction/opening/widthM", scope: "building", lockedValue: 1.22, reason: "Imported pin" }] },
+      recipe: old.recipe, reference: old.reference, intentionalExceptions: old.intentionalExceptions });
+    const pinnedLineage = { ...lineage, source: pinned, resolution: await resolveConstructionGeneration(pinned),
+      materialPlan: await planConstructionReferenceMaterials(lineage.materialPlan.templateSpec, pinned, lineage.materialPlan.options) };
+    await expect(resolveConstructionFamily(plan, pinnedLineage, defaultConstructionGenerationControls, undefined, composition)).rejects.toThrow(/pinned lock/);
+    const coordinated = resolveConstructionFamilyComposition({ schemaVersion: "0.2.0", kind: "construction-family-composition-request", familySeed: "family-one",
+      policy: { openings: true, frontage: false, roof: false, groupedBays: true }, openingLock: false });
+    await expect(resolveConstructionFamily(plan, lineage, defaultConstructionGenerationControls, undefined, coordinated)).rejects.toThrow(/cannot currently coexist/);
+  }, 90000);
   it("generates recorded architectural compositions without replacing material lineage", async () => {
     const { lineage, plan } = await fixture();
     const composition = resolveConstructionFamilyComposition({ schemaVersion: "0.1.0", kind: "construction-family-composition-request", familySeed: plan.source.familySeed,
