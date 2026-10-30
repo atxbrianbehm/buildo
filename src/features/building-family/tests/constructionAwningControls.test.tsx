@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { createBuildingConstructionGraph } from "../contracts/bayConstructionGraph";
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
+import { withConstructionAwningSupports } from "../core/constructionAwningSupportGraph";
 import { withConstructionAwnings } from "../core/constructionAwningGraph";
 import { createConstructionAwningFabric } from "../materials/constructionAwningFabric";
 import { ConstructionAwningControls } from "../ui/ConstructionAwningControls";
@@ -39,4 +40,15 @@ it("edits the shared fabric explicitly and disables it for a family member", asy
   expect(change).toHaveBeenCalledWith("solid", [153, 68, 34], [69, 99, 78]);
   rerender(<ConstructionAwningControls graph={graph} disabled={false} onChange={() => {}} fabric={fabric} fabricDisabled onFabricChange={change} />);
   expect(screen.getByRole("button", { name: "Apply awning fabric" })).toBeDisabled();
+});
+
+
+it("offers support rods only for the selected awning and guards family members", () => {
+  const graph = withConstructionAwnings(withConstructionStorefront(createBuildingConstructionGraph(), 1), [{ bayIndex: 0, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }]);
+  const change = vi.fn();
+  const { rerender } = render(<ConstructionAwningControls graph={graph} disabled={false} onChange={() => {}} onSupportChange={change} />);
+  fireEvent.click(screen.getByRole("button", { name: "Add support rods" })); expect(change).toHaveBeenCalledWith(0, true);
+  const supported = withConstructionAwningSupports(graph, [{ bayIndex: 0, anchorRiseM: 0.15, thicknessM: 0.03 }]);
+  rerender(<ConstructionAwningControls graph={supported} disabled={false} onChange={() => {}} onSupportChange={change} supportDisabled />);
+  expect(screen.getByRole("button", { name: "Remove support rods" })).toBeDisabled();
 });
