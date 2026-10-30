@@ -4,9 +4,10 @@ import {
 } from "three";
 import { AtlasChannelSchema } from "../contracts/atlasManifest";
 import { findBuildingDocumentJsonIssue } from "../contracts/buildingDocument";
-import { BuildingSurfaceCompositionSchema, type BuildingSurfaceTileArtifact } from "../contracts/surfaceComposition";
+import { BuildingSurfaceCompositionSchema, SURFACE_TILE_ALGORITHM_V1, SURFACE_TILE_ALGORITHM_CONSTANT_BASE_V2, type BuildingSurfaceTileArtifact } from "../contracts/surfaceComposition";
 import type { RuntimeBuildingIR } from "../contracts/runtimeBuildingIR";
 import { canonicalJson } from "../core/canonicalJson";
+import { hashCanonicalJson } from "../core/contentHash";
 import type { PackedAtlas, PackedAtlasChannels } from "../materials/atlasPacker";
 import { composeBuildingSurfaceTile } from "../materials/composeSurfaceTile";
 import { resolveBuildingSurfaceBindings } from "../materials/resolveSurfaceBindings";
@@ -134,7 +135,25 @@ function materialSettings(slotId: string, constantBase = false) {
     alphaTest: slotId.includes("ornament") ? 0.2 : 0
   };
 }
-function literalBase(tile: BuildingSurfaceTileArtifact, atlas: PackedAtlas, appearance?: ConstantSurfaceBaseAppearance): boolean {
+type RuntimeTile = Pick<BuildingSurfaceTileArtifact, "schemaVersion" | "baseSlotId" | "widthPx" | "heightPx" | "physicalSizeM" | "channels" | "channelHashes" | "pixelContentHash"> & {
+  baseAppearanceRef?: { schemaVersion: "0.1.0"; contentHash: string; slotId: string };
+};
+function runtimeTile(tile: BuildingSurfaceTileArtifact): RuntimeTile {
+  return { schemaVersion: tile.schemaVersion, baseSlotId: tile.baseSlotId, widthPx: tile.widthPx, heightPx: tile.heightPx,
+    physicalSizeM: tile.physicalSizeM, channels: tile.channels, channelHashes: tile.channelHashes, pixelContentHash: tile.pixelContentHash,
+    ...(tile.schemaVersion === "0.2.0" ? { baseAppearanceRef: tile.baseAppearanceRef } : {}) };
+}
+type PixelCacheState = { entries: Map<string, RuntimeTile | null>; bytes: number };
+export type FamilySurfacePixelCache = object;
+const familyPixelCaches = new WeakMap<FamilySurfacePixelCache, PixelCacheState>();
+/** A private, bounded cache for one family preparation; it contains no semantic artifacts. */
+export function createFamilySurfacePixelCache(): FamilySurfacePixelCache {
+  const token = Object.freeze({}); familyPixelCaches.set(token, { entries: new Map(), bytes: 0 }); return token;
+}
+export function disposeFamilySurfacePixelCache(token: FamilySurfacePixelCache): void {
+  familyPixelCaches.get(token)?.entries.clear(); familyPixelCaches.delete(token);
+}
+function literalBase(tile: RuntimeTile, atlas: PackedAtlas, appearance?: ConstantSurfaceBaseAppearance): boolean {
   const rect = atlas.manifest.slots.find(slot => slot.id === tile.baseSlotId)!.rectPx;
   const palette = appearance ? surfaceBaseRgba(appearance) : undefined;
   return names.every(name => {
@@ -149,7 +168,9 @@ function literalBase(tile: BuildingSurfaceTileArtifact, atlas: PackedAtlas, appe
  * Prepare verified surface pixels before a synchronous scene swap. This object owns
  * only composite materials/textures; family atlas resources are borrowed through leases.
  */
-export async function prepareBuildingSurfaceRuntime(input: unknown): Promise<BuildingSurfaceRuntime> {
+export async function prepareBuildingSurfaceRuntime(input: unknown, familyCache?: FamilySurfacePixelCache): Promise<BuildingSurfaceRuntime> {
+  const shared = familyCache === undefined ? undefined : familyPixelCaches.get(familyCache);
+  if (familyCache !== undefined && !shared) fail("surfaceRuntime.invalidInput", "Family surface cache is unavailable.");
   const keys = Object.keys(record(input)).sort().join(",");
   if (keys !== "atlas,composition,ir" && keys !== "atlas,baseAppearances,composition,ir")
     fail("surfaceRuntime.invalidInput", "Expected composition, IR, atlas and optional base appearances.");
@@ -175,19 +196,30 @@ export async function prepareBuildingSurfaceRuntime(input: unknown): Promise<Bui
   }
   const bindings = await pendingBindings;
   if (!bindings.bindings.length) fail("surfaceRuntime.invalidInput", "No semantic bindings exist.");
-  const recipes = new Map<string, BuildingSurfaceTileArtifact | null>();
-  const tilesByAddress = new Map<string, BuildingSurfaceTileArtifact>();
+  const manifestHash = shared ? await hashCanonicalJson(atlas.manifest) : "";
+  const recipes = new Map<string, RuntimeTile | null>();
+  const tilesByAddress = new Map<string, RuntimeTile>();
   let verified = false, evaluatedRecipes = 0;
   for (const binding of bindings.bindings) {
     if (!binding.layers.length) continue;
     const baseAppearance = bases.get(binding.baseSlot.slotId);
-    const key = canonicalJson({ baseSlot: binding.baseSlot, layers: binding.layers,
+    const key = canonicalJson({ ...(shared ? { manifestHash, algorithm: baseAppearance ? SURFACE_TILE_ALGORITHM_CONSTANT_BASE_V2 : SURFACE_TILE_ALGORITHM_V1 } : {}), baseSlot: binding.baseSlot, layers: binding.layers,
       ...(baseAppearance ? { baseAppearanceHash: baseAppearance.contentHash } : {}) });
     if (!recipes.has(key)) {
-      const tile = await composeBuildingSurfaceTile({ artifact: bindings, relativePath: binding.relativePath, atlas,
-        ...(baseAppearance ? { baseAppearance } : {}) });
-      verified = true; evaluatedRecipes++;
-      recipes.set(key, literalBase(tile, atlas, baseAppearance) ? null : tile);
+      // Always execute one full compositor admission per member. It rechecks the
+      // owned atlas bytes and this member's binding artifact before any cache hit.
+      if (verified && shared?.entries.has(key)) recipes.set(key, shared.entries.get(key)!);
+      else {
+        const artifact = await composeBuildingSurfaceTile({ artifact: bindings, relativePath: binding.relativePath, atlas,
+          ...(baseAppearance ? { baseAppearance } : {}) });
+        verified = true; evaluatedRecipes++;
+        const tile = runtimeTile(artifact), result = literalBase(tile, atlas, baseAppearance) ? null : tile;
+        recipes.set(key, result);
+        if (shared && !shared.entries.has(key) && shared.entries.size < 128) {
+          const bytes = result ? names.reduce((total, name) => total + result.channels[name].data.byteLength, 0) : 0;
+          if (shared.bytes + bytes <= 32 * 1024 * 1024) { shared.entries.set(key, result); shared.bytes += bytes; }
+        }
+      }
     }
     const tile = recipes.get(key);
     if (tile) tilesByAddress.set(address(binding.batchId, binding.kind === "instance" ? binding.elementIndex! : undefined), tile);

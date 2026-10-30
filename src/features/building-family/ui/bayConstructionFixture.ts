@@ -12,7 +12,7 @@ import { ProceduralMaterialProvider, type MaterialGenerationProvider } from "../
 import { captureBuildingSourceSnapshot, createBuildingSourceFile, type BuildingSourceFile } from "../state/buildingSourceFile";
 import type { AssemblyHallFixture } from "./assemblyHallFixture";
 import { createConstructionSurfaceBases } from "../materials/surfaceBaseAppearance";
-import { prepareBuildingSurfaceRuntime, type BuildingSurfaceRuntime } from "../renderer-three/surfaceMaterialRuntime";
+import { createFamilySurfacePixelCache, disposeFamilySurfacePixelCache, prepareBuildingSurfaceRuntime, type BuildingSurfaceRuntime, type FamilySurfacePixelCache } from "../renderer-three/surfaceMaterialRuntime";
 
 import { generateConstructionReferenceAtlas } from "../materials/constructionReferenceMaterials";
 
@@ -36,7 +36,7 @@ function configureConstructionSurface(surface: BuildingSurfaceRuntime) {
 
 /** Preparation owns resources until the caller can atomically publish the new view. */
 export async function prepareBayConstructionFixture(base: AssemblyHallFixture, result: BayConstructionResult,
-  materials: BayConstructionMaterials, signal?: AbortSignal): Promise<BayConstructionFixture> {
+  materials: BayConstructionMaterials, signal?: AbortSignal, familyCache?: FamilySurfacePixelCache): Promise<BayConstructionFixture> {
   const fixture = createBayConstructionFixture(base, result, materials);
   let surface: BuildingSurfaceRuntime | undefined;
   const check = () => { if (signal?.aborted) throw new DOMException("Construction was cancelled.", "AbortError"); };
@@ -44,7 +44,7 @@ export async function prepareBayConstructionFixture(base: AssemblyHallFixture, r
     check();
     if (result.surfaceComposition) {
       const baseAppearances = await createConstructionSurfaceBases(); check();
-      surface = await prepareBuildingSurfaceRuntime({ composition: result.surfaceComposition, ir: result.ir, atlas: materials.packedAtlas, baseAppearances }); check();
+      surface = await prepareBuildingSurfaceRuntime({ composition: result.surfaceComposition, ir: result.ir, atlas: materials.packedAtlas, baseAppearances }, familyCache); check();
       if (constructionUsesOperator(result.graph, "Footprint", result.previewNodeId ?? result.graph.outputNodeId)) configureConstructionSurface(surface);
       const baseTextureCount = fixture.familyRuntime.metrics.textureCount;
       fixture.buildingRuntime = fixture.familyRuntime.createOrReplaceBuilding({ ir: result.ir, catalog: fixture.catalog,
@@ -65,9 +65,11 @@ export async function prepareConstructionFamilyFixture(base: AssemblyHallFixture
   materials: BayConstructionMaterials, signal?: AbortSignal): Promise<BayConstructionFixture> {
   if (results.length !== 6) throw new Error("A family preview requires six buildings.");
   const check = () => { if (signal?.aborted) throw new DOMException("Family preview was cancelled.", "AbortError"); };
-  const fixture = await prepareBayConstructionFixture(base, results[0], materials, signal);
+  const cache = createFamilySurfacePixelCache();
+  let fixture: BayConstructionFixture | undefined;
   const surfaces: BuildingSurfaceRuntime[] = [];
   try {
+    fixture = await prepareBayConstructionFixture(base, results[0], materials, signal, cache);
     const extraTextureCount = fixture.familyRuntime.metrics.textureCount - Object.keys(fixture.familyRuntime.textureSet.textures).length
       - (fixture.buildingRuntime.surfaceRuntime?.listTextures().length ?? 0);
     const widths = results.map(result => result.ir.bounds.max[0] - result.ir.bounds.min[0]);
@@ -78,7 +80,7 @@ export async function prepareConstructionFamilyFixture(base: AssemblyHallFixture
       check();
       let surface: BuildingSurfaceRuntime | undefined;
       if (result.surfaceComposition) {
-        surface = await prepareBuildingSurfaceRuntime({ composition: result.surfaceComposition, ir: result.ir, atlas: materials.packedAtlas, baseAppearances: bases });
+        surface = await prepareBuildingSurfaceRuntime({ composition: result.surfaceComposition, ir: result.ir, atlas: materials.packedAtlas, baseAppearances: bases }, cache);
         surfaces.push(surface); check(); configureConstructionSurface(surface);
       }
       const runtime = fixture.familyRuntime.createOrReplaceBuilding({ ir: result.ir, catalog: fixture.catalog,
@@ -91,7 +93,8 @@ export async function prepareConstructionFamilyFixture(base: AssemblyHallFixture
     fixture.familyRuntime.dispose = () => { try { return originalDispose(); } finally { for (const surface of surfaces) surface.dispose(); } };
     fixture.metrics = { ...fixture.metrics, ...fixture.familyRuntime.metrics };
     return fixture;
-  } catch (error) { try { fixture.familyRuntime.dispose(); } finally { for (const surface of surfaces) surface.dispose(); } throw error; }
+  } catch (error) { try { fixture?.familyRuntime.dispose(); } finally { for (const surface of surfaces) surface.dispose(); } throw error; }
+  finally { disposeFamilySurfacePixelCache(cache); }
 }
 
 /** New-project initialization only. Graph edits reuse the resulting immutable artifacts. */

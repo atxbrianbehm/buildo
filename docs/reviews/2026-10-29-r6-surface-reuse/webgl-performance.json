@@ -1,0 +1,30 @@
+{
+  "api": "webgl",
+  "loadMs": 4425,
+  "samples": [
+    {
+      "openMemberMs": 731,
+      "editMs": 583,
+      "returnMs": 1259,
+      "saveMs": 977
+    },
+    {
+      "openMemberMs": 551,
+      "editMs": 552,
+      "returnMs": 1269,
+      "saveMs": 931
+    },
+    {
+      "openMemberMs": 662,
+      "editMs": 748,
+      "returnMs": 1791,
+      "saveMs": 1480
+    }
+  ],
+  "system": {
+    "hardwareConcurrency": 64,
+    "deviceMemory": 32,
+    "adapter": null
+  },
+  "errors": []
+}

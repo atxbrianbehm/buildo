@@ -1,0 +1,18 @@
+{
+  "api": "webgpu",
+  "mode": "opened",
+  "original": "11.2",
+  "next": "11.6",
+  "localWidth": "1.5",
+  "target": "building/preview_family_v02/node/window/facade/floor/1/bay/0/frame",
+  "beforeHash": "61400c895a4e58800dbc9f43a36b8025963ba640ec07b19a7f26e94f549ddcd2",
+  "afterHash": "5ba6f7f04723f0b32e9b987c38153e9e903b3dba034d36dc14ea95ff52352122",
+  "materialHash": "3feae06c59d16ea57029d815b13900184c8cb94b29369c58fe806168e3ee2d9c",
+  "siblingsUnchanged": true,
+  "originUnchanged": true,
+  "undoRedo": true,
+  "reopenedMember": true,
+  "providerCallsBefore": 24,
+  "providerCallsAfter": 24,
+  "errors": []
+}
