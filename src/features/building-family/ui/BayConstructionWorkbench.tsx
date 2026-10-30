@@ -180,6 +180,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     historyAction: "edit" | "open" | "undo" | "redo" = "edit", lineage?: ConstructionGenerationLineage | null) => {
     const isCurrent = () => alive.current && sequence.current === token && !signal.aborted;
     if (!isCurrent()) return;
+    if (graph.schemaVersion === "0.16.0") throw new Error("Sign-bearing buildings are not yet supported in the construction workspace.");
     const previous = current.current;
     const nextGeneration = lineage === undefined ? previous?.generation ?? null : lineage;
     if (previous && shown.current === previous.fixture && JSON.stringify(previous.fixture.construction.graph) === JSON.stringify(graph) &&
