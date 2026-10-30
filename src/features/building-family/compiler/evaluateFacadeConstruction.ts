@@ -1,3 +1,6 @@
+import { resolveConstructionFacadePiers } from "../core/constructionFacadePier";
+import { buildConstructionFacadePierGeometry } from "./constructionFacadePierGeometry";
+import { ConstructionFacadePierStudyRequestSchema, type ConstructionFacadePierStudyRequest } from "../contracts/constructionFacadePierStudy";
 import { resolveConstructionAwningSupports } from "../core/constructionAwningSupports";
 import { buildConstructionAwningSupportGeometry } from "./constructionAwningSupportGeometry";
 import { resolveConstructionStorefront } from "../core/constructionStorefront";
@@ -59,8 +62,16 @@ function front(primitive: PrimitiveGeometry): PrimitiveGeometry {
 
 /** Scope collections feed the same wall subtractor and accepted C1 window geometry. */
 export async function evaluateFacadeConstruction(input: unknown, materials: BayConstructionMaterials = DEFAULT_BAY_MATERIALS,
-  previewNodeId?: string, groupedInput: readonly unknown[] = []): Promise<BayConstructionResult> {
+  previewNodeId?: string, groupedInput: readonly unknown[] = [], pierStudyInput?: ConstructionFacadePierStudyRequest): Promise<BayConstructionResult> {
   const graph = structuredClone(BayConstructionGraphSchema.parse(input));
+  const pierStudy = pierStudyInput === undefined ? undefined : ConstructionFacadePierStudyRequestSchema.parse(pierStudyInput);
+  if (pierStudy && (previewNodeId || groupedInput.length || canonicalJson(pierStudy.graph) !== canonicalJson(graph)))
+    throw new Error("Facade pier study requires its complete matching graph and no experimental grouping request.");
+  if (pierStudy && (graph.nodes.filter(node => node.type === "EmitWall" && !node.bypassed).length !== 1 || graph.nodes.filter(node => node.type === "SplitBays" && !node.bypassed).length !== 1 ||
+      graph.nodes.filter(node => node.type === "Storeys").length !== 1 || graph.nodes.filter(node => node.type === "ProfileTrim" && !node.bypassed).length > 1 ||
+      graph.nodes.filter(node => node.type === "BuildingRoof" && !node.bypassed).length > 1))
+    throw new Error("Facade pier study requires one active wall, storey system and bay split, and at most one band and roof.");
+  let pierCount = 0;
   const grouped = groupedInput.map(readConstructionGroupedBay);
   if (grouped.length && graph.upperBayGroups?.length) throw new Error("Use the graph grouping or an explicit experimental request, not both.");
   const groupedByScope = new Map(grouped.map(plan => [plan.source.scope.id, plan]));
@@ -342,10 +353,38 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
         const cells = await scopes(node.input.nodeId);
         if (["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0", "0.14.0"].includes(graph.schemaVersion) && cells.every(cell=>cell.building)) {
           const faces = new Map<string,Cell[]>(); for(const cell of cells) faces.set(cell.root,[...(faces.get(cell.root)??[]),cell]);
-          value = { kind: "geometry", parts: node.bypassed ? [] : [...faces.values()].map(group=>{
+          const parts = node.bypassed ? [] : [...faces.values()].map(group=>{
             const cell={...group[0],key:group[0].root},part=makeMesh(node,cell,"wall",[constructionFacadeSolid(group.map(cell=>cell.scope),group.filter(cell=>cell.scope.opening?.roundHead).map(roundPlan))],"facade",materials.wall);
             part.wallCells=group;return part;
-          }) };
+          });
+          if (pierStudy && !node.bypassed) {
+            const frontCells = cells.filter(cell => cell.face === "front" && cell.scope.floorIndex > 0), building = frontCells[0]?.building;
+            const split = graph.nodes.find(item => item.type === "SplitBays" && !item.bypassed);
+            if (!building || split?.type !== "SplitBays" || frontCells.some(cell => !cell.scope.opening || canonicalJson(cell.building) !== canonicalJson(building)))
+              throw new Error("Facade pier study requires upper-front opening scopes on one building.");
+            const floorIndices = [...new Set(frontCells.map(cell => cell.scope.floorIndex))].sort((a, b) => a - b);
+            if (floorIndices.length !== building.floorTopsM.length - 1 || floorIndices.some((floor, index) => floor !== index + 1) ||
+                floorIndices.some(floor => new Set(frontCells.filter(cell => cell.scope.floorIndex === floor).map(cell => cell.scope.bayIndex)).size !== split.parameters.count))
+              throw new Error("Facade pier study requires all upper-front floors and bays in the wall output.");
+            const band = graph.nodes.find(item => item.type === "ProfileTrim" && !item.bypassed);
+            const roof = graph.nodes.find(item => item.type === "BuildingRoof" && !item.bypassed);
+            const floors = floorIndices.map(floorIndex => {
+              const floorCells = frontCells.filter(cell => cell.scope.floorIndex === floorIndex), scope = floorCells[0].scope;
+              const topReserve = floorIndex === building.floorTopsM.length - 1 ? (roof?.type === "BuildingRoof" ? roof.parameters.corniceHeightM : 0) : (band?.type === "ProfileTrim" ? band.parameters.heightM : 0);
+              return { floorIndex, bottomM: scope.originM[1] + pierStudy.clearanceM,
+                topM: scope.originM[1] + scope.sizeM[1] - topReserve - pierStudy.clearanceM,
+                openingSpans: floorCells.map(cell => [cell.scope.opening!.centerAlongM - cell.scope.opening!.widthM / 2 - 0.1,
+                  cell.scope.opening!.centerAlongM + cell.scope.opening!.widthM / 2 + 0.1] as [number, number]) };
+            });
+            const plan = resolveConstructionFacadePiers({ schemaVersion: "0.1.0", kind: "construction-facade-pier-request", facadeWidthM: building.widthM,
+              bayCount: split.parameters.count, floors, pierWidthM: pierStudy.pierWidthM, projectionM: pierStudy.projectionM, endHeightM: pierStudy.endHeightM, clearanceM: pierStudy.clearanceM });
+            for (const pier of buildConstructionFacadePierGeometry(plan)) {
+              const base = frontCells.find(cell => cell.scope.floorIndex === pier.floorIndex)!;
+              const cell = { ...base, key: `${base.root}/floor/${pier.floorIndex}/bay-edge/${pier.edgeIndex}` };
+              parts.push(makeMesh(node, cell, "facade-pier", pier.parts, "trim", materials.trim)); pierCount++;
+            }
+          }
+          value = { kind: "geometry", parts };
         } else value = { kind: "geometry", parts: node.bypassed ? [] : cells.map(cell => makeMesh(node, cell, "wall", expandBayWallPrimitives(cell.scope), "facade", materials.wall)) }; break;
       }
       case "AssembleWindow": {
@@ -472,6 +511,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
   }
   const full = await evaluate(graph.outputNodeId);
   if (full.kind !== "geometry" || !full.parts.length) throw new Error("Construction output is empty.");
+  if (pierStudy && (!pierCount || full.parts.filter(part => part.role === "facade-pier").length !== pierCount)) throw new Error("Facade piers must reach the complete building output.");
   if (usedGroups.size !== grouped.length) throw new Error("A grouped bay is missing from the executed opening scopes.");
   for (const node of graph.nodes) if (node.type === "EditOpeningWidth" && !node.bypassed) for (const { target } of node.overrides) {
     const path = `building/${graph.documentId}/node/${target.windowNodeId}/${target.storeysNodeId}/floor/${target.floorIndex}/bay/${target.bayIndex}/frame`;
@@ -535,7 +575,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
     materialSlotId: group[0].prototype!.materialSlotId!, count: group.length,
     transforms: new Float32Array(group.flatMap(part => poseMatrix(part.translation!,part.pose))) }));
   const ir = RuntimeBuildingIRSchema.parse({ schemaVersion: "0.1.0", buildingId: graph.documentId, familyId: graph.documentId,
-    sourceGraphHash: await hashCanonicalJson(groupedInput.length ? { schemaVersion: "0.1.0", kind: "construction-grouped-geometry-request", graph, groups: grouped } : graph), bounds: union(parts.map(p => p.bounds)), meshBatches, instanceBatches, semanticIndex,
+    sourceGraphHash: await hashCanonicalJson(pierStudy ?? (groupedInput.length ? { schemaVersion: "0.1.0", kind: "construction-grouped-geometry-request", graph, groups: grouped } : graph)), bounds: union(parts.map(p => p.bounds)), meshBatches, instanceBatches, semanticIndex,
     metrics: { vertexCount: [...meshBatches, ...prototypes.values()].reduce((sum, batch) => sum + batch.positions!.length / 3, 0),
       triangleCount: parts.reduce((sum, part) => sum + (part.mesh ?? part.prototype)!.indices!.length / 3, 0),
       instanceCount: instanceBatches.reduce((sum, batch) => sum + batch.count, 0) } });
