@@ -1,0 +1,9 @@
+# AL.P4.1: explicit structural evidence intake
+
+This packet adds an owned, versioned intake for the audited metagrinder `source-lifecycle` shape and a separate, attributed mapping to the supported upper-front flat or round opening head. Source, claim, evidence, citation review, provenance and unknown upstream JSON fields are retained. Empty mappings yield unknown coverage; claim text is never used to infer a choice. An admitted mapping needs a passing upstream rights gate, no integrity flags, an approved individual-human citation review, non-retracted referenced sources and verified source-based evidence with a locator or span. Conflicting mappings fail instead of choosing a winner.
+
+The adapter validates and preserves the literal record, calculates a content hash, and recomputes the result on replay. The hash detects changes against that snapshot; it is not a signature and cannot authenticate a source or reviewer. The mapping is a declared human judgment: this code cannot prove that a claim actually describes the selected building or that a reviewer exists. It does not inspect original source text, establish byte-span validity against a source package, promote UTDG candidates, or apply evidence to generation. These remain integration work.
+
+Tests use deliberately labelled synthetic data and exercise chain failures, unknowns, ownership and replay. No real architectural evidence or historical coverage is claimed. Upstream provenance and source-contract audit: [AL.P4.0](../2026-10-30-al-p4-0-metagrinder-source-audit/README.md). No UI, geometry or material behavior changes in this packet.
+
+Verification: all 2,005 tests across 143 files passed, including 17 focused tests. Typecheck, lint, production build and browser E2E smoke also passed. The production build retains the existing large-chunk warning.
