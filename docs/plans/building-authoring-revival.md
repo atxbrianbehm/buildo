@@ -1403,6 +1403,17 @@ The next bounded building-vocabulary sequence adds a raised-center front parapet
 | **C10.P2 — engineering complete** | [PR25](https://github.com/atxbrianbehm/buildo/pull/25). Grouped authoring and versioned source/continuation for the new silhouette. | All five checks: 1,948 tests/135 files and eight E2E workflows. Both backends verify native textured/clay, map-disabled, height/side/rear, history, invalid-draft, room and cold recovery with unchanged materials and zero cold generation. [Evidence](../reviews/2026-10-29-c10-p2-parapet-authoring/README.md); [phone publication](../reviews/2026-10-29-c10-p2-publication/README.md), 164 images total. Existing ground-shadow gaps remain unattributed. |
 | **C10 visual review — accepted** | User chose “Accept parapet baseline” for the flat and raised-center treatments. | [October 29 decision](../reviews/2026-10-29-c10-accepted/README.md); ground-shadow quality, historical UTDG, artist studies and family/block performance remain separate. |
 
+### R6 — related buildings from the authored construction
+
+The accepted building now has window, storefront, cornice and parapet vocabulary. Its current construction fixture still has zero family variants; use the active authored graph and pinned material lineage to create six related buildings rather than reusing the older stress-view result. [Sequential family plan](authored-building-family.md).
+
+| Packet | Bounded result | Required verification |
+| --- | --- | --- |
+| **R6.P0 — complete** | Strict six-member source plan and owned rebasing of graph document identity and local targets. | Five focused tests/two files, typecheck and lint pass; six unique admitted graphs and semantic paths, target/surface rebasing, deterministic readback and tamper rejection. [Evidence](../reviews/2026-10-29-r6-p0-family-plan/README.md). |
+| **R6.P1 — ready** | Generate and compile six related member graphs using the existing resolver and shared pinned material lineage. | Stable semantic identity, lock/exception retention, material reuse, deterministic replay and meaningful variation or a clear failure. |
+| **R6.P2 — queued** | Actual six-building preview on the construction path with shared resources and source continuation. | All five checks, native renders, ownership/cancellation, material identity and representative-machine evidence. |
+| **R6 visual review — queued** | Review the related family before block work. | User decision and visual checklist; historical UTDG and performance remain separate. |
+
 Do not remove advanced graph access or implement a fake targeted editor. [Selected-opening packet plan](selected-opening-authoring.md) defines the admitted task and sequential milestones after both October26 decisions. Continue P1 after P0 and P2 after P1 without another intermediate human gate. Human task review and artist evidence precede broad UI migration; historical UTDG coverage and release readiness remain unproven.
 
 ### C6 — architectural variety, then deeper assemblies and materials
