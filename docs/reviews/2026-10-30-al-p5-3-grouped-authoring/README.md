@@ -6,4 +6,4 @@ Both [WebGPU](webgpu-reviewed/receipt.json) and [WebGL](webgl-reviewed/receipt.j
 
 The separate openings and masonry read in the close views, although the small trim gaps are subtle and a fine reddish sill line remains visible. These static captures do not establish a fix for the prior sill line, all texture interactions, historical correctness, or street readiness. The initial captures before the final conflict-message change are excluded from this packet's final evidence. User visual approval has not been inferred.
 
-Verification at initial review: focused workbench test, typecheck, lint, build, standard E2E and both renderer workflows passed; the full suite was running. One lint attempt included capture-generated Vite caches; those owned caches were removed and the clean lint passed. The build retains its large-chunk warning.
+Verification: all 2,028 tests across 147 files, typecheck, lint, build, standard E2E and both renderer workflows passed. One lint attempt included capture-generated Vite caches; those owned caches were removed and the clean lint passed. The build retains its large-chunk warning.
