@@ -30,6 +30,7 @@ export function ConstructionBuildingControls({ graph, fields, windowCount, store
   onFieldChange: (nodeId: string, field: string, text: string) => void; onApply: () => void; onRevert: () => void; onAdvanced: () => void;
   onStorefrontDivisionChange: (field: "displayLights" | "transomLights", value: number) => void;
 }) {
+  const pierProtected = graph.schemaVersion === "0.15.0";
   const [active, setActive] = useState<string | null>("openings"), prefix = useId();
   if (!supportsGroupedConstruction(graph)) return <div className="construction-grouped__custom"><p>This construction has custom connections or added nodes. Edit its actual branches in the advanced recipe graph.</p>
     <button type="button" onClick={onAdvanced}>Edit custom construction</button></div>;
@@ -52,6 +53,7 @@ export function ConstructionBuildingControls({ graph, fields, windowCount, store
         onChange={event => onFieldChange(nodeId,key,event.currentTarget.value)} /></label>;
   };
   return <form className="construction-grouped" noValidate onSubmit={event => { event.preventDefault(); onApply(); }}>
+    {pierProtected ? <p>Facade piers are retained while you edit dimensions. Assembly and local-detail controls will be enabled in a later update.</p> : null}
     <fieldset disabled={disabled}>
       {groups.map(group => <details key={group.id} open={active === group.id} className="construction-grouped__section">
         <summary onClick={event => {event.preventDefault();setActive(value => value === group.id ? null : group.id);}}>{group.label}</summary>
@@ -60,7 +62,7 @@ export function ConstructionBuildingControls({ graph, fields, windowCount, store
           {group.id === "openings" ? <label className="construction-grouped__field construction-grouped__assembly">
             <span><strong>Window assembly</strong><small id={prefix+"assembly"}>{storefront ? "Frame and glazing for regular windows; display bays use their own assembly." : "Frame and glazing construction for every generated window."}</small></span>
             <select aria-label="Window assembly" aria-describedby={prefix+"assembly"} value={fields.window?.layout ?? "0"}
-              disabled={Boolean(graph.nodes.find(node => node.id === "window" && "bypassed" in node && node.bypassed))}
+              disabled={pierProtected || Boolean(graph.nodes.find(node => node.id === "window" && "bypassed" in node && node.bypassed))}
               onChange={event => onFieldChange("window","layout",event.currentTarget.value)}>
               {CONSTRUCTION_WINDOW_LAYOUTS.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
             </select>
@@ -68,25 +70,25 @@ export function ConstructionBuildingControls({ graph, fields, windowCount, store
           {group.id === "openings" ? <label className="construction-grouped__field construction-grouped__assembly">
             <span><strong>Upper front opening head</strong><small id={prefix+"head"}>Applies to regular windows on the front above the ground floor. Sash bars sit in front of a shared curved pane.</small></span>
             <select aria-label="Upper front opening head" aria-describedby={prefix+"head"} value={fields.opening?.upperFrontRoundHead ?? "0"}
-              disabled={graph.nodes.some(node => node.type === "PlaceOpening" && node.bypassed)} onChange={event => onFieldChange("opening", "upperFrontRoundHead", event.currentTarget.value)}>
+              disabled={pierProtected || graph.nodes.some(node => node.type === "PlaceOpening" && node.bypassed)} onChange={event => onFieldChange("opening", "upperFrontRoundHead", event.currentTarget.value)}>
               {CONSTRUCTION_OPENING_HEADS.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
             </select>
           </label> : null}
           {group.id === "frontage" ? <>
             <label className="construction-grouped__field construction-grouped__assembly">
               <span><strong>Ground frontage</strong><small id={prefix+"frontage"}>Wide display glazing and a glazed entrance with a shared transom.{frontageBypassed ? " This operator is bypassed in the advanced graph." : ""}</small></span>
-              <select aria-label="Ground frontage" aria-describedby={prefix+"frontage"} value={fields.frontage?.mode ?? "0"} disabled={frontageBypassed} onChange={event => onFieldChange("frontage","mode",event.currentTarget.value)}>
+              <select aria-label="Ground frontage" aria-describedby={prefix+"frontage"} value={fields.frontage?.mode ?? "0"} disabled={pierProtected || frontageBypassed} onChange={event => onFieldChange("frontage","mode",event.currentTarget.value)}>
                 {CONSTRUCTION_FRONTAGE_OPTIONS.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
               </select>
             </label>
             {frontageChosen ? <>
               {storefront ? <>
                 <label className="construction-grouped__field construction-grouped__assembly"><span><strong>Display lights</strong><small>Separate panes across each front display window.</small></span>
-                  <select aria-label="Display lights" value={graph.storefrontDivision?.displayLights ?? 1} onChange={event => onStorefrontDivisionChange("displayLights", Number(event.currentTarget.value))}>
+                  <select aria-label="Display lights" disabled={pierProtected} value={graph.storefrontDivision?.displayLights ?? 1} onChange={event => onStorefrontDivisionChange("displayLights", Number(event.currentTarget.value))}>
                     <option value={1}>One pane</option><option value={2}>Two panes</option>
                   </select></label>
                 <label className="construction-grouped__field construction-grouped__assembly"><span><strong>Transom lights</strong><small>Separate panes above each display and the entrance.</small></span>
-                  <select aria-label="Transom lights" value={graph.storefrontDivision?.transomLights ?? 1} onChange={event => onStorefrontDivisionChange("transomLights", Number(event.currentTarget.value))}>
+                  <select aria-label="Transom lights" disabled={pierProtected} value={graph.storefrontDivision?.transomLights ?? 1} onChange={event => onStorefrontDivisionChange("transomLights", Number(event.currentTarget.value))}>
                     <option value={1}>One pane</option><option value={2}>Two panes</option><option value={3}>Three panes</option>
                   </select></label>
                 {graph.storefrontDivision ? <p>Keep edited assemblies or lock openings to retain these divisions when generating.</p> : null}
@@ -104,14 +106,14 @@ export function ConstructionBuildingControls({ graph, fields, windowCount, store
           {group.id === "roof" ? <label className="construction-grouped__field construction-grouped__assembly">
             <span><strong>Parapet silhouette</strong><small id={prefix+"parapet"}>Shape of the front wall above the roof.{graph.nodes.some(node => node.type === "BuildingRoof" && node.bypassed) ? " This operator is bypassed in the advanced graph." : ""}</small></span>
             <select aria-label="Parapet silhouette" aria-describedby={prefix+"parapet"} value={fields.roof?.parapetSilhouette ?? "0"}
-              disabled={graph.nodes.some(node => node.type === "BuildingRoof" && node.bypassed)} onChange={event => onFieldChange("roof","parapetSilhouette",event.currentTarget.value)}>
+              disabled={pierProtected || graph.nodes.some(node => node.type === "BuildingRoof" && node.bypassed)} onChange={event => onFieldChange("roof","parapetSilhouette",event.currentTarget.value)}>
               {CONSTRUCTION_PARAPET_SILHOUETTES.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
             </select>
           </label> : null}
           {group.id === "roof" ? <label className="construction-grouped__field construction-grouped__assembly">
             <span><strong>Cornice treatment</strong><small id={prefix+"cornice"}>Profile and detail course on all four elevations.{graph.nodes.some(node => node.type === "BuildingRoof" && node.bypassed) ? " This operator is bypassed in the advanced graph." : ""}</small></span>
             <select aria-label="Cornice treatment" aria-describedby={prefix+"cornice"} value={fields.roof?.corniceAssembly ?? "0"}
-              disabled={graph.nodes.some(node => node.type === "BuildingRoof" && node.bypassed)} onChange={event => onFieldChange("roof","corniceAssembly",event.currentTarget.value)}>
+              disabled={pierProtected || graph.nodes.some(node => node.type === "BuildingRoof" && node.bypassed)} onChange={event => onFieldChange("roof","corniceAssembly",event.currentTarget.value)}>
               {CONSTRUCTION_CORNICE_LAYOUTS.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
             </select>
           </label> : null}
