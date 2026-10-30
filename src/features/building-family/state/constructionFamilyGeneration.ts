@@ -41,15 +41,23 @@ export async function resolveConstructionFamily(input: unknown, lineageInput: un
   abort(signal);
   const original = await readConstructionGenerationLineage(lineage); abort(signal);
   const composition = compositionInput === undefined ? null : readConstructionFamilyCompositionPlan(compositionInput);
-  const varyStorefrontLights = composition?.schemaVersion === "0.3.0" && composition.source.policy.storefrontLights;
+  const varyStorefrontLights = (composition?.schemaVersion === "0.3.0" || composition?.schemaVersion === "0.4.0") && composition.source.policy.storefrontLights;
+  const varyMassing = composition?.schemaVersion === "0.4.0" && composition.source.policy.massing;
+  if (varyMassing) {
+    if (controls.lockFootprint || controls.lockStoreys) throw new Error("Unlock footprint and storeys to vary family massing.");
+    const sourceStoreys = plan.source.graph.nodes.find(node => node.type === "Storeys"), priorStoreys = original.resolution.graph.nodes.find(node => node.type === "Storeys");
+    const sourceBays = plan.source.graph.nodes.find(node => node.type === "SplitBays"), priorBays = original.resolution.graph.nodes.find(node => node.type === "SplitBays");
+    if (!sourceStoreys || !priorStoreys || !sourceBays || !priorBays || sourceStoreys.parameters.count !== priorStoreys.parameters.count || sourceBays.parameters.count !== priorBays.parameters.count)
+      throw new Error("Family massing variation cannot overwrite authored storey or bay counts.");
+  }
   if (varyStorefrontLights && plan.source.graph.storefrontDivision)
     throw new Error("Storefront variation cannot overwrite authored divisions. Reset them or turn off storefront-light variation.");
   if (plan.source.graph.storefrontDivision && composition?.source.policy.frontage)
     throw new Error("Ground-frontage variation cannot currently coexist with retained storefront divisions. Disable that variation or reset the divisions.");
   if (plan.source.graph.upperBayGroups?.length && composition?.source.policy.openings)
     throw new Error("Opening-head variation cannot currently coexist with retained grouped bays. Disable that variation or explicitly remove the groups.");
-  const varyGroups = (composition?.schemaVersion === "0.2.0" || composition?.schemaVersion === "0.3.0") && composition.source.policy.groupedBays;
-  if (varyGroups && !composition.source.policy.openings && plan.source.graph.nodes.find(node => node.type === "PlaceOpening")?.parameters.upperFrontRoundHead === 1)
+  const varyGroups = Boolean(composition && composition.schemaVersion !== "0.1.0" && composition.source.policy.groupedBays);
+  if (varyGroups && !composition?.source.policy.openings && plan.source.graph.nodes.find(node => node.type === "PlaceOpening")?.parameters.upperFrontRoundHead === 1)
     throw new Error("Grouped family variation needs flat upper-front heads. Choose flat heads or enable coordinated opening variation.");
   if (composition) {
     if (composition.source.familySeed !== plan.source.familySeed || composition.source.openingLock !== controls.lockOpenings)
@@ -58,6 +66,7 @@ export async function resolveConstructionFamily(input: unknown, lineageInput: un
       ...(composition.source.policy.openings ? ["construction/opening/upperFrontRoundHead", "construction/window/layout"] : []),
       ...(varyGroups ? ["construction/opening", "construction/window", "construction/upperBayGroups"] : []),
       ...(varyStorefrontLights ? ["construction/opening", "construction/window", "construction/frontage", "construction/storefrontDivision"] : []),
+      ...(varyMassing ? ["construction/facade/count", "construction/bays/count", "construction/footprint"] : []),
       ...(composition.source.policy.frontage ? ["construction/frontage/mode"] : []),
       ...(composition.source.policy.roof ? ["construction/roof/corniceAssembly", "construction/roof/parapetSilhouette"] : [])
     ];
@@ -87,7 +96,12 @@ export async function resolveConstructionFamily(input: unknown, lineageInput: un
     for (let attempt = 0; attempt < 12; attempt++) {
       abort(signal);
       const buildingSeed = createSeedTree(member.buildingSeed).fork(`candidate/${attempt}`).root;
-      const generated = await resolveWorkbenchGeneration(member.graph, baseLineage, { ...controls, buildingSeed }, false); abort(signal);
+      const massing = composition?.schemaVersion === "0.4.0" ? composition.members[member.ordinal - 1].massing : null;
+      const generated = await resolveWorkbenchGeneration(member.graph, baseLineage, { ...controls, buildingSeed,
+        ...(massing ? { floorCount: massing.floorCount, bayCount: massing.bayCount } : {}) }, false); abort(signal);
+      if (massing && (generated.graph.nodes.find(node => node.type === "Storeys")?.parameters.count !== massing.floorCount ||
+          generated.graph.nodes.find(node => node.type === "SplitBays")?.parameters.count !== massing.bayCount))
+        throw new Error("A family member could not retain its planned massing without overriding authored constraints.");
       const nextMaterial = await planConstructionReferenceMaterials(original.materialPlan.templateSpec, generated.source, original.materialPlan.options); abort(signal);
       if (nextMaterial.materialInputsHash !== original.materialPlan.materialInputsHash || canonicalJson(nextMaterial.atlas.manifest) !== canonicalJson(original.materialPlan.atlas.manifest)) {
         throw new Error("Family variation would change the pinned material plan.");

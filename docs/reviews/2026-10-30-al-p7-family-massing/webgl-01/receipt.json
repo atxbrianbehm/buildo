@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "0.1.0",
+  "api": "webgl",
+  "massing": [
+    {
+      "floorCount": 4,
+      "bayCount": 3
+    },
+    {
+      "floorCount": 3,
+      "bayCount": 5
+    },
+    {
+      "floorCount": 2,
+      "bayCount": 3
+    },
+    {
+      "floorCount": 3,
+      "bayCount": 4
+    },
+    {
+      "floorCount": 4,
+      "bayCount": 5
+    },
+    {
+      "floorCount": 2,
+      "bayCount": 5
+    }
+  ],
+  "lights": [
+    {
+      "displayLights": 1,
+      "transomLights": 2
+    },
+    {
+      "displayLights": 2,
+      "transomLights": 1
+    },
+    {
+      "displayLights": 1,
+      "transomLights": 1
+    },
+    {
+      "displayLights": 2,
+      "transomLights": 2
+    },
+    {
+      "displayLights": 1,
+      "transomLights": 3
+    },
+    {
+      "displayLights": 2,
+      "transomLights": 3
+    }
+  ],
+  "selected": 5,
+  "memberEdit": true,
+  "siblingsAndSourceUnchanged": true,
+  "reopened": true,
+  "materialHash": "e912990f01e37be516a5dc151f66471b16afa14a40fcfe8dd2fa475925d68bca",
+  "providerCallsDelta": 0,
+  "errors": []
+}
