@@ -15,6 +15,8 @@ import { withConstructionGroupedBays } from "../core/constructionGroupedBayGraph
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { withConstructionStorefrontDivision } from "../core/constructionStorefrontDivisionGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
+import { withConstructionAwnings } from "../core/constructionAwningGraph";
+import { createConstructionAwningFabric } from "../materials/constructionAwningFabric";
 
 describe("persistent construction family source", () => {
   it("owns, validates and round-trips six independent graphs with one shared material artifact", async () => {
@@ -50,6 +52,18 @@ describe("persistent construction family source", () => {
       const restored = await readConstructionFamilySource(JSON.parse(JSON.stringify(saved)));
       const dividedGraph = withConstructionStorefrontDivision(withConstructionStorefront(edited, 1), { displayLights: 2, transomLights: 3 });
       const dividedMember = withConstructionStorefrontDivision(withConstructionStorefront(saved.members[0].graph, 1), { displayLights: 2, transomLights: 3 });
+      const fabric = await createConstructionAwningFabric({ schemaVersion: "0.1.0", kind: "construction-awning-fabric-request", seed: "family-fabric", pattern: "striped", primary: [220, 210, 190], secondary: [60, 90, 70], physicalSizeM: [1, 1] });
+      const awnings = [{ bayIndex: 0, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }];
+      const awningInput = { ...input, familySeed: "seed", schemaVersion: "0.8.0" as const, awningFabric: fabric, sourceGraph: withConstructionAwnings(dividedGraph, awnings),
+        members: saved.members.map(member => ({ ...member, graph: withConstructionAwnings(withConstructionStorefrontDivision(withConstructionStorefront(member.graph, 1), { displayLights: 2, transomLights: 3 }), awnings) })) };
+      const awningFamily = await createConstructionFamilySource(awningInput), awningReopened = await readConstructionFamilySource(JSON.parse(JSON.stringify(awningFamily)));
+      expect(awningReopened).toEqual(awningFamily); expect(awningReopened.schemaVersion === "0.8.0" && awningReopened.awningFabric).toEqual(fabric);
+      expect(awningReopened.materialSource).toEqual(saved.materialSource);
+      expect((await evaluateConstruction(awningReopened.members[0].graph)).ir.meshBatches.filter(batch => batch.role.startsWith("awning."))).toHaveLength(2);
+      const badFabric = structuredClone(fabric); badFabric.source.seed = "tampered";
+      await expect(createConstructionFamilySource({ ...awningInput, awningFabric: badFabric })).rejects.toThrow(/does not match/);
+      const { awningFabric: _fabric, ...withoutFabric } = awningInput; void _fabric;
+      await expect(createConstructionFamilySource({ ...withoutFabric, schemaVersion: "0.5.0" })).rejects.toThrow(/Awning family graphs require/);
       const dividedInput = { ...input, familySeed: "seed", schemaVersion: "0.5.0", sourceGraph: dividedGraph,
         members: saved.members.map((member, index) => index === 0 ? { ...member, graph: dividedMember } : member) };
       const divided = await createConstructionFamilySource(dividedInput);
@@ -98,6 +112,9 @@ describe("persistent construction family source", () => {
       await expect(readConstructionFamilySource({ ...saved, schemaVersion: "0.1.0" })).rejects.toThrow(/lacks the original building/);
       expect(materialGeneration).not.toHaveBeenCalled(); materialGeneration.mockRestore();
       const composition = resolveConstructionFamilyComposition({ schemaVersion: "0.1.0", kind: "construction-family-composition-request", familySeed: "seed", policy: { openings: true, frontage: true, roof: true }, openingLock: false });
+      const composedAwningFamily = await createConstructionFamilySource({ ...awningInput, initialComposition: composition });
+      expect(composedAwningFamily.schemaVersion === "0.8.0" && composedAwningFamily.initialComposition).toEqual(composition);
+      await expect(createConstructionFamilySource({ ...awningInput, familySeed: "other", initialComposition: composition })).rejects.toThrow(/retain the family seed/);
       const composed = await resolveConstructionFamily(plan, lineage, defaultConstructionGenerationControls, undefined, composition);
       const composedSource = await createConstructionFamilySource({ ...input, familySeed: "seed", schemaVersion: "0.3.0", initialComposition: composition,
         members: composed.members.map(member => ({ documentId: member.documentId, graph: member.construction.graph, generation: member.lineage })) });
