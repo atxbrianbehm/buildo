@@ -45,7 +45,7 @@ export async function readBayConstructionProject(input: unknown) {
 }
 
 
-async function validateGeneration(project: { graph: { documentId: string }; materialSource: { contentHash: string }; generation?: z.infer<typeof ConstructionGenerationLineageSchema> }, manifest: unknown) {
+export async function validateGeneration(project: { graph: { documentId: string }; materialSource: { contentHash: string }; generation?: z.infer<typeof ConstructionGenerationLineageSchema> }, manifest: unknown) {
   if (!project.generation) return;
   const lineage = await readConstructionGenerationLineage(project.generation);
   if (lineage.source.documentId !== project.graph.documentId || lineage.materialSourceHash !== project.materialSource.contentHash ||
