@@ -1426,6 +1426,10 @@ Do not remove advanced graph access or implement a fake targeted editor. [Select
 
 The [street-segment packet plan](authored-street-segment.md) maps the current fixed-six comparison, source and renderer seams to separate parcel, procedural corner, runtime, authoring and review milestones. It preserves the intended 4–12 building outcome and existing family files. This is planning only: Phase F implementation remains gated by checklist items 1–7 on a representative machine with a stored visual QA packet. The accepted family direction and local high-end workstation measurements do not by themselves clear that gate.
 
+### AL — architectural language before street readiness
+
+On October 30 the user reviewed the family against five reference images and stated that substantially more architectural variety is needed. The [reference-led language plan](architectural-language-diversity.md) makes this the next independent building/family work: real round-headed upper openings first, then authored family composition and a verified metagrinder evidence bridge. The accepted family is a starting direction, not street-ready. These packets do not waive the Phase F gate or assert upstream architectural coverage.
+
 ### C6 — architectural variety, then deeper assemblies and materials
 
 C5 proved the path; the next work must broaden visible capability without replacing the accepted graph/compiler or collapsing everything into one milestone. The immediate C6 success case is the same authored building moving among three named procedural recipes: the accepted restrained baseline, deep reveals with thicker wall/frame/sill construction, and a projecting cornice/profile treatment. These are geometric design recipes, not sourced historical styles. Existing material/reference coverage labels remain literal.
