@@ -6,4 +6,6 @@ Eleven tests across the family-plan, generation and source suites pass; typechec
 
 The first negative-test attempt assumed a changed document ID would pass graph admission and fail only at the hash; graph validation correctly rejected the mismatched surface document first. A later roof-only test exposed that roof graphs can still reference storeys; the final admission additionally requires the connected wall operator, and the final regression passed. The final local log supersedes those earlier runs.
 
+Follow-up: the first source shape omitted the original building, so it could not support a faithful cold return from the family view. Version 0.2.0 adds the original graph and generation lineage and validates both against the same material/reference inputs. The focused suite now independently admits the original and all six members as construction projects. Version 0.1.0 has no original building and is rejected with an explicit recovery message; no released workbench wrote that version.
+
 No workbench controls or file actions are added here. Family Save/Open, per-member editing, stale-load/disposal handling and real browser recovery remain P3.1/P3.2. Architectural UTDG coverage and representative-machine performance remain open.
