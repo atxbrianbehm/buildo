@@ -44,6 +44,7 @@ export async function resolveConstructionFamily(input: unknown, lineageInput: un
   abort(signal);
   const original = await readConstructionGenerationLineage(lineage); abort(signal);
   const composition = compositionInput === undefined ? null : readConstructionFamilyCompositionPlan(compositionInput);
+  if (composition?.schemaVersion === "0.6.0") throw new Error("Entrance variation is not yet supported in family generation.");
   const varyStorefrontLights = (composition?.schemaVersion === "0.3.0" || composition?.schemaVersion === "0.4.0" || composition?.schemaVersion === "0.5.0") && composition.source.policy.storefrontLights;
   const varyMassing = (composition?.schemaVersion === "0.4.0" || composition?.schemaVersion === "0.5.0") && composition.source.policy.massing;
   const varyAwnings = composition?.schemaVersion === "0.5.0" && composition.source.policy.awnings;

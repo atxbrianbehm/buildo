@@ -465,6 +465,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         : familyVariation.groupedBays ? { schemaVersion: "0.2.0", kind: "construction-family-composition-request", familySeed, policy: { openings: familyVariation.openings, frontage: familyVariation.frontage, roof: familyVariation.roof, groupedBays: true }, openingLock: generationControls.lockOpenings }
         : { schemaVersion: "0.1.0", kind: "construction-family-composition-request", familySeed,
           policy: { openings: familyVariation.openings, frontage: familyVariation.frontage, roof: familyVariation.roof }, openingLock: generationControls.lockOpenings }) : null;
+      if (composition?.schemaVersion === "0.6.0") throw new Error("Entrance variation is not yet supported in the family workspace.");
       const family = await resolveConstructionFamily(plan, source.generation, generationControls, signal, composition ?? undefined);
       if (!isCurrent()) return;
       const candidate = await prepareConstructionFamilyFixture(base, family.members.map(member => member.construction), source.materials, signal);
