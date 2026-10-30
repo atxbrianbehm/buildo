@@ -1,20 +1,34 @@
 import { readConstructionParapetSilhouettePlan } from "../core/constructionParapetSilhouette";
-import { buildBoxPrimitive, emptyBounds, expandBounds, type PrimitiveGeometry, type Vec3 } from "./primitiveGeometry";
+import { emptyBounds, expandBounds, type PrimitiveGeometry, type Vec3 } from "./primitiveGeometry";
 
-/** The added solid meets the existing closed parapet at its top; it does not overlap its exterior. */
-export function buildRaisedParapetCenter(input: unknown): PrimitiveGeometry {
+/** One boundary mesh for the parapet ring and raised center, with no internal contact faces. */
+export function buildSteppedParapetSolid(input: unknown): PrimitiveGeometry {
   const plan = readConstructionParapetSilhouettePlan(input);
   if (plan.source.treatment !== "raised-center") throw new Error("A raised-center plan is required.");
-  const { widthM, depthM } = plan.source.building;
-  const geometry = buildBoxPrimitive({ center: [0, (plan.lowTopM + plan.highTopM) / 2, -depthM / 2 + 0.11],
-    size: [widthM / 2, plan.highTopM - plan.lowTopM, 0.22] });
-  for (let i = 0; i < geometry.positions.length / 3; i++) {
-    const x = geometry.positions[i * 3], y = geometry.positions[i * 3 + 1], z = geometry.positions[i * 3 + 2];
-    const nx = geometry.normals[i * 3], ny = geometry.normals[i * 3 + 1];
-    geometry.uvs[i * 2] = Math.abs(nx) > 0.5 ? z : x;
-    geometry.uvs[i * 2 + 1] = Math.abs(ny) > 0.5 ? z : y;
+  const { widthM: w, depthM: d } = plan.source.building;
+  const xs = [-w / 2, -w / 2 + 0.22, -w / 4, w / 4, w / 2 - 0.22, w / 2];
+  const ys = [plan.baseM, plan.lowTopM, plan.highTopM], zs = [-d / 2, -d / 2 + 0.22, d / 2 - 0.22, d / 2];
+  const positions: number[] = [], normals: number[] = [], uvs: number[] = [], indices: number[] = [];
+  const solid = (x: number, y: number, z: number) => x >= 0 && x < 5 && y >= 0 && y < 2 && z >= 0 && z < 3 &&
+    (y === 0 ? x === 0 || x === 4 || z === 0 || z === 2 : x === 2 && z === 0);
+  const quad = (v: [Vec3, Vec3, Vec3, Vec3], normal: Vec3) => {
+    const base = positions.length / 3;
+    for (const point of v) {
+      positions.push(...point); normals.push(...normal);
+      uvs.push(Math.abs(normal[0]) > 0.5 ? point[2] : point[0], Math.abs(normal[1]) > 0.5 ? point[2] : point[1]);
+    }
+    indices.push(base, base + 1, base + 2, base, base + 2, base + 3);
+  };
+  for (let x = 0; x < 5; x++) for (let y = 0; y < 2; y++) for (let z = 0; z < 3; z++) if (solid(x, y, z)) {
+    const x0 = xs[x], x1 = xs[x + 1], y0 = ys[y], y1 = ys[y + 1], z0 = zs[z], z1 = zs[z + 1];
+    if (!solid(x - 1, y, z)) quad([[x0,y0,z0],[x0,y0,z1],[x0,y1,z1],[x0,y1,z0]], [-1,0,0]);
+    if (!solid(x + 1, y, z)) quad([[x1,y0,z1],[x1,y0,z0],[x1,y1,z0],[x1,y1,z1]], [1,0,0]);
+    if (!solid(x, y - 1, z)) quad([[x0,y0,z0],[x1,y0,z0],[x1,y0,z1],[x0,y0,z1]], [0,-1,0]);
+    if (!solid(x, y + 1, z)) quad([[x0,y1,z1],[x1,y1,z1],[x1,y1,z0],[x0,y1,z0]], [0,1,0]);
+    if (!solid(x, y, z - 1)) quad([[x1,y0,z0],[x0,y0,z0],[x0,y1,z0],[x1,y1,z0]], [0,0,-1]);
+    if (!solid(x, y, z + 1)) quad([[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]], [0,0,1]);
   }
-  return geometry;
+  return { positions, normals, uvs, indices, bounds: { min: [-w / 2, plan.baseM, -d / 2], max: [w / 2, plan.highTopM, d / 2] } };
 }
 
 /** Sweep the existing coping profile around the roof and through two mitered vertical steps. */

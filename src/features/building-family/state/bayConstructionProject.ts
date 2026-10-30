@@ -8,7 +8,7 @@ import { BuildingSourceFileSchema, parseBuildingSourceFile } from "./buildingSou
 import { validateConstructionSurfaceSources } from "../core/constructionSurfaceAuthoring";
 
 const payloadSchema = z.object({
-  schemaVersion: z.enum(["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0"]), kind: z.literal("bay-construction-project"),
+  schemaVersion: z.enum(["0.1.0", "0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0"]), kind: z.literal("bay-construction-project"),
   appearancePreset: z.enum(["restrained-bay-v1", "restrained-building-v1"]),
   graph: BayConstructionGraphSchema, materialSource: BuildingSourceFileSchema, generation: ConstructionGenerationLineageSchema.optional()
 }).strict();
@@ -16,8 +16,8 @@ export const BayConstructionProjectSchema = z.unknown().superRefine((input, cont
   const issue = findBuildingDocumentJsonIssue(input);
   if (issue) context.addIssue({ code: "custom", path: issue.path, message: issue.message });
 }).pipe(payloadSchema.extend({ contentHash: z.string().regex(/^[a-f0-9]{64}$/) }).strict()).superRefine((project, context) => {
-  if (project.appearancePreset !== (["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0"].includes(project.graph.schemaVersion) ? "restrained-building-v1" : "restrained-bay-v1")) context.addIssue({ code: "custom", message: "Construction appearance preset must match its graph version." });
-  if (project.schemaVersion === "0.9.0" ? project.graph.schemaVersion !== "0.8.0" : project.schemaVersion === "0.8.0" ? project.graph.schemaVersion !== "0.7.0" : project.schemaVersion === "0.7.0" ? project.graph.schemaVersion !== "0.6.0" : project.schemaVersion === "0.6.0" ? project.graph.schemaVersion !== "0.5.0" : project.schemaVersion === "0.5.0" ? project.graph.schemaVersion !== "0.4.0" || !project.generation : project.schemaVersion !== project.graph.schemaVersion || project.generation !== undefined) context.addIssue({ code: "custom", message: "Construction project and graph versions must agree." });
+  if (project.appearancePreset !== (["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0"].includes(project.graph.schemaVersion) ? "restrained-building-v1" : "restrained-bay-v1")) context.addIssue({ code: "custom", message: "Construction appearance preset must match its graph version." });
+  if (project.schemaVersion === "0.10.0" ? project.graph.schemaVersion !== "0.9.0" : project.schemaVersion === "0.9.0" ? project.graph.schemaVersion !== "0.8.0" : project.schemaVersion === "0.8.0" ? project.graph.schemaVersion !== "0.7.0" : project.schemaVersion === "0.7.0" ? project.graph.schemaVersion !== "0.6.0" : project.schemaVersion === "0.6.0" ? project.graph.schemaVersion !== "0.5.0" : project.schemaVersion === "0.5.0" ? project.graph.schemaVersion !== "0.4.0" || !project.generation : project.schemaVersion !== project.graph.schemaVersion || project.generation !== undefined) context.addIssue({ code: "custom", message: "Construction project and graph versions must agree." });
 });
 export type BayConstructionProject = z.infer<typeof BayConstructionProjectSchema>;
 
@@ -25,8 +25,8 @@ export async function createBayConstructionProject(graph: unknown, materialSourc
   if (generation === null) generation = undefined;
   // Capture graph and every encoded material channel before yielding.
   const ownedGraph = BayConstructionGraphSchema.parse(graph);
-  const payload = structuredClone(payloadSchema.parse({ schemaVersion: ownedGraph.schemaVersion === "0.8.0" ? "0.9.0" : ownedGraph.schemaVersion === "0.7.0" ? "0.8.0" : ownedGraph.schemaVersion === "0.6.0" ? "0.7.0" : ownedGraph.schemaVersion === "0.5.0" ? "0.6.0" : generation === undefined ? ownedGraph.schemaVersion : "0.5.0", kind: "bay-construction-project",
-    appearancePreset: ["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0"].includes(ownedGraph.schemaVersion) ? "restrained-building-v1" : "restrained-bay-v1", graph: ownedGraph, materialSource, ...(generation === undefined ? {} : { generation }) }));
+  const payload = structuredClone(payloadSchema.parse({ schemaVersion: ownedGraph.schemaVersion === "0.9.0" ? "0.10.0" : ownedGraph.schemaVersion === "0.8.0" ? "0.9.0" : ownedGraph.schemaVersion === "0.7.0" ? "0.8.0" : ownedGraph.schemaVersion === "0.6.0" ? "0.7.0" : ownedGraph.schemaVersion === "0.5.0" ? "0.6.0" : generation === undefined ? ownedGraph.schemaVersion : "0.5.0", kind: "bay-construction-project",
+    appearancePreset: ["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0"].includes(ownedGraph.schemaVersion) ? "restrained-building-v1" : "restrained-bay-v1", graph: ownedGraph, materialSource, ...(generation === undefined ? {} : { generation }) }));
   const materials = await parseBuildingSourceFile(payload.materialSource);
   validateConstructionSurfaceSources(ownedGraph, materials.packedAtlas);
   await validateGeneration(payload, materials.packedAtlas.manifest);

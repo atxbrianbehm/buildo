@@ -9,7 +9,7 @@ import { RuntimeBuildingIRSchema, type MeshBatchIR, type RuntimeBuildingIR } fro
 import { hashCanonicalJson } from "../core/contentHash";
 import { buildBoxPrimitive, combinePrimitiveGeometry, emptyBounds, expandBounds, type Bounds3, type PrimitiveGeometry } from "./primitiveGeometry";
 import { resolveConstructionParapetSilhouette } from "../core/constructionParapetSilhouette";
-import { buildRaisedParapetCenter, buildSteppedParapetCoping } from "./constructionSteppedParapetGeometry";
+import { buildSteppedParapetSolid, buildSteppedParapetCoping } from "./constructionSteppedParapetGeometry";
 import { expandBayWallPrimitives, MIN_FACADE_PIER_WIDTH_M, type FacadeBayScope } from "./facadeWallSubdivision";
 import { extrudeProfileSolidAlongX } from "./profileSweepGeometry";
 import { evaluateBayConstruction, DEFAULT_BAY_MATERIALS, type BayConstructionMaterials, type BayConstructionResult, type BayConstructionTrace } from "./evaluateBayConstruction";
@@ -202,7 +202,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
         const coping = silhouette ? front(buildSteppedParapetCoping(silhouette)) : ring([{y:top,offset:-.22-c},{y:top,offset:c-.015},{y:top+.025,offset:c},{y:top+.075,offset:c},{y:top+.095,offset:c-.015},{y:top+.095,offset:-.22-c}]);
         const deck=buildBoxPrimitive({center:[0,h-.1,0],size:[w-.44,.16,d-.44]});
         for(let i=0;i<deck.positions.length/3;i++){deck.uvs[i*2]=deck.positions[i*3];deck.uvs[i*2+1]=deck.positions[i*3+2];}
-        value = { kind: "geometry", parts: [globalMesh(node,"roof",[deck],"roof","roof.primary"),globalMesh(node,"parapet",silhouette ? [parapet,front(buildRaisedParapetCenter(silhouette))] : [parapet],"roof",materials.wall),globalMesh(node,"cornice",[cornice.backing,coping,...cornice.units],"roof",materials.trim)] };break;
+        value = { kind: "geometry", parts: [globalMesh(node,"roof",[deck],"roof","roof.primary"),globalMesh(node,"parapet",silhouette ? [front(buildSteppedParapetSolid(silhouette))] : [parapet],"roof",materials.wall),globalMesh(node,"cornice",[cornice.backing,coping,...cornice.units],"roof",materials.trim)] };break;
       }
       case "FacadeScope": {
         const { widthM, heightM, wallDepthM } = node.parameters;

@@ -3,6 +3,7 @@ import { CubeTexture, DataTexture, DirectionalLight, LinearFilter, LinearMipmapL
 import { vi } from "vitest";
 import { BayConstructionWorkbench, type BayConstructionSession } from "../ui/BayConstructionWorkbench";
 import { withConstructionCorniceLayout } from "../core/constructionCorniceVocabulary";
+import { withConstructionParapetSilhouette } from "../core/constructionParapetVocabulary";
 import { withConstructionOpeningWidth } from "../core/constructionOpeningEditGraph";
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { withConstructionWindowLayout } from "../core/constructionWindowVocabulary";
@@ -570,6 +571,36 @@ it("generates, edits, locks and rerolls through the actual workbench with saved 
     } finally {view.unmount();}
     for(const record of rendererState.records)expect(record.dispose).toHaveBeenCalledTimes(1);
   },60000);
+
+  it("publishes the parapet with cornice and opening choices, portable10, checkpoint and history", async () => {
+    const base = withConstructionCorniceLayout(createBuildingConstructionGraph(), 2), view = mount({ graph: base, materials });
+    try {
+      await ready(); fireEvent.click(screen.getByText("Roof & trim", { selector: "summary" }));
+      fireEvent.change(screen.getByRole("combobox", { name: "Parapet silhouette" }), { target: { value: "1" } });
+      fireEvent.click(screen.getByRole("button", { name: "Apply construction" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(2), { timeout: 15000 }); await ready();
+      const edited = view.onSessionChange.mock.calls.at(-1)![0];
+      expect(edited.graph).toEqual(withConstructionParapetSilhouette(base, 1)); expect(edited.materials).toBe(materials);
+      const file = await createBayConstructionProject(edited.graph, edited.materials.file); expect(file.schemaVersion).toBe("0.10.0");
+      expect((await readBayConstructionProject(JSON.parse(JSON.stringify(file)))).project).toEqual(file);
+      await expect(readBayConstructionProject({ ...file, schemaVersion: "0.9.0" })).rejects.toThrow("versions must agree");
+      const checkpoint = await createConstructionCheckpoint("parapet-workspace", edited.graph, edited.materials.file);
+      expect((await readConstructionCheckpoint(checkpoint)).project.graph).toEqual(edited.graph);
+      fireEvent.click(screen.getByRole("button", { name: "Undo construction" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(3), { timeout: 15000 }); await ready();
+      expect(view.onSessionChange.mock.calls.at(-1)![0].graph).toEqual(base);
+      fireEvent.click(screen.getByRole("button", { name: "Redo construction" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(4), { timeout: 15000 }); await ready();
+      expect(screen.getByRole("combobox", { name: "Parapet silhouette" })).toHaveValue("1");
+      fireEvent.change(screen.getByRole("combobox", { name: "Cornice treatment" }), { target: { value: "1" } });
+      fireEvent.click(screen.getByRole("button", { name: "Apply construction" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(5), { timeout: 15000 }); await ready();
+      const after = view.onSessionChange.mock.calls.at(-1)![0];
+      expect(after.graph.nodes.find(node => node.type === "BuildingRoof")!.parameters.parapetSilhouette).toBe(1);
+      expect(after.graph.nodes.find(node => node.type === "BuildingRoof")!.parameters.corniceAssembly).toBe(1);
+      expect(after.materials).toBe(materials);
+    } finally { view.unmount(); }
+  }, 90000);
 
   it("publishes cornice treatment with prior authored choices, portable9, checkpoint, history and failed-candidate retention",async()=>{
     const base=createBuildingConstructionGraph(),target={documentId:base.documentId,storeysNodeId:"facade",windowNodeId:"window",face:"front" as const,floorIndex:1,bayIndex:2};

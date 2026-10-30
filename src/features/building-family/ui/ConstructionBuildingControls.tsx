@@ -1,4 +1,5 @@
 import { CONSTRUCTION_CORNICE_LAYOUTS } from "../core/constructionCorniceVocabulary";
+import { CONSTRUCTION_PARAPET_SILHOUETTES } from "../core/constructionParapetVocabulary";
 import { CONSTRUCTION_WINDOW_LAYOUTS } from "../core/constructionWindowVocabulary";
 import { useId, useState } from "react";
 import type { BayConstructionGraph } from "../contracts/bayConstructionGraph";
@@ -78,6 +79,13 @@ export function ConstructionBuildingControls({ graph, fields, windowCount, store
               <p>Head band and transom level set the entrance height. Regular window controls stay under Openings.</p>
             </> : null}
           </> : null}
+          {group.id === "roof" ? <label className="construction-grouped__field construction-grouped__assembly">
+            <span><strong>Parapet silhouette</strong><small id={prefix+"parapet"}>Shape of the front wall above the roof.{graph.nodes.some(node => node.type === "BuildingRoof" && node.bypassed) ? " This operator is bypassed in the advanced graph." : ""}</small></span>
+            <select aria-label="Parapet silhouette" aria-describedby={prefix+"parapet"} value={fields.roof?.parapetSilhouette ?? "0"}
+              disabled={graph.nodes.some(node => node.type === "BuildingRoof" && node.bypassed)} onChange={event => onFieldChange("roof","parapetSilhouette",event.currentTarget.value)}>
+              {CONSTRUCTION_PARAPET_SILHOUETTES.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
+            </select>
+          </label> : null}
           {group.id === "roof" ? <label className="construction-grouped__field construction-grouped__assembly">
             <span><strong>Cornice treatment</strong><small id={prefix+"cornice"}>Profile and detail course on all four elevations.{graph.nodes.some(node => node.type === "BuildingRoof" && node.bypassed) ? " This operator is bypassed in the advanced graph." : ""}</small></span>
             <select aria-label="Cornice treatment" aria-describedby={prefix+"cornice"} value={fields.roof?.corniceAssembly ?? "0"}

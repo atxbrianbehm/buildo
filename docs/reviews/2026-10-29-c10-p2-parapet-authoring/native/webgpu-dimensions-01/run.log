@@ -1,0 +1,5 @@
+6:29:11 PM [vite] (client) [optimizer] bundling dependencies...
+{"api":"webgpu","state":"raised-baseline"}
+{"api":"webgpu","state":"tall-parapet"}
+{"api":"webgpu","state":"undo-height"}
+{"api":"webgpu","states":3,"captures":4,"errors":[]}

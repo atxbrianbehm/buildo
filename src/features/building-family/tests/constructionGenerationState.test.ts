@@ -1,5 +1,6 @@
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { withConstructionCorniceLayout } from "../core/constructionCorniceVocabulary";
+import { withConstructionParapetSilhouette } from "../core/constructionParapetVocabulary";
 import { withConstructionOpeningWidth } from "../core/constructionOpeningEditGraph";
 import { withConstructionWindowLayout } from "../core/constructionWindowVocabulary";
 import { describe, expect, it } from "vitest";
@@ -233,6 +234,23 @@ describe("construction recipe transitions", () => {
     const pending = resolveWorkbenchGeneration(a.graph, a.lineage, controls); controls.recipeId = "unknown";
     expect((await pending).source.recipe.id).toBe("deep-reveal-masonry"); expect(a).toEqual(before);
   });
+});
+
+it("retains an authored parapet and cornice on regeneration, and releases roof choices independently of opening locks", async () => {
+  const a = await initial();
+  const edited = withConstructionParapetSilhouette(withConstructionCorniceLayout(a.graph, 2), 1);
+  const before = structuredClone(edited);
+  const kept = await resolveWorkbenchGeneration(edited, a.lineage, defaultConstructionGenerationControls, true);
+  const roof = kept.graph.nodes.find(node => node.type === "BuildingRoof")!;
+  expect(kept.graph.schemaVersion).toBe("0.9.0"); expect(roof.parameters.parapetSilhouette).toBe(1); expect(roof.parameters.corniceAssembly).toBe(2);
+  expect(kept.resolution.graph.schemaVersion).toBe("0.4.0"); expect(edited).toEqual(before);
+  expect(kept.source.intent.locks.some(lock => lock.semanticPath.endsWith("/parapetSilhouette"))).toBe(false);
+  const materialPlan = await planConstructionReferenceMaterials(a.template, kept.source);
+  expect(materialPlan.materialInputsHash).toBe(a.lineage.materialPlan.materialInputsHash);
+  const lineage = { ...a.lineage, source: kept.source, resolution: kept.resolution, materialPlan };
+  const released = await resolveWorkbenchGeneration(kept.graph, lineage, { ...kept.controls, preserveAuthored: false, lockOpenings: true }, true);
+  const releasedRoof = released.graph.nodes.find(node => node.type === "BuildingRoof")!;
+  expect(releasedRoof.parameters.parapetSilhouette).toBe(0); expect(releasedRoof.parameters.corniceAssembly).toBe(0);
 });
 
 it("retains authored casement vocabulary over the literal pinned recipe and releases it explicitly",async()=>{

@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "parapet-authoring-verification",
+  "parentCommit": "2e02614bccc3b663a949bebb751a14f2a5db9d58",
+  "checks": {
+    "typecheck": 0,
+    "lint": 0,
+    "test": 0,
+    "build": 0,
+    "test:e2e": 0
+  },
+  "testFiles": 135,
+  "tests": 1948,
+  "e2eWorkflows": 8,
+  "finalSourcePinsExact": 339,
+  "nativeRuns": {
+    "webgpu-04": {
+      "states": 7,
+      "captures": 10,
+      "sourcePinsExact": 359
+    },
+    "webgl-01": {
+      "states": 7,
+      "captures": 10,
+      "sourcePinsExact": 359
+    },
+    "webgpu-dimensions-01": {
+      "states": 3,
+      "captures": 4,
+      "sourcePinsExact": 359
+    },
+    "webgl-dimensions-01": {
+      "states": 3,
+      "captures": 4,
+      "sourcePinsExact": 359
+    },
+    "webgpu-flat-ground-01": {
+      "states": 2,
+      "captures": 2,
+      "sourcePinsExact": 359
+    }
+  },
+  "graphVersion": "0.9.0",
+  "portableVersion": "0.10.0",
+  "coldProviderCalls": 0,
+  "coldMaterialCalls": 0,
+  "portableAliases": 12,
+  "uniquePortablePayloads": 4,
+  "excluded": "Initial cold-camera variance and pre-repair contact/UV join preserved.",
+  "groundShadowGaps": "Also seen in similar flat baseline; cause unproven, cameras differ.",
+  "visualReview": "pending"
+}
