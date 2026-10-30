@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "authored-family-plan-verification",
+  "parentCommit": "ac947f91afecc47d5f943ad87d245416b3763619",
+  "priorPinsExact": 339,
+  "sourceHashes": {
+    "src/features/building-family/contracts/constructionFamilyPlan.ts": "f7c02e268efb00e01e30d14b923a645e7d4ef4de704eb6a9a421ff4beb56af8c",
+    "src/features/building-family/core/constructionFamilyPlan.ts": "42985606c129f9296bae725d1ae89cbd350dc969d9b73312b703b5e7f0b0e8df",
+    "src/features/building-family/tests/constructionFamilyPlan.test.ts": "b6ef1de4b5af71524c1aa0dde6f18cea27c86a0f6508541f248dc30a1086fbdf"
+  },
+  "checks": {
+    "focused": 0,
+    "typecheck": 0,
+    "lint": 0
+  },
+  "focusedFiles": 2,
+  "focusedTests": 5,
+  "compiledMemberGraphs": 6,
+  "variationImplemented": false,
+  "previewImplemented": false
+}

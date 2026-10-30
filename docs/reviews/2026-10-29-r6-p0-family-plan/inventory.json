@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "0.1.0",
+  "files": [
+    {
+      "file": "checks/focused-01.log",
+      "bytes": 245,
+      "sha256": "7051db7e229e36803009752620c4d0d854e23ae1191077cdda1f1bbe02cd9793"
+    },
+    {
+      "file": "checks/focused-final.log",
+      "bytes": 245,
+      "sha256": "0f671d51ec7cb24a54a2e3ef7a63e490dd1d2908808e7c3d6661a5e185233722"
+    },
+    {
+      "file": "checks/lint.log",
+      "bytes": 37,
+      "sha256": "a21c6d2dedb756f860b052cb2d84cd603fbbe38ee53e1ad76ab9c5803f028958"
+    },
+    {
+      "file": "checks/typecheck.log",
+      "bytes": 49,
+      "sha256": "1927639a5b89b1406e25b817bb2c8efb1e16fccc181e86591db136d628e7f5e6"
+    },
+    {
+      "file": "README.md",
+      "bytes": 1173,
+      "sha256": "7c23f93255f3ee966699577af48c32285041b16a1ad56bd31616b94df2947d00"
+    },
+    {
+      "file": "verification.json",
+      "bytes": 830,
+      "sha256": "b5d763b432f24eecf00e1d7a99cff08f7ff55ffe5bf72e9e868f2bcef4b462f8"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+# R6: a related family from the authored building
+
+The construction workbench currently creates one real building and explicitly reports zero family variants. The older Assembly Hall stress tools use a different path and do not establish an authored construction family. R6 must derive at least six related, meaningfully different buildings from the current accepted construction, then render and review them together before block work.
+
+Each member needs a distinct stable document identity and semantic paths, an explicit deterministic building seed, the same pinned reference/material lineage and shared material assets, and preserved compatible authored choices and locks. Incompatible local overrides must fail with an actionable diagnostic rather than disappear. The family is not a claim of historical UTDG coverage or a block generator. It must use the existing graph, resolver, worker and runtime; no preassembled buildings or second geometry authority.
+
+| Packet | Bounded result | Required verification |
+| --- | --- | --- |
+| R6.P0 — complete | Pure versioned six-member family source plan and owned graph identity rebasing. It changes no UI or renderer. | Stable semantic seeds and unique IDs, deterministic readback/tamper rejection, local target and surface document rebasing, ownership, malformed inputs and actual graph/compiler admission. Typecheck, lint and focused tests. |
+| R6.P1 — ready | Resolve six member graphs through the existing seeded generation and compiler, with pinned lineage and one material source. Conflicts retain the accepted source rather than silently discard overrides. | Actual six compiled outputs, same material inputs, lock/exception retention, unique semantic identities, deterministic replay, meaningful variation or a candid insufficient-diversity failure; stale/failure cleanup. |
+| R6.P2 | Add a bounded artist-facing family preview to the construction workbench, using shared runtime assets and preserving the current editable building. | All five checks, real WebGPU/WebGL six-building captures, source/material/lock continuity, shared identities, cancellation/disposal, source reopen and representative-machine measurements. No block claim. |
+| R6 visual review | Review the six related buildings before block work. | User decision and visual checklist rows 1–8; performance and historical UTDG claims require their own evidence. |
+
+Continue the packets separately without a human gate between P0, P1 and P2. P0 is groundwork, not a family preview or proof of diversity. Do not coerce a local edit onto a missing floor/bay or silently replace the accepted scene.
+
+
+P0 result: six owned, uniquely addressed copies compile with distinct semantic paths; five focused tests, typecheck and lint pass. This does not yet produce visual variation or a family preview. [Evidence](../reviews/2026-10-29-r6-p0-family-plan/README.md).
