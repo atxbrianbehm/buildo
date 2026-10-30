@@ -6,4 +6,4 @@ The adapter validates and preserves the literal record, calculates a content has
 
 Tests use deliberately labelled synthetic data and exercise chain failures, unknowns, ownership and replay. No real architectural evidence or historical coverage is claimed. Upstream provenance and source-contract audit: [AL.P4.0](../2026-10-30-al-p4-0-metagrinder-source-audit/README.md). No UI, geometry or material behavior changes in this packet.
 
-Verification: 17 focused tests, typecheck, lint, production build and browser E2E smoke passed. The production build retains the existing large-chunk warning. The full test suite was still running at this packet's initial review.
+Verification: all 2,005 tests across 143 files passed, including 17 focused tests. Typecheck, lint, production build and browser E2E smoke also passed. The production build retains the existing large-chunk warning.
