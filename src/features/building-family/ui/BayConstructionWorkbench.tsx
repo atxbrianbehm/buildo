@@ -27,6 +27,7 @@ import { resolveConstructionFamilyPlan } from "../core/constructionFamilyPlan";
 import { resolveConstructionFamily } from "../state/constructionFamilyGeneration";
 import { createConstructionFamilySource, readConstructionFamilySource, withUpdatedConstructionFamilyMembers, type ConstructionFamilyPayload } from "../state/constructionFamilySource";
 import { resolveConstructionFamilyComposition } from "../core/constructionFamilyComposition";
+import { resolveConstructionFamilyPierVariation } from "../core/constructionFamilyPierVariation";
 import { parseBuildingSourceFile } from "../state/buildingSourceFile";
 import { defaultConstructionGenerationControls, resolveWorkbenchGeneration, rebindGenerationSurfaceSources, type ConstructionGenerationLineage } from "../state/constructionGenerationState";
 import { ConstructionGenerationPanel } from "./ConstructionGenerationPanel";
@@ -129,6 +130,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   const [familyDirty, setFamilyDirty] = useState(false);
   const [familySeed, setFamilySeed] = useState("building-family-1");
   const [familyVariation, setFamilyVariation] = useState({ openings: false, frontage: false, roof: false, groupedBays: false, storefrontLights: false, massing: false, awnings: false, entranceBay: false });
+  const [familyPierVariation, setFamilyPierVariation] = useState(false);
   const [familyDetails, setFamilyDetails] = useState<string[]>([]);
   const [familyFabricView, setFamilyFabricView] = useState<{ inherited: ConstructionAwningFabricArtifact; memberIds: string[]; assignments?: ConstructionFamilyFabricAssignments } | null>(null);
   const familySource = useRef<ConstructionFamilyPayload | null>(null);
@@ -478,7 +480,8 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         : familyVariation.groupedBays ? { schemaVersion: "0.2.0", kind: "construction-family-composition-request", familySeed, policy: { openings: familyVariation.openings, frontage: familyVariation.frontage, roof: familyVariation.roof, groupedBays: true }, openingLock: generationControls.lockOpenings }
         : { schemaVersion: "0.1.0", kind: "construction-family-composition-request", familySeed,
           policy: { openings: familyVariation.openings, frontage: familyVariation.frontage, roof: familyVariation.roof }, openingLock: generationControls.lockOpenings }) : null;
-      const family = await resolveConstructionFamily(plan, source.generation, generationControls, signal, composition ?? undefined);
+      const pierVariation = familyPierVariation ? resolveConstructionFamilyPierVariation({ schemaVersion: "0.1.0", kind: "construction-family-pier-variation-request", familySeed, enabled: true, openingLock: generationControls.lockOpenings }) : null;
+      const family = await resolveConstructionFamily(plan, source.generation, generationControls, signal, composition ?? undefined, pierVariation ?? undefined);
       if (!isCurrent()) return;
       const candidate = await prepareConstructionFamilyFixture(base, family.members.map(member => member.construction), source.materials, signal);
       if (!isCurrent()) { candidate.familyRuntime.dispose(); return; }
@@ -494,7 +497,8 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
           sourceGraph: source.fixture.construction.graph, sourceGeneration: source.generation!, materialSource: source.materials.file,
           members: family.members.map(member => ({ documentId: member.documentId, graph: member.construction.graph, generation: member.lineage })) };
         if (composition?.schemaVersion === "0.5.0" && !source.materials.awningFabric) throw new Error("Awning variation requires its saved fabric source.");
-        familySource.current = familyBase.sourceGraph.schemaVersion === "0.15.0" || familyBase.members.some(member => member.graph.schemaVersion === "0.15.0") ? { ...familyBase, schemaVersion: "0.13.0", ...(composition ? { initialComposition: composition } : {}), ...(source.materials.awningFabric ? { awningFabric: source.materials.awningFabric } : {}) }
+        familySource.current = pierVariation ? { ...familyBase, schemaVersion: "0.14.0", initialPierVariation: pierVariation, ...(composition ? { initialComposition: composition } : {}), ...(source.materials.awningFabric ? { awningFabric: source.materials.awningFabric } : {}) }
+          : familyBase.sourceGraph.schemaVersion === "0.15.0" || familyBase.members.some(member => member.graph.schemaVersion === "0.15.0") ? { ...familyBase, schemaVersion: "0.13.0", ...(composition ? { initialComposition: composition } : {}), ...(source.materials.awningFabric ? { awningFabric: source.materials.awningFabric } : {}) }
           : composition?.schemaVersion === "0.6.0" ? { ...familyBase, schemaVersion: "0.12.0", initialComposition: composition, ...(source.materials.awningFabric ? { awningFabric: source.materials.awningFabric } : {}) }
           : familyBase.sourceGraph.schemaVersion === "0.14.0" && source.materials.awningFabric ? { ...familyBase, schemaVersion: "0.10.0", awningFabric: source.materials.awningFabric, ...(composition ? { initialComposition: composition } : {}) }
           : composition?.schemaVersion === "0.5.0" ? { ...familyBase, schemaVersion: "0.9.0", awningFabric: source.materials.awningFabric!, initialComposition: composition }
@@ -516,8 +520,8 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   const updateFamilyMember = useCallback((session: BayConstructionSession) => {
     const source = familySource.current, id = memberEditId.current;
     if (!source || !id || session.graph.documentId !== id || !session.generation || session.materials.file.contentHash !== source.materialSource.contentHash) return;
-    const assignment = (source.schemaVersion === "0.11.0" || source.schemaVersion === "0.12.0" || source.schemaVersion === "0.13.0") ? source.fabricAssignments?.members.find(member => member.documentId === id) : undefined;
-    const expectedFabric = assignment?.mode === "override" ? assignment.fabric : source.schemaVersion === "0.8.0" || source.schemaVersion === "0.9.0" || source.schemaVersion === "0.10.0" || source.schemaVersion === "0.11.0" || source.schemaVersion === "0.12.0" || source.schemaVersion === "0.13.0" ? source.awningFabric : undefined;
+    const assignment = (source.schemaVersion === "0.11.0" || source.schemaVersion === "0.12.0" || source.schemaVersion === "0.13.0" || source.schemaVersion === "0.14.0") ? source.fabricAssignments?.members.find(member => member.documentId === id) : undefined;
+    const expectedFabric = assignment?.mode === "override" ? assignment.fabric : source.schemaVersion === "0.8.0" || source.schemaVersion === "0.9.0" || source.schemaVersion === "0.10.0" || source.schemaVersion === "0.11.0" || source.schemaVersion === "0.12.0" || source.schemaVersion === "0.13.0" || source.schemaVersion === "0.14.0" ? source.awningFabric : undefined;
     if (session.materials.awningFabric?.contentHash !== expectedFabric?.contentHash) return;
     const currentMember = source.members.find(member => member.documentId === id);
     if (!currentMember) return;
@@ -534,7 +538,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     const source = familySource.current, materials = current.current?.materials, member = source?.members[memberIndex];
     if (!source || !materials || !member || pending || saving) return;
     memberEditId.current = member.documentId;
-    const assignment = (source.schemaVersion === "0.11.0" || source.schemaVersion === "0.12.0" || source.schemaVersion === "0.13.0") ? source.fabricAssignments?.members.find(value => value.documentId === member.documentId) : undefined;
+    const assignment = (source.schemaVersion === "0.11.0" || source.schemaVersion === "0.12.0" || source.schemaVersion === "0.13.0" || source.schemaVersion === "0.14.0") ? source.fabricAssignments?.members.find(value => value.documentId === member.documentId) : undefined;
     const memberMaterials = assignment?.mode === "override" ? { ...materials, awningFabric: assignment.fabric } : materials;
     setMemberEdit({ documentId: member.documentId, number: memberIndex + 1, session: { graph: member.graph, generation: member.generation,
       materials: memberMaterials, history: memberHistories.current.get(member.documentId) ?? null } });
@@ -547,7 +551,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       compiler.current ??= new BayConstructionClient(new Worker(new URL("../compiler/bayConstruction.worker.ts", import.meta.url), { type: "module" }));
       const results = [];
       for (const member of source.members) { results.push(await compiler.current.evaluate(member.graph)); if (!isCurrent()) return; }
-      const candidate = await prepareConstructionFamilyFixture(base, results, original.materials, signal, (source.schemaVersion === "0.11.0" || source.schemaVersion === "0.12.0" || source.schemaVersion === "0.13.0") ? source.fabricAssignments : undefined);
+      const candidate = await prepareConstructionFamilyFixture(base, results, original.materials, signal, (source.schemaVersion === "0.11.0" || source.schemaVersion === "0.12.0" || source.schemaVersion === "0.13.0" || source.schemaVersion === "0.14.0") ? source.fabricAssignments : undefined);
       if (!isCurrent()) { candidate.familyRuntime.dispose(); return; }
       owners.current.set(candidate, { fixture: candidate, leases: 0, retired: false });
       let prepared: PreparedBuildingFixtureView | undefined;
@@ -563,11 +567,11 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   }
   async function changeFamilyFabric(pattern: "solid" | "striped" | null, primary?: [number, number, number], secondary?: [number, number, number]) {
     const source = familySource.current, original = current.current, member = source?.members[memberIndex];
-    if (!source || !original || !member || source.schemaVersion === "0.14.0" || !("awningFabric" in source) || !source.awningFabric || !familyPreview) return;
+    if (!source || !original || !member || !("awningFabric" in source) || !source.awningFabric || !familyPreview) return;
     const inheritedFabric = source.awningFabric;
     await perform(async (token, signal) => {
       const isCurrent = () => alive.current && sequence.current === token && !signal.aborted && current.current === original && familySource.current === source;
-      const prior = (source.schemaVersion === "0.11.0" || source.schemaVersion === "0.12.0" || source.schemaVersion === "0.13.0") && source.fabricAssignments ? source.fabricAssignments.members : source.members.map(item => ({ documentId: item.documentId, mode: "inherit" as const }));
+      const prior = (source.schemaVersion === "0.11.0" || source.schemaVersion === "0.12.0" || source.schemaVersion === "0.13.0" || source.schemaVersion === "0.14.0") && source.fabricAssignments ? source.fabricAssignments.members : source.members.map(item => ({ documentId: item.documentId, mode: "inherit" as const }));
       const selected = prior.find(item => item.documentId === member.documentId)!;
       const oldFabric = selected.mode === "override" ? selected.fabric : inheritedFabric;
       const replacement = pattern === null ? { documentId: member.documentId, mode: "inherit" as const }
@@ -587,7 +591,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         if (!isCurrent()) { prepared?.discard(); retire(candidate); return; }
         const finalize = prepared?.commit(), previous = shown.current;
         shown.current = candidate; setAccepted(candidate);
-        familySource.current = source.schemaVersion === "0.12.0" || source.schemaVersion === "0.13.0" ? { ...source, fabricAssignments: assignments } : { ...source, schemaVersion: "0.11.0", fabricAssignments: assignments };
+        familySource.current = source.schemaVersion === "0.12.0" || source.schemaVersion === "0.13.0" || source.schemaVersion === "0.14.0" ? { ...source, fabricAssignments: assignments } : { ...source, schemaVersion: "0.11.0", fabricAssignments: assignments };
         setFamilyFabricView({ inherited: inheritedFabric, memberIds: source.members.map(item => item.documentId), assignments }); setFamilyDirty(true);
         if (previous && previous !== original.fixture && previous !== candidate) retire(previous);
         finalize?.();
@@ -617,10 +621,9 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       const previous = current.current;
       const isCurrent = () => alive.current && sequence.current === token && !signal.aborted && current.current === previous;
       const source = await readConstructionFamilySource(JSON.parse(await file.text()));
-      if (source.schemaVersion === "0.14.0") throw new Error("Pier variation families are not yet supported in the family workspace.");
       if (!isCurrent()) return;
       const parsed = await parseBuildingSourceFile(source.materialSource);
-      const materials = { ...parsed, file: source.materialSource, ...(source.schemaVersion === "0.8.0" || source.schemaVersion === "0.9.0" || source.schemaVersion === "0.10.0" || source.schemaVersion === "0.11.0" || (source.schemaVersion === "0.12.0" || source.schemaVersion === "0.13.0") && source.awningFabric ? { awningFabric: source.awningFabric } : {}) };
+      const materials = { ...parsed, file: source.materialSource, ...(source.schemaVersion === "0.8.0" || source.schemaVersion === "0.9.0" || source.schemaVersion === "0.10.0" || source.schemaVersion === "0.11.0" || (source.schemaVersion === "0.12.0" || source.schemaVersion === "0.13.0" || source.schemaVersion === "0.14.0") && source.awningFabric ? { awningFabric: source.awningFabric } : {}) };
       if (!isCurrent()) return;
       compiler.current ??= new BayConstructionClient(new Worker(new URL("../compiler/bayConstruction.worker.ts", import.meta.url), { type: "module" }));
       const originalResult = await compiler.current.evaluate(source.sourceGraph);
@@ -633,7 +636,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         original = await prepareBayConstructionFixture(base, originalResult, materials, signal);
         if (!isCurrent()) { original.familyRuntime.dispose(); return; }
         owners.current.set(original, { fixture: original, leases: 0, retired: false });
-        candidate = await prepareConstructionFamilyFixture(base, results, materials, signal, (source.schemaVersion === "0.11.0" || source.schemaVersion === "0.12.0" || source.schemaVersion === "0.13.0") ? source.fabricAssignments : undefined);
+        candidate = await prepareConstructionFamilyFixture(base, results, materials, signal, (source.schemaVersion === "0.11.0" || source.schemaVersion === "0.12.0" || source.schemaVersion === "0.13.0" || source.schemaVersion === "0.14.0") ? source.fabricAssignments : undefined);
         if (!isCurrent()) { candidate.familyRuntime.dispose(); retire(original); return; }
         owners.current.set(candidate, { fixture: candidate, leases: 0, retired: false });
         if (viewer.current) prepared = await viewer.current(candidate, { signal });
@@ -645,8 +648,8 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         setSelected(source.sourceGraph.nodes[0].id); setGeneration(source.sourceGeneration);
         setGenerationControls(controls => ({ ...controls, ...controlsFrom(source.sourceGeneration) }));
         const composition = "initialComposition" in source ? source.initialComposition : undefined;
-        setFamilyFabricView("awningFabric" in source && source.awningFabric ? { inherited: source.awningFabric, memberIds: source.members.map(member => member.documentId), ...((source.schemaVersion === "0.11.0" || source.schemaVersion === "0.12.0" || source.schemaVersion === "0.13.0") && source.fabricAssignments ? { assignments: source.fabricAssignments } : {}) } : null);
-        setFamilySeed(source.familySeed); setFamilyVariation(composition ? { ...composition.source.policy, groupedBays: "groupedBays" in composition.source.policy ? composition.source.policy.groupedBays : false, storefrontLights: "storefrontLights" in composition.source.policy ? composition.source.policy.storefrontLights : false, massing: "massing" in composition.source.policy ? composition.source.policy.massing : false, awnings: "awnings" in composition.source.policy ? composition.source.policy.awnings : false, entranceBay: "entranceBay" in composition.source.policy ? composition.source.policy.entranceBay : false } : { openings: false, frontage: false, roof: false, groupedBays: false, storefrontLights: false, massing: false, awnings: false, entranceBay: false }); setFamilyDetails(source.members.map(member => describeFamilyMember(member.graph))); setPreviewNode(null); setFamilyPreview(true); setFamilyDirty(false); chooseFrame(null);
+        setFamilyFabricView("awningFabric" in source && source.awningFabric ? { inherited: source.awningFabric, memberIds: source.members.map(member => member.documentId), ...((source.schemaVersion === "0.11.0" || source.schemaVersion === "0.12.0" || source.schemaVersion === "0.13.0" || source.schemaVersion === "0.14.0") && source.fabricAssignments ? { assignments: source.fabricAssignments } : {}) } : null);
+        setFamilySeed(source.familySeed); setFamilyPierVariation(source.schemaVersion === "0.14.0" && source.initialPierVariation.source.enabled); setFamilyVariation(composition ? { ...composition.source.policy, groupedBays: "groupedBays" in composition.source.policy ? composition.source.policy.groupedBays : false, storefrontLights: "storefrontLights" in composition.source.policy ? composition.source.policy.storefrontLights : false, massing: "massing" in composition.source.policy ? composition.source.policy.massing : false, awnings: "awnings" in composition.source.policy ? composition.source.policy.awnings : false, entranceBay: "entranceBay" in composition.source.policy ? composition.source.policy.entranceBay : false } : { openings: false, frontage: false, roof: false, groupedBays: false, storefrontLights: false, massing: false, awnings: false, entranceBay: false }); setFamilyDetails(source.members.map(member => describeFamilyMember(member.graph))); setPreviewNode(null); setFamilyPreview(true); setFamilyDirty(false); chooseFrame(null);
         setDirty(false); setOpeningDirty(false); setError(null); referenceSequence.current++; setReferenceDraft(null);
         const { contentHash: _hash, ...payload } = source; void _hash; familySource.current = payload;
         memberHistories.current.clear(); setMemberIndex(0);
@@ -876,9 +879,11 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
           <label><input type="checkbox" checked={familyVariation.awnings} onChange={event => { const checked = event.currentTarget.checked; setFamilyVariation(value => ({ ...value, awnings: checked })); }} /> Additional storefront awnings</label>
           <label><input type="checkbox" checked={familyVariation.massing} onChange={event => { const checked = event.currentTarget.checked; setFamilyVariation(value => ({ ...value, massing: checked })); }} /> Storey and bay counts</label>
           <label><input type="checkbox" checked={familyVariation.roof} onChange={event => { const checked = event.currentTarget.checked; setFamilyVariation(value => ({ ...value, roof: checked })); }} /> Cornice and parapet</label>
+          <label><input type="checkbox" checked={familyPierVariation} onChange={event => setFamilyPierVariation(event.currentTarget.checked)} /> Upper facade piers</label>
         </fieldset>
         {familyVariation.entranceBay ? <p>Entrance variation requires an unchanged entrance bay and a storefront without authored awnings. Turn off ground-frontage and additional-awning variation.</p> : null}
-        {generationControls.lockOpenings && (familyVariation.openings || familyVariation.frontage || familyVariation.groupedBays || familyVariation.storefrontLights || familyVariation.awnings || familyVariation.entranceBay) ? <p>Unlock openings to vary opening heads, grouped windows, sash, storefronts, entrances or awnings.</p> : null}
+        {familyPierVariation ? <p>Vary demo piers across the family. Existing authored piers are retained; openings need enough clearance.</p> : null}
+        {generationControls.lockOpenings && (familyVariation.openings || familyVariation.frontage || familyVariation.groupedBays || familyVariation.storefrontLights || familyVariation.awnings || familyVariation.entranceBay || familyPierVariation) ? <p>Unlock openings to vary opening heads, grouped windows, sash, storefronts, entrances, awnings or piers.</p> : null}
         <div className="control-panel__actions">{familyPreview ? <button type="button" disabled={pending || saving || !viewerReady || familyDirty} onClick={() => void preview(null)}>Return to building</button>
           : <button type="button" disabled={disabled || dirty || !viewerReady || !generation || Boolean(previewNode) || !familySeed.trim()} onClick={() => void previewFamily()}>Preview family</button>}</div>
         <div className="control-panel__actions"><button type="button" disabled={pending || saving || !familyPreview} onClick={() => void saveFamily()}>Save family</button>
