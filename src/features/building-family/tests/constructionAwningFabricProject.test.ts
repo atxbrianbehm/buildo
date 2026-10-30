@@ -5,7 +5,7 @@ import { createBayConstructionProject, readBayConstructionProject } from "../sta
 import { createAssemblyHallFixture } from "../ui/assemblyHallFixture";
 import { createBayConstructionMaterials } from "../ui/bayConstructionFixture";
 import { defaultBuildingPromptControls } from "../state/buildingStore";
-import { readConstructionCheckpoint } from "../state/constructionCheckpoint";
+import { createConstructionCheckpoint, readConstructionCheckpoint } from "../state/constructionCheckpoint";
 import { hashCanonicalJson } from "../core/contentHash";
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { withConstructionStorefrontDivision } from "../core/constructionStorefrontDivisionGraph";
@@ -31,7 +31,8 @@ it("stores a separate fabric source without changing the saved atlas during stru
     await expect(readBayConstructionProject({ ...first, schemaVersion: "0.13.0" })).rejects.toThrow();
     const checkpoint = { schemaVersion: "0.1.0", kind: "construction-source-checkpoint", workspaceDocumentId: "fabric-proof",
       createdAt: "2026-10-30T00:00:00.000Z", project: second };
-    await expect(readConstructionCheckpoint({ ...checkpoint, contentHash: await hashCanonicalJson(checkpoint) })).rejects.toThrow(/cannot yet retain/);
+    const recovered = await readConstructionCheckpoint({ ...checkpoint, contentHash: await hashCanonicalJson(checkpoint) });
+    expect(recovered.materials.awningFabric).toEqual(fabric);
     expect((await readBayConstructionProject(JSON.parse(JSON.stringify(old)))).project).toEqual(old);
     const storefront = withConstructionStorefrontDivision(withConstructionStorefront(graph, 1), { displayLights: 2, transomLights: 3 });
     const awningGraph = withConstructionAwnings(storefront, [{ bayIndex: 0, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }]);
@@ -39,6 +40,8 @@ it("stores a separate fabric source without changing the saved atlas during stru
     expect(awningProject.schemaVersion).toBe("0.15.0");
     const awningReopened = (await readBayConstructionProject(JSON.parse(JSON.stringify(awningProject)))).project;
     expect(awningReopened).toEqual(awningProject);
+    const awningCheckpoint = await createConstructionCheckpoint("awning-workspace", awningGraph, materials.file, undefined, fabric);
+    expect((await readConstructionCheckpoint(JSON.parse(JSON.stringify(awningCheckpoint)))).materials.awningFabric).toEqual(fabric);
     expect((await evaluateConstruction(awningReopened.graph)).ir.meshBatches.filter(batch => batch.role.startsWith("awning."))).toHaveLength(2);
     const widened = structuredClone(awningGraph); widened.nodes.find(node => node.type === "Footprint")!.parameters.widthM += 1;
     const widenedProject = await createBayConstructionProject(widened, materials.file, undefined, fabric);

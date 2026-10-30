@@ -170,7 +170,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     const previous = current.current;
     const nextGeneration = lineage === undefined ? previous?.generation ?? null : lineage;
     if (previous && shown.current === previous.fixture && JSON.stringify(previous.fixture.construction.graph) === JSON.stringify(graph) &&
-        previous.materials.file.contentHash === materials.file.contentHash && canonicalJson(previous.generation) === canonicalJson(nextGeneration)) {
+        previous.materials.file.contentHash === materials.file.contentHash && previous.materials.awningFabric?.contentHash === materials.awningFabric?.contentHash && canonicalJson(previous.generation) === canonicalJson(nextGeneration)) {
       setDraft(graph); setFields(fieldsFor(graph)); setDirty(false); setOpeningDirty(false); setGroupDirty(false); setError(null);
       if (historyAction === "open") { history.record(graph, materials.file.contentHash, true, nextGeneration); onSessionChange({ graph, materials, history: history.snapshot(), generation: nextGeneration }); }
       return;
@@ -271,8 +271,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   async function open(file: File) {
     await perform(async (token, signal) => {
       const { project, materials } = await readBayConstructionProject(JSON.parse(await file.text()));
-      if (project.awningFabric) throw new Error("This project contains supplemental awning fabric that the editor cannot yet retain. The current building is unchanged.");
-      await publish(project.graph, { ...materials, file: project.materialSource }, token, signal, "open", project.generation ?? null);
+      await publish(project.graph, { ...materials, file: project.materialSource, ...(project.awningFabric ? { awningFabric: project.awningFabric } : {}) }, token, signal, "open", project.generation ?? null);
     });
   }
   async function applyOpeningWidth(text: string | null) {
@@ -305,7 +304,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
           memberCount: edit.memberCount, memberWidthM: Number(edit.memberWidthM), pierWidthM: Number(edit.pierWidthM) });
       }
       let graph: BayConstructionGraph;
-      if (groups.length || original.schemaVersion === "0.12.0") graph = withConstructionGroupedBays(original, groups);
+      if (groups.length || ["0.12.0", "0.13.0"].includes(original.schemaVersion)) graph = withConstructionGroupedBays(original, groups);
       else if (original.schemaVersion === "0.11.0") {
         const { upperBayGroups: _removed, ...prior } = original; void _removed;
         graph = BayConstructionGraphSchema.parse({ ...prior, schemaVersion: "0.10.0" });
@@ -319,6 +318,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     if (!acceptedSource || dirty) return;
     const controls = structuredClone(generationControls), reference = referenceDraft ? structuredClone(referenceDraft) : undefined;
     await perform(async (token, signal) => {
+      if (acceptedSource.materials.awningFabric) throw new Error("Generation cannot yet retain supplemental awning fabric. Save the current building before generating a separate one.");
       const result = await resolveWorkbenchGeneration(acceptedSource.fixture.construction.graph, acceptedSource.generation, controls, reroll, reference);
       if (signal.aborted) return;
       const templateSpec = acceptedSource.generation?.materialPlan.templateSpec ?? base.spec;
@@ -391,6 +391,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     const source = current.current;
     if (!source?.generation || dirty) return;
     await perform(async (token, signal) => {
+      if (source.materials.awningFabric) throw new Error("Family generation cannot yet retain supplemental awning fabric.");
       const isCurrent = () => alive.current && sequence.current === token && !signal.aborted && current.current === source;
       const plan = resolveConstructionFamilyPlan({ schemaVersion: "0.1.0", kind: "construction-family-request",
         familyId: "preview_family", familySeed, graph: source.fixture.construction.graph });
@@ -537,7 +538,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     if (!source) return;
     setSaving(true); setError(null);
     try {
-      const project = await createBayConstructionProject(source.fixture.construction.graph, source.materials.file, source.generation ?? undefined);
+      const project = await createBayConstructionProject(source.fixture.construction.graph, source.materials.file, source.generation ?? undefined, source.materials.awningFabric);
       if (!alive.current || current.current !== source) return;
       downloadJson(project, `${project.graph.documentId}.buildo-construction.json`);
     } catch (failure) { if (alive.current) setError(problem(failure)); }
@@ -609,7 +610,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
               </select>
             </label> : null}
             {"input" in node && node.type !== "Storeys" ? <label className="control-panel__field-wide construction-contribution"><input type="checkbox" aria-label="Bypass selected node" checked={Boolean(node.bypassed)}
-              onChange={event => { setDraft(graph => ({ ...graph, schemaVersion: ["0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0"].includes(graph.schemaVersion) ? graph.schemaVersion : "0.2.0" })); replace({ ...node, bypassed: event.currentTarget.checked }); }} /><span>Bypass this node</span></label> : null}
+              onChange={event => { setDraft(graph => ({ ...graph, schemaVersion: ["0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0"].includes(graph.schemaVersion) ? graph.schemaVersion : "0.2.0" })); replace({ ...node, bypassed: event.currentTarget.checked }); }} /><span>Bypass this node</span></label> : null}
             {"inputs" in node ? draft.nodes.filter(value => value.id !== node.id && constructionOutputSocket(value.type) === "geometry").map(value =>
               <label className="control-panel__field-wide construction-contribution" key={value.id}>
                 <input type="checkbox" aria-label={`Include ${displayName(value)}`} checked={node.inputs.some(link => link.nodeId === value.id)}

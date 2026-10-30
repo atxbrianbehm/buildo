@@ -91,11 +91,11 @@ export class ConstructionCheckpointQueue {
     initial?: { sourceKey: string; projectHash: string }) {
     this.acknowledgedKey = initial?.sourceKey ?? null; this.acknowledgedHash = initial?.projectHash ?? null;
   }
-  save(sourceKey: string, graph: unknown, materialSource: unknown, generation?: unknown): void {
+  save(sourceKey: string, graph: unknown, materialSource: unknown, generation?: unknown, awningFabric?: unknown): void {
     if (this.closed) return;
     if (!this.running && !this.latest && sourceKey === this.acknowledgedKey) return;
     // The codec owns graph/material JSON before its first await. Superseded promises are observed too.
-    const record = createConstructionCheckpoint(this.writer.workspaceDocumentId, graph, materialSource, generation);
+    const record = createConstructionCheckpoint(this.writer.workspaceDocumentId, graph, materialSource, generation, awningFabric);
     void record.catch(() => undefined);
     this.latest = { sequence: ++this.sequence, sourceKey, record }; this.notify({ state: "saving" }); this.pump();
   }

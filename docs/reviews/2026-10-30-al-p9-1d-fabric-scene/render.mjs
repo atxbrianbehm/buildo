@@ -35,7 +35,7 @@ try {
       const fabric = await createConstructionAwningFabric({ schemaVersion: "0.1.0", kind: "construction-awning-fabric-request", seed: "demo-fabric", pattern: mode,
         primary: [224, 213, 187], secondary: [69, 99, 78], physicalSizeM: [1, 1] });
       const fabricRuntime = await prepareConstructionAwningFabricRuntime(fabric), fabricLease = fabricRuntime.acquire();
-      const add = (part, role, x = 0) => { const material = role === "canopy" ? fabricLease.material : new THREE.MeshStandardMaterial({ color: materials[role], roughness: .8, side: THREE.DoubleSide }); const mesh = new THREE.Mesh(geometry(part), material); mesh.position.x = x; scene.add(mesh); };
+      const add = (part, role, x = 0) => { const material = role === "canopy" ? fabricLease.getMaterial() : new THREE.MeshStandardMaterial({ color: materials[role], roughness: .8, side: THREE.DoubleSide }); const mesh = new THREE.Mesh(geometry(part), material); mesh.position.x = x; scene.add(mesh); };
       add(constructionFacadeSolid(wallScopes), "wall");
       for (const plan of plans) {
         const division = resolveConstructionStorefrontDivision({ schemaVersion: "0.1.0", kind: "construction-storefront-division-request", storefront: plan,
