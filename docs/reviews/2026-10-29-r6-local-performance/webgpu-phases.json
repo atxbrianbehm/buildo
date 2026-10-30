@@ -1,0 +1,51 @@
+{
+  "api": "webgpu",
+  "loadMs": 5882,
+  "samples": [
+    {
+      "openMemberMs": 676,
+      "editMs": 669,
+      "returnMs": 2489,
+      "saveMs": 2090
+    },
+    {
+      "openMemberMs": 562,
+      "editMs": 676,
+      "returnMs": 2555,
+      "saveMs": 2020
+    },
+    {
+      "openMemberMs": 579,
+      "editMs": 687,
+      "returnMs": 2543,
+      "saveMs": 1953
+    }
+  ],
+  "phases": [
+    {
+      "compileMs": 248.2000000178814,
+      "fixtureMs": 1501.9000000059605,
+      "viewerMs": 561.6999999880791
+    },
+    {
+      "compileMs": 277.5,
+      "fixtureMs": 1534,
+      "viewerMs": 564.4000000059605
+    },
+    {
+      "compileMs": 244.60000002384186,
+      "fixtureMs": 1535.2999999821186,
+      "viewerMs": 581.3000000119209
+    }
+  ],
+  "system": {
+    "hardwareConcurrency": 64,
+    "deviceMemory": 32,
+    "adapter": {
+      "vendor": "nvidia",
+      "architecture": "lovelace",
+      "description": ""
+    }
+  },
+  "errors": []
+}

@@ -1,0 +1,47 @@
+{
+  "api": "webgl",
+  "loadMs": 4952,
+  "samples": [
+    {
+      "openMemberMs": 666,
+      "editMs": 538,
+      "returnMs": 1966,
+      "saveMs": 994
+    },
+    {
+      "openMemberMs": 547,
+      "editMs": 524,
+      "returnMs": 1955,
+      "saveMs": 898
+    },
+    {
+      "openMemberMs": 562,
+      "editMs": 541,
+      "returnMs": 1970,
+      "saveMs": 966
+    }
+  ],
+  "phases": [
+    {
+      "compileMs": 248.59999999403954,
+      "fixtureMs": 1490.0999999940395,
+      "viewerMs": 103.30000001192093
+    },
+    {
+      "compileMs": 261.80000001192093,
+      "fixtureMs": 1459.800000011921,
+      "viewerMs": 101.7999999821186
+    },
+    {
+      "compileMs": 238.7000000178814,
+      "fixtureMs": 1499.2999999821186,
+      "viewerMs": 105.5
+    }
+  ],
+  "system": {
+    "hardwareConcurrency": 64,
+    "deviceMemory": 32,
+    "adapter": null
+  },
+  "errors": []
+}
