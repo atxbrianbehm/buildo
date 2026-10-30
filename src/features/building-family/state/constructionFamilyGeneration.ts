@@ -41,6 +41,8 @@ export async function resolveConstructionFamily(input: unknown, lineageInput: un
   abort(signal);
   const original = await readConstructionGenerationLineage(lineage); abort(signal);
   const composition = compositionInput === undefined ? null : readConstructionFamilyCompositionPlan(compositionInput);
+  if (plan.source.graph.storefrontDivision && composition?.source.policy.frontage)
+    throw new Error("Ground-frontage variation cannot currently coexist with retained storefront divisions. Disable that variation or reset the divisions.");
   if (plan.source.graph.upperBayGroups?.length && composition?.source.policy.openings)
     throw new Error("Opening-head variation cannot currently coexist with retained grouped bays. Disable that variation or explicitly remove the groups.");
   const varyGroups = composition?.schemaVersion === "0.2.0" && composition.source.policy.groupedBays;

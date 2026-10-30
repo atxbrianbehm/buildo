@@ -410,7 +410,9 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
           sourceDocumentId: source.fixture.construction.graph.documentId, familySeed: plan.source.familySeed,
           sourceGraph: source.fixture.construction.graph, sourceGeneration: source.generation!, materialSource: source.materials.file,
           members: family.members.map(member => ({ documentId: member.documentId, graph: member.construction.graph, generation: member.lineage })) };
-        familySource.current = composition?.schemaVersion === "0.2.0" ? { ...familyBase, schemaVersion: "0.4.0", initialComposition: composition }
+        familySource.current = [familyBase.sourceGraph, ...familyBase.members.map(member => member.graph)].some(graph => graph.schemaVersion === "0.12.0")
+          ? { ...familyBase, schemaVersion: "0.5.0", ...(composition ? { initialComposition: composition } : {}) }
+          : composition?.schemaVersion === "0.2.0" ? { ...familyBase, schemaVersion: "0.4.0", initialComposition: composition }
           : composition ? { ...familyBase, schemaVersion: "0.3.0", initialComposition: composition } : { ...familyBase, schemaVersion: "0.2.0" };
         setFamilyDetails(familyBase.members.map(member => describeFamilyMember(member.graph)));
         memberHistories.current.clear(); setMemberIndex(0);
@@ -425,8 +427,9 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     const currentMember = source.members.find(member => member.documentId === id);
     if (!currentMember) return;
     if (canonicalJson(currentMember.graph) !== canonicalJson(session.graph) || canonicalJson(currentMember.generation) !== canonicalJson(session.generation)) {
-      familySource.current = { ...source, members: source.members.map(member => member.documentId === id
-        ? { documentId: id, graph: session.graph, generation: session.generation! } : member) };
+      const members = source.members.map(member => member.documentId === id
+        ? { documentId: id, graph: session.graph, generation: session.generation! } : member);
+      familySource.current = session.graph.schemaVersion === "0.12.0" ? { ...source, schemaVersion: "0.5.0", members } : { ...source, members };
       setFamilyDetails(familySource.current.members.map(member => describeFamilyMember(member.graph)));
       setFamilyDirty(true);
     }
@@ -509,7 +512,8 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         shown.current = candidate; setAccepted(candidate); setDraft(source.sourceGraph); setFields(fieldsFor(source.sourceGraph));
         setSelected(source.sourceGraph.nodes[0].id); setGeneration(source.sourceGeneration);
         setGenerationControls(controls => ({ ...controls, ...controlsFrom(source.sourceGeneration) }));
-        setFamilySeed(source.familySeed); setFamilyVariation(source.schemaVersion === "0.4.0" ? source.initialComposition.source.policy : source.schemaVersion === "0.3.0" ? { ...source.initialComposition.source.policy, groupedBays: false } : { openings: false, frontage: false, roof: false, groupedBays: false }); setFamilyDetails(source.members.map(member => describeFamilyMember(member.graph))); setPreviewNode(null); setFamilyPreview(true); setFamilyDirty(false); chooseFrame(null);
+        const composition = "initialComposition" in source ? source.initialComposition : undefined;
+        setFamilySeed(source.familySeed); setFamilyVariation(composition ? { ...composition.source.policy, groupedBays: "groupedBays" in composition.source.policy ? composition.source.policy.groupedBays : false } : { openings: false, frontage: false, roof: false, groupedBays: false }); setFamilyDetails(source.members.map(member => describeFamilyMember(member.graph))); setPreviewNode(null); setFamilyPreview(true); setFamilyDirty(false); chooseFrame(null);
         setDirty(false); setOpeningDirty(false); setError(null); referenceSequence.current++; setReferenceDraft(null);
         const { contentHash: _hash, ...payload } = source; void _hash; familySource.current = payload;
         memberHistories.current.clear(); setMemberIndex(0);
