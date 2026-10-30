@@ -12,12 +12,23 @@ import { withConstructionStorefront } from "../core/constructionStorefrontGraph"
 import { withConstructionRoundHead } from "../core/constructionRoundHeadVocabulary";
 import { withConstructionFacadePiers, withoutConstructionFacadePiers } from "../core/constructionFacadePierGraph";
 import { withConstructionOpeningWidth, withoutConstructionOpeningWidth } from "../core/constructionOpeningEditGraph";
+import { withConstructionGroupedBays } from "../core/constructionGroupedBayGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
 import { evaluateConstructionFacadePierStudy } from "../compiler/evaluateConstructionFacadePierStudy";
 import { BayConstructionWorkerRequestSchema, BayConstructionWorkerReplySchema } from "../compiler/bayConstructionWorkerProtocol";
 
 const directive = { pierWidthM: 0.28, projectionM: 0.18, endHeightM: 0.15, clearanceM: 0.04 };
 describe("facade pier graph and worker", () => {
+  it("edits grouped windows while retaining facade piers and rejects a collision", async () => {
+    const graph = withConstructionFacadePiers(createBuildingConstructionGraph("pier_group"), directive), original = structuredClone(graph);
+    const group = { storeysNodeId: "facade", floorIndex: 1, bayIndex: 0, memberCount: 2, memberWidthM: 0.55, pierWidthM: 0.24 };
+    const edited = withConstructionGroupedBays(graph, [group]);
+    expect(edited.schemaVersion).toBe("0.15.0"); expect(edited.facadePiers).toEqual(directive);
+    expect((await evaluateConstruction(edited)).ir.meshBatches.some(batch => batch.role === "facade-pier")).toBe(true);
+    expect(withConstructionGroupedBays(edited, []).facadePiers).toEqual(directive);
+    await expect(evaluateConstruction(withConstructionGroupedBays(graph, [{ ...group, memberWidthM: 0.9 }]))).rejects.toThrow(/conflicts with an opening clearance/);
+    expect(graph).toEqual(original);
+  });
   it("edits a local window while retaining piers and rejects a conflicting width", async () => {
     const graph = withConstructionFacadePiers(createBuildingConstructionGraph("pier_local"), directive), original = structuredClone(graph);
     const target = { documentId: graph.documentId, storeysNodeId: "facade", windowNodeId: "window", face: "front" as const, floorIndex: 1, bayIndex: 1 };

@@ -327,7 +327,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
           memberCount: edit.memberCount, memberWidthM: Number(edit.memberWidthM), pierWidthM: Number(edit.pierWidthM) });
       }
       let graph: BayConstructionGraph;
-      if (groups.length || ["0.12.0", "0.13.0", "0.14.0"].includes(original.schemaVersion)) graph = withConstructionGroupedBays(original, groups);
+      if (groups.length || ["0.12.0", "0.13.0", "0.14.0", "0.15.0"].includes(original.schemaVersion)) graph = withConstructionGroupedBays(original, groups);
       else if (original.schemaVersion === "0.11.0") {
         const { upperBayGroups: _removed, ...prior } = original; void _removed;
         graph = BayConstructionGraphSchema.parse({ ...prior, schemaVersion: "0.10.0" });
@@ -788,7 +788,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         onApply={text=>void applyOpeningWidth(text)} onReset={()=>void applyOpeningWidth(null)} onDraftChange={value=>{setOpeningDirty(value);if(!value)setError(null);}} /> : null}
       {buildingMode && !advancedOpen && accepted && supportsGroupedConstruction(accepted.construction.graph) ? <ConstructionGroupedBayControls
         key={`${accepted.construction.graph.nodes.find(node => node.type === "Storeys")?.parameters.count}:${accepted.construction.graph.nodes.find(node => node.type === "SplitBays")?.parameters.count}`}
-        graph={accepted.construction.graph} dirty={groupDirty} disabled={pierProtected || pending || saving || openingDirty || buildingDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode)}
+        graph={accepted.construction.graph} dirty={groupDirty} disabled={pending || saving || openingDirty || buildingDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode)}
         onDraftChange={value => { setGroupDirty(value); if (!value) setError(null); }} onApply={edit => void applyGroupedBay(edit)} /> : null}
       {buildingMode && !advancedOpen && accepted && supportsGroupedConstruction(accepted.construction.graph) && constructionHasStorefront(accepted.construction.graph) ? <ConstructionAwningControls
         graph={accepted.construction.graph} disabled={pierProtected || pending || saving || openingDirty || buildingDirty || groupDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode) || (familyMemberMode && !startingSession?.materials.awningFabric)}
