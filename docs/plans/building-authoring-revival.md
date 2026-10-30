@@ -1430,6 +1430,8 @@ The [street-segment packet plan](authored-street-segment.md) maps the current fi
 
 On October 30 the user reviewed the family against five reference images and stated that substantially more architectural variety is needed. The [reference-led language plan](architectural-language-diversity.md) makes this the next independent building/family work: real round-headed upper openings first, then authored family composition and a verified metagrinder evidence bridge. The accepted family is a starting direction, not street-ready. These packets do not waive the Phase F gate or assert upstream architectural coverage.
 
+AL.P0 now defines a validated round-headed aperture and glazing plan with owned source and deterministic replay. Six focused tests, typecheck and lint pass; [evidence](../reviews/2026-10-30-al-p0-round-head/README.md). This does not yet alter compiled geometry or the product. AL.P1 is the next packet.
+
 ### C6 — architectural variety, then deeper assemblies and materials
 
 C5 proved the path; the next work must broaden visible capability without replacing the accepted graph/compiler or collapsing everything into one milestone. The immediate C6 success case is the same authored building moving among three named procedural recipes: the accepted restrained baseline, deep reveals with thicker wall/frame/sill construction, and a projecting cornice/profile treatment. These are geometric design recipes, not sourced historical styles. Existing material/reference coverage labels remain literal.
