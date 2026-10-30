@@ -76,6 +76,7 @@ function assertTopology(current: BayConstructionGraph, generated: BayConstructio
 export async function resolveWorkbenchGeneration(currentInput: unknown, previousInput: ConstructionGenerationLineage | null,
   controlsInput: ConstructionGenerationControls, reroll = false, referenceInput?: unknown) {
   const inputGraph = structuredClone(BayConstructionGraphSchema.parse(currentInput));
+  if (inputGraph.awningSupports) throw new Error("Awning support graphs cannot yet be regenerated without losing support choices.");
   const authoredAwnings = inputGraph.awnings;
   let current = inputGraph;
   if (authoredAwnings) {

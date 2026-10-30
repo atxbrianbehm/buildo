@@ -1,3 +1,5 @@
+import { resolveConstructionAwningSupports } from "../core/constructionAwningSupports";
+import { buildConstructionAwningSupportGeometry } from "./constructionAwningSupportGeometry";
 import { resolveConstructionStorefront } from "../core/constructionStorefront";
 import { resolveConstructionOpeningWidth } from "../core/constructionOpeningEdit";
 import type { ConstructionStorefrontPlan } from "../contracts/constructionStorefront";
@@ -67,7 +69,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
   if ((grouped.length || graph.upperBayGroups?.length) && (graph.nodes.filter(node => node.type === "PlaceOpening" && !node.bypassed).length !== 1 ||
       graph.nodes.filter(node => node.type === "AssembleWindow" && !node.bypassed).length !== 1))
     throw new Error("Grouped bays require one active opening and window assembly.");
-  if (!["0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0"].includes(graph.schemaVersion)) throw new Error("Facade construction requires a supported graph version.");
+  if (!["0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0", "0.14.0"].includes(graph.schemaVersion)) throw new Error("Facade construction requires a supported graph version.");
   const nodes = new Map(graph.nodes.map(node => [node.id, node]));
   if (previewNodeId && !nodes.has(previewNodeId)) throw new Error("The preview node is missing.");
   const values = new Map<string, Promise<Value>>(), trace: BayConstructionTrace[] = [];
@@ -118,8 +120,11 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
     const translate = (part: PrimitiveGeometry): PrimitiveGeometry => ({ ...part,
       positions: part.positions.map((value, index) => index % 3 === 0 ? value + plan.centerAlongM : index % 3 === 1 ? value + cell.scope.originM[1] : value),
       bounds: shifted(part.bounds, [plan.centerAlongM, cell.scope.originM[1], 0]) });
+    const support = graph.awningSupports?.find(item => item.bayIndex === directive.bayIndex);
+    const rods = support ? buildConstructionAwningSupportGeometry(resolveConstructionAwningSupports({ schemaVersion: "0.1.0", kind: "construction-awning-support-request", awning: plan, anchorRiseM: support.anchorRiseM, thicknessM: support.thicknessM })) : [];
     return [makeMesh(node, cell, "awning.canopy", [translate(geometry.roof)], "openings", CONSTRUCTION_AWNING_FABRIC_SLOT),
-      makeMesh(node, cell, "awning.valance", [translate(geometry.valance)], "openings", CONSTRUCTION_AWNING_FABRIC_SLOT)];
+      makeMesh(node, cell, "awning.valance", [translate(geometry.valance)], "openings", CONSTRUCTION_AWNING_FABRIC_SLOT),
+      ...(support ? [makeMesh(node, cell, "awning.support", rods.map(translate), "openings", "ornament.primary")] : [])];
   }
   const samePlane = (a: Cell, b: Cell) => JSON.stringify(a.pose ? [a.pose.cosine,a.pose.sine,a.pose.x,a.pose.z] : [1,0,0,0]) === JSON.stringify(b.pose ? [b.pose.cosine,b.pose.sine,b.pose.x,b.pose.z] : [1,0,0,0]);
   const wallCells = (parts: Part[]) => parts.filter(part => part.role === "wall").flatMap(part => part.wallCells ?? (part.cell ? [part.cell] : []));
@@ -335,7 +340,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
       }
       case "EmitWall": {
         const cells = await scopes(node.input.nodeId);
-        if (["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0"].includes(graph.schemaVersion) && cells.every(cell=>cell.building)) {
+        if (["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0", "0.14.0"].includes(graph.schemaVersion) && cells.every(cell=>cell.building)) {
           const faces = new Map<string,Cell[]>(); for(const cell of cells) faces.set(cell.root,[...(faces.get(cell.root)??[]),cell]);
           value = { kind: "geometry", parts: node.bypassed ? [] : [...faces.values()].map(group=>{
             const cell={...group[0],key:group[0].root},part=makeMesh(node,cell,"wall",[constructionFacadeSolid(group.map(cell=>cell.scope),group.filter(cell=>cell.scope.opening?.roundHead).map(roundPlan))],"facade",materials.wall);
