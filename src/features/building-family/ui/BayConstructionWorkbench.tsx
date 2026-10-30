@@ -458,7 +458,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     if (canonicalJson(currentMember.graph) !== canonicalJson(session.graph) || canonicalJson(currentMember.generation) !== canonicalJson(session.generation)) {
       const members = source.members.map(member => member.documentId === id
         ? { documentId: id, graph: session.graph, generation: session.generation! } : member);
-      familySource.current = session.graph.schemaVersion === "0.12.0" && source.schemaVersion !== "0.6.0" && source.schemaVersion !== "0.7.0" ? { ...source, schemaVersion: "0.5.0", members } : { ...source, members };
+      familySource.current = session.graph.schemaVersion === "0.12.0" && source.schemaVersion !== "0.6.0" && source.schemaVersion !== "0.7.0" && source.schemaVersion !== "0.8.0" ? { ...source, schemaVersion: "0.5.0", members } : { ...source, members };
       setFamilyDetails(familySource.current.members.map(member => describeFamilyMember(member.graph)));
       setFamilyDirty(true);
     }
@@ -516,6 +516,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       const previous = current.current;
       const isCurrent = () => alive.current && sequence.current === token && !signal.aborted && current.current === previous;
       const source = await readConstructionFamilySource(JSON.parse(await file.text()));
+      if (source.schemaVersion === "0.8.0") throw new Error("This family contains supplemental awning fabric that the family workspace cannot yet retain. The current building is unchanged.");
       if (!isCurrent()) return;
       const parsed = await parseBuildingSourceFile(source.materialSource);
       const materials = { ...parsed, file: source.materialSource };
