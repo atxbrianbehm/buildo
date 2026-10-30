@@ -7,6 +7,10 @@ import { CONSTRUCTION_WINDOW_LAYOUTS, upgradeConstructionWindowVocabulary } from
 import { ConstructionBuildingControls } from "./ConstructionBuildingControls";
 import { ConstructionOpeningControls } from "./ConstructionOpeningControls";
 import { ConstructionGroupedBayControls, type GroupedBayEdit } from "./ConstructionGroupedBayControls";
+import { ConstructionFamilyFabricControls } from "./ConstructionFamilyFabricControls";
+import { createConstructionFamilyFabricAssignments } from "../materials/constructionFamilyFabric";
+import type { ConstructionFamilyFabricAssignments } from "../contracts/constructionFamilyFabric";
+import type { ConstructionAwningFabricArtifact } from "../contracts/constructionAwningFabric";
 import { ConstructionAwningControls } from "./ConstructionAwningControls";
 import { withConstructionAwningSupports } from "../core/constructionAwningSupportGraph";
 import { withConstructionAwnings } from "../core/constructionAwningGraph";
@@ -125,6 +129,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   const [familySeed, setFamilySeed] = useState("building-family-1");
   const [familyVariation, setFamilyVariation] = useState({ openings: false, frontage: false, roof: false, groupedBays: false, storefrontLights: false, massing: false, awnings: false });
   const [familyDetails, setFamilyDetails] = useState<string[]>([]);
+  const [familyFabricView, setFamilyFabricView] = useState<{ inherited: ConstructionAwningFabricArtifact; memberIds: string[]; assignments?: ConstructionFamilyFabricAssignments } | null>(null);
   const familySource = useRef<ConstructionFamilyPayload | null>(null);
   const [memberIndex, setMemberIndex] = useState(0);
   const [memberEdit, setMemberEdit] = useState<{ documentId: string; number: number; session: BayConstructionSession } | null>(null);
@@ -485,6 +490,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
           ? { ...familyBase, schemaVersion: "0.5.0", ...(composition ? { initialComposition: composition } : {}) }
           : composition?.schemaVersion === "0.2.0" ? { ...familyBase, schemaVersion: "0.4.0", initialComposition: composition }
           : composition ? { ...familyBase, schemaVersion: "0.3.0", initialComposition: composition } : { ...familyBase, schemaVersion: "0.2.0" };
+        setFamilyFabricView(source.materials.awningFabric ? { inherited: source.materials.awningFabric, memberIds: familyBase.members.map(member => member.documentId) } : null);
         setFamilyDetails(familyBase.members.map(member => describeFamilyMember(member.graph)));
         memberHistories.current.clear(); setMemberIndex(0);
         if (previous && previous !== source.fixture && previous !== candidate) retire(previous);
@@ -540,6 +546,38 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       } catch (failure) { prepared?.discard(); retire(candidate); throw failure; }
     });
   }
+  async function changeFamilyFabric(pattern: "solid" | "striped" | null, primary?: [number, number, number], secondary?: [number, number, number]) {
+    const source = familySource.current, original = current.current, member = source?.members[memberIndex];
+    if (!source || !original || !member || !("awningFabric" in source) || !familyPreview) return;
+    await perform(async (token, signal) => {
+      const isCurrent = () => alive.current && sequence.current === token && !signal.aborted && current.current === original && familySource.current === source;
+      const prior = source.schemaVersion === "0.11.0" ? source.fabricAssignments.members : source.members.map(item => ({ documentId: item.documentId, mode: "inherit" as const }));
+      const selected = prior.find(item => item.documentId === member.documentId)!;
+      const oldFabric = selected.mode === "override" ? selected.fabric : source.awningFabric;
+      const replacement = pattern === null ? { documentId: member.documentId, mode: "inherit" as const }
+        : { documentId: member.documentId, mode: "override" as const, fabric: await createConstructionAwningFabric({ ...oldFabric.source, pattern, primary, secondary }) };
+      if (!isCurrent()) return;
+      const assignments = await createConstructionFamilyFabricAssignments({ schemaVersion: "0.1.0", kind: "construction-family-fabric-assignments", familyId: source.familyId,
+        sourceDocumentId: source.sourceDocumentId, inheritedFabric: source.awningFabric, members: prior.map(item => item.documentId === member.documentId ? replacement : item) });
+      if (!isCurrent()) return;
+      const results = []; compiler.current ??= new BayConstructionClient(new Worker(new URL("../compiler/bayConstruction.worker.ts", import.meta.url), { type: "module" }));
+      for (const item of source.members) { results.push(await compiler.current.evaluate(item.graph)); if (!isCurrent()) return; }
+      const candidate = await prepareConstructionFamilyFixture(base, results, original.materials, signal, assignments);
+      if (!isCurrent()) { candidate.familyRuntime.dispose(); return; }
+      owners.current.set(candidate, { fixture: candidate, leases: 0, retired: false });
+      let prepared: PreparedBuildingFixtureView | undefined;
+      try {
+        if (viewer.current) prepared = await viewer.current(candidate, { signal });
+        if (!isCurrent()) { prepared?.discard(); retire(candidate); return; }
+        const finalize = prepared?.commit(), previous = shown.current;
+        shown.current = candidate; setAccepted(candidate);
+        familySource.current = { ...source, schemaVersion: "0.11.0", fabricAssignments: assignments };
+        setFamilyFabricView({ inherited: source.awningFabric, memberIds: source.members.map(item => item.documentId), assignments }); setFamilyDirty(true);
+        if (previous && previous !== original.fixture && previous !== candidate) retire(previous);
+        finalize?.();
+      } catch (failure) { prepared?.discard(); retire(candidate); throw failure; }
+    });
+  }
   function downloadJson(value: unknown, filename: string) {
     const url = URL.createObjectURL(new Blob([JSON.stringify(value, null, 2)], { type: "application/json" }));
     const link = document.createElement("a"); link.href = url; link.download = filename;
@@ -590,6 +628,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         setSelected(source.sourceGraph.nodes[0].id); setGeneration(source.sourceGeneration);
         setGenerationControls(controls => ({ ...controls, ...controlsFrom(source.sourceGeneration) }));
         const composition = "initialComposition" in source ? source.initialComposition : undefined;
+        setFamilyFabricView("awningFabric" in source ? { inherited: source.awningFabric, memberIds: source.members.map(member => member.documentId), ...(source.schemaVersion === "0.11.0" ? { assignments: source.fabricAssignments } : {}) } : null);
         setFamilySeed(source.familySeed); setFamilyVariation(composition ? { ...composition.source.policy, groupedBays: "groupedBays" in composition.source.policy ? composition.source.policy.groupedBays : false, storefrontLights: "storefrontLights" in composition.source.policy ? composition.source.policy.storefrontLights : false, massing: "massing" in composition.source.policy ? composition.source.policy.massing : false, awnings: "awnings" in composition.source.policy ? composition.source.policy.awnings : false } : { openings: false, frontage: false, roof: false, groupedBays: false, storefrontLights: false, massing: false, awnings: false }); setFamilyDetails(source.members.map(member => describeFamilyMember(member.graph))); setPreviewNode(null); setFamilyPreview(true); setFamilyDirty(false); chooseFrame(null);
         setDirty(false); setOpeningDirty(false); setError(null); referenceSequence.current++; setReferenceDraft(null);
         const { contentHash: _hash, ...payload } = source; void _hash; familySource.current = payload;
@@ -823,6 +862,11 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         {familyPreview ? <><div className="control-panel__fields"><label><span>Family member</span><select aria-label="Family member" value={memberIndex} disabled={pending || saving} onChange={event => setMemberIndex(Number(event.currentTarget.value))}>
           {Array.from({ length: 6 }, (_, index) => <option key={index} value={index}>Building {index + 1}</option>)}</select></label></div>
           {familyDetails[memberIndex] ? <p aria-label="Selected building details">{familyDetails[memberIndex]}</p> : null}
+          {familyFabricView ? (() => { const assignment = familyFabricView.assignments?.members.find(item => item.documentId === familyFabricView.memberIds[memberIndex]);
+            const fabric = assignment?.mode === "override" ? assignment.fabric : familyFabricView.inherited;
+            return <ConstructionFamilyFabricControls buildingNumber={memberIndex + 1} fabric={fabric} inherited={assignment?.mode !== "override"} disabled={pending || saving}
+              onApply={(pattern, primary, secondary) => void changeFamilyFabric(pattern, primary, secondary)} onReset={() => void changeFamilyFabric(null)} />;
+          })() : null}
           <div className="control-panel__actions"><button type="button" disabled={pending || saving} onClick={editFamilyMember}>Edit selected building</button></div></> : null}
         {familyDirty ? <p role="status">Family changes are unsaved. Save the family before returning to the original building or opening another family.</p> : null}
         {!generation ? <p>Generate the building once to pin its reference and material source.</p> : null}
