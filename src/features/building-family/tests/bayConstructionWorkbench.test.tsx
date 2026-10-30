@@ -708,6 +708,44 @@ it("generates, edits, locks and rerolls through the actual workbench with saved 
     } finally { view.unmount(); }
   }, 60000);
 
+  it("authors grouped openings through history and save/open without replacing materials", async () => {
+    const view = mount({ graph: createBuildingConstructionGraph(), materials });
+    try {
+      await ready();
+      fireEvent.change(screen.getByLabelText("Grouped window arrangement"), { target: { value: "2" } });
+      expect(screen.getByRole("button", { name: "Save construction" })).toBeDisabled();
+      fireEvent.click(screen.getByRole("button", { name: "Apply window arrangement" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(2), { timeout: 15000 }); await ready();
+      const edited = view.onSessionChange.mock.calls.at(-1)![0];
+      expect(edited.graph.schemaVersion).toBe("0.11.0"); expect(edited.graph.upperBayGroups).toHaveLength(1); expect(edited.materials).toBe(materials);
+      const file = await createBayConstructionProject(edited.graph, edited.materials.file);
+      expect(file.schemaVersion).toBe("0.12.0"); expect((await readBayConstructionProject(JSON.parse(JSON.stringify(file)))).project).toEqual(file);
+      fireEvent.click(screen.getByRole("button", { name: "Undo construction" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(3), { timeout: 15000 }); await ready();
+      expect(screen.getByLabelText("Grouped window arrangement")).toHaveValue("1");
+      fireEvent.click(screen.getByRole("button", { name: "Redo construction" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(4), { timeout: 15000 }); await ready();
+      expect(screen.getByLabelText("Grouped window arrangement")).toHaveValue("2");
+      fireEvent.change(screen.getByLabelText("Grouped window pier width"), { target: { value: "0.1" } });
+      fireEvent.click(screen.getByRole("button", { name: "Apply window arrangement" }));
+      await screen.findByRole("alert"); expect(view.onSessionChange).toHaveBeenCalledTimes(4);
+      fireEvent.click(screen.getByRole("button", { name: "Discard window arrangement draft" }));
+      fireEvent.change(screen.getByLabelText("Grouped window arrangement"), { target: { value: "1" } });
+      fireEvent.click(screen.getByRole("button", { name: "Apply window arrangement" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(5), { timeout: 15000 }); await ready();
+      expect(view.onSessionChange.mock.calls.at(-1)![0].graph.schemaVersion).toBe("0.10.0");
+      fireEvent.change(screen.getByLabelText("Upper front opening head"), { target: { value: "1" } });
+      fireEvent.click(screen.getByRole("button", { name: "Apply construction" }));
+      await waitFor(() => expect(view.onSessionChange).toHaveBeenCalledTimes(6), { timeout: 15000 }); await ready();
+      fireEvent.change(screen.getByLabelText("Grouped window arrangement"), { target: { value: "2" } });
+      fireEvent.click(screen.getByRole("button", { name: "Apply window arrangement" }));
+      expect(await screen.findByRole("alert")).toHaveTextContent("Change Upper front opening head to Flat head first");
+      expect(view.onSessionChange).toHaveBeenCalledTimes(6);
+      expect(generate).toHaveBeenCalledTimes(sourceCalls);
+    } finally { view.unmount(); }
+    for (const record of rendererState.records) expect(record.dispose).toHaveBeenCalledTimes(1);
+  }, 60000);
+
   it("publishes round heads through history and portable source with the same materials",async()=>{
     const view=mount({graph:createBuildingConstructionGraph(),materials});
     try {

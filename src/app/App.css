@@ -3694,3 +3694,10 @@ h1 {
 .construction-opening-edit h3 { margin: 0 0 18px; font-size: 1.05rem; }
 .construction-opening-edit__target { grid-template-columns: minmax(0,1fr); gap: 10px; }
 .construction-opening-edit > fieldset > p { line-height: 1.5; }
+.construction-grouped-bay { padding: 20px 0; border-bottom: 1px solid var(--workspace-line); }
+.construction-grouped-bay h3 { margin: 0 0 10px; font-size: 1.05rem; }
+.construction-grouped-bay p { color: #536257; font-size: .85rem; line-height: 1.5; }
+.construction-grouped-bay fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 12px; }
+.construction-grouped-bay label { display: grid; grid-template-columns: minmax(0, 1fr) minmax(100px, 45%); gap: 12px; align-items: center; font-size: .9rem; }
+.construction-grouped-bay select, .construction-grouped-bay input { width: 100%; min-width: 0; min-height: 44px; padding: 9px 10px; border: 1px solid #bcc7bd; border-radius: 5px; background: #fbfcf9; color: #18201c; font: inherit; }
+.construction-grouped-bay button { min-height: 44px; }
