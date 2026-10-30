@@ -494,7 +494,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   }
   const updateFamilyMember = useCallback((session: BayConstructionSession) => {
     const source = familySource.current, id = memberEditId.current;
-    if (!source || !id || session.graph.documentId !== id || !session.generation || session.materials.file.contentHash !== source.materialSource.contentHash ||
+    if (!source || source.schemaVersion === "0.11.0" || !id || session.graph.documentId !== id || !session.generation || session.materials.file.contentHash !== source.materialSource.contentHash ||
         session.materials.awningFabric?.contentHash !== (source.schemaVersion === "0.8.0" || source.schemaVersion === "0.9.0" || source.schemaVersion === "0.10.0" ? source.awningFabric.contentHash : undefined)) return;
     const currentMember = source.members.find(member => member.documentId === id);
     if (!currentMember) return;
@@ -560,6 +560,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       const isCurrent = () => alive.current && sequence.current === token && !signal.aborted && current.current === previous;
       const source = await readConstructionFamilySource(JSON.parse(await file.text()));
       if (!isCurrent()) return;
+      if (source.schemaVersion === "0.11.0") throw new Error("Families with individual fabrics cannot yet be opened here. The current building is retained.");
       const parsed = await parseBuildingSourceFile(source.materialSource);
       const materials = { ...parsed, file: source.materialSource, ...(source.schemaVersion === "0.8.0" || source.schemaVersion === "0.9.0" || source.schemaVersion === "0.10.0" ? { awningFabric: source.awningFabric } : {}) };
       if (!isCurrent()) return;
