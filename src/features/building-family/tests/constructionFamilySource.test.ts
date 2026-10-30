@@ -17,6 +17,7 @@ import { withConstructionStorefrontDivision } from "../core/constructionStorefro
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
 import { withConstructionAwningSupports } from "../core/constructionAwningSupportGraph";
 import { withConstructionAwnings } from "../core/constructionAwningGraph";
+import { createConstructionFamilyFabricAssignments } from "../materials/constructionFamilyFabric";
 import { createConstructionAwningFabric } from "../materials/constructionAwningFabric";
 
 describe("persistent construction family source", () => {
@@ -74,6 +75,16 @@ describe("persistent construction family source", () => {
       const { contentHash: _supportHash, ...oneMemberPayload } = oneMemberFamily; void _supportHash;
       const removedLast = withUpdatedConstructionFamilyMembers(oneMemberPayload, awningInput.members);
       expect(removedLast.schemaVersion).toBe("0.8.0"); expect((await createConstructionFamilySource(removedLast)).schemaVersion).toBe("0.8.0");
+      const redFabric = await createConstructionAwningFabric({ ...fabric.source, pattern: "solid", primary: [150, 40, 35] });
+      const fabricAssignments = await createConstructionFamilyFabricAssignments({ schemaVersion: "0.1.0", kind: "construction-family-fabric-assignments", familyId: supportInput.familyId,
+        sourceDocumentId: supportInput.sourceDocumentId, inheritedFabric: fabric,
+        members: supportInput.members.map((member, index) => index === 0 ? { documentId: member.documentId, mode: "override", fabric: redFabric } : { documentId: member.documentId, mode: "inherit" }) });
+      const individualInput = { ...supportInput, schemaVersion: "0.11.0" as const, fabricAssignments };
+      const individualFamily = await createConstructionFamilySource(individualInput);
+      expect(await readConstructionFamilySource(JSON.parse(JSON.stringify(individualFamily)))).toEqual(individualFamily);
+      await expect(createConstructionFamilySource({ ...individualInput, familyId: "wrong" })).rejects.toThrow(/owning family/);
+      await expect(createConstructionFamilySource({ ...individualInput, awningFabric: redFabric })).rejects.toThrow(/owning family/);
+      await expect(createConstructionFamilySource({ ...individualInput, schemaVersion: "0.10.0" })).rejects.toThrow();
       const supportFamily = await createConstructionFamilySource(supportInput);
       expect(await readConstructionFamilySource(JSON.parse(JSON.stringify(supportFamily)))).toEqual(supportFamily);
       expect((await evaluateConstruction(supportFamily.members[0].graph)).ir.meshBatches.filter(batch => batch.role === "awning.support")).toHaveLength(1);
