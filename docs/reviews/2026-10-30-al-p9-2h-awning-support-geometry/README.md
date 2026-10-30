@@ -1,0 +1,5 @@
+# AL.P9.2h: Procedural awning tension-rod study
+
+A versioned, source-validated demo plan fits two wall-to-canopy tension rods to an existing awning, preserving the source and rejecting anchors beyond the storefront storey. The compiler builds closed rectangular rods from the planned endpoints; no preassembled mesh is used. Dimensions are illustrative, not measurements from the reference images.
+
+The [angled clay study](awnings-angle.png) and [front study](awnings-clay.png) render the isolated geometry alongside the earlier divided storefront and awning primitives. This is not the product view: no graph operator, worker protocol, material binding, saved project, editor control or family integration is included. The rods lack attachment plates and physical engineering validation; the supplied references do not establish this specific hardware. All five repository checks passed: 2,065 tests across 160 files, standard browser smoke, typecheck, lint and build. The build retains its large-chunk warning.
