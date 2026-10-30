@@ -28,6 +28,7 @@ import { resolveConstructionFamily } from "../state/constructionFamilyGeneration
 import { createConstructionFamilySource, readConstructionFamilySource, withUpdatedConstructionFamilyMembers, type ConstructionFamilyPayload } from "../state/constructionFamilySource";
 import { resolveConstructionFamilyComposition } from "../core/constructionFamilyComposition";
 import { resolveConstructionFamilyPierVariation } from "../core/constructionFamilyPierVariation";
+import { withConstructionStorefrontSign, withoutConstructionStorefrontSign } from "../core/constructionStorefrontSignGraph";
 import { parseBuildingSourceFile } from "../state/buildingSourceFile";
 import { defaultConstructionGenerationControls, resolveWorkbenchGeneration, rebindGenerationSurfaceSources, type ConstructionGenerationLineage } from "../state/constructionGenerationState";
 import { ConstructionGenerationPanel } from "./ConstructionGenerationPanel";
@@ -131,6 +132,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   const [familySeed, setFamilySeed] = useState("building-family-1");
   const [familyVariation, setFamilyVariation] = useState({ openings: false, frontage: false, roof: false, groupedBays: false, storefrontLights: false, massing: false, awnings: false, entranceBay: false });
   const [familyPierVariation, setFamilyPierVariation] = useState(false);
+  const [signBay, setSignBay] = useState(0);
   const [familyDetails, setFamilyDetails] = useState<string[]>([]);
   const [familyFabricView, setFamilyFabricView] = useState<{ inherited: ConstructionAwningFabricArtifact; memberIds: string[]; assignments?: ConstructionFamilyFabricAssignments } | null>(null);
   const familySource = useRef<ConstructionFamilyPayload | null>(null);
@@ -294,6 +296,15 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     await perform(async (token, signal) => {
       const graph = enabled ? withConstructionFacadePiers(source.fixture.construction.graph, { pierWidthM: 0.28, projectionM: 0.18, endHeightM: 0.15, clearanceM: 0.04 })
         : withoutConstructionFacadePiers(source.fixture.construction.graph);
+      await publish(graph, source.materials, token, signal);
+    });
+  }
+  async function changeStorefrontSign(enabled: boolean, bayIndex: number) {
+    const source = current.current;
+    if (!source || dirty || previewNode || shown.current !== source.fixture) return;
+    await perform(async (token, signal) => {
+      const graph = enabled ? withConstructionStorefrontSign(source.fixture.construction.graph, { bayIndex, heightM: 0.18, projectionM: 0.08, frameWidthM: 0.035 })
+        : withoutConstructionStorefrontSign(source.fixture.construction.graph);
       await publish(graph, source.materials, token, signal);
     });
   }
@@ -686,6 +697,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   const labelFor = (key: string) => key === "bayIndex" && node.type === "PlaceDoor" ? "Entrance bay index" : key === "count" ? (node.type === "SplitFloors" || node.type === "Storeys") ? "Floor count" : "Bay count" : labels[key];
   const pierProtected = accepted?.construction.graph.schemaVersion === "0.15.0";
   const signProtected = accepted?.construction.graph.schemaVersion === "0.16.0";
+  const effectiveSignBay = accepted?.construction.graph.storefrontSign?.bayIndex ?? Math.min(signBay, (accepted?.construction.graph.nodes.find(node => node.type === "SplitBays")?.parameters.count ?? 1) - 1);
   const buildingMode = accepted && constructionUsesOperator(accepted.construction.graph,"Footprint");
   const facadeMode = accepted && (constructionUsesOperator(accepted.construction.graph,"SplitFloors") || constructionUsesOperator(accepted.construction.graph,"SplitBays"));
   const displayName = (value: BayConstructionNode) => {
@@ -798,6 +810,15 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         fabric={awningFabric} fabricDisabled={familyMemberMode}
         onFabricChange={(pattern, primary, secondary) => void changeAwningFabric(pattern, primary, secondary)}
         onChange={(bay, enabled, dimensions) => void changeAwning(bay, enabled, dimensions)} /> : null}
+      {buildingMode && !advancedOpen && !familyMemberMode && accepted && supportsGroupedConstruction(accepted.construction.graph) && constructionHasStorefront(accepted.construction.graph) ? <section className="construction-generate" aria-label="Storefront sign">
+        <h3>Storefront sign</h3>
+        <p>A blank framed demo sign fits one bay's head band. It cannot share a bay with an awning yet.</p>
+        <label>Bay <select aria-label="Sign bay" value={effectiveSignBay}
+          disabled={disabled || dirty || Boolean(accepted.construction.graph.storefrontSign)} onChange={event => setSignBay(Number(event.currentTarget.value))}>
+          {Array.from({ length: accepted.construction.graph.nodes.find(node => node.type === "SplitBays")?.parameters.count ?? 0 }, (_, index) => <option key={index} value={index}>Bay {index + 1}</option>)}
+        </select></label>
+        <button type="button" disabled={disabled || dirty || openingDirty || groupDirty || !viewerReady || Boolean(previewNode)} onClick={() => void changeStorefrontSign(!signProtected, effectiveSignBay)}>{signProtected ? "Remove sign" : "Add sign"}</button>
+      </section> : null}
       {buildingMode && !advancedOpen && !signProtected && accepted && supportsGroupedConstruction(accepted.construction.graph) ? <section className="construction-generate" aria-label="Upper facade piers">
         <h3>Upper facade piers</h3>
         <p>Place a vertical pier at each front bay edge on upper storeys. The demo proportions require clearance from windows and trim.</p>

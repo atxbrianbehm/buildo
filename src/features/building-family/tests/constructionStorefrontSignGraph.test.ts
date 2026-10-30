@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { BayConstructionGraphSchema, createBuildingConstructionGraph } from "../contracts/bayConstructionGraph";
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { withConstructionFacadePiers } from "../core/constructionFacadePierGraph";
-import { withConstructionStorefrontSign } from "../core/constructionStorefrontSignGraph";
+import { withConstructionStorefrontSign, withoutConstructionStorefrontSign } from "../core/constructionStorefrontSignGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
 import { evaluateConstructionStorefrontSignStudy } from "../compiler/evaluateConstructionStorefrontSignStudy";
 import { BayConstructionWorkerRequestSchema, BayConstructionWorkerReplySchema } from "../compiler/bayConstructionWorkerProtocol";
@@ -16,6 +16,7 @@ describe("storefront sign graph and worker", () => {
     const graph = withConstructionStorefrontSign(base, directive), result = await evaluateConstruction(graph);
     const study = await evaluateConstructionStorefrontSignStudy({ schemaVersion: "0.1.0", kind: "construction-storefront-sign-study-request", graph: base, ...directive });
     expect(base).toEqual(original); expect(graph.schemaVersion).toBe("0.16.0"); expect(graph.facadePiers).toEqual(base.facadePiers);
+    expect(withoutConstructionStorefrontSign(graph)).toEqual(base);
     expect(result.ir.meshBatches).toEqual(study.ir.meshBatches); expect(result.ir.instanceBatches).toEqual(study.ir.instanceBatches);
     expect(result.ir.meshBatches.filter(batch => batch.role.startsWith("sign."))).toHaveLength(2);
     expect(await evaluateConstruction(graph)).toEqual(result);

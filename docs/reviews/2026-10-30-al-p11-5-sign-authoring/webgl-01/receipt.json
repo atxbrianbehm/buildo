@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "0.1.0",
+  "api": "webgl",
+  "signBay": 2,
+  "collisionRejected": true,
+  "pierRetained": true,
+  "materialsRetained": true,
+  "undoRedo": true,
+  "recovered": true
+}
