@@ -16,6 +16,7 @@ import { BayConstructionGraphSchema } from "../contracts/bayConstructionGraph";
 import { withConstructionAwningSupports } from "../core/constructionAwningSupportGraph";
 import { withConstructionAwnings } from "../core/constructionAwningGraph";
 import { constructionHasStorefront } from "../core/constructionStorefrontGraph";
+import { applyConstructionFamilyPierVariation, readConstructionFamilyPierVariation } from "../core/constructionFamilyPierVariation";
 
 const controlsSchema = z.object({ recipeId: z.string().min(1).max(512).optional(), floorCount: z.number().int().min(2).max(6),
   bayCount: z.number().int().min(3).max(6), buildingSeed: z.string().trim().min(1).max(256),
@@ -38,7 +39,7 @@ async function geometryHash(result: Awaited<ReturnType<typeof evaluateConstructi
 }
 
 /** Resolve a complete owned family or fail without publishing a partial result. */
-export async function resolveConstructionFamily(input: unknown, lineageInput: unknown, controlsInput: ConstructionGenerationControls, signal?: AbortSignal, compositionInput?: unknown) {
+export async function resolveConstructionFamily(input: unknown, lineageInput: unknown, controlsInput: ConstructionGenerationControls, signal?: AbortSignal, compositionInput?: unknown, pierVariationInput?: unknown) {
   const plan = readConstructionFamilyPlan(input);
   const lineage = structuredClone(ConstructionGenerationLineageSchema.parse(lineageInput));
   const controls = controlsSchema.parse(controlsInput);
@@ -46,6 +47,16 @@ export async function resolveConstructionFamily(input: unknown, lineageInput: un
   abort(signal);
   const original = await readConstructionGenerationLineage(lineage); abort(signal);
   const composition = compositionInput === undefined ? null : readConstructionFamilyCompositionPlan(compositionInput);
+  const pierVariation = pierVariationInput === undefined ? null : readConstructionFamilyPierVariation(pierVariationInput);
+  if (pierVariation) {
+    if (pierVariation.source.familySeed !== plan.source.familySeed || pierVariation.source.openingLock !== controls.lockOpenings)
+      throw new Error("Family pier variation seed and opening-lock state must match the active family request.");
+    if (pierVariation.source.enabled) {
+      const affected = ["construction/opening", "construction/window", "construction/upperBayGroups", "construction/facade/piers"];
+      for (const lock of original.source.intent.locks) if (affected.some(path => path === lock.semanticPath || path.startsWith(lock.semanticPath + "/") || lock.semanticPath.startsWith(path + "/")))
+        throw new Error(`Family pier variation conflicts with the pinned lock ${lock.semanticPath}.`);
+    }
+  }
   const varyStorefrontLights = (composition?.schemaVersion === "0.3.0" || composition?.schemaVersion === "0.4.0" || composition?.schemaVersion === "0.5.0" || composition?.schemaVersion === "0.6.0") && composition.source.policy.storefrontLights;
   const varyMassing = (composition?.schemaVersion === "0.4.0" || composition?.schemaVersion === "0.5.0" || composition?.schemaVersion === "0.6.0") && composition.source.policy.massing;
   const varyAwnings = (composition?.schemaVersion === "0.5.0" || composition?.schemaVersion === "0.6.0") && composition.source.policy.awnings;
@@ -137,6 +148,7 @@ export async function resolveConstructionFamily(input: unknown, lineageInput: un
         if (supports) candidateGraph = withConstructionAwningSupports(candidateGraph, supports);
         if (piers) candidateGraph = withConstructionFacadePiers(candidateGraph, piers);
       }
+      if (pierVariation) candidateGraph = applyConstructionFamilyPierVariation(candidateGraph, pierVariation, member.ordinal);
       const construction = await evaluateConstruction(candidateGraph); abort(signal);
       BayConstructionWorkerReplySchema.parse({ schemaVersion: candidateGraph.schemaVersion, type: "bay-result", requestId: member.ordinal, result: construction });
       for (const layer of construction.surfaceComposition?.layers ?? []) {

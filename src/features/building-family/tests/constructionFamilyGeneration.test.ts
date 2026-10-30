@@ -17,6 +17,7 @@ import { emptyConstructionComposition, setConstructionSurface } from "../core/co
 import { defaultConstructionGenerationControls, resolveWorkbenchGeneration, type ConstructionGenerationLineage } from "../state/constructionGenerationState";
 import { resolveConstructionFamily } from "../state/constructionFamilyGeneration";
 import { resolveConstructionFamilyComposition } from "../core/constructionFamilyComposition";
+import { resolveConstructionFamilyPierVariation } from "../core/constructionFamilyPierVariation";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
 import { normalizeBuildingSpec } from "../core/specNormalizer";
 import { planConstructionReferenceMaterials } from "../materials/constructionReferenceMaterials";
@@ -34,6 +35,30 @@ async function fixture() {
 }
 
 describe("authored construction family generation", () => {
+  it("generates seeded pier treatments without changing materials or authored piers", async () => {
+    const { lineage, graph, plan } = await fixture();
+    const variation = resolveConstructionFamilyPierVariation({ schemaVersion: "0.1.0", kind: "construction-family-pier-variation-request", familySeed: plan.source.familySeed, enabled: true, openingLock: false });
+    const composition = resolveConstructionFamilyComposition({ schemaVersion: "0.1.0", kind: "construction-family-composition-request", familySeed: plan.source.familySeed, openingLock: false,
+      policy: { openings: false, frontage: false, roof: true } });
+    const family = await resolveConstructionFamily(plan, lineage, defaultConstructionGenerationControls, undefined, composition, variation);
+    for (const [index, member] of family.members.entries()) {
+      expect(Boolean(member.construction.graph.facadePiers)).toBe(variation.members[index].treatment !== "none");
+      expect(member.construction.ir.meshBatches.some(batch => batch.role === "facade-pier")).toBe(variation.members[index].treatment !== "none");
+      expect(member.lineage.materialPlan.materialInputsHash).toBe(lineage.materialPlan.materialInputsHash);
+      expect(member.lineage.materialSourceHash).toBe(lineage.materialSourceHash);
+    }
+    const directive = { pierWidthM: 0.28, projectionM: 0.18, endHeightM: 0.15, clearanceM: 0.04 };
+    const authored = resolveConstructionFamilyPlan({ ...plan.source, graph: withConstructionFacadePiers(graph, directive) });
+    const retained = await resolveConstructionFamily(authored, lineage, defaultConstructionGenerationControls, undefined, undefined, variation);
+    expect(retained.members.every(member => JSON.stringify(member.construction.graph.facadePiers) === JSON.stringify(directive))).toBe(true);
+    await expect(resolveConstructionFamily(plan, lineage, { ...defaultConstructionGenerationControls, lockOpenings: true }, undefined, undefined, variation)).rejects.toThrow(/opening-lock state/);
+    const mismatch = resolveConstructionFamilyPierVariation({ ...variation.source, familySeed: "different" });
+    await expect(resolveConstructionFamily(plan, lineage, defaultConstructionGenerationControls, undefined, undefined, mismatch)).rejects.toThrow(/seed and opening-lock/);
+    const old = lineage.source, pinned = await captureConstructionGenerationSource({ schemaVersion: "0.1.0", kind: "construction-generation-input", documentId: old.documentId,
+      intent: { ...old.intent, locks: [{ semanticPath: "construction/opening/widthM", scope: "building", lockedValue: 1.22, reason: "Imported pin" }] }, recipe: old.recipe, reference: old.reference, intentionalExceptions: old.intentionalExceptions });
+    const pinnedLineage = { ...lineage, source: pinned, resolution: await resolveConstructionGeneration(pinned), materialPlan: await planConstructionReferenceMaterials(lineage.materialPlan.templateSpec, pinned) };
+    await expect(resolveConstructionFamily(plan, pinnedLineage, defaultConstructionGenerationControls, undefined, undefined, variation)).rejects.toThrow(/pinned lock/);
+  }, 120000);
   it("retains authored facade piers and awning supports through family composition", async () => {
     const { lineage, graph } = await fixture(), directive = { pierWidthM: 0.28, projectionM: 0.18, endHeightM: 0.15, clearanceM: 0.04 };
     const awning = withConstructionAwnings(withConstructionStorefront(graph, 1), [{ bayIndex: 0, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }]);
