@@ -64,7 +64,8 @@ function front(primitive: PrimitiveGeometry): PrimitiveGeometry {
 export async function evaluateFacadeConstruction(input: unknown, materials: BayConstructionMaterials = DEFAULT_BAY_MATERIALS,
   previewNodeId?: string, groupedInput: readonly unknown[] = [], pierStudyInput?: ConstructionFacadePierStudyRequest): Promise<BayConstructionResult> {
   const graph = structuredClone(BayConstructionGraphSchema.parse(input));
-  const pierStudy = pierStudyInput === undefined ? undefined : ConstructionFacadePierStudyRequestSchema.parse(pierStudyInput);
+  if (pierStudyInput && graph.facadePiers) throw new Error("Use either the graph pier directive or an experimental pier study.");
+  const pierStudy = pierStudyInput === undefined ? graph.facadePiers ? ConstructionFacadePierStudyRequestSchema.parse({ schemaVersion: "0.1.0", kind: "construction-facade-pier-study-request", graph, ...graph.facadePiers }) : undefined : ConstructionFacadePierStudyRequestSchema.parse(pierStudyInput);
   if (pierStudy && (previewNodeId || groupedInput.length || canonicalJson(pierStudy.graph) !== canonicalJson(graph)))
     throw new Error("Facade pier study requires its complete matching graph and no experimental grouping request.");
   if (pierStudy && (graph.nodes.filter(node => node.type === "EmitWall" && !node.bypassed).length !== 1 || graph.nodes.filter(node => node.type === "SplitBays" && !node.bypassed).length !== 1 ||
@@ -80,7 +81,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
   if ((grouped.length || graph.upperBayGroups?.length) && (graph.nodes.filter(node => node.type === "PlaceOpening" && !node.bypassed).length !== 1 ||
       graph.nodes.filter(node => node.type === "AssembleWindow" && !node.bypassed).length !== 1))
     throw new Error("Grouped bays require one active opening and window assembly.");
-  if (!["0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0", "0.14.0"].includes(graph.schemaVersion)) throw new Error("Facade construction requires a supported graph version.");
+  if (!["0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0", "0.14.0", "0.15.0"].includes(graph.schemaVersion)) throw new Error("Facade construction requires a supported graph version.");
   const nodes = new Map(graph.nodes.map(node => [node.id, node]));
   if (previewNodeId && !nodes.has(previewNodeId)) throw new Error("The preview node is missing.");
   const values = new Map<string, Promise<Value>>(), trace: BayConstructionTrace[] = [];
@@ -351,7 +352,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
       }
       case "EmitWall": {
         const cells = await scopes(node.input.nodeId);
-        if (["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0", "0.14.0"].includes(graph.schemaVersion) && cells.every(cell=>cell.building)) {
+        if (["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0", "0.14.0", "0.15.0"].includes(graph.schemaVersion) && cells.every(cell=>cell.building)) {
           const faces = new Map<string,Cell[]>(); for(const cell of cells) faces.set(cell.root,[...(faces.get(cell.root)??[]),cell]);
           const parts = node.bypassed ? [] : [...faces.values()].map(group=>{
             const cell={...group[0],key:group[0].root},part=makeMesh(node,cell,"wall",[constructionFacadeSolid(group.map(cell=>cell.scope),group.filter(cell=>cell.scope.opening?.roundHead).map(roundPlan))],"facade",materials.wall);
@@ -575,7 +576,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
     materialSlotId: group[0].prototype!.materialSlotId!, count: group.length,
     transforms: new Float32Array(group.flatMap(part => poseMatrix(part.translation!,part.pose))) }));
   const ir = RuntimeBuildingIRSchema.parse({ schemaVersion: "0.1.0", buildingId: graph.documentId, familyId: graph.documentId,
-    sourceGraphHash: await hashCanonicalJson(pierStudy ?? (groupedInput.length ? { schemaVersion: "0.1.0", kind: "construction-grouped-geometry-request", graph, groups: grouped } : graph)), bounds: union(parts.map(p => p.bounds)), meshBatches, instanceBatches, semanticIndex,
+    sourceGraphHash: await hashCanonicalJson(pierStudyInput ?? (groupedInput.length ? { schemaVersion: "0.1.0", kind: "construction-grouped-geometry-request", graph, groups: grouped } : graph)), bounds: union(parts.map(p => p.bounds)), meshBatches, instanceBatches, semanticIndex,
     metrics: { vertexCount: [...meshBatches, ...prototypes.values()].reduce((sum, batch) => sum + batch.positions!.length / 3, 0),
       triangleCount: parts.reduce((sum, part) => sum + (part.mesh ?? part.prototype)!.indices!.length / 3, 0),
       instanceCount: instanceBatches.reduce((sum, batch) => sum + batch.count, 0) } });

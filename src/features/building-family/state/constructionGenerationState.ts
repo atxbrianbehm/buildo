@@ -77,6 +77,7 @@ function assertTopology(current: BayConstructionGraph, generated: BayConstructio
 export async function resolveWorkbenchGeneration(currentInput: unknown, previousInput: ConstructionGenerationLineage | null,
   controlsInput: ConstructionGenerationControls, reroll = false, referenceInput?: unknown) {
   const inputGraph = structuredClone(BayConstructionGraphSchema.parse(currentInput));
+  if (inputGraph.schemaVersion === "0.15.0") throw new Error("Facade pier graphs are not yet supported in building generation.");
   const authoredSupports = inputGraph.awningSupports, authoredAwnings = inputGraph.awnings;
   let current = inputGraph;
   if (authoredAwnings) {
