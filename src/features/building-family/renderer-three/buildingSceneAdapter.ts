@@ -477,7 +477,7 @@ export function createBuildingSceneRuntime(input: CreateBuildingSceneRuntimeInpu
     for (const batch of input.ir.meshBatches) {
       const stage = stageForBatch(input.ir, batch.batchId);
       const materialSlotId = batch.materialSlotId ?? "utility.mask";
-      const material = materialSlotId === CONSTRUCTION_AWNING_FABRIC_SLOT ? runtime.awningFabricLease!.material : runtime.surfaceLease?.getMaterial(batch.batchId) ?? input.materialRegistry.getMaterial(materialSlotId);
+      const material = materialSlotId === CONSTRUCTION_AWNING_FABRIC_SLOT ? runtime.awningFabricLease!.getMaterial() : runtime.surfaceLease?.getMaterial(batch.batchId) ?? input.materialRegistry.getMaterial(materialSlotId);
       const geometry = adaptGeometry(createMeshGeometry(batch), material, "meters");
       const mesh = new Mesh(geometry, material) as BuildingRenderable;
       mesh.name = batch.batchId;

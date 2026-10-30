@@ -24,9 +24,9 @@ export type ConstructionCheckpoint = z.infer<typeof ConstructionCheckpointSchema
 export type ParsedConstructionCheckpoint = Awaited<ReturnType<typeof readConstructionCheckpoint>>;
 
 /** Capture graph and encoded material authority synchronously, before nested validation yields. */
-export async function createConstructionCheckpoint(workspaceDocumentId: string, graph: unknown, materialSource: unknown, generation?: unknown): Promise<ConstructionCheckpoint> {
+export async function createConstructionCheckpoint(workspaceDocumentId: string, graph: unknown, materialSource: unknown, generation?: unknown, awningFabric?: unknown): Promise<ConstructionCheckpoint> {
   const documentId = documentIdSchema.parse(workspaceDocumentId);
-  const projectPromise = createBayConstructionProject(graph, materialSource, generation), createdAt = new Date().toISOString();
+  const projectPromise = createBayConstructionProject(graph, materialSource, generation, awningFabric), createdAt = new Date().toISOString();
   const payload = payloadSchema.parse({ schemaVersion: "0.1.0", kind: CONSTRUCTION_CHECKPOINT_TYPE,
     workspaceDocumentId: documentId, createdAt, project: await projectPromise });
   return ConstructionCheckpointSchema.parse({ ...payload, contentHash: await hashCanonicalJson(payload) });
@@ -35,8 +35,8 @@ export async function readConstructionCheckpoint(input: unknown) {
   const record = ConstructionCheckpointSchema.parse(input), { contentHash, ...payload } = record;
   if (await hashCanonicalJson(payload) !== contentHash) throw new Error("Construction checkpoint content does not match its saved hash.");
   const restored = await readBayConstructionProject(record.project);
-  if (restored.project.awningFabric) throw new Error("This checkpoint contains supplemental awning fabric that the editor cannot yet retain.");
-  return { record, project: restored.project, materials: { ...restored.materials, file: restored.project.materialSource } };
+  return { record, project: restored.project, materials: { ...restored.materials, file: restored.project.materialSource,
+    ...(restored.project.awningFabric ? { awningFabric: restored.project.awningFabric } : {}) } };
 }
 export interface ConstructionCheckpointPersistence {
   put(input: unknown): Promise<void>;

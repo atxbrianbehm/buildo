@@ -88,7 +88,7 @@ function liveMetrics(
 ): BuildingFamilyRuntimeMetrics {
   const runtimes = Array.from(buildingRuntimes.values()).filter((runtime) => !runtime.disposed);
   const surfaces = [...new Set(runtimes.flatMap(runtime => runtime.surfaceRuntime ? [runtime.surfaceRuntime] : []))];
-  const awningMaterials = new Set(runtimes.flatMap(runtime => runtime.awningFabricLease ? [runtime.awningFabricLease.material] : []));
+  const awningMaterials = new Set(runtimes.flatMap(runtime => runtime.awningFabricLease ? [runtime.awningFabricLease.getMaterial()] : []));
   return {
     buildingCount: runtimes.length,
     meshCount: runtimes.reduce((total, runtime) => total + runtime.metrics.meshCount, 0),

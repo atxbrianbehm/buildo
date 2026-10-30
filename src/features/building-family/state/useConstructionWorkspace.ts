@@ -18,7 +18,7 @@ export function constructionRecoveryText(status: ConstructionRecoveryStatus): st
   return status.message ?? copy[status.state];
 }
 const closingDocuments = new Map<string, Promise<void>>();
-const sourceKey = (session: BayConstructionSession) => canonicalJson({ graph: session.graph, materialSourceHash: session.materials.file.contentHash, ...(session.generation ? { generation: session.generation } : {}) });
+const sourceKey = (session: BayConstructionSession) => canonicalJson({ graph: session.graph, materialSourceHash: session.materials.file.contentHash, ...(session.materials.awningFabric ? { awningFabricHash: session.materials.awningFabric.contentHash } : {}), ...(session.generation ? { generation: session.generation } : {}) });
 interface WorkspaceState { documentId: string; mode: boolean; session: BayConstructionSession | null; status: ConstructionRecoveryStatus; recovering: boolean }
 
 /** Keeps accepted source alive across room changes; page recovery creates fresh renderer resources. */
@@ -71,8 +71,7 @@ export function useConstructionWorkspace(documentId: string) {
   const acceptSession = useCallback((session: BayConstructionSession) => {
     const owner = ownerRef.current; if (!owner || owner.documentId !== documentId) return;
     setState(previous => previous.documentId === documentId ? { ...previous, session, recovering: false } : previous);
-    if (session.generation) owner.queue?.save(sourceKey(session), session.graph, session.materials.file, session.generation);
-    else owner.queue?.save(sourceKey(session), session.graph, session.materials.file);
+    owner.queue?.save(sourceKey(session), session.graph, session.materials.file, session.generation ?? undefined, session.materials.awningFabric);
   }, [documentId]);
   const setMode = useCallback((mode: boolean) => {
     setState(previous => previous.documentId === documentId ? { ...previous, mode } : previous);

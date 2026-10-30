@@ -34,7 +34,7 @@ export async function prepareConstructionAwningFabricRuntime(input: unknown) {
       if (closed) throw new Error("Awning fabric runtime is closed.");
       leases++; let released = false;
       return {
-        get material() { if (released) throw new Error("Awning fabric lease is released."); return material; },
+        getMaterial() { if (released) throw new Error("Awning fabric lease is released."); return material; },
         release() { if (!released) { released = true; leases--; free(); } }
       };
     },
