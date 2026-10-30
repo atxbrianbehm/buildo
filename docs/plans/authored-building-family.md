@@ -11,6 +11,8 @@ Each member needs a distinct stable document identity and semantic paths, an exp
 | R6.P2 — implemented; representative performance pending | A bounded artist-facing preview renders six related buildings on the construction path with a shared material registry; returning restores the editable building. | All five checks pass, with WebGPU/WebGL captures, retained saved source and material, cancellation and disposal. [Evidence](../reviews/2026-10-29-r6-p2-family-preview/README.md). Representative-machine performance remains unmeasured. |
 | R6 visual review — accepted | The user approved the reviewed six-building family on October 29 after the locked and unlocked variation diagnostics. | This accepts the shown family as a direction; checklist coverage, representative-machine performance and historical UTDG claims require their own evidence. |
 
+The accepted single-building project was exercised through floor, bay, seed and opening-lock changes on both browser renderers. The original material source remained exact and no new procedural provider calls occurred. [Edit-stability evidence](../reviews/2026-10-29-r6-edit-stability/README.md). This is one bounded workflow, not complete family-wide edit coverage or representative-machine performance.
+
 Continue the packets separately without a human gate between P0, P1 and P2. P0 is groundwork, not a family preview or proof of diversity. Do not coerce a local edit onto a missing floor/bay or silently replace the accepted scene.
 
 

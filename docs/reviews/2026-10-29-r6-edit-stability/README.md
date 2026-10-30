@@ -1,0 +1,7 @@
+# R6 edit stability: bounded source workflow
+
+The accepted raised-parapet construction was opened in the real workbench. On WebGPU and WebGL, the same sequence changed three to four storeys, four to five bays, then selected Lock openings and generated with a new building seed. Each step saved a versioned construction project. The final source retained four storeys, five bays, the new seed and an opening lock; the saved material-source hash remained identical throughout. The instrumented procedural provider call count stayed at 24 after the initial workspace setup and source opening, with no new calls during the tested edits. Both runs reported zero page errors.
+
+[WebGPU receipt](webgpu.json), [WebGL receipt](webgl.json), and the [local capture script](verify.mjs) retain the observed hashes and steps. Replay requires the locally retained C10 `raised-v10.json` and installed Chromium; the saved projects themselves remain local review artifacts. The script tests material-source identity and calls, not every GPU texture allocation or all possible edits.
+
+This supports the checklist's dial-in criterion for this bounded single-building workflow. It does not prove editing individual family members, persistent family export, all lock combinations, representative-machine performance, or full visual-checklist acceptance. The full app checks from the unchanged preview implementation are recorded in the preceding [R6.P2 evidence](../2026-10-29-r6-p2-family-preview/README.md).
