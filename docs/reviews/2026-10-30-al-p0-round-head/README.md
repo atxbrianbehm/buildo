@@ -1,0 +1,5 @@
+# AL.P0 — round-headed opening plan
+
+The new independent request and plan describe a semicircular upper-front aperture and concentric glazing contour, in facade-local metres with a stable scope ID. Both contours use the same spring line and 16 arc segments. The planner validates masonry margins, frame clearance and wall-depth fit; unsupported faces and malformed or inconsistent data fail explicitly. The plan reader recomputes from its owned source and rejects changed derived points. No existing graph, compiler, renderer, material or UI path changes in this packet.
+
+Six focused tests pass for geometry, exact fit and rejection, scope and wall depth, translation, ownership, deterministic JSON replay, tampering and malformed input. `npm run typecheck` and `npm run lint` pass. The initial sandboxed Vitest run failed before executing tests due to a temporary-file rename permission error; the final focused run used the existing outside-sandbox workflow and passed. The added contract is groundwork only: wall cuts, reveal, frame, glazing, artist controls and rendered review remain AL.P1–P3.
