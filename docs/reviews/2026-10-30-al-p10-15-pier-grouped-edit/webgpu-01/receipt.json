@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "0.1.0",
+  "api": "webgpu",
+  "pierRetained": true,
+  "memberCount": 2,
+  "materialsRetained": true,
+  "undoRedo": true,
+  "reopened": true
+}
