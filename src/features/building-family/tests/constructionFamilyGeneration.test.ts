@@ -4,6 +4,8 @@ import { resolveConstructionFamilyPlan } from "../core/constructionFamilyPlan";
 import { withConstructionParapetSilhouette } from "../core/constructionParapetVocabulary";
 import { withConstructionCorniceLayout } from "../core/constructionCorniceVocabulary";
 import { withConstructionWindowLayout } from "../core/constructionWindowVocabulary";
+import { withConstructionFacadePiers } from "../core/constructionFacadePierGraph";
+import { withConstructionAwningSupports } from "../core/constructionAwningSupportGraph";
 import { withConstructionAwnings } from "../core/constructionAwningGraph";
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { withConstructionOpeningWidth } from "../core/constructionOpeningEditGraph";
@@ -32,6 +34,21 @@ async function fixture() {
 }
 
 describe("authored construction family generation", () => {
+  it("retains authored facade piers and awning supports through family composition", async () => {
+    const { lineage, graph } = await fixture(), directive = { pierWidthM: 0.28, projectionM: 0.18, endHeightM: 0.15, clearanceM: 0.04 };
+    const awning = withConstructionAwnings(withConstructionStorefront(graph, 1), [{ bayIndex: 0, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }]);
+    const source = withConstructionFacadePiers(withConstructionAwningSupports(awning, [{ bayIndex: 0, anchorRiseM: 0.15, thicknessM: 0.03 }]), directive);
+    const plan = resolveConstructionFamilyPlan({ schemaVersion: "0.1.0", kind: "construction-family-request", familyId: "pier_family", familySeed: "pier-seed", graph: source });
+    const composition = resolveConstructionFamilyComposition({ schemaVersion: "0.1.0", kind: "construction-family-composition-request", familySeed: "pier-seed", openingLock: false,
+      policy: { openings: false, frontage: false, roof: true } });
+    const family = await resolveConstructionFamily(plan, lineage, defaultConstructionGenerationControls, undefined, composition);
+    expect(family.members).toHaveLength(6);
+    for (const member of family.members) {
+      expect(member.construction.graph.facadePiers).toEqual(directive); expect(member.construction.graph.awnings).toEqual(source.awnings);
+      expect(member.construction.graph.awningSupports).toEqual(source.awningSupports); expect(member.lineage.materialSourceHash).toBe(lineage.materialSourceHash);
+      expect(member.construction.ir.meshBatches.filter(batch => batch.role === "facade-pier").length).toBeGreaterThan(0);
+    }
+  }, 120000);
   it("generates seeded entrance positions while protecting authored and pinned choices", async () => {
     const { lineage, graph } = await fixture();
     const storefront = withConstructionStorefront(graph, 1);

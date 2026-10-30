@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "0.1.0",
+  "api": "webgl",
+  "members": 6,
+  "retained": true,
+  "supportsRetained": true,
+  "variedCounts": [
+    1,
+    2,
+    3
+  ],
+  "memberEdit": true,
+  "memberPierAdded": true,
+  "individualFabric": true,
+  "siblingsUnchanged": true,
+  "reopened": true,
+  "fabricHash": "010de6034ae0c9398205fbd70b0b4951000f05b3e5e4f17da30989e5b77c3ec4",
+  "providerCallsDelta": 0
+}
