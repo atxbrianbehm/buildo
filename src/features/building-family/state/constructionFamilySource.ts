@@ -140,6 +140,10 @@ export async function readConstructionFamilySource(input: unknown): Promise<Cons
 
 /** Preserve the family format when updating a member, downgrading only after its last support graph is gone. */
 export function withUpdatedConstructionFamilyMembers(source: ConstructionFamilyPayload, members: ConstructionFamilyPayload["members"]): ConstructionFamilyPayload {
+  if (source.schemaVersion !== "0.13.0" && [source.sourceGraph, ...members.map(member => member.graph)].some(graph => graph.schemaVersion === "0.15.0")) {
+    const { schemaVersion: _version, ...prior } = source; void _version;
+    return { ...prior, schemaVersion: "0.13.0", members };
+  }
   if (source.schemaVersion === "0.10.0" && ![source.sourceGraph, ...members.map(member => member.graph)].some(graph => graph.schemaVersion === "0.14.0")) {
     const { schemaVersion: _version, initialComposition, ...prior } = source; void _version;
     return initialComposition?.schemaVersion === "0.5.0"

@@ -117,6 +117,11 @@ describe("persistent construction family source", () => {
       const plainPierFamily = await createConstructionFamilySource(plainPierInput);
       expect(await readConstructionFamilySource(JSON.parse(JSON.stringify(plainPierFamily)))).toEqual(plainPierFamily);
       const individualFamily = await createConstructionFamilySource(individualInput);
+      const { contentHash: _individualHash, ...individualPayload } = individualFamily; void _individualHash;
+      const upgradedMembers = individualPayload.members.map((member, index) => index === 0 ? { ...member, graph: withConstructionFacadePiers(member.graph, pierDirective) } : member);
+      const upgraded = withUpdatedConstructionFamilyMembers(individualPayload, upgradedMembers);
+      expect(upgraded.schemaVersion).toBe("0.13.0");
+      expect((await createConstructionFamilySource(upgraded)).schemaVersion).toBe("0.13.0");
       expect(await readConstructionFamilySource(JSON.parse(JSON.stringify(individualFamily)))).toEqual(individualFamily);
       await expect(createConstructionFamilySource({ ...individualInput, familyId: "wrong" })).rejects.toThrow(/owning family/);
       await expect(createConstructionFamilySource({ ...individualInput, awningFabric: redFabric })).rejects.toThrow(/owning family/);

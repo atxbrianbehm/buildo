@@ -1,3 +1,4 @@
+import { withConstructionFacadePiers, withoutConstructionFacadePiers } from "../core/constructionFacadePierGraph";
 import { z } from "zod";
 import { readConstructionFamilyPlan } from "../core/constructionFamilyPlan";
 import { captureConstructionGenerationSource } from "../core/constructionGenerationSource";
@@ -39,7 +40,6 @@ async function geometryHash(result: Awaited<ReturnType<typeof evaluateConstructi
 /** Resolve a complete owned family or fail without publishing a partial result. */
 export async function resolveConstructionFamily(input: unknown, lineageInput: unknown, controlsInput: ConstructionGenerationControls, signal?: AbortSignal, compositionInput?: unknown) {
   const plan = readConstructionFamilyPlan(input);
-  if (plan.source.graph.schemaVersion === "0.15.0") throw new Error("Facade pier graphs are not yet supported in family generation.");
   const lineage = structuredClone(ConstructionGenerationLineageSchema.parse(lineageInput));
   const controls = controlsSchema.parse(controlsInput);
   if (!controls.preserveAuthored) throw new Error("Family generation requires preserving authored choices.");
@@ -124,6 +124,8 @@ export async function resolveConstructionFamily(input: unknown, lineageInput: un
       }
       let candidateGraph = generated.graph;
       if (composition) {
+        const piers = candidateGraph.facadePiers;
+        if (piers) candidateGraph = withoutConstructionFacadePiers(candidateGraph);
         const awnings = candidateGraph.awnings, supports = candidateGraph.awningSupports;
         if (awnings) {
           const { awnings: _removed, awningSupports: _supports, ...prior } = candidateGraph; void _removed; void _supports;
@@ -133,6 +135,7 @@ export async function resolveConstructionFamily(input: unknown, lineageInput: un
         if (awnings) candidateGraph = withConstructionAwnings(candidateGraph, awnings);
         candidateGraph = applyConstructionFamilyAwningVariation(candidateGraph, composition, member.ordinal);
         if (supports) candidateGraph = withConstructionAwningSupports(candidateGraph, supports);
+        if (piers) candidateGraph = withConstructionFacadePiers(candidateGraph, piers);
       }
       const construction = await evaluateConstruction(candidateGraph); abort(signal);
       BayConstructionWorkerReplySchema.parse({ schemaVersion: candidateGraph.schemaVersion, type: "bay-result", requestId: member.ordinal, result: construction });

@@ -7,8 +7,6 @@ import { resolveConstructionGeneration } from "../core/constructionGenerationRes
 import { normalizeBuildingSpec } from "../core/specNormalizer";
 import { planConstructionReferenceMaterials } from "../materials/constructionReferenceMaterials";
 import stylePack from "../style-packs/late-19c-commercial-demo.json";
-import { resolveConstructionFamilyPlan } from "../core/constructionFamilyPlan";
-import { resolveConstructionFamily } from "../state/constructionFamilyGeneration";
 import { resolveWorkbenchGeneration, defaultConstructionGenerationControls } from "../state/constructionGenerationState";
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { withConstructionRoundHead } from "../core/constructionRoundHeadVocabulary";
@@ -32,8 +30,6 @@ describe("facade pier graph and worker", () => {
     expect(locked.graph.facadePiers).toEqual(directive);
     const released = await resolveWorkbenchGeneration(graph, null, { ...defaultConstructionGenerationControls, preserveAuthored: false });
     expect(released.graph.facadePiers).toBeUndefined(); expect(released.graph.awnings).toBeUndefined();
-    const plan = resolveConstructionFamilyPlan({ schemaVersion: "0.1.0", kind: "construction-family-request", familyId: "test_family", familySeed: "seed", graph });
-    await expect(resolveConstructionFamily(plan, null, defaultConstructionGenerationControls)).rejects.toThrow(/not yet supported in family generation/);
   });
   it("retains piers when an imported opening lock protects the layout", async () => {
     const initial = await resolveWorkbenchGeneration(createBuildingConstructionGraph("pier_lock"), null, defaultConstructionGenerationControls);
