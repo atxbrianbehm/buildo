@@ -69,6 +69,13 @@ describe("persistent construction family source", () => {
       const awningMembers = await resolveConstructionFamily(awningPlan, lineage, defaultConstructionGenerationControls, undefined, roofChoices);
       expect(awningMembers.members).toHaveLength(6);
       expect(awningMembers.members.every(member => JSON.stringify(member.construction.graph.awnings) === JSON.stringify(awnings))).toBe(true);
+      const awningChoices = resolveConstructionFamilyComposition({ schemaVersion: "0.5.0", kind: "construction-family-composition-request", familySeed: "seed", openingLock: false,
+        policy: { openings: false, frontage: false, roof: false, groupedBays: false, storefrontLights: false, massing: false, awnings: true } });
+      const variedAwnings = await resolveConstructionFamily(awningPlan, lineage, defaultConstructionGenerationControls, undefined, awningChoices);
+      expect(new Set(variedAwnings.members.map(member => member.construction.graph.awnings!.length))).toEqual(new Set([1, 2, 3]));
+      const variedSource = await createConstructionFamilySource({ ...awningInput, schemaVersion: "0.9.0", initialComposition: awningChoices,
+        members: variedAwnings.members.map(member => ({ documentId: member.documentId, graph: member.construction.graph, generation: member.lineage })) });
+      expect(await readConstructionFamilySource(JSON.parse(JSON.stringify(variedSource)))).toEqual(variedSource);
       const dividedInput = { ...input, familySeed: "seed", schemaVersion: "0.5.0", sourceGraph: dividedGraph,
         members: saved.members.map((member, index) => index === 0 ? { ...member, graph: dividedMember } : member) };
       const divided = await createConstructionFamilySource(dividedInput);

@@ -7,7 +7,7 @@ import { constructionUsesOperator, validateConstructionSurfaceSources } from "..
 import { BuildingSourceFileSchema, parseBuildingSourceFile } from "./buildingSourceFile";
 import { ConstructionGenerationLineageSchema } from "./constructionGenerationState";
 import { validateGeneration } from "./bayConstructionProject";
-import { ConstructionFamilyCompositionPlanV1Schema, ConstructionFamilyCompositionPlanV2Schema, ConstructionFamilyCompositionPlanV3Schema, ConstructionFamilyCompositionPlanV4Schema } from "../contracts/constructionFamilyComposition";
+import { ConstructionFamilyCompositionPlanV1Schema, ConstructionFamilyCompositionPlanV2Schema, ConstructionFamilyCompositionPlanV3Schema, ConstructionFamilyCompositionPlanV4Schema, ConstructionFamilyCompositionPlanV5Schema } from "../contracts/constructionFamilyComposition";
 import { readConstructionFamilyCompositionPlan } from "../core/constructionFamilyComposition";
 import { ConstructionAwningFabricArtifactSchema } from "../contracts/constructionAwningFabric";
 import { readConstructionAwningFabric } from "../materials/constructionAwningFabric";
@@ -28,7 +28,8 @@ const variedStorefrontPayload = z.object({ schemaVersion: z.literal("0.6.0"), ..
 const massingPayload = z.object({ schemaVersion: z.literal("0.7.0"), ...common, initialComposition: ConstructionFamilyCompositionPlanV4Schema }).strict();
 const awningPayload = z.object({ schemaVersion: z.literal("0.8.0"), ...common, awningFabric: ConstructionAwningFabricArtifactSchema,
   initialComposition: z.union([ConstructionFamilyCompositionPlanV1Schema, ConstructionFamilyCompositionPlanV2Schema, ConstructionFamilyCompositionPlanV3Schema, ConstructionFamilyCompositionPlanV4Schema]).optional() }).strict();
-const payload = z.discriminatedUnion("schemaVersion", [legacyPayload, composedPayload, groupedPayload, dividedPayload, variedStorefrontPayload, massingPayload, awningPayload]);
+const variedAwningPayload = z.object({ schemaVersion: z.literal("0.9.0"), ...common, awningFabric: ConstructionAwningFabricArtifactSchema, initialComposition: ConstructionFamilyCompositionPlanV5Schema }).strict();
+const payload = z.discriminatedUnion("schemaVersion", [legacyPayload, composedPayload, groupedPayload, dividedPayload, variedStorefrontPayload, massingPayload, awningPayload, variedAwningPayload]);
 const json = z.unknown().superRefine((value, context) => { const issue = findBuildingDocumentJsonIssue(value);
   if (issue) context.addIssue({ code: "custom", path: issue.path, message: issue.message }); });
 export const ConstructionFamilySourceSchema = json.pipe(z.discriminatedUnion("schemaVersion", [
@@ -38,7 +39,8 @@ export const ConstructionFamilySourceSchema = json.pipe(z.discriminatedUnion("sc
   dividedPayload.extend({ contentHash: z.string().regex(/^[a-f0-9]{64}$/) }).strict(),
   variedStorefrontPayload.extend({ contentHash: z.string().regex(/^[a-f0-9]{64}$/) }).strict(),
   massingPayload.extend({ contentHash: z.string().regex(/^[a-f0-9]{64}$/) }).strict(),
-  awningPayload.extend({ contentHash: z.string().regex(/^[a-f0-9]{64}$/) }).strict()
+  awningPayload.extend({ contentHash: z.string().regex(/^[a-f0-9]{64}$/) }).strict(),
+  variedAwningPayload.extend({ contentHash: z.string().regex(/^[a-f0-9]{64}$/) }).strict()
 ]));
 export type ConstructionFamilySource = z.infer<typeof ConstructionFamilySourceSchema>;
 export type ConstructionFamilyPayload = z.infer<typeof payload>;
@@ -51,14 +53,14 @@ function requireBuildingGraph(graph: z.infer<typeof BayConstructionGraphSchema>)
 }
 
 async function validate(source: z.infer<typeof payload>) {
-  if (source.schemaVersion === "0.3.0" || source.schemaVersion === "0.4.0" || source.schemaVersion === "0.6.0" || source.schemaVersion === "0.7.0" || (source.schemaVersion === "0.5.0" || source.schemaVersion === "0.8.0") && source.initialComposition) {
+  if (source.schemaVersion === "0.3.0" || source.schemaVersion === "0.4.0" || source.schemaVersion === "0.6.0" || source.schemaVersion === "0.7.0" || source.schemaVersion === "0.9.0" || (source.schemaVersion === "0.5.0" || source.schemaVersion === "0.8.0") && source.initialComposition) {
     const composition = readConstructionFamilyCompositionPlan(source.initialComposition);
     if (composition.source.familySeed !== source.familySeed) throw new Error("Family composition must retain the family seed.");
   }
-  if (source.schemaVersion === "0.8.0") await readConstructionAwningFabric(source.awningFabric);
-  if (source.schemaVersion !== "0.8.0" && [source.sourceGraph, ...source.members.map(member => member.graph)].some(graph => graph.schemaVersion === "0.13.0"))
+  if (source.schemaVersion === "0.8.0" || source.schemaVersion === "0.9.0") await readConstructionAwningFabric(source.awningFabric);
+  if (source.schemaVersion !== "0.8.0" && source.schemaVersion !== "0.9.0" && [source.sourceGraph, ...source.members.map(member => member.graph)].some(graph => graph.schemaVersion === "0.13.0"))
     throw new Error("Awning family graphs require family source version 0.8.0 and its fabric.");
-  if (source.schemaVersion !== "0.5.0" && source.schemaVersion !== "0.6.0" && source.schemaVersion !== "0.7.0" && source.schemaVersion !== "0.8.0" && [source.sourceGraph, ...source.members.map(member => member.graph)].some(graph => graph.schemaVersion === "0.12.0"))
+  if (source.schemaVersion !== "0.5.0" && source.schemaVersion !== "0.6.0" && source.schemaVersion !== "0.7.0" && source.schemaVersion !== "0.8.0" && source.schemaVersion !== "0.9.0" && [source.sourceGraph, ...source.members.map(member => member.graph)].some(graph => graph.schemaVersion === "0.12.0"))
     throw new Error("Divided storefront family graphs require family source version 0.5.0.");
   const ids = new Set(source.members.map(member => member.documentId));
   if (ids.size !== 6 || ids.has(source.sourceDocumentId)) throw new Error("Family member identities must be unique and separate from the source building.");
