@@ -18,6 +18,8 @@ import { constructionFacePose, constructionFacadeSolid, constructionProfileRing,
 import { constructionSurfaceAt } from "./constructionSurfaceProgram";
 import { resolveConstructionRoundHead } from "../core/constructionRoundHead";
 import { buildConstructionRoundHeadSash, buildConstructionRoundHeadWindow } from "./constructionRoundHeadGeometry";
+import { readConstructionGroupedBay } from "../core/constructionGroupedBay";
+import { canonicalJson } from "../core/canonicalJson";
 
 type Cell = { localOpeningWidth?: boolean; storefrontPlan?: ConstructionStorefrontPlan; root: string; key: string; floorSplit: boolean; baySplit: boolean; scope: FacadeBayScope; face?: "front" | "right" | "rear" | "left"; pose?: ConstructionFacePose; building?: ConstructionBuilding };
 type Stage = "facade" | "openings" | "trim" | "roof";
@@ -50,8 +52,15 @@ function front(primitive: PrimitiveGeometry): PrimitiveGeometry {
 
 /** Scope collections feed the same wall subtractor and accepted C1 window geometry. */
 export async function evaluateFacadeConstruction(input: unknown, materials: BayConstructionMaterials = DEFAULT_BAY_MATERIALS,
-  previewNodeId?: string): Promise<BayConstructionResult> {
+  previewNodeId?: string, groupedInput: readonly unknown[] = []): Promise<BayConstructionResult> {
   const graph = structuredClone(BayConstructionGraphSchema.parse(input));
+  const grouped = groupedInput.map(readConstructionGroupedBay);
+  const groupedByScope = new Map(grouped.map(plan => [plan.source.scope.id, plan]));
+  if (groupedByScope.size !== grouped.length) throw new Error("Grouped bay scope IDs must be unique.");
+  const usedGroups = new Set<string>();
+  if (grouped.length && (graph.nodes.filter(node => node.type === "PlaceOpening" && !node.bypassed).length !== 1 ||
+      graph.nodes.filter(node => node.type === "AssembleWindow" && !node.bypassed).length !== 1))
+    throw new Error("Grouped bays require one active opening and window assembly.");
   if (!["0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0"].includes(graph.schemaVersion)) throw new Error("Facade construction requires graph version 0.2.0 or 0.3.0.");
   const nodes = new Map(graph.nodes.map(node => [node.id, node]));
   if (previewNodeId && !nodes.has(previewNodeId)) throw new Error("The preview node is missing.");
@@ -257,7 +266,38 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
           scope.opening = { kind: "window", widthM, heightM, centerAlongM: scope.originM[0] + scope.sizeM[0] / 2, centerYM: scope.originM[1] + sillM + heightM / 2,
             ...(node.parameters.upperFrontRoundHead && face === "front" && scope.floorIndex > 0 ? { roundHead: true } : {}) };
         }
-        value = { kind: "scope", cells }; break;
+        const expanded = cells.flatMap(cell => {
+          const plan = groupedByScope.get(cell.key);
+          if (!plan || node.bypassed) return [cell];
+          const { scope: requested, parameters: p } = plan.source, scope = cell.scope;
+          // Existing rectangular sill and lintel extend 0.1 m past each side.
+          // Separate members must not generate overlapping coplanar trim.
+          if (p.pierWidthM <= 0.2) throw new Error(`Grouped bay ${cell.key} needs more than 0.2 m between openings for separate trim.`);
+          const outerMargin = (scope.sizeM[0] - p.memberCount * p.memberWidthM - (p.memberCount - 1) * p.pierWidthM) / 2;
+          if (outerMargin <= 0.12) throw new Error(`Grouped bay ${cell.key} needs more outer masonry for its trim and neighboring bays.`);
+          const windows = graph.nodes.filter(item => item.type === "AssembleWindow" && !item.bypassed);
+          const window = windows[0];
+          if (!cell.building || cell.face !== "front" || scope.floorIndex === 0 || scope.opening?.roundHead ||
+              requested.face !== cell.face || requested.floorIndex !== scope.floorIndex || requested.bayIndex !== scope.bayIndex ||
+              canonicalJson(requested.originM) !== canonicalJson(scope.originM) || canonicalJson(requested.sizeM) !== canonicalJson(scope.sizeM) ||
+              p.heightM !== heightM || p.sillM !== sillM || window?.type !== "AssembleWindow" ||
+              p.frameWidthM !== window.parameters.frameWidthM || p.recessM !== window.parameters.recessM)
+            throw new Error(`Grouped bay ${cell.key} does not match the active rectangular building scope and assembly.`);
+          usedGroups.add(cell.key);
+          return plan.members.map((member, index) => {
+            const left = index === 0 ? scope.originM[0] : (plan.members[index-1].centerAlongM + member.centerAlongM) / 2;
+            const right = index === plan.members.length-1 ? scope.originM[0]+scope.sizeM[0] : (member.centerAlongM+plan.members[index+1].centerAlongM)/2;
+            const child = structuredClone(cell);
+            child.key = member.id;
+            child.scope.originM[0] = left;
+            child.scope.sizeM[0] = right-left;
+            child.scope.opening = { kind: "window", widthM: member.widthM, heightM: member.heightM,
+              centerAlongM: member.centerAlongM, centerYM: member.centerYM };
+            return child;
+          });
+        });
+        if (expanded.length > 256) throw new Error("A facade supports at most 256 scopes after grouping.");
+        value = { kind: "scope", cells: expanded }; break;
       }
       case "EmitWall": {
         const cells = await scopes(node.input.nodeId);
@@ -392,11 +432,18 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
   }
   const full = await evaluate(graph.outputNodeId);
   if (full.kind !== "geometry" || !full.parts.length) throw new Error("Construction output is empty.");
+  if (usedGroups.size !== grouped.length) throw new Error("A grouped bay is missing from the executed opening scopes.");
   for (const node of graph.nodes) if (node.type === "EditOpeningWidth" && !node.bypassed) for (const { target } of node.overrides) {
     const path = `building/${graph.documentId}/node/${target.windowNodeId}/${target.storeysNodeId}/floor/${target.floorIndex}/bay/${target.bayIndex}/frame`;
     if (!editedOpenings.has(path)) throw new Error("The selected opening edit is not connected to the final output.");
   }
   const fullWalls = full.parts.flatMap(part => part.wallCells ?? (part.role === "wall" && part.cell ? [part.cell] : []));
+  for (const plan of grouped) for (const member of plan.members) {
+    const matchingWalls = fullWalls.filter(cell => cell.key === member.id);
+    const matchingFrames = full.parts.filter(part => part.role === "frame" && part.cell?.key === member.id);
+    if (matchingWalls.length !== 1 || matchingFrames.length !== 1 || layoutOf(matchingWalls[0]) !== layoutOf(matchingFrames[0].cell!))
+      throw new Error("Each grouped member must reach one matching wall aperture and window frame.");
+  }
   for (const [path, expected] of editedOpenings) {
     if (full.parts.filter(part => part.id === path).length !== 1 ||
         fullWalls.filter(cell => cell.key === expected.key && layoutOf(cell) === expected.layout).length !== 1) {
@@ -433,7 +480,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
     materialSlotId: group[0].prototype!.materialSlotId!, count: group.length,
     transforms: new Float32Array(group.flatMap(part => poseMatrix(part.translation!,part.pose))) }));
   const ir = RuntimeBuildingIRSchema.parse({ schemaVersion: "0.1.0", buildingId: graph.documentId, familyId: graph.documentId,
-    sourceGraphHash: await hashCanonicalJson(graph), bounds: union(parts.map(p => p.bounds)), meshBatches, instanceBatches, semanticIndex,
+    sourceGraphHash: await hashCanonicalJson(grouped.length ? { schemaVersion: "0.1.0", kind: "construction-grouped-geometry-request", graph, groups: grouped } : graph), bounds: union(parts.map(p => p.bounds)), meshBatches, instanceBatches, semanticIndex,
     metrics: { vertexCount: [...meshBatches, ...prototypes.values()].reduce((sum, batch) => sum + batch.positions!.length / 3, 0),
       triangleCount: parts.reduce((sum, part) => sum + (part.mesh ?? part.prototype)!.indices!.length / 3, 0),
       instanceCount: instanceBatches.reduce((sum, batch) => sum + batch.count, 0) } });
