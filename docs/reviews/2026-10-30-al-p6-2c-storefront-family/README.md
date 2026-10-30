@@ -4,4 +4,4 @@ The opt-in Storefront pane divisions policy generates a versioned, deterministic
 
 Focused tests cover six distinct choices, deterministic replay and tampering, compatible punched-frontage choices, geometry, authored and pinned conflicts and family-source round trip. Actual [WebGPU](webgpu-01/receipt.json) and [WebGL](webgl-01/receipt.json) workflows produced identical choices, edited one member, retained siblings and source, saved/reopened the family and made zero new material-provider calls. The [family view](webgpu-01/family.png) and [edited member](webgpu-01/member.png) are actual textured captures. At this scale, variation is subtle and the masses, storey rhythms and material palette remain very similar. This does not establish street readiness, historical accuracy or a fix for the observed sill line.
 
-Full repository validation is pending. The capture script generates its own starting construction through the editor.
+All five repository checks passed: 2,043 tests across 149 files, standard browser smoke, typecheck, lint and build. The build retains its large-chunk warning. The capture script generates its own starting construction through the editor.
