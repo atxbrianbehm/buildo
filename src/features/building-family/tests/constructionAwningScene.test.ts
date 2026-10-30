@@ -19,7 +19,7 @@ it("binds separately owned fabric to semantic awning meshes and releases it with
   const owner = await prepareConstructionAwningFabricRuntime(fabric), registry = createAtlasMaterialRegistry({ atlasId: "atlas", atlasContentHash: "atlas-hash" });
   const input = { ir, catalog: {} as ComponentCatalog, materialRegistry: registry };
   expect(() => createBuildingSceneRuntime(input)).toThrow(/needs its supplemental material/);
-  expect(() => createBuildingSceneRuntime({ ...input, awningFabricRuntime: owner, surfaceRuntime: {} as BuildingSurfaceRuntime })).toThrow(/cannot yet use surface composition/);
+  expect(() => createBuildingSceneRuntime({ ...input, awningFabricRuntime: owner, surfaceRuntime: {} as BuildingSurfaceRuntime })).toThrow(/does not match/);
   const invalid = { ...ir, semanticIndex: ir.semanticIndex.slice(1) };
   expect(() => createBuildingSceneRuntime({ ...input, ir: invalid, awningFabricRuntime: owner })).toThrow(/semantic opening address/);
   const duplicate = { ...ir, semanticIndex: [...ir.semanticIndex, { ...ir.semanticIndex[0], batchId: "other" }] };

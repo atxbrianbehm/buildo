@@ -15,6 +15,10 @@ import { resolveConstructionFrameFromPath, resolveConstructionFrameFromIntersect
 import { setConstructionSurface } from "../core/constructionSurfaceAuthoring";
 import { createBayConstructionProject, readBayConstructionProject } from "../state/bayConstructionProject";
 import { defaultBuildingPromptControls } from "../state/buildingStore";
+import { createConstructionAwningFabric } from "../materials/constructionAwningFabric";
+import { CONSTRUCTION_AWNING_FABRIC_SLOT, prepareConstructionAwningFabricRuntime } from "../renderer-three/constructionAwningFabricRuntime";
+import { createBuildingSceneRuntime } from "../renderer-three/buildingSceneAdapter";
+import { disposeBuildingSceneResources } from "../renderer-three/resourceDisposal";
 
 const generate = vi.spyOn(ProceduralMaterialProvider.prototype, "generate");
 let base: Awaited<ReturnType<typeof createAssemblyHallFixture>>, materials: Awaited<ReturnType<typeof createBayConstructionMaterials>>;
@@ -51,6 +55,35 @@ afterAll(async () => {
   try { if (materials) expect(await channelHashes()).toEqual(originalChannels); expect(generate).toHaveBeenCalledTimes(sourceCalls); }
   finally { base?.familyRuntime.dispose(); generate.mockRestore(); }
 });
+
+it("keeps atlas finishes and an independently pinned awning fabric in the same scene", async () => {
+  const ir = structuredClone(result.ir), sourceMesh = ir.meshBatches[0];
+  const fabricBatch = { ...sourceMesh, batchId: "test.awning", role: "awning.canopy", materialSlotId: CONSTRUCTION_AWNING_FABRIC_SLOT };
+  ir.meshBatches.push(fabricBatch);
+  const semanticPath = `building/${ir.familyId}/test/awning/canopy`;
+  ir.semanticIndex.push({ semanticPath, batchId: fabricBatch.batchId, stage: "openings" });
+  const fabric = await createConstructionAwningFabric({ schemaVersion: "0.1.0", kind: "construction-awning-fabric-request", seed: "coexistence", pattern: "striped", primary: [220, 210, 190], secondary: [60, 90, 70], physicalSizeM: [1, 1] });
+  await expect(prepareBuildingSurfaceRuntime({ composition: composition(), ir, atlas: materials.packedAtlas })).rejects.toThrow(/Supplemental awning material/);
+  const layer = wood(0.5); layer.target = { kind: "slot", slotId: CONSTRUCTION_AWNING_FABRIC_SLOT };
+  await expect(prepareBuildingSurfaceRuntime({ composition: composition([layer]), ir, atlas: materials.packedAtlas, awningFabric: fabric })).rejects.toThrow(/cannot yet target/);
+  layer.target = { kind: "element", relativePath: "test/awning/canopy", expectedRole: "frame" };
+  await expect(prepareBuildingSurfaceRuntime({ composition: composition([layer]), ir, atlas: materials.packedAtlas, awningFabric: fabric })).rejects.toThrow(/cannot yet target/);
+  const tampered = structuredClone(fabric); tampered.source.seed = "changed";
+  await expect(prepareBuildingSurfaceRuntime({ composition: composition(), ir, atlas: materials.packedAtlas, awningFabric: tampered })).rejects.toThrow(/does not match/);
+  const target = fixture(), owner = await prepareConstructionAwningFabricRuntime(fabric);
+  const surface = await prepareBuildingSurfaceRuntime({ composition: composition([wood(0.5)]), ir, atlas: materials.packedAtlas, baseAppearances: bases, awningFabric: fabric });
+  try {
+    expect(surface.supplementalAwningFabricHash).toBe(fabric.contentHash);
+    const other = await prepareConstructionAwningFabricRuntime(await createConstructionAwningFabric({ ...fabric.source, seed: "other" }));
+    try { expect(() => createBuildingSceneRuntime({ ir, catalog: target.catalog, materialRegistry: target.familyRuntime.materialRegistry, surfaceRuntime: surface, awningFabricRuntime: other })).toThrow(/does not match/); }
+    finally { other.dispose(); }
+    const scene = createBuildingSceneRuntime({ ir, catalog: target.catalog, materialRegistry: target.familyRuntime.materialRegistry,
+      compiledInstanceGeometry: new Map(result.prototypes!.map(prototype => [prototype.batchId, prototype])), surfaceRuntime: surface, awningFabricRuntime: owner });
+    expect(scene.semanticLookup.get(semanticPath)!.object.material.userData.fabricContentHash).toBe(fabric.contentHash);
+    expect(scene.semanticLookup.get(fullPath(firstFrame().relativePath))!.object.material.userData.pixelContentHash).toBeDefined();
+    disposeBuildingSceneResources(scene, { disposeMaterials: false });
+  } finally { surface.dispose(); owner.dispose(); target.familyRuntime.dispose(); }
+}, 120000);
 
 it.each(["empty", "zero"])("retains every accepted material pointer for %s composition on actual construction instances", async kind => {
   const target = fixture(), original = target.buildingRuntime;

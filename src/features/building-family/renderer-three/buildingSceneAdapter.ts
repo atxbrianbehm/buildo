@@ -466,7 +466,8 @@ export function createBuildingSceneRuntime(input: CreateBuildingSceneRuntimeInpu
     const fabricMeshes = input.ir.meshBatches.filter(batch => batch.materialSlotId === CONSTRUCTION_AWNING_FABRIC_SLOT);
     if (input.ir.instanceBatches.some(batch => batch.materialSlotId === CONSTRUCTION_AWNING_FABRIC_SLOT)) throw new Error("Supplemental awning fabric currently supports mesh batches only.");
     if (input.ir.meshBatches.some(batch => ["awning.canopy", "awning.valance"].includes(batch.role) && batch.materialSlotId !== CONSTRUCTION_AWNING_FABRIC_SLOT)) throw new Error("Awning surfaces require the supplemental fabric slot.");
-    if (fabricMeshes.length && (!input.awningFabricRuntime || input.surfaceRuntime)) throw new Error("Awning fabric needs its supplemental material and cannot yet use surface composition.");
+    if (fabricMeshes.length && !input.awningFabricRuntime) throw new Error("Awning fabric needs its supplemental material.");
+    if (fabricMeshes.length && input.surfaceRuntime && input.surfaceRuntime.supplementalAwningFabricHash !== input.awningFabricRuntime!.contentHash) throw new Error("Surface composition does not match the supplemental awning fabric.");
     if (fabricMeshes.some(batch => {
       const entries = input.ir.semanticIndex.filter(entry => entry.batchId === batch.batchId), entry = entries[0];
       return !["awning.canopy", "awning.valance"].includes(batch.role) || entries.length !== 1 || entry.elementIndex !== undefined || entry.stage !== "openings" || !entry.semanticPath.startsWith(`building/${input.ir.familyId}/`) || input.ir.semanticIndex.filter(other => other.semanticPath === entry.semanticPath).length !== 1 || [...input.ir.meshBatches, ...input.ir.instanceBatches].filter(other => other.batchId === batch.batchId).length !== 1;
