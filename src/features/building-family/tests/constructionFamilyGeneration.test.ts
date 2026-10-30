@@ -7,6 +7,7 @@ import { withConstructionWindowLayout } from "../core/constructionWindowVocabula
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { withConstructionOpeningWidth } from "../core/constructionOpeningEditGraph";
 import { withConstructionGroupedBays } from "../core/constructionGroupedBayGraph";
+import { withConstructionStorefrontDivision } from "../core/constructionStorefrontDivisionGraph";
 import { captureConstructionGenerationSource } from "../core/constructionGenerationSource";
 import { resolveConstructionGeneration } from "../core/constructionGenerationResolver";
 import { emptyConstructionComposition, setConstructionSurface } from "../core/constructionSurfaceAuthoring";
@@ -30,6 +31,22 @@ async function fixture() {
 }
 
 describe("authored construction family generation", () => {
+  it("retains divided storefronts for all family members and rejects conflicting frontage variation", async () => {
+    const { lineage, graph } = await fixture();
+    const authored = withConstructionStorefrontDivision(withConstructionStorefront(graph, 1), { displayLights: 2, transomLights: 3 });
+    const plan = resolveConstructionFamilyPlan({ schemaVersion: "0.1.0", kind: "construction-family-request", familyId: "storefront_family", familySeed: "storefront-seed", graph: authored });
+    const family = await resolveConstructionFamily(plan, lineage, defaultConstructionGenerationControls);
+    expect(family.members).toHaveLength(6);
+    for (const member of family.members) expect(member.construction.graph.storefrontDivision).toEqual(authored.storefrontDivision);
+    const composition = resolveConstructionFamilyComposition({ schemaVersion: "0.1.0", kind: "construction-family-composition-request", familySeed: "storefront-seed", policy: { openings: false, frontage: true, roof: false }, openingLock: false });
+    await expect(resolveConstructionFamily(plan, lineage, defaultConstructionGenerationControls, undefined, composition)).rejects.toThrow(/cannot currently coexist/);
+    const old = lineage.source, pinned = await captureConstructionGenerationSource({ schemaVersion: "0.1.0", kind: "construction-generation-input",
+      documentId: old.documentId, intent: { ...old.intent, locks: [{ semanticPath: "construction/opening/widthM", scope: "building", lockedValue: 1.22, reason: "Imported pin" }] },
+      recipe: old.recipe, reference: old.reference, intentionalExceptions: old.intentionalExceptions });
+    const pinnedLineage = { ...lineage, source: pinned, resolution: await resolveConstructionGeneration(pinned), materialPlan: await planConstructionReferenceMaterials(lineage.materialPlan.templateSpec, pinned) };
+    const retained = await resolveWorkbenchGeneration(authored, pinnedLineage, { ...defaultConstructionGenerationControls, preserveAuthored: false, lockOpenings: false });
+    expect(retained.graph.storefrontDivision).toEqual(authored.storefrontDivision);
+  }, 120000);
   it("keeps authored groups while varying an available bay and rejects pinned opening locks", async () => {
     const { lineage, graph } = await fixture();
     const authored = withConstructionGroupedBays(graph, [{ storeysNodeId: "facade", floorIndex: 1, bayIndex: 0, memberCount: 2, memberWidthM: 0.5, pierWidthM: 0.24 }]);

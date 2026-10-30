@@ -89,7 +89,7 @@ export function ConstructionBuildingControls({ graph, fields, windowCount, store
                   <select aria-label="Transom lights" value={graph.storefrontDivision?.transomLights ?? 1} onChange={event => onStorefrontDivisionChange("transomLights", Number(event.currentTarget.value))}>
                     <option value={1}>One pane</option><option value={2}>Two panes</option><option value={3}>Three panes</option>
                   </select></label>
-                {graph.storefrontDivision ? <p>Building and family generation are temporarily unavailable for divided storefronts; the current building can still be edited and saved.</p> : null}
+                {graph.storefrontDivision ? <p>Keep edited assemblies or lock openings to retain these divisions when generating.</p> : null}
               </> : <p>Apply the storefront first to choose its glazing divisions.</p>}
               <label className="construction-grouped__field"><span><strong>Entrance bay</strong><small id={prefix+"entrance"}>Front bays are numbered from left to right.</small></span>
                 <select aria-label="Entrance bay" aria-describedby={prefix+"entrance"} value={fields.entrance?.bayIndex ?? "1"} disabled={frontageBypassed} onChange={event => onFieldChange("entrance","bayIndex",event.currentTarget.value)}>

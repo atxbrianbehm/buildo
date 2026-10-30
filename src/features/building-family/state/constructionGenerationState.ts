@@ -2,6 +2,7 @@ import { retainConstructionCorniceVocabulary, withConstructionCorniceLayout } fr
 import { retainConstructionParapetVocabulary, withConstructionParapetSilhouette } from "../core/constructionParapetVocabulary";
 import { retainConstructionRoundHead, withConstructionRoundHead } from "../core/constructionRoundHeadVocabulary";
 import { withConstructionGroupedBays } from "../core/constructionGroupedBayGraph";
+import { withConstructionStorefrontDivision } from "../core/constructionStorefrontDivisionGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
 import { retainConstructionStorefront, withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { retainConstructionOpeningEdits, withConstructionOpeningEdits } from "../core/constructionOpeningEditGraph";
@@ -54,7 +55,8 @@ const controlsSchema = z.object({ recipeId: z.string().min(1).max(512).optional(
   lockFootprint: z.boolean(), lockStoreys: z.boolean(), lockOpenings: z.boolean(), preserveAuthored: z.boolean() }).strict();
 
 function assertTopology(current: BayConstructionGraph, generated: BayConstructionGraph) {
-  if (current.schemaVersion === "0.11.0") generated = withConstructionGroupedBays(generated, current.upperBayGroups);
+  if (current.schemaVersion === "0.12.0") generated = withConstructionStorefrontDivision(withConstructionGroupedBays(withConstructionStorefront(generated, 1), current.upperBayGroups), current.storefrontDivision);
+  else if (current.schemaVersion === "0.11.0") generated = withConstructionGroupedBays(generated, current.upperBayGroups);
   else if (current.schemaVersion === "0.10.0") generated = withConstructionRoundHead(generated, 0);
   else if (current.schemaVersion === "0.9.0") generated = withConstructionParapetSilhouette(withConstructionCorniceLayout(generated, 0), 0);
   else if (current.schemaVersion === "0.8.0") generated = withConstructionCorniceLayout(generated, 0);
@@ -73,7 +75,6 @@ function assertTopology(current: BayConstructionGraph, generated: BayConstructio
 export async function resolveWorkbenchGeneration(currentInput: unknown, previousInput: ConstructionGenerationLineage | null,
   controlsInput: ConstructionGenerationControls, reroll = false, referenceInput?: unknown) {
   const current = structuredClone(BayConstructionGraphSchema.parse(currentInput));
-  if (current.schemaVersion === "0.12.0") throw new Error("Generation from divided storefronts is not available yet; the current building is retained.");
   const previous = previousInput ? structuredClone(ConstructionGenerationLineageSchema.parse(previousInput)) : null;
   const controls = controlsSchema.parse(controlsInput);
   const reference = referenceInput === undefined ? undefined : ConstructionReferenceSnapshotSchema.parse(referenceInput);
@@ -145,13 +146,20 @@ export async function resolveWorkbenchGeneration(currentInput: unknown, previous
     "$constructionPsgDocument": document, "$constructionPsgTrace": JSON.parse(canonicalJson(evaluation.trace)) };
   const source = await captureConstructionGenerationSource(input), resolution = await resolveConstructionGeneration(source);
   const preserve = controls.preserveAuthored || controls.lockOpenings;
-  let graph = retainConstructionRoundHead(current, retainConstructionParapetVocabulary(current, retainConstructionCorniceVocabulary(current, retainConstructionOpeningEdits(current, retainConstructionStorefront(current, retainConstructionWindowVocabulary(current, structuredClone(resolution.graph), preserve), preserve), preserve), controls.preserveAuthored), controls.preserveAuthored), preserve);
+  const keepStorefront = preserve || source.intent.locks.some(lock => ["construction/opening", "construction/window", "construction/frontage", "construction/storefrontDivision"]
+    .some(path => path === lock.semanticPath || path.startsWith(lock.semanticPath + "/") || lock.semanticPath.startsWith(path + "/")));
+  let graph = retainConstructionRoundHead(current, retainConstructionParapetVocabulary(current, retainConstructionCorniceVocabulary(current, retainConstructionOpeningEdits(current, retainConstructionStorefront(current, retainConstructionWindowVocabulary(current, structuredClone(resolution.graph), preserve), keepStorefront), preserve), controls.preserveAuthored), controls.preserveAuthored), preserve);
   const keepGroups = preserve || source.intent.locks.some(lock => ["construction/opening", "construction/window", "construction/upperBayGroups"]
     .some(path => path === lock.semanticPath || path.startsWith(lock.semanticPath + "/") || lock.semanticPath.startsWith(path + "/")));
-  if (current.schemaVersion === "0.11.0" && keepGroups) {
+  if (["0.11.0", "0.12.0"].includes(current.schemaVersion) && keepGroups) {
     graph = withConstructionGroupedBays(graph, current.upperBayGroups);
     try { await evaluateConstruction(graph); }
     catch (failure) { throw new Error(`A retained grouped bay does not fit the generated building: ${failure instanceof Error ? failure.message : "invalid construction"}`, { cause: failure }); }
+  }
+  if (current.schemaVersion === "0.12.0" && keepStorefront) {
+    graph = withConstructionStorefrontDivision(graph, current.storefrontDivision);
+    try { await evaluateConstruction(graph); }
+    catch (failure) { throw new Error(`The retained storefront divisions do not fit the generated building: ${failure instanceof Error ? failure.message : "invalid construction"}`, { cause: failure }); }
   }
   for (const node of graph.nodes) if (node.type === "SetSurface") {
     const authored = current.nodes.find(item => item.id === node.id);

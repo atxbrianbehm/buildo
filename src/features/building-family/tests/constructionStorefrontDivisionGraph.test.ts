@@ -32,7 +32,7 @@ describe("storefront division graph", () => {
     expect(BayConstructionGraphSchema.safeParse({ ...graph, schemaVersion: "0.11.0" }).success).toBe(false);
     expect(() => withConstructionStorefrontDivision(withConstructionStorefront(createBuildingConstructionGraph(), 0), { displayLights: 2, transomLights: 3 })).toThrow();
     expect(withConstructionCorniceLayout(graph, 1).storefrontDivision).toEqual(graph.storefrontDivision);
-    await expect(resolveWorkbenchGeneration(graph, null, defaultConstructionGenerationControls)).rejects.toThrow(/not available yet/);
+    expect((await resolveWorkbenchGeneration(graph, null, defaultConstructionGenerationControls)).graph.storefrontDivision).toEqual(graph.storefrontDivision);
     const disconnected = structuredClone(graph);
     const window = disconnected.nodes.find(node => node.type === "AssembleWindow")!;
     window.bypassed = true;
@@ -49,5 +49,14 @@ describe("storefront division graph", () => {
       expect(reopened.project).toEqual(project); expect(reopened.project.materialSource).toEqual(materials.file);
       expect((await evaluateConstruction(reopened.project.graph)).prototypes).toEqual((await evaluateConstruction(graph)).prototypes);
     } finally { fixture.familyRuntime.dispose(); }
+  }, 120000);
+  it("retains divisions for authored or locked generation and releases them when requested", async () => {
+    const graph = withConstructionStorefrontDivision(base(), { displayLights: 2, transomLights: 3 });
+    const kept = await resolveWorkbenchGeneration(graph, null, defaultConstructionGenerationControls);
+    expect(kept.graph.storefrontDivision).toEqual(graph.storefrontDivision);
+    const locked = await resolveWorkbenchGeneration(graph, null, { ...defaultConstructionGenerationControls, preserveAuthored: false, lockOpenings: true });
+    expect(locked.graph.storefrontDivision).toEqual(graph.storefrontDivision);
+    const released = await resolveWorkbenchGeneration(graph, null, { ...defaultConstructionGenerationControls, preserveAuthored: false, lockOpenings: false });
+    expect(released.graph.storefrontDivision).toBeUndefined();
   }, 120000);
 });

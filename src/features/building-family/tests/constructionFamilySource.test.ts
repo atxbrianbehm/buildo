@@ -12,6 +12,8 @@ import { createReferenceConstructionMaterials } from "../ui/bayConstructionFixtu
 import { defaultBuildingPromptControls } from "../state/buildingStore";
 import { ProceduralMaterialProvider } from "../materials/providers/proceduralMaterialProvider";
 import { withConstructionGroupedBays } from "../core/constructionGroupedBayGraph";
+import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
+import { withConstructionStorefrontDivision } from "../core/constructionStorefrontDivisionGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
 
 describe("persistent construction family source", () => {
@@ -46,6 +48,13 @@ describe("persistent construction family source", () => {
       expect(saved.members).toHaveLength(6);
       expect(saved.members.every(member => member.generation.materialSourceHash === saved.materialSource.contentHash)).toBe(true);
       const restored = await readConstructionFamilySource(JSON.parse(JSON.stringify(saved)));
+      const dividedGraph = withConstructionStorefrontDivision(withConstructionStorefront(edited, 1), { displayLights: 2, transomLights: 3 });
+      const dividedMember = withConstructionStorefrontDivision(withConstructionStorefront(saved.members[0].graph, 1), { displayLights: 2, transomLights: 3 });
+      const dividedInput = { ...input, familySeed: "seed", schemaVersion: "0.5.0", sourceGraph: dividedGraph,
+        members: saved.members.map((member, index) => index === 0 ? { ...member, graph: dividedMember } : member) };
+      const divided = await createConstructionFamilySource(dividedInput);
+      expect(await readConstructionFamilySource(JSON.parse(JSON.stringify(divided)))).toEqual(divided);
+      await expect(createConstructionFamilySource({ ...dividedInput, schemaVersion: "0.2.0" })).rejects.toThrow(/require family source version/);
       expect(restored.contentHash).toBe(saved.contentHash);
       expect(restored.sourceGraph).toEqual(edited);
       expect(restored.sourceGeneration).toEqual(lineage);
