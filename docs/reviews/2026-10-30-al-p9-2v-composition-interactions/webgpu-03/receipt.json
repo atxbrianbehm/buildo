@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "0.1.0",
+  "api": "webgpu",
+  "entranceBays": [
+    2,
+    4,
+    1,
+    3,
+    2,
+    3
+  ],
+  "heads": [
+    0,
+    1,
+    0,
+    1,
+    0,
+    1
+  ],
+  "sashes": [
+    2,
+    1,
+    0,
+    2,
+    1,
+    0
+  ],
+  "groups": [
+    2,
+    0,
+    2,
+    0,
+    3,
+    0
+  ],
+  "lights": [
+    {
+      "displayLights": 1,
+      "transomLights": 2
+    },
+    {
+      "displayLights": 2,
+      "transomLights": 1
+    },
+    {
+      "displayLights": 1,
+      "transomLights": 1
+    },
+    {
+      "displayLights": 2,
+      "transomLights": 2
+    },
+    {
+      "displayLights": 1,
+      "transomLights": 3
+    },
+    {
+      "displayLights": 2,
+      "transomLights": 3
+    }
+  ],
+  "floors": [
+    4,
+    3,
+    2,
+    3,
+    4,
+    2
+  ],
+  "materialPreserved": true,
+  "memberEdit": true,
+  "siblingsUnchanged": true,
+  "reopened": true,
+  "providerCallsDelta": 0,
+  "retainedFabric": false,
+  "varyMassing": true
+}
