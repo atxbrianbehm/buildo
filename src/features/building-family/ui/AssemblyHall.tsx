@@ -387,7 +387,7 @@ function applyPresentationMode(
   clayMaterial: MeshStandardMaterial,
   presentationMode: AssemblyPresentationMode
 ): void {
-  for (const renderable of fixture.buildingRuntime.renderables) {
+  for (const runtime of fixture.familyRuntime.buildingRuntimes.values()) for (const renderable of runtime.renderables) {
     const textured = originalTexturedMaterials.get(renderable) ?? renderable.material;
     originalTexturedMaterials.set(renderable, textured);
     renderable.material =
@@ -962,7 +962,8 @@ export function AssemblyHall({
       let workspaceFittedAspect = 0;
       const fitWorkspaceCamera = (focusBounds?: Box3) => {
         if (!workspaceRef.current || !camera || !preparedScene) return;
-        const bounds = focusBounds ?? new Box3().setFromObject(viewerFixture.buildingRuntime.root);
+        const bounds = focusBounds ?? new Box3().setFromObject(viewerFixture.familyRuntime.buildingRuntimes.size > 1
+          ? viewerFixture.familyRuntime.root : viewerFixture.buildingRuntime.root);
         if (bounds.isEmpty()) return;
         const center = bounds.getCenter(new Vector3());
         const target = orbitControls?.target ?? preparedScene.orbitTarget;
@@ -1327,7 +1328,8 @@ export function AssemblyHall({
           renderer.domElement.remove();
           throw abortError();
         }
-        if(constructionFrameSelectionRef.current && previousViewer && JSON.stringify(previousViewer.fixture.ir.bounds)===JSON.stringify(viewerFixture.ir.bounds)) {
+        if(constructionFrameSelectionRef.current && previousViewer && previousViewer.fixture.familyRuntime.buildingRuntimes.size === 1 &&
+          viewerFixture.familyRuntime.buildingRuntimes.size === 1 && JSON.stringify(previousViewer.fixture.ir.bounds)===JSON.stringify(viewerFixture.ir.bounds)) {
           const state=previousViewer.viewState();
           if(state&&camera&&orbitControls){camera.position.fromArray(state.position);orbitControls.target.fromArray(state.target);orbitControls.minDistance=state.minDistance;orbitControls.update();camera.updateMatrixWorld();}
         }
