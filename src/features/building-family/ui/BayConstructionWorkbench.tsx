@@ -349,13 +349,13 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       if (!enabled && original.awningSupports) {
         const remaining = original.awningSupports.filter(support => support.bayIndex !== bayIndex);
         if (remaining.length) baseGraph = BayConstructionGraphSchema.parse({ ...original, awningSupports: remaining });
-        else { const { awningSupports: _removed, ...prior } = original; void _removed; baseGraph = BayConstructionGraphSchema.parse({ ...prior, schemaVersion: "0.13.0" }); }
+        else { const { awningSupports: _removed, ...prior } = original; void _removed; baseGraph = BayConstructionGraphSchema.parse({ ...prior, schemaVersion: original.schemaVersion === "0.15.0" ? "0.15.0" : "0.13.0" }); }
       }
       let graph: BayConstructionGraph;
       if (awnings.length) graph = withConstructionAwnings(baseGraph, awnings);
-      else if (baseGraph.schemaVersion === "0.13.0") {
+      else if (baseGraph.schemaVersion === "0.13.0" || baseGraph.schemaVersion === "0.15.0") {
         const { awnings: _removed, ...prior } = baseGraph; void _removed;
-        graph = BayConstructionGraphSchema.parse({ ...prior, schemaVersion: "0.12.0" });
+        graph = BayConstructionGraphSchema.parse({ ...prior, schemaVersion: baseGraph.schemaVersion === "0.15.0" ? "0.15.0" : "0.12.0" });
       } else return;
       const fabric = source.materials.awningFabric ?? await createConstructionAwningFabric({ schemaVersion: "0.1.0", kind: "construction-awning-fabric-request", seed: "buildo-awning-demo-v1", pattern: "striped", primary: [224, 213, 187], secondary: [69, 99, 78], physicalSizeM: [1, 1] });
       if (signal.aborted) return;
@@ -373,7 +373,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       supports.sort((a, b) => a.bayIndex - b.bayIndex);
       let graph: BayConstructionGraph;
       if (supports.length) graph = withConstructionAwningSupports(original, supports);
-      else if (original.schemaVersion === "0.14.0") { const { awningSupports: _removed, ...prior } = original; void _removed; graph = BayConstructionGraphSchema.parse({ ...prior, schemaVersion: "0.13.0" }); }
+      else if (original.schemaVersion === "0.14.0" || original.schemaVersion === "0.15.0") { const { awningSupports: _removed, ...prior } = original; void _removed; graph = BayConstructionGraphSchema.parse({ ...prior, schemaVersion: original.schemaVersion === "0.15.0" ? "0.15.0" : "0.13.0" }); }
       else return;
       await publish(graph, source.materials, token, signal);
     });
@@ -791,7 +791,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         graph={accepted.construction.graph} dirty={groupDirty} disabled={pending || saving || openingDirty || buildingDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode)}
         onDraftChange={value => { setGroupDirty(value); if (!value) setError(null); }} onApply={edit => void applyGroupedBay(edit)} /> : null}
       {buildingMode && !advancedOpen && accepted && supportsGroupedConstruction(accepted.construction.graph) && constructionHasStorefront(accepted.construction.graph) ? <ConstructionAwningControls
-        graph={accepted.construction.graph} disabled={pierProtected || pending || saving || openingDirty || buildingDirty || groupDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode) || (familyMemberMode && !startingSession?.materials.awningFabric)}
+        graph={accepted.construction.graph} disabled={pending || saving || openingDirty || buildingDirty || groupDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode) || (familyMemberMode && !startingSession?.materials.awningFabric)}
         unavailableReason={familyMemberMode && !startingSession?.materials.awningFabric ? "Add an awning to the original building before creating this family." : undefined}
         supportDisabled={familyMemberMode} onSupportChange={(bay, enabled) => void changeAwningSupport(bay, enabled)}
         fabric={awningFabric} fabricDisabled={familyMemberMode}
