@@ -1,5 +1,6 @@
 import { readConstructionRoundHeadPlan } from "../core/constructionRoundHead";
 import { emptyBounds, expandBounds, type PrimitiveGeometry, type Vec3 } from "./primitiveGeometry";
+import { buildConstructionTimberRail } from "./bayWindowGeometry";
 
 type Point = [number, number];
 type Shape = { positions: number[]; normals: number[]; uvs: number[]; indices: number[] };
@@ -46,6 +47,38 @@ export function buildConstructionRoundHeadWindow(input: unknown): { frame: Primi
     face(glass, [at(center, glassBack), at(inner[j], glassBack), at(inner[i], glassBack)]);
   }
   return { frame: finish(frame), glass: finish(glass) };
+}
+
+/** Real sash bars in the rectangular lower portion, under a shared arched transom. */
+export function buildConstructionRoundHeadSash(input: unknown, layout: 0 | 1 | 2): PrimitiveGeometry[] {
+  const plan = readConstructionRoundHeadPlan(input), inner = plan.glazing, p = plan.source.parameters;
+  const left = inner.pointsM[0][0], right = inner.pointsM[1][0], bottom = inner.pointsM[0][1], top = inner.springY;
+  const width = right - left, height = top - bottom, section = Math.max(.018, p.frameWidthM * .55), z = -plan.revealDepthM - .012;
+  if (width <= section * 6 || height <= section * 8) throw new Error("Round-headed sash does not fit its framed opening.");
+  const centerX = (left + right) / 2, bars: PrimitiveGeometry[] = [];
+  const horizontal = (x: number, y: number, length: number) => bars.push(buildConstructionTimberRail(length, section, .026, [x, y, z], false, true));
+  const vertical = (x: number, y: number, length: number) => bars.push(buildConstructionTimberRail(length, section, .026, [x, y, z], true, true));
+  horizontal(centerX, top - section / 2, width);
+  if (layout === 0) {
+    // Two stacked sash rings with distinct meeting rails.
+    const h = (height - section) / 2;
+    for (let i = 0; i < 2; i++) {
+      const low = bottom + i * h, y = low + h / 2;
+      vertical(left + section / 2, y, h); vertical(right - section / 2, y, h);
+      horizontal(centerX, low + section / 2, width - section * 2);
+      horizontal(centerX, low + h - section / 2, width - section * 2);
+    }
+  } else {
+    vertical(centerX, bottom + height / 2, height - section);
+    for (const side of [-1, 1]) {
+      const x = centerX + side * width / 4, leafWidth = width / 2 - section;
+      vertical(x - leafWidth / 2, bottom + height / 2, height - section);
+      vertical(x + leafWidth / 2, bottom + height / 2, height - section);
+      horizontal(x, bottom + section / 2, leafWidth);
+      if (layout === 2) for (const ratio of [1 / 3, 2 / 3]) horizontal(x, bottom + height * ratio, leafWidth);
+    }
+  }
+  return bars;
 }
 
 /** The wall area above an arched aperture cut out from its rectangular bounding box. */

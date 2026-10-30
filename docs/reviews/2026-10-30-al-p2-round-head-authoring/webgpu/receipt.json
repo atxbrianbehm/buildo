@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "0.1.0",
+  "api": "webgpu",
+  "beforeHash": "746d77cdef2d9fd0db5c3c0f04aa1d2354171ab2be11ab02e6e9990c13243ac5",
+  "archedHash": "253b2812902e105399059923dfe8c86c23ad919e5a7fbc2818da3b6be2cdf321",
+  "beforeMaterialHash": "3feae06c59d16ea57029d815b13900184c8cb94b29369c58fe806168e3ee2d9c",
+  "archedMaterialHash": "3feae06c59d16ea57029d815b13900184c8cb94b29369c58fe806168e3ee2d9c",
+  "projectVersion": "0.11.0",
+  "graphVersion": "0.10.0",
+  "providerCallsDelta": 0,
+  "undoRedo": true,
+  "reopen": true,
+  "freshPageOpen": true,
+  "savedSourceEqual": true,
+  "errors": []
+}

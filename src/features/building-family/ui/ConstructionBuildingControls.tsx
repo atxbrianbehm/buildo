@@ -1,6 +1,7 @@
 import { CONSTRUCTION_CORNICE_LAYOUTS } from "../core/constructionCorniceVocabulary";
 import { CONSTRUCTION_PARAPET_SILHOUETTES } from "../core/constructionParapetVocabulary";
 import { CONSTRUCTION_WINDOW_LAYOUTS } from "../core/constructionWindowVocabulary";
+import { CONSTRUCTION_OPENING_HEADS } from "../core/constructionRoundHeadVocabulary";
 import { useId, useState } from "react";
 import type { BayConstructionGraph } from "../contracts/bayConstructionGraph";
 import { supportsGroupedConstruction } from "./constructionBuildingBindings";
@@ -33,7 +34,9 @@ export function ConstructionBuildingControls({ graph, fields, windowCount, store
     <button type="button" onClick={onAdvanced}>Edit custom construction</button></div>;
   const changedNodes = graph.nodes.filter(node => "parameters" in node && Object.entries(fields[node.id] ?? {}).some(([key, text]) =>
     text !== String(Number((node.parameters as Record<string,number>)[key].toPrecision(12))))).map(node => node.id);
-  const onlyWindows = active === "openings" && (!dirty || changedNodes.length > 0 && changedNodes.every(id => id === "window" || id === "opening"));
+  const headNode = graph.nodes.find(node => node.type === "PlaceOpening");
+  const headDirty = headNode && fields.opening?.upperFrontRoundHead !== undefined && fields.opening.upperFrontRoundHead !== String(headNode.parameters.upperFrontRoundHead ?? 0);
+  const onlyWindows = active === "openings" && !headDirty && (!dirty || changedNodes.length > 0 && changedNodes.every(id => id === "window" || id === "opening"));
   const pendingLayout = changedNodes.some(id => !["window", "opening"].includes(id));
   const storefront = constructionHasStorefront(graph), frontageChosen = fields.frontage?.mode === "1";
   const frontageBypassed = Boolean(graph.nodes.find(node => node.type === "PlaceStorefront" && node.bypassed));
@@ -59,6 +62,13 @@ export function ConstructionBuildingControls({ graph, fields, windowCount, store
               disabled={Boolean(graph.nodes.find(node => node.id === "window" && "bypassed" in node && node.bypassed))}
               onChange={event => onFieldChange("window","layout",event.currentTarget.value)}>
               {CONSTRUCTION_WINDOW_LAYOUTS.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
+            </select>
+          </label> : null}
+          {group.id === "openings" ? <label className="construction-grouped__field construction-grouped__assembly">
+            <span><strong>Upper front opening head</strong><small id={prefix+"head"}>Applies to regular windows on the front above the ground floor. Sash bars sit in front of a shared curved pane.</small></span>
+            <select aria-label="Upper front opening head" aria-describedby={prefix+"head"} value={fields.opening?.upperFrontRoundHead ?? "0"}
+              disabled={graph.nodes.some(node => node.type === "PlaceOpening" && node.bypassed)} onChange={event => onFieldChange("opening", "upperFrontRoundHead", event.currentTarget.value)}>
+              {CONSTRUCTION_OPENING_HEADS.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
             </select>
           </label> : null}
           {group.id === "frontage" ? <>
