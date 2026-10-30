@@ -7,7 +7,7 @@ import { resolveConstructionFamily } from "../state/constructionFamilyGeneration
 import { resolveWorkbenchGeneration, defaultConstructionGenerationControls } from "../state/constructionGenerationState";
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { withConstructionRoundHead } from "../core/constructionRoundHeadVocabulary";
-import { withConstructionFacadePiers } from "../core/constructionFacadePierGraph";
+import { withConstructionFacadePiers, withoutConstructionFacadePiers } from "../core/constructionFacadePierGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
 import { evaluateConstructionFacadePierStudy } from "../compiler/evaluateConstructionFacadePierStudy";
 import { BayConstructionWorkerRequestSchema, BayConstructionWorkerReplySchema } from "../compiler/bayConstructionWorkerProtocol";
@@ -19,6 +19,7 @@ describe("facade pier graph and worker", () => {
     const supported = withConstructionAwningSupports(awning, [{ bayIndex: 0, anchorRiseM: 0.15, thicknessM: 0.03 }]);
     const graph = withConstructionFacadePiers(supported, directive), compiled = await evaluateConstruction(graph);
     expect(graph.awnings).toEqual(supported.awnings); expect(graph.awningSupports).toEqual(supported.awningSupports);
+    expect(withoutConstructionFacadePiers(graph)).toEqual(supported); expect(graph.facadePiers).toEqual(directive);
     expect(compiled.ir.meshBatches.filter(batch => batch.role === "awning.support")).toHaveLength(1);
     await expect(resolveWorkbenchGeneration(graph, null, defaultConstructionGenerationControls)).rejects.toThrow(/not yet supported in building generation/);
     const plan = resolveConstructionFamilyPlan({ schemaVersion: "0.1.0", kind: "construction-family-request", familyId: "test_family", familySeed: "seed", graph });
@@ -28,6 +29,7 @@ describe("facade pier graph and worker", () => {
     const old = withConstructionRoundHead(withConstructionStorefront(createBuildingConstructionGraph("pier_graph"), 1), 0), snapshot = structuredClone(old);
     const graph = withConstructionFacadePiers(old, directive);
     expect(old).toEqual(snapshot); expect(graph.schemaVersion).toBe("0.15.0");
+    expect(withoutConstructionFacadePiers(graph)).toEqual(old);
     const result = await evaluateConstruction(graph), study = await evaluateConstructionFacadePierStudy({ schemaVersion: "0.1.0", kind: "construction-facade-pier-study-request", graph: old, ...directive });
     expect(result.ir.meshBatches).toEqual(study.ir.meshBatches); expect(result.ir.instanceBatches).toEqual(study.ir.instanceBatches);
     expect(result.ir.meshBatches.filter(batch => batch.role === "facade-pier")).toHaveLength(10);
