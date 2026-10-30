@@ -2,7 +2,7 @@ import { DataTexture, LinearFilter, LinearMipmapLinearFilter, MeshStandardMateri
 import { ConstructionAwningFabricArtifactSchema } from "../contracts/constructionAwningFabric";
 import { readConstructionAwningFabric } from "../materials/constructionAwningFabric";
 
-export const CONSTRUCTION_AWNING_FABRIC_SLOT = "supplemental.awning.fabric";
+export { CONSTRUCTION_AWNING_FABRIC_SLOT } from "../contracts/constructionAwningFabric";
 export type ConstructionAwningFabricRuntime = Awaited<ReturnType<typeof prepareConstructionAwningFabricRuntime>>;
 export type ConstructionAwningFabricLease = ReturnType<ConstructionAwningFabricRuntime["acquire"]>;
 

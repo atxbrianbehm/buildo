@@ -22,6 +22,9 @@ import { buildConstructionRoundHeadSash, buildConstructionRoundHeadWindow } from
 import { buildConstructionSillSeat } from "./constructionOpeningTrimGeometry";
 import { readConstructionGroupedBay, resolveConstructionGroupedBay } from "../core/constructionGroupedBay";
 import { canonicalJson } from "../core/canonicalJson";
+import { resolveConstructionAwning } from "../core/constructionAwning";
+import { buildConstructionAwningGeometry } from "./constructionAwningGeometry";
+import { CONSTRUCTION_AWNING_FABRIC_SLOT } from "../contracts/constructionAwningFabric";
 
 type Cell = { localOpeningWidth?: boolean; storefrontPlan?: ConstructionStorefrontPlan; root: string; key: string; floorSplit: boolean; baySplit: boolean; scope: FacadeBayScope; face?: "front" | "right" | "rear" | "left"; pose?: ConstructionFacePose; building?: ConstructionBuilding };
 type Stage = "facade" | "openings" | "trim" | "roof";
@@ -64,7 +67,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
   if ((grouped.length || graph.upperBayGroups?.length) && (graph.nodes.filter(node => node.type === "PlaceOpening" && !node.bypassed).length !== 1 ||
       graph.nodes.filter(node => node.type === "AssembleWindow" && !node.bypassed).length !== 1))
     throw new Error("Grouped bays require one active opening and window assembly.");
-  if (!["0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0"].includes(graph.schemaVersion)) throw new Error("Facade construction requires a supported graph version.");
+  if (!["0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0"].includes(graph.schemaVersion)) throw new Error("Facade construction requires a supported graph version.");
   const nodes = new Map(graph.nodes.map(node => [node.id, node]));
   if (previewNodeId && !nodes.has(previewNodeId)) throw new Error("The preview node is missing.");
   const values = new Map<string, Promise<Value>>(), trace: BayConstructionTrace[] = [];
@@ -105,6 +108,18 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
     const cell: Cell = { root: "building", key: "building", floorSplit: false, baySplit: false,
       scope: { facade: "front", floorIndex: 0, bayIndex: 0, zone: "body", originM: [0,0,0], sizeM: [1,1,1] } };
     return makeMesh(node,cell,role,primitives,stage,slot);
+  }
+  function awningParts(node: BayConstructionNode, cell: Cell): Part[] {
+    const directive = graph.awnings?.find(awning => awning.bayIndex === cell.scope.bayIndex);
+    if (!directive || !cell.storefrontPlan || cell.face !== "front" || cell.scope.floorIndex !== 0) return [];
+    const plan = resolveConstructionAwning({ schemaVersion: "0.1.0", kind: "construction-awning-request", storefront: cell.storefrontPlan,
+      projectionM: directive.projectionM, dropM: directive.dropM, valanceHeightM: directive.valanceHeightM });
+    const geometry = buildConstructionAwningGeometry(plan);
+    const translate = (part: PrimitiveGeometry): PrimitiveGeometry => ({ ...part,
+      positions: part.positions.map((value, index) => index % 3 === 0 ? value + plan.centerAlongM : index % 3 === 1 ? value + cell.scope.originM[1] : value),
+      bounds: shifted(part.bounds, [plan.centerAlongM, cell.scope.originM[1], 0]) });
+    return [makeMesh(node, cell, "awning.canopy", [translate(geometry.roof)], "openings", CONSTRUCTION_AWNING_FABRIC_SLOT),
+      makeMesh(node, cell, "awning.valance", [translate(geometry.valance)], "openings", CONSTRUCTION_AWNING_FABRIC_SLOT)];
   }
   const samePlane = (a: Cell, b: Cell) => JSON.stringify(a.pose ? [a.pose.cosine,a.pose.sine,a.pose.x,a.pose.z] : [1,0,0,0]) === JSON.stringify(b.pose ? [b.pose.cosine,b.pose.sine,b.pose.x,b.pose.z] : [1,0,0,0]);
   const wallCells = (parts: Part[]) => parts.filter(part => part.role === "wall").flatMap(part => part.wallCells ?? (part.cell ? [part.cell] : []));
@@ -209,6 +224,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
           const shiftedGeometry = (primitives: PrimitiveGeometry[]) => primitives.map(primitive => ({ ...primitive,
             positions: primitive.positions.map((v,i)=>i%3===0?v+opening.centerAlongM:v), bounds: shifted(primitive.bounds,[opening.centerAlongM,0,0]) }));
           parts.push(makeMesh(node,cell,"frame",shiftedGeometry(geometry.frame),"openings",materials.frame),makeMesh(node,cell,"leaf",shiftedGeometry(geometry.leaf),"openings","door.primary"),makeMesh(node,cell,"hardware",shiftedGeometry(geometry.hardware),"openings","ornament.primary"),makeMesh(node,cell,"glass",shiftedGeometry(geometry.glass),"openings",materials.glass),makeMesh(node,cell,"trim",shiftedGeometry(geometry.trim),"trim",materials.trim));
+          parts.push(...awningParts(node, cell));
         }
         value = { kind: "geometry", parts }; break;
       }
@@ -319,7 +335,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
       }
       case "EmitWall": {
         const cells = await scopes(node.input.nodeId);
-        if (["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0"].includes(graph.schemaVersion) && cells.every(cell=>cell.building)) {
+        if (["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0"].includes(graph.schemaVersion) && cells.every(cell=>cell.building)) {
           const faces = new Map<string,Cell[]>(); for(const cell of cells) faces.set(cell.root,[...(faces.get(cell.root)??[]),cell]);
           value = { kind: "geometry", parts: node.bypassed ? [] : [...faces.values()].map(group=>{
             const cell={...group[0],key:group[0].root},part=makeMesh(node,cell,"wall",[constructionFacadeSolid(group.map(cell=>cell.scope),group.filter(cell=>cell.scope.opening?.roundHead).map(roundPlan))],"facade",materials.wall);
@@ -380,6 +396,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
             parts.push({ id: `building/${graph.documentId}/node/${node.id}/${cell.key}/${batch.role}`, nodeId: node.id, cell, role: batch.role,
               prototype, translation, pose: cell.pose, bounds: posedBounds(shifted(batchBounds(batch), translation),cell.pose), stage: batch.role === "trim" ? "trim" : "openings" });
           }
+          parts.push(...awningParts(node, cell));
         }
         value = { kind: "geometry", parts }; break;
       }
@@ -456,6 +473,11 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
     if (!editedOpenings.has(path)) throw new Error("The selected opening edit is not connected to the final output.");
   }
   const fullWalls = full.parts.flatMap(part => part.wallCells ?? (part.role === "wall" && part.cell ? [part.cell] : []));
+  for (const awning of graph.awnings ?? []) {
+    const matching = full.parts.filter(part => part.cell?.face === "front" && part.cell.scope.floorIndex === 0 && part.cell.scope.bayIndex === awning.bayIndex);
+    if (matching.filter(part => part.role === "awning.canopy").length !== 1 || matching.filter(part => part.role === "awning.valance").length !== 1)
+      throw new Error("Each awning must reach one existing storefront and the final building output.");
+  }
   if (graph.storefrontDivision) {
     if (!storefrontTargets.size) throw new Error("The divided storefront must be connected to the final building output.");
     for (const [key, layout] of storefrontTargets) {

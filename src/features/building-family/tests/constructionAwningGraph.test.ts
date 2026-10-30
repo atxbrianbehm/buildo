@@ -1,0 +1,25 @@
+import { BayConstructionGraphSchema, createBuildingConstructionGraph } from "../contracts/bayConstructionGraph";
+import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
+import { withConstructionStorefrontDivision } from "../core/constructionStorefrontDivisionGraph";
+import { withConstructionAwnings } from "../core/constructionAwningGraph";
+import { evaluateConstruction } from "../compiler/evaluateConstruction";
+import { BayConstructionWorkerRequestSchema, BayConstructionWorkerReplySchema } from "../compiler/bayConstructionWorkerProtocol";
+import { CONSTRUCTION_AWNING_FABRIC_SLOT } from "../contracts/constructionAwningFabric";
+import { defaultConstructionGenerationControls, resolveWorkbenchGeneration } from "../state/constructionGenerationState";
+
+it("compiles deterministic awning surfaces on selected storefront bays with stable addresses", async () => {
+  const base = withConstructionStorefrontDivision(withConstructionStorefront(createBuildingConstructionGraph(), 1), { displayLights: 2, transomLights: 3 });
+  const graph = withConstructionAwnings(base, [{ bayIndex: 0, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }, { bayIndex: 1, projectionM: 0.8, dropM: 0.4, valanceHeightM: 0.2 }]);
+  const before = await evaluateConstruction(base), result = await evaluateConstruction(graph), replay = await evaluateConstruction(JSON.parse(JSON.stringify(graph)));
+  expect(result.ir.meshBatches.filter(batch => batch.materialSlotId === CONSTRUCTION_AWNING_FABRIC_SLOT)).toHaveLength(4);
+  expect(result.ir.meshBatches.filter(batch => batch.materialSlotId === CONSTRUCTION_AWNING_FABRIC_SLOT)).toEqual(replay.ir.meshBatches.filter(batch => batch.materialSlotId === CONSTRUCTION_AWNING_FABRIC_SLOT));
+  expect(result.ir.semanticIndex.filter(entry => entry.semanticPath.includes("/awning."))).toHaveLength(4);
+  expect(result.ir.semanticIndex.filter(entry => !entry.semanticPath.includes("/awning."))).toEqual(before.ir.semanticIndex);
+  expect(BayConstructionWorkerRequestSchema.safeParse({ schemaVersion: "0.13.0", type: "evaluate-bay", requestId: 1, graph }).success).toBe(true);
+  expect(BayConstructionWorkerRequestSchema.safeParse({ schemaVersion: "0.12.0", type: "evaluate-bay", requestId: 1, graph }).success).toBe(false);
+  expect(BayConstructionWorkerReplySchema.safeParse({ schemaVersion: "0.13.0", type: "bay-result", requestId: 1, result }).success).toBe(true);
+  expect(BayConstructionGraphSchema.safeParse({ ...graph, schemaVersion: "0.12.0" }).success).toBe(false);
+  expect(() => withConstructionAwnings(base, [graph.awnings![0], graph.awnings![0]])).toThrow();
+  await expect(evaluateConstruction(withConstructionAwnings(base, [{ bayIndex: 19, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }]))).rejects.toThrow(/existing storefront/);
+  await expect(resolveWorkbenchGeneration(graph, null, defaultConstructionGenerationControls)).rejects.toThrow(/cannot yet retain awning/);
+});
