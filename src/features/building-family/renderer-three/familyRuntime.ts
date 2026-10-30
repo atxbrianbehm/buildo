@@ -13,6 +13,7 @@ import {
 } from "./buildingSceneAdapter";
 import { disposeBuildingSceneResources } from "./resourceDisposal";
 import type { BuildingSurfaceRuntime } from "./surfaceMaterialRuntime";
+import type { ConstructionAwningFabricRuntime } from "./constructionAwningFabricRuntime";
 
 export interface CreateBuildingFamilyRuntimeInput {
   familyId: string;
@@ -27,6 +28,7 @@ export interface CreateOrReplaceBuildingRuntimeInput {
   componentGallery?: ComponentGallery;
   buildingId?: string;
   surfaceRuntime?: BuildingSurfaceRuntime;
+  awningFabricRuntime?: ConstructionAwningFabricRuntime;
   compiledInstanceGeometry?: ReadonlyMap<string, MeshBatchIR>;
 }
 
@@ -86,6 +88,7 @@ function liveMetrics(
 ): BuildingFamilyRuntimeMetrics {
   const runtimes = Array.from(buildingRuntimes.values()).filter((runtime) => !runtime.disposed);
   const surfaces = [...new Set(runtimes.flatMap(runtime => runtime.surfaceRuntime ? [runtime.surfaceRuntime] : []))];
+  const awningMaterials = new Set(runtimes.flatMap(runtime => runtime.awningFabricLease ? [runtime.awningFabricLease.material] : []));
   return {
     buildingCount: runtimes.length,
     meshCount: runtimes.reduce((total, runtime) => total + runtime.metrics.meshCount, 0),
@@ -93,8 +96,8 @@ function liveMetrics(
     instanceCount: runtimes.reduce((total, runtime) => total + runtime.metrics.instanceCount, 0),
     triangleCount: runtimes.reduce((total, runtime) => total + runtime.metrics.triangleCount, 0),
     drawCallCount: runtimes.reduce((total, runtime) => total + runtime.renderables.length, 0),
-    sharedMaterialCount: materialRegistry.listMaterials().length + surfaces.reduce((sum, surface) => sum + surface.listMaterials().length, 0),
-    textureCount: (textureSet.disposed ? 0 : Object.keys(textureSet.textures).length) + surfaces.reduce((sum, surface) => sum + surface.listTextures().length, 0),
+    sharedMaterialCount: materialRegistry.listMaterials().length + awningMaterials.size + surfaces.reduce((sum, surface) => sum + surface.listMaterials().length, 0),
+    textureCount: (textureSet.disposed ? 0 : Object.keys(textureSet.textures).length) + awningMaterials.size + surfaces.reduce((sum, surface) => sum + surface.listTextures().length, 0),
     preferredBackend
   };
 }
@@ -155,6 +158,7 @@ export function createBuildingFamilyRuntime(input: CreateBuildingFamilyRuntimeIn
         componentGallery: buildingInput.componentGallery,
         materialRegistry,
         surfaceRuntime: buildingInput.surfaceRuntime,
+        awningFabricRuntime: buildingInput.awningFabricRuntime,
         compiledInstanceGeometry: buildingInput.compiledInstanceGeometry
       });
       if (existing) {
