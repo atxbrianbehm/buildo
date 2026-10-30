@@ -3,9 +3,9 @@ import type { BayConstructionGraph } from "../contracts/bayConstructionGraph";
 import type { ConstructionAwningFabricArtifact } from "../contracts/constructionAwningFabric";
 
 /** A single explicit front-bay scope; multiple bays can be authored one at a time. */
-export function ConstructionAwningControls({ graph, disabled, unavailableReason, onChange, fabric, fabricDisabled, onFabricChange }: {
+export function ConstructionAwningControls({ graph, disabled, unavailableReason, onChange, fabric, fabricDisabled, onFabricChange, supportDisabled, onSupportChange }: {
   graph: BayConstructionGraph; disabled: boolean; unavailableReason?: string; onChange: (bayIndex: number, enabled: boolean, dimensions?: { projectionM: number; dropM: number; valanceHeightM: number }) => void;
-  fabric?: ConstructionAwningFabricArtifact; fabricDisabled?: boolean;
+  fabric?: ConstructionAwningFabricArtifact; fabricDisabled?: boolean; supportDisabled?: boolean; onSupportChange?: (bayIndex: number, enabled: boolean) => void;
   onFabricChange?: (pattern: "solid" | "striped", primary: [number, number, number], secondary: [number, number, number]) => void;
 }) {
   const [bayIndex, setBay] = useState(0);
@@ -23,6 +23,10 @@ export function ConstructionAwningControls({ graph, disabled, unavailableReason,
         {Array.from({ length: count }, (_, index) => <option key={index} value={index}>Bay {index + 1}</option>)}
       </select></label>
       <button type="button" onClick={() => onChange(selected, !present)}>{present ? "Remove awning" : "Add awning"}</button>
+      {awning && onSupportChange ? <div>
+        <button type="button" disabled={supportDisabled} onClick={() => onSupportChange(selected, !graph.awningSupports?.some(item => item.bayIndex === selected))}>{graph.awningSupports?.some(item => item.bayIndex === selected) ? "Remove support rods" : "Add support rods"}</button>
+        {supportDisabled ? <p>Support editing is unavailable in a family member.</p> : null}
+      </div> : null}
       {awning ? <form key={`${selected}:${awning.projectionM}:${awning.dropM}:${awning.valanceHeightM}`} onSubmit={event => {
         event.preventDefault(); const fields = new FormData(event.currentTarget);
         onChange(selected, true, { projectionM: Number(fields.get("projection")), dropM: Number(fields.get("drop")), valanceHeightM: Number(fields.get("valance")) });
@@ -48,7 +52,7 @@ export function ConstructionAwningControls({ graph, disabled, unavailableReason,
           </form>
         </fieldset>
       </div> : null}
-      <p>{present ? "This bay has an awning." : "This bay has no awning."} The current treatment has a rigid canopy and no support arms.</p>
+      <p>{present ? "This bay has an awning." : "This bay has no awning."} The canopy is rigid; optional tension rods use illustrative dimensions.</p>
     </fieldset>
   </section>;
 }

@@ -1,0 +1,5 @@
+# AL.P9.2l: Selected awning support authoring
+
+Artists can add or remove illustrative tension rods on a selected storefront awning. Changing that awning's dimensions preserves its supports; removing the awning removes its supports, and support removal alone leaves the canopy. Other awnings and the independent fabric remain intact. A support that does not fit the storey is rejected by the existing plan. Support editing in family members and generation from support graphs remain guarded.
+
+Actual [WebGL](webgl-supported.png) and [WebGPU](webgpu-supported.png) app captures exercise the controls with textured fabric and brick. Both workflows verify scoped placement, dimensions, removal, undo/redo, checkpoint recovery, save/reopen and no additional material-provider calls. The script uses the locally retained P6.2 project at `docs/reviews/2026-10-30-al-p6-2-storefront-authoring/webgpu-02/divided.json`. The rods are thin, lack attachment plates and are demo geometry rather than a historical assertion. All five repository checks passed: 2,067 tests across 161 files, standard browser smoke, typecheck, lint and build. The build retains its large-chunk warning.

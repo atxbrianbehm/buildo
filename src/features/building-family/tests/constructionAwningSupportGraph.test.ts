@@ -13,6 +13,7 @@ it("compiles opt-in scoped support rods with deterministic identities and preser
   const base = withConstructionAwnings(withConstructionStorefront(createBuildingConstructionGraph(), 1), [{ bayIndex: 0, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }]);
   const before = await evaluateConstruction(base);
   const graph = withConstructionAwningSupports(base, [{ bayIndex: 0, anchorRiseM: 0.15, thicknessM: 0.03 }]);
+  expect(withConstructionAwnings(graph, graph.awnings).awningSupports).toEqual(graph.awningSupports);
   expect(withConstructionOpeningEdits(graph).awningSupports).toEqual(graph.awningSupports);
   expect(withConstructionGroupedBays(graph, []).awningSupports).toEqual(graph.awningSupports);
   expect(withConstructionStorefrontDivision(graph, { displayLights: 1, transomLights: 1 }).awningSupports).toEqual(graph.awningSupports);

@@ -8,6 +8,7 @@ import { ConstructionBuildingControls } from "./ConstructionBuildingControls";
 import { ConstructionOpeningControls } from "./ConstructionOpeningControls";
 import { ConstructionGroupedBayControls, type GroupedBayEdit } from "./ConstructionGroupedBayControls";
 import { ConstructionAwningControls } from "./ConstructionAwningControls";
+import { withConstructionAwningSupports } from "../core/constructionAwningSupportGraph";
 import { withConstructionAwnings } from "../core/constructionAwningGraph";
 import { createConstructionAwningFabric } from "../materials/constructionAwningFabric";
 import { withConstructionGroupedBays } from "../core/constructionGroupedBayGraph";
@@ -327,15 +328,37 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       const awnings = (original.awnings ?? []).filter(awning => awning.bayIndex !== bayIndex);
       if (enabled) awnings.push({ bayIndex, ...(dimensions ?? { projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }) });
       awnings.sort((a, b) => a.bayIndex - b.bayIndex);
+      let baseGraph = original;
+      if (!enabled && original.awningSupports) {
+        const remaining = original.awningSupports.filter(support => support.bayIndex !== bayIndex);
+        if (remaining.length) baseGraph = BayConstructionGraphSchema.parse({ ...original, awningSupports: remaining });
+        else { const { awningSupports: _removed, ...prior } = original; void _removed; baseGraph = BayConstructionGraphSchema.parse({ ...prior, schemaVersion: "0.13.0" }); }
+      }
       let graph: BayConstructionGraph;
-      if (awnings.length) graph = withConstructionAwnings(original, awnings);
-      else if (original.schemaVersion === "0.13.0") {
-        const { awnings: _removed, ...prior } = original; void _removed;
+      if (awnings.length) graph = withConstructionAwnings(baseGraph, awnings);
+      else if (baseGraph.schemaVersion === "0.13.0") {
+        const { awnings: _removed, ...prior } = baseGraph; void _removed;
         graph = BayConstructionGraphSchema.parse({ ...prior, schemaVersion: "0.12.0" });
       } else return;
       const fabric = source.materials.awningFabric ?? await createConstructionAwningFabric({ schemaVersion: "0.1.0", kind: "construction-awning-fabric-request", seed: "buildo-awning-demo-v1", pattern: "striped", primary: [224, 213, 187], secondary: [69, 99, 78], physicalSizeM: [1, 1] });
       if (signal.aborted) return;
       await publish(graph, { ...source.materials, awningFabric: fabric }, token, signal);
+    });
+  }
+  async function changeAwningSupport(bayIndex: number, enabled: boolean) {
+    const source = current.current;
+    if (!source || familyMemberMode || dirty || previewNode || shown.current !== source.fixture) return;
+    await perform(async (token, signal) => {
+      const original = source.fixture.construction.graph;
+      if (!original.awnings?.some(awning => awning.bayIndex === bayIndex)) throw new Error("Add an awning to this bay before adding supports.");
+      const supports = (original.awningSupports ?? []).filter(support => support.bayIndex !== bayIndex);
+      if (enabled) supports.push({ bayIndex, anchorRiseM: 0.15, thicknessM: 0.03 });
+      supports.sort((a, b) => a.bayIndex - b.bayIndex);
+      let graph: BayConstructionGraph;
+      if (supports.length) graph = withConstructionAwningSupports(original, supports);
+      else if (original.schemaVersion === "0.14.0") { const { awningSupports: _removed, ...prior } = original; void _removed; graph = BayConstructionGraphSchema.parse({ ...prior, schemaVersion: "0.13.0" }); }
+      else return;
+      await publish(graph, source.materials, token, signal);
     });
   }
   async function changeAwningFabric(pattern: "solid" | "striped", primary: [number, number, number], secondary: [number, number, number]) {
@@ -703,8 +726,9 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         graph={accepted.construction.graph} dirty={groupDirty} disabled={pending || saving || openingDirty || buildingDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode)}
         onDraftChange={value => { setGroupDirty(value); if (!value) setError(null); }} onApply={edit => void applyGroupedBay(edit)} /> : null}
       {buildingMode && !advancedOpen && accepted && supportsGroupedConstruction(accepted.construction.graph) && constructionHasStorefront(accepted.construction.graph) ? <ConstructionAwningControls
-        graph={accepted.construction.graph} disabled={pending || saving || openingDirty || buildingDirty || groupDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode) || accepted.construction.graph.schemaVersion === "0.14.0" || (familyMemberMode && !startingSession?.materials.awningFabric)}
-        unavailableReason={accepted.construction.graph.schemaVersion === "0.14.0" ? "Awning controls are not yet available for support projects." : familyMemberMode && !startingSession?.materials.awningFabric ? "Add an awning to the original building before creating this family." : undefined}
+        graph={accepted.construction.graph} disabled={pending || saving || openingDirty || buildingDirty || groupDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode) || (familyMemberMode && !startingSession?.materials.awningFabric)}
+        unavailableReason={familyMemberMode && !startingSession?.materials.awningFabric ? "Add an awning to the original building before creating this family." : undefined}
+        supportDisabled={familyMemberMode} onSupportChange={(bay, enabled) => void changeAwningSupport(bay, enabled)}
         fabric={awningFabric} fabricDisabled={familyMemberMode}
         onFabricChange={(pattern, primary, secondary) => void changeAwningFabric(pattern, primary, secondary)}
         onChange={(bay, enabled, dimensions) => void changeAwning(bay, enabled, dimensions)} /> : null}
