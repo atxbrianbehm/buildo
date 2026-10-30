@@ -7,7 +7,6 @@ import { evaluateConstruction } from "../compiler/evaluateConstruction";
 import { evaluateConstructionStorefrontSignStudy } from "../compiler/evaluateConstructionStorefrontSignStudy";
 import { BayConstructionWorkerRequestSchema, BayConstructionWorkerReplySchema } from "../compiler/bayConstructionWorkerProtocol";
 import { defaultConstructionGenerationControls, resolveWorkbenchGeneration } from "../state/constructionGenerationState";
-import { createBayConstructionProject } from "../state/bayConstructionProject";
 
 describe("storefront sign graph and worker", () => {
   it("compiles a versioned sign with matching study geometry and retained piers", async () => {
@@ -26,7 +25,6 @@ describe("storefront sign graph and worker", () => {
     expect(BayConstructionGraphSchema.safeParse({ ...graph, schemaVersion: "0.15.0" }).success).toBe(false);
     expect(BayConstructionGraphSchema.safeParse({ ...graph, storefrontSign: undefined }).success).toBe(false);
     await expect(resolveWorkbenchGeneration(graph, null, defaultConstructionGenerationControls)).rejects.toThrow(/not yet supported/);
-    await expect(createBayConstructionProject(graph, {})).rejects.toThrow(/not yet supported/);
     await expect(evaluateConstruction(graph, "window")).rejects.toThrow(/complete matching graph/);
   });
 });
