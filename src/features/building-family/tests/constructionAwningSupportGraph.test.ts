@@ -27,7 +27,12 @@ it("compiles opt-in scoped support rods with deterministic identities and preser
   expect(BayConstructionWorkerRequestSchema.safeParse({ schemaVersion: "0.13.0", type: "evaluate-bay", requestId: 1, graph }).success).toBe(false);
   expect(BayConstructionWorkerReplySchema.safeParse({ schemaVersion: "0.14.0", type: "bay-result", requestId: 1, result }).success).toBe(true);
   expect(BayConstructionGraphSchema.safeParse({ ...graph, schemaVersion: "0.13.0" }).success).toBe(false);
-  await expect(resolveWorkbenchGeneration(graph, null, defaultConstructionGenerationControls)).rejects.toThrow(/cannot yet be regenerated/);
+  const retained = await resolveWorkbenchGeneration(graph, null, defaultConstructionGenerationControls);
+  expect(retained.graph.awningSupports).toEqual(graph.awningSupports);
+  const locked = await resolveWorkbenchGeneration(graph, null, { ...defaultConstructionGenerationControls, preserveAuthored: false, lockOpenings: true });
+  expect(locked.graph.awningSupports).toEqual(graph.awningSupports);
+  const released = await resolveWorkbenchGeneration(graph, null, { ...defaultConstructionGenerationControls, preserveAuthored: false, lockOpenings: false });
+  expect(released.graph.awningSupports).toBeUndefined(); expect(released.graph.awnings).toBeUndefined();
   expect(() => withConstructionAwningSupports(base, [{ bayIndex: 1, anchorRiseM: 0.15, thicknessM: 0.03 }])).toThrow(/unique authored awning/);
   expect(() => withConstructionAwningSupports(base, [{ bayIndex: 0, anchorRiseM: 0.15, thicknessM: 0.03 }, { bayIndex: 0, anchorRiseM: 0.15, thicknessM: 0.03 }])).toThrow(/unique authored awning/);
 });

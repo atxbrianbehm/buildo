@@ -37,6 +37,7 @@ async function geometryHash(result: Awaited<ReturnType<typeof evaluateConstructi
 /** Resolve a complete owned family or fail without publishing a partial result. */
 export async function resolveConstructionFamily(input: unknown, lineageInput: unknown, controlsInput: ConstructionGenerationControls, signal?: AbortSignal, compositionInput?: unknown) {
   const plan = readConstructionFamilyPlan(input);
+  if (plan.source.graph.awningSupports) throw new Error("Family generation cannot yet retain awning support choices.");
   const lineage = structuredClone(ConstructionGenerationLineageSchema.parse(lineageInput));
   const controls = controlsSchema.parse(controlsInput);
   if (!controls.preserveAuthored) throw new Error("Family generation requires preserving authored choices.");
