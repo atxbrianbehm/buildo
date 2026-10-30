@@ -75,6 +75,7 @@ function assertTopology(current: BayConstructionGraph, generated: BayConstructio
 export async function resolveWorkbenchGeneration(currentInput: unknown, previousInput: ConstructionGenerationLineage | null,
   controlsInput: ConstructionGenerationControls, reroll = false, referenceInput?: unknown) {
   const current = structuredClone(BayConstructionGraphSchema.parse(currentInput));
+  if (current.awnings) throw new Error("Generation cannot yet retain awning directives; keep the current building or remove them before generating.");
   const previous = previousInput ? structuredClone(ConstructionGenerationLineageSchema.parse(previousInput)) : null;
   const controls = controlsSchema.parse(controlsInput);
   const reference = referenceInput === undefined ? undefined : ConstructionReferenceSnapshotSchema.parse(referenceInput);

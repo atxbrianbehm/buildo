@@ -1,6 +1,9 @@
 import { z } from "zod";
 import { findBuildingDocumentJsonIssue } from "./buildingDocument";
 
+/** A supplemental source, never an atlas material slot. */
+export const CONSTRUCTION_AWNING_FABRIC_SLOT = "supplemental.awning.fabric";
+
 const json = z.unknown().superRefine((value, context) => { const issue = findBuildingDocumentJsonIssue(value);
   if (issue) context.addIssue({ code: "custom", path: issue.path, message: issue.message }); });
 const color = z.tuple([z.number().int().min(0).max(255), z.number().int().min(0).max(255), z.number().int().min(0).max(255)]);

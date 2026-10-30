@@ -1,0 +1,7 @@
+# AL.P9.1f: Bay-scoped awning graph and worker
+
+Graph version 0.13 adds explicit, unique front storefront bay directives for awning projection, drop and valance. The compiler creates separate procedural canopy and valance mesh batches, each with its own semantic path and the supplemental fabric slot. It rejects nonexistent or disconnected targets and infeasible fit; existing storefront geometry and semantic paths remain intact. Generation explicitly rejects these graphs until it can preserve the directives.
+
+The [whole-building study](graph-building.png) renders graph-generated awning meshes through the actual scene adapter and supplemental fabric owner. The rest of the building uses flat demo material colors. This is an isolated WebGL study, not the application; project save/open, workspace ownership, controls, family generation and actual app rendering remain pending. The canopy is still rigid and lacks supports. The image does not establish historical measurements or evidence.
+
+Focused graph and storefront tests passed; an actual browser worker produced matching direct-compiler geometry and semantic paths. Full repository validation is pending. Reproduce with `node docs/reviews/2026-10-30-al-p9-1f-awning-graph/worker-smoke.mjs` and `node docs/reviews/2026-10-30-al-p9-1f-awning-graph/render.mjs`.
