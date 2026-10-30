@@ -4,4 +4,4 @@ The surface runtime validates a separate awning fabric artifact and binds existi
 
 A focused integration test uses a real compiled construction fixture and synthetic semantic awning mesh IR to exercise the actual surface runtime and scene adapter, including a finished frame, separate fabric binding, invalid and mismatched fabric, unsupported layer targets and lifecycle. The synthetic geometry is not graph-generated awning geometry and this is not an application screenshot; graph, worker, project/session ownership and product rendering remain pending.
 
-Full repository validation is pending.
+All five repository checks passed: 2,056 tests across 155 files, the standard browser smoke suite, typecheck, lint and build. The build retains its large-chunk warning.
