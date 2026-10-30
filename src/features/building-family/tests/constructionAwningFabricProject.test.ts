@@ -7,6 +7,10 @@ import { createBayConstructionMaterials } from "../ui/bayConstructionFixture";
 import { defaultBuildingPromptControls } from "../state/buildingStore";
 import { readConstructionCheckpoint } from "../state/constructionCheckpoint";
 import { hashCanonicalJson } from "../core/contentHash";
+import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
+import { withConstructionStorefrontDivision } from "../core/constructionStorefrontDivisionGraph";
+import { withConstructionAwnings } from "../core/constructionAwningGraph";
+import { evaluateConstruction } from "../compiler/evaluateConstruction";
 
 it("stores a separate fabric source without changing the saved atlas during structural edits", async () => {
   const fixture = await createAssemblyHallFixture({ promptControls: structuredClone(defaultBuildingPromptControls) });
@@ -29,5 +33,17 @@ it("stores a separate fabric source without changing the saved atlas during stru
       createdAt: "2026-10-30T00:00:00.000Z", project: second };
     await expect(readConstructionCheckpoint({ ...checkpoint, contentHash: await hashCanonicalJson(checkpoint) })).rejects.toThrow(/cannot yet retain/);
     expect((await readBayConstructionProject(JSON.parse(JSON.stringify(old)))).project).toEqual(old);
+    const storefront = withConstructionStorefrontDivision(withConstructionStorefront(graph, 1), { displayLights: 2, transomLights: 3 });
+    const awningGraph = withConstructionAwnings(storefront, [{ bayIndex: 0, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }]);
+    const awningProject = await createBayConstructionProject(awningGraph, materials.file, undefined, fabric);
+    expect(awningProject.schemaVersion).toBe("0.15.0");
+    const awningReopened = (await readBayConstructionProject(JSON.parse(JSON.stringify(awningProject)))).project;
+    expect(awningReopened).toEqual(awningProject);
+    expect((await evaluateConstruction(awningReopened.graph)).ir.meshBatches.filter(batch => batch.role.startsWith("awning."))).toHaveLength(2);
+    const widened = structuredClone(awningGraph); widened.nodes.find(node => node.type === "Footprint")!.parameters.widthM += 1;
+    const widenedProject = await createBayConstructionProject(widened, materials.file, undefined, fabric);
+    expect(widenedProject.awningFabric).toEqual(awningProject.awningFabric); expect(widenedProject.materialSource).toEqual(awningProject.materialSource);
+    await expect(createBayConstructionProject(awningGraph, materials.file)).rejects.toThrow(/versions must agree/);
+    await expect(readBayConstructionProject({ ...awningProject, schemaVersion: "0.14.0" })).rejects.toThrow();
   } finally { fixture.familyRuntime.dispose(); }
 }, 120000);
