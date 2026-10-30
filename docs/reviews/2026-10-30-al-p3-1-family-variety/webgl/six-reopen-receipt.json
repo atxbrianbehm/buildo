@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "family-six-reopen",
+  "api": "webgl",
+  "memberCount": 6,
+  "fileEqual": true,
+  "contentHash": "593e23917f3238d6a6a5d8fb9ac3f772bc3b5b6c8197c57d9ecb5b77efc3a7b8",
+  "errors": []
+}

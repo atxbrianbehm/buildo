@@ -13,7 +13,8 @@ import { canonicalJson } from "../core/canonicalJson";
 import { planConstructionReferenceMaterials } from "../materials/constructionReferenceMaterials";
 import { resolveConstructionFamilyPlan } from "../core/constructionFamilyPlan";
 import { resolveConstructionFamily } from "../state/constructionFamilyGeneration";
-import { createConstructionFamilySource, readConstructionFamilySource, type ConstructionFamilySource } from "../state/constructionFamilySource";
+import { createConstructionFamilySource, readConstructionFamilySource, type ConstructionFamilyPayload } from "../state/constructionFamilySource";
+import { resolveConstructionFamilyComposition } from "../core/constructionFamilyComposition";
 import { parseBuildingSourceFile } from "../state/buildingSourceFile";
 import { defaultConstructionGenerationControls, resolveWorkbenchGeneration, rebindGenerationSurfaceSources, type ConstructionGenerationLineage } from "../state/constructionGenerationState";
 import { ConstructionGenerationPanel } from "./ConstructionGenerationPanel";
@@ -60,6 +61,13 @@ const labels: Record<string, string> = {
   count: "Count", floorIndex: "Floor index (-1 = all)", bayIndex: "Bay index (-1 = all)", depthM: "Depth (m)", projectionM: "Projection (m)"
 };
 const displayNumber = (value: number) => String(Number(value.toPrecision(12)));
+function describeFamilyMember(graph: BayConstructionGraph) {
+  const opening = graph.nodes.find(node => node.type === "PlaceOpening")?.parameters.upperFrontRoundHead ?? 0;
+  const sash = graph.nodes.find(node => node.type === "AssembleWindow")?.parameters.layout ?? 0;
+  const frontage = graph.nodes.find(node => node.type === "PlaceStorefront")?.parameters.mode ?? 0;
+  const roof = graph.nodes.find(node => node.type === "BuildingRoof")?.parameters;
+  return `${opening ? "Round head" : "Flat head"} · ${["Double-hung", "Twin casement", "Six-light casement"][sash]} · ${frontage ? "Storefront" : "Punched ground floor"} · ${["Moulded", "Dentil", "Bracket"][roof?.corniceAssembly ?? 0]} cornice · ${roof?.parapetSilhouette ? "Raised parapet" : "Flat parapet"}`;
+}
 function fieldsFor(graph: BayConstructionGraph): Record<string, Record<string, string>> {
   return Object.fromEntries(graph.nodes.map(node => [node.id, "parameters" in node
     ? Object.fromEntries(Object.entries(node.parameters).map(([key, value]) => [key, displayNumber(value)])) : {}]));
@@ -102,7 +110,9 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   const [familyPreview, setFamilyPreview] = useState(false);
   const [familyDirty, setFamilyDirty] = useState(false);
   const [familySeed, setFamilySeed] = useState("building-family-1");
-  const familySource = useRef<Omit<ConstructionFamilySource, "contentHash"> | null>(null);
+  const [familyVariation, setFamilyVariation] = useState({ openings: false, frontage: false, roof: false });
+  const [familyDetails, setFamilyDetails] = useState<string[]>([]);
+  const familySource = useRef<ConstructionFamilyPayload | null>(null);
   const [memberIndex, setMemberIndex] = useState(0);
   const [memberEdit, setMemberEdit] = useState<{ documentId: string; number: number; session: BayConstructionSession } | null>(null);
   const memberEditId = useRef<string | null>(null);
@@ -343,7 +353,9 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       const isCurrent = () => alive.current && sequence.current === token && !signal.aborted && current.current === source;
       const plan = resolveConstructionFamilyPlan({ schemaVersion: "0.1.0", kind: "construction-family-request",
         familyId: "preview_family", familySeed, graph: source.fixture.construction.graph });
-      const family = await resolveConstructionFamily(plan, source.generation, generationControls, signal);
+      const composition = Object.values(familyVariation).some(Boolean) ? resolveConstructionFamilyComposition({ schemaVersion: "0.1.0",
+        kind: "construction-family-composition-request", familySeed, policy: familyVariation, openingLock: generationControls.lockOpenings }) : null;
+      const family = await resolveConstructionFamily(plan, source.generation, generationControls, signal, composition ?? undefined);
       if (!isCurrent()) return;
       const candidate = await prepareConstructionFamilyFixture(base, family.members.map(member => member.construction), source.materials, signal);
       if (!isCurrent()) { candidate.familyRuntime.dispose(); return; }
@@ -354,10 +366,12 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         if (!isCurrent()) { prepared?.discard(); retire(candidate); return; }
         const finalize = prepared?.commit(), previous = shown.current;
         shown.current = candidate; setAccepted(candidate); setPreviewNode(null); setFamilyPreview(true); setFamilyDirty(false); chooseFrame(null);
-        familySource.current = { schemaVersion: "0.2.0", kind: "construction-family-source", familyId: plan.source.familyId,
+        const familyBase = { kind: "construction-family-source" as const, familyId: plan.source.familyId,
           sourceDocumentId: source.fixture.construction.graph.documentId, familySeed: plan.source.familySeed,
           sourceGraph: source.fixture.construction.graph, sourceGeneration: source.generation!, materialSource: source.materials.file,
           members: family.members.map(member => ({ documentId: member.documentId, graph: member.construction.graph, generation: member.lineage })) };
+        familySource.current = composition ? { ...familyBase, schemaVersion: "0.3.0", initialComposition: composition } : { ...familyBase, schemaVersion: "0.2.0" };
+        setFamilyDetails(familyBase.members.map(member => describeFamilyMember(member.graph)));
         memberHistories.current.clear(); setMemberIndex(0);
         if (previous && previous !== source.fixture && previous !== candidate) retire(previous);
         finalize?.();
@@ -372,6 +386,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     if (canonicalJson(currentMember.graph) !== canonicalJson(session.graph) || canonicalJson(currentMember.generation) !== canonicalJson(session.generation)) {
       familySource.current = { ...source, members: source.members.map(member => member.documentId === id
         ? { documentId: id, graph: session.graph, generation: session.generation! } : member) };
+      setFamilyDetails(familySource.current.members.map(member => describeFamilyMember(member.graph)));
       setFamilyDirty(true);
     }
     memberHistories.current.set(id, session.history ?? null);
@@ -453,7 +468,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         shown.current = candidate; setAccepted(candidate); setDraft(source.sourceGraph); setFields(fieldsFor(source.sourceGraph));
         setSelected(source.sourceGraph.nodes[0].id); setGeneration(source.sourceGeneration);
         setGenerationControls(controls => ({ ...controls, ...controlsFrom(source.sourceGeneration) }));
-        setFamilySeed(source.familySeed); setPreviewNode(null); setFamilyPreview(true); setFamilyDirty(false); chooseFrame(null);
+        setFamilySeed(source.familySeed); setFamilyVariation(source.schemaVersion === "0.3.0" ? source.initialComposition.source.policy : { openings: false, frontage: false, roof: false }); setFamilyDetails(source.members.map(member => describeFamilyMember(member.graph))); setPreviewNode(null); setFamilyPreview(true); setFamilyDirty(false); chooseFrame(null);
         setDirty(false); setOpeningDirty(false); setError(null); referenceSequence.current++; setReferenceDraft(null);
         const { contentHash: _hash, ...payload } = source; void _hash; familySource.current = payload;
         memberHistories.current.clear(); setMemberIndex(0);
@@ -646,8 +661,14 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       {buildingMode && !familyMemberMode ? <details className="construction-generate"><summary>Generate & vary</summary><ConstructionGenerationPanel controls={generationControls} lineage={generation} reference={referenceDraft} onReferenceFile={file => void importReference(file)} disabled={disabled || dirty || !viewerReady}
         onChange={setGenerationControls} onGenerate={reroll => void generateBuilding(reroll)} /></details> : null}
       {buildingMode && !familyMemberMode ? <section className="construction-generate" aria-label="Building family preview"><h3>Related buildings</h3>
-        <p>Preview six variations using this building's current material and authored choices.</p>
+        <p>Preview six related buildings using this building's material. Choose which architectural details may vary; unchecked groups keep your authored choices. The current choices use a small demo catalog.</p>
         <div className="control-panel__fields"><label><span>Family seed</span><input aria-label="Family seed" value={familySeed} disabled={pending || saving || familyPreview} onChange={event => setFamilySeed(event.currentTarget.value)} /></label></div>
+        <fieldset className="construction-family-variation" disabled={pending || saving || familyPreview}><legend>Vary architectural details</legend>
+          <label><input type="checkbox" checked={familyVariation.openings} onChange={event => { const checked = event.currentTarget.checked; setFamilyVariation(value => ({ ...value, openings: checked })); }} /> Opening heads and sash</label>
+          <label><input type="checkbox" checked={familyVariation.frontage} onChange={event => { const checked = event.currentTarget.checked; setFamilyVariation(value => ({ ...value, frontage: checked })); }} /> Ground frontage</label>
+          <label><input type="checkbox" checked={familyVariation.roof} onChange={event => { const checked = event.currentTarget.checked; setFamilyVariation(value => ({ ...value, roof: checked })); }} /> Cornice and parapet</label>
+        </fieldset>
+        {generationControls.lockOpenings && (familyVariation.openings || familyVariation.frontage) ? <p>Unlock openings to vary opening heads, sash or ground frontage.</p> : null}
         <div className="control-panel__actions">{familyPreview ? <button type="button" disabled={pending || saving || !viewerReady || familyDirty} onClick={() => void preview(null)}>Return to building</button>
           : <button type="button" disabled={disabled || dirty || !viewerReady || !generation || Boolean(previewNode) || !familySeed.trim()} onClick={() => void previewFamily()}>Preview family</button>}</div>
         <div className="control-panel__actions"><button type="button" disabled={pending || saving || !familyPreview} onClick={() => void saveFamily()}>Save family</button>
@@ -656,6 +677,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
             onChange={event => { const file = event.currentTarget.files?.[0]; event.currentTarget.value = ""; if (file) void openFamily(file); }} /></div>
         {familyPreview ? <><div className="control-panel__fields"><label><span>Family member</span><select aria-label="Family member" value={memberIndex} disabled={pending || saving} onChange={event => setMemberIndex(Number(event.currentTarget.value))}>
           {Array.from({ length: 6 }, (_, index) => <option key={index} value={index}>Building {index + 1}</option>)}</select></label></div>
+          {familyDetails[memberIndex] ? <p aria-label="Selected building details">{familyDetails[memberIndex]}</p> : null}
           <div className="control-panel__actions"><button type="button" disabled={pending || saving} onClick={editFamilyMember}>Edit selected building</button></div></> : null}
         {familyDirty ? <p role="status">Family changes are unsaved. Save the family before returning to the original building or opening another family.</p> : null}
         {!generation ? <p>Generate the building once to pin its reference and material source.</p> : null}
