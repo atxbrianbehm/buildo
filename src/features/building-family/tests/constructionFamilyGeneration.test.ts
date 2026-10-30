@@ -31,6 +31,33 @@ async function fixture() {
 }
 
 describe("authored construction family generation", () => {
+  it("generates massing through each member's source and respects count constraints", async () => {
+    const { lineage, graph } = await fixture();
+    const plan = resolveConstructionFamilyPlan({ schemaVersion: "0.1.0", kind: "construction-family-request", familyId: "massing_family", familySeed: "massing-seed", graph });
+    const composition = resolveConstructionFamilyComposition({ schemaVersion: "0.4.0", kind: "construction-family-composition-request", familySeed: "massing-seed",
+      policy: { openings: false, frontage: false, roof: false, groupedBays: false, storefrontLights: false, massing: true }, openingLock: false });
+    if (composition.schemaVersion !== "0.4.0") throw new Error("Wrong plan version");
+    const family = await resolveConstructionFamily(plan, lineage, defaultConstructionGenerationControls, undefined, composition);
+    for (const [index, member] of family.members.entries()) {
+      const choice = composition.members[index].massing!;
+      expect(member.construction.graph.nodes.find(node => node.type === "Storeys")!.parameters.count).toBe(choice.floorCount);
+      expect(member.construction.graph.nodes.find(node => node.type === "SplitBays")!.parameters.count).toBe(choice.bayCount);
+      expect(member.lineage.source.intent.requested).toMatchObject(choice);
+      expect(member.lineage.resolution.graph.nodes.find(node => node.type === "Storeys")!.parameters.count).toBe(choice.floorCount);
+      expect(member.lineage.materialSourceHash).toBe(lineage.materialSourceHash);
+    }
+    expect(new Set(family.members.map(member => member.construction.graph.nodes.find(node => node.type === "Storeys")!.parameters.count))).toEqual(new Set([2, 3, 4]));
+    await expect(resolveConstructionFamily(plan, lineage, { ...defaultConstructionGenerationControls, lockStoreys: true }, undefined, composition)).rejects.toThrow(/Unlock footprint and storeys/);
+    await expect(resolveConstructionFamily(plan, lineage, { ...defaultConstructionGenerationControls, lockFootprint: true }, undefined, composition)).rejects.toThrow(/Unlock footprint and storeys/);
+    const edited = structuredClone(graph); edited.nodes.find(node => node.type === "Storeys")!.parameters.count = 4;
+    await expect(resolveConstructionFamily(resolveConstructionFamilyPlan({ ...plan.source, graph: edited }), lineage, defaultConstructionGenerationControls, undefined, composition)).rejects.toThrow(/cannot overwrite authored/);
+    const grouped = withConstructionGroupedBays(graph, [{ storeysNodeId: "facade", floorIndex: 2, bayIndex: 0, memberCount: 2, memberWidthM: 0.55, pierWidthM: 0.24 }]);
+    await expect(resolveConstructionFamily(resolveConstructionFamilyPlan({ ...plan.source, graph: grouped }), lineage, defaultConstructionGenerationControls, undefined, composition)).rejects.toThrow(/retained grouped bay/);
+    const old = lineage.source, pinned = await captureConstructionGenerationSource({ schemaVersion: "0.1.0", kind: "construction-generation-input", documentId: old.documentId,
+      intent: { ...old.intent, locks: [{ semanticPath: "construction/facade/count", scope: "building", lockedValue: 3, reason: "Imported pin" }] }, recipe: old.recipe, reference: old.reference, intentionalExceptions: old.intentionalExceptions });
+    const pinnedLineage = { ...lineage, source: pinned, resolution: await resolveConstructionGeneration(pinned), materialPlan: await planConstructionReferenceMaterials(lineage.materialPlan.templateSpec, pinned) };
+    await expect(resolveConstructionFamily(plan, pinnedLineage, defaultConstructionGenerationControls, undefined, composition)).rejects.toThrow(/conflicts with the pinned lock/);
+  }, 120000);
   it("generates diverse storefront lights and refuses authored divisions and imported opening pins", async () => {
     const { lineage, graph } = await fixture();
     const storefront = withConstructionStorefront(graph, 1);

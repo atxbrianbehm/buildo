@@ -13,6 +13,19 @@ const request = () => ({ schemaVersion: "0.1.0", kind: "construction-family-comp
   policy: { openings: true, frontage: true, roof: true }, openingLock: false });
 
 describe("family architectural composition", () => {
+  it("records seeded storey and bay choices and requires them to be resolved before composition", () => {
+    const input = { schemaVersion: "0.4.0", kind: "construction-family-composition-request", familySeed: "massing-seed",
+      policy: { openings: false, frontage: false, roof: false, groupedBays: false, storefrontLights: false, massing: true }, openingLock: false };
+    const plan = resolveConstructionFamilyComposition(input);
+    if (plan.schemaVersion !== "0.4.0") throw new Error("Wrong plan version");
+    expect(readConstructionFamilyCompositionPlan(JSON.parse(JSON.stringify(plan)))).toEqual(plan);
+    expect(new Set(plan.members.map(member => member.massing?.floorCount))).toEqual(new Set([2, 3, 4]));
+    expect(new Set(plan.members.map(member => member.massing?.bayCount))).toEqual(new Set([3, 4, 5]));
+    const tampered = structuredClone(plan); tampered.members[0].massing!.floorCount = tampered.members[0].massing!.floorCount === 2 ? 3 : 2;
+    expect(() => readConstructionFamilyCompositionPlan(tampered)).toThrow(/do not match/);
+    const mismatched = plan.members.findIndex(member => member.massing?.floorCount !== 3 || member.massing?.bayCount !== 4) + 1;
+    expect(() => applyConstructionFamilyComposition(createBuildingConstructionGraph(), plan, mismatched)).toThrow(/through generation/);
+  });
   it("replays varied storefront lights, protects authored divisions and coordinates punched frontage", async () => {
     const input = { schemaVersion: "0.3.0", kind: "construction-family-composition-request", familySeed: "lights-seed",
       policy: { openings: false, frontage: false, roof: false, groupedBays: false, storefrontLights: true }, openingLock: false };
