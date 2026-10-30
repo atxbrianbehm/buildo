@@ -5,8 +5,9 @@ import { withConstructionAwnings } from "../core/constructionAwningGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
 import { createConstructionAwningFabric } from "../materials/constructionAwningFabric";
 import { createAssemblyHallFixture } from "../ui/assemblyHallFixture";
-import { createBayConstructionMaterials, prepareBayConstructionFixture } from "../ui/bayConstructionFixture";
+import { createBayConstructionMaterials, prepareBayConstructionFixture, prepareConstructionFamilyFixture } from "../ui/bayConstructionFixture";
 import { defaultBuildingPromptControls } from "../state/buildingStore";
+import { resolveConstructionFamilyPlan } from "../core/constructionFamilyPlan";
 
 it("prepares and releases graph-generated awnings with the real construction fixture", async () => {
   const base = await createAssemblyHallFixture({ promptControls: structuredClone(defaultBuildingPromptControls) });
@@ -22,5 +23,12 @@ it("prepares and releases graph-generated awnings with the real construction fix
     expect(awnings[1].object.material).toBe(awnings[0].object.material);
     const disposed = vi.fn(); awnings[0].object.material.addEventListener("dispose", disposed);
     fixture.familyRuntime.dispose(); expect(disposed).toHaveBeenCalledOnce(); fixture.familyRuntime.dispose(); expect(disposed).toHaveBeenCalledOnce();
+    const plan = resolveConstructionFamilyPlan({ schemaVersion: "0.1.0", kind: "construction-family-request", familyId: "awning_family", familySeed: "seed", graph });
+    const results = await Promise.all(plan.members.map(member => evaluateConstruction(member.graph)));
+    const family = await prepareConstructionFamilyFixture(base, results, { ...materials, awningFabric: fabric });
+    const familyMaterials = [...family.familyRuntime.buildingRuntimes.values()].map(runtime => [...runtime.semanticLookup.values()].find(entry => entry.object.userData.role === "awning.canopy")!.object.material);
+    expect(familyMaterials).toHaveLength(6); expect(new Set(familyMaterials).size).toBe(1);
+    const familyDisposed = vi.fn(); familyMaterials[0].addEventListener("dispose", familyDisposed);
+    family.familyRuntime.dispose(); expect(familyDisposed).toHaveBeenCalledOnce();
   } finally { base.familyRuntime.dispose(); }
 }, 120000);

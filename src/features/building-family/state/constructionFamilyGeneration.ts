@@ -11,6 +11,8 @@ import { BayConstructionWorkerReplySchema } from "../compiler/bayConstructionWor
 import { ConstructionGenerationLineageSchema, readConstructionGenerationLineage, resolveWorkbenchGeneration,
   type ConstructionGenerationControls, type ConstructionGenerationLineage } from "./constructionGenerationState";
 import { applyConstructionFamilyComposition, readConstructionFamilyCompositionPlan } from "../core/constructionFamilyComposition";
+import { BayConstructionGraphSchema } from "../contracts/bayConstructionGraph";
+import { withConstructionAwnings } from "../core/constructionAwningGraph";
 
 const controlsSchema = z.object({ recipeId: z.string().min(1).max(512).optional(), floorCount: z.number().int().min(2).max(6),
   bayCount: z.number().int().min(3).max(6), buildingSeed: z.string().trim().min(1).max(256),
@@ -106,7 +108,16 @@ export async function resolveConstructionFamily(input: unknown, lineageInput: un
       if (nextMaterial.materialInputsHash !== original.materialPlan.materialInputsHash || canonicalJson(nextMaterial.atlas.manifest) !== canonicalJson(original.materialPlan.atlas.manifest)) {
         throw new Error("Family variation would change the pinned material plan.");
       }
-      const candidateGraph = composition ? applyConstructionFamilyComposition(generated.graph, composition, member.ordinal) : generated.graph;
+      let candidateGraph = generated.graph;
+      if (composition) {
+        const awnings = candidateGraph.awnings;
+        if (awnings) {
+          const { awnings: _removed, ...prior } = candidateGraph; void _removed;
+          candidateGraph = BayConstructionGraphSchema.parse({ ...prior, schemaVersion: "0.12.0" });
+        }
+        candidateGraph = applyConstructionFamilyComposition(candidateGraph, composition, member.ordinal);
+        if (awnings) candidateGraph = withConstructionAwnings(candidateGraph, awnings);
+      }
       const construction = await evaluateConstruction(candidateGraph); abort(signal);
       BayConstructionWorkerReplySchema.parse({ schemaVersion: candidateGraph.schemaVersion, type: "bay-result", requestId: member.ordinal, result: construction });
       for (const layer of construction.surfaceComposition?.layers ?? []) {
