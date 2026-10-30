@@ -320,6 +320,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     const source = current.current;
     if (!source || dirty || previewNode || shown.current !== source.fixture) return;
     await perform(async (token, signal) => {
+      if (familyMemberMode && !source.materials.awningFabric) throw new Error("Add awnings to the original building before creating this family.");
       const original = source.fixture.construction.graph;
       const awnings = (original.awnings ?? []).filter(awning => awning.bayIndex !== bayIndex);
       if (enabled) awnings.push({ bayIndex, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 });
@@ -412,7 +413,6 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     const source = current.current;
     if (!source?.generation || dirty) return;
     await perform(async (token, signal) => {
-      if (source.materials.awningFabric) throw new Error("Family generation cannot yet retain supplemental awning fabric.");
       const isCurrent = () => alive.current && sequence.current === token && !signal.aborted && current.current === source;
       const plan = resolveConstructionFamilyPlan({ schemaVersion: "0.1.0", kind: "construction-family-request",
         familyId: "preview_family", familySeed, graph: source.fixture.construction.graph });
@@ -437,7 +437,8 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
           sourceDocumentId: source.fixture.construction.graph.documentId, familySeed: plan.source.familySeed,
           sourceGraph: source.fixture.construction.graph, sourceGeneration: source.generation!, materialSource: source.materials.file,
           members: family.members.map(member => ({ documentId: member.documentId, graph: member.construction.graph, generation: member.lineage })) };
-        familySource.current = composition?.schemaVersion === "0.4.0" ? { ...familyBase, schemaVersion: "0.7.0", initialComposition: composition }
+        familySource.current = source.materials.awningFabric ? { ...familyBase, schemaVersion: "0.8.0", awningFabric: source.materials.awningFabric, ...(composition ? { initialComposition: composition } : {}) }
+          : composition?.schemaVersion === "0.4.0" ? { ...familyBase, schemaVersion: "0.7.0", initialComposition: composition }
           : composition?.schemaVersion === "0.3.0" ? { ...familyBase, schemaVersion: "0.6.0", initialComposition: composition }
           : [familyBase.sourceGraph, ...familyBase.members.map(member => member.graph)].some(graph => graph.schemaVersion === "0.12.0")
           ? { ...familyBase, schemaVersion: "0.5.0", ...(composition ? { initialComposition: composition } : {}) }
@@ -452,7 +453,8 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   }
   const updateFamilyMember = useCallback((session: BayConstructionSession) => {
     const source = familySource.current, id = memberEditId.current;
-    if (!source || !id || session.graph.documentId !== id || !session.generation || session.materials.file.contentHash !== source.materialSource.contentHash) return;
+    if (!source || !id || session.graph.documentId !== id || !session.generation || session.materials.file.contentHash !== source.materialSource.contentHash ||
+        session.materials.awningFabric?.contentHash !== (source.schemaVersion === "0.8.0" ? source.awningFabric.contentHash : undefined)) return;
     const currentMember = source.members.find(member => member.documentId === id);
     if (!currentMember) return;
     if (canonicalJson(currentMember.graph) !== canonicalJson(session.graph) || canonicalJson(currentMember.generation) !== canonicalJson(session.generation)) {
@@ -516,10 +518,9 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       const previous = current.current;
       const isCurrent = () => alive.current && sequence.current === token && !signal.aborted && current.current === previous;
       const source = await readConstructionFamilySource(JSON.parse(await file.text()));
-      if (source.schemaVersion === "0.8.0") throw new Error("This family contains supplemental awning fabric that the family workspace cannot yet retain. The current building is unchanged.");
       if (!isCurrent()) return;
       const parsed = await parseBuildingSourceFile(source.materialSource);
-      const materials = { ...parsed, file: source.materialSource };
+      const materials = { ...parsed, file: source.materialSource, ...(source.schemaVersion === "0.8.0" ? { awningFabric: source.awningFabric } : {}) };
       if (!isCurrent()) return;
       compiler.current ??= new BayConstructionClient(new Worker(new URL("../compiler/bayConstruction.worker.ts", import.meta.url), { type: "module" }));
       const originalResult = await compiler.current.evaluate(source.sourceGraph);
@@ -684,7 +685,8 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         graph={accepted.construction.graph} dirty={groupDirty} disabled={pending || saving || openingDirty || buildingDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode)}
         onDraftChange={value => { setGroupDirty(value); if (!value) setError(null); }} onApply={edit => void applyGroupedBay(edit)} /> : null}
       {buildingMode && !advancedOpen && accepted && supportsGroupedConstruction(accepted.construction.graph) && constructionHasStorefront(accepted.construction.graph) ? <ConstructionAwningControls
-        graph={accepted.construction.graph} disabled={pending || saving || openingDirty || buildingDirty || groupDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode)}
+        graph={accepted.construction.graph} disabled={pending || saving || openingDirty || buildingDirty || groupDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode) || (familyMemberMode && !startingSession?.materials.awningFabric)}
+        unavailableReason={familyMemberMode && !startingSession?.materials.awningFabric ? "Add an awning to the original building before creating this family." : undefined}
         onChange={(bay, enabled) => void changeAwning(bay, enabled)} /> : null}
       {buildingMode && !advancedOpen && accepted ? <ConstructionBuildingControls graph={draft} fields={fields} windowCount={groupedWindowCount(accepted.construction.graph,accepted.ir)} storefrontCount={groupedStorefrontCount(accepted.construction.graph,accepted.ir)} localWidthCount={constructionOpeningOptions(accepted.construction.graph,accepted.ir).filter(option=>option.overridden).length}
         disabled={disabled || !viewerReady || Boolean(previewNode)} dirty={buildingDirty}

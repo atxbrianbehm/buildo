@@ -64,6 +64,11 @@ describe("persistent construction family source", () => {
       await expect(createConstructionFamilySource({ ...awningInput, awningFabric: badFabric })).rejects.toThrow(/does not match/);
       const { awningFabric: _fabric, ...withoutFabric } = awningInput; void _fabric;
       await expect(createConstructionFamilySource({ ...withoutFabric, schemaVersion: "0.5.0" })).rejects.toThrow(/Awning family graphs require/);
+      const awningPlan = resolveConstructionFamilyPlan({ schemaVersion: "0.1.0", kind: "construction-family-request", familyId: "awning_family", familySeed: "seed", graph: awningInput.sourceGraph });
+      const roofChoices = resolveConstructionFamilyComposition({ schemaVersion: "0.1.0", kind: "construction-family-composition-request", familySeed: "seed", policy: { openings: false, frontage: false, roof: true }, openingLock: false });
+      const awningMembers = await resolveConstructionFamily(awningPlan, lineage, defaultConstructionGenerationControls, undefined, roofChoices);
+      expect(awningMembers.members).toHaveLength(6);
+      expect(awningMembers.members.every(member => JSON.stringify(member.construction.graph.awnings) === JSON.stringify(awnings))).toBe(true);
       const dividedInput = { ...input, familySeed: "seed", schemaVersion: "0.5.0", sourceGraph: dividedGraph,
         members: saved.members.map((member, index) => index === 0 ? { ...member, graph: dividedMember } : member) };
       const divided = await createConstructionFamilySource(dividedInput);
