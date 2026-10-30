@@ -696,6 +696,18 @@ it("generates, edits, locks and rerolls through the actual workbench with saved 
     for(const record of rendererState.records)expect(record.dispose).toHaveBeenCalledTimes(1);
   },60000);
 
+  it("lets an artist select family variation groups without changing the building", async () => {
+    const view = mount({ graph: createBuildingConstructionGraph(), materials });
+    try {
+      await ready();
+      for (const label of ["Opening heads and sash", "Ground frontage", "Cornice and parapet"]) {
+        const option = screen.getByRole("checkbox", { name: label });
+        expect(option).not.toBeChecked(); fireEvent.click(option); expect(option).toBeChecked();
+      }
+      expect(view.onSessionChange).toHaveBeenCalledTimes(1);
+    } finally { view.unmount(); }
+  }, 60000);
+
   it("publishes round heads through history and portable source with the same materials",async()=>{
     const view=mount({graph:createBuildingConstructionGraph(),materials});
     try {

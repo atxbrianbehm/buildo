@@ -10,6 +10,7 @@ import { evaluateConstruction } from "../compiler/evaluateConstruction";
 import { BayConstructionWorkerReplySchema } from "../compiler/bayConstructionWorkerProtocol";
 import { ConstructionGenerationLineageSchema, readConstructionGenerationLineage, resolveWorkbenchGeneration,
   type ConstructionGenerationControls, type ConstructionGenerationLineage } from "./constructionGenerationState";
+import { applyConstructionFamilyComposition, readConstructionFamilyCompositionPlan } from "../core/constructionFamilyComposition";
 
 const controlsSchema = z.object({ recipeId: z.string().min(1).max(512).optional(), floorCount: z.number().int().min(2).max(6),
   bayCount: z.number().int().min(3).max(6), buildingSeed: z.string().trim().min(1).max(256),
@@ -32,13 +33,25 @@ async function geometryHash(result: Awaited<ReturnType<typeof evaluateConstructi
 }
 
 /** Resolve a complete owned family or fail without publishing a partial result. */
-export async function resolveConstructionFamily(input: unknown, lineageInput: unknown, controlsInput: ConstructionGenerationControls, signal?: AbortSignal) {
+export async function resolveConstructionFamily(input: unknown, lineageInput: unknown, controlsInput: ConstructionGenerationControls, signal?: AbortSignal, compositionInput?: unknown) {
   const plan = readConstructionFamilyPlan(input);
   const lineage = structuredClone(ConstructionGenerationLineageSchema.parse(lineageInput));
   const controls = controlsSchema.parse(controlsInput);
   if (!controls.preserveAuthored) throw new Error("Family generation requires preserving authored choices.");
   abort(signal);
   const original = await readConstructionGenerationLineage(lineage); abort(signal);
+  const composition = compositionInput === undefined ? null : readConstructionFamilyCompositionPlan(compositionInput);
+  if (composition) {
+    if (composition.source.familySeed !== plan.source.familySeed || composition.source.openingLock !== controls.lockOpenings)
+      throw new Error("Family composition seed and opening-lock state must match the active family request.");
+    const affected = [
+      ...(composition.source.policy.openings ? ["construction/opening/upperFrontRoundHead", "construction/window/layout"] : []),
+      ...(composition.source.policy.frontage ? ["construction/frontage/mode"] : []),
+      ...(composition.source.policy.roof ? ["construction/roof/corniceAssembly", "construction/roof/parapetSilhouette"] : [])
+    ];
+    for (const lock of original.source.intent.locks) if (affected.some(path => path === lock.semanticPath || path.startsWith(lock.semanticPath + "/")))
+      throw new Error(`Family composition conflicts with the pinned lock ${lock.semanticPath}.`);
+  }
   if (original.source.documentId !== plan.source.graph.documentId) throw new Error("Family source identity does not match its pinned generation lineage.");
   if (controls.materialSeed !== original.source.intent.seeds.material || controls.trimSeed !== original.source.intent.seeds.trim) {
     throw new Error("Family generation must retain the pinned material and trim seeds.");
@@ -67,8 +80,9 @@ export async function resolveConstructionFamily(input: unknown, lineageInput: un
       if (nextMaterial.materialInputsHash !== original.materialPlan.materialInputsHash || canonicalJson(nextMaterial.atlas.manifest) !== canonicalJson(original.materialPlan.atlas.manifest)) {
         throw new Error("Family variation would change the pinned material plan.");
       }
-      const construction = await evaluateConstruction(generated.graph); abort(signal);
-      BayConstructionWorkerReplySchema.parse({ schemaVersion: generated.graph.schemaVersion, type: "bay-result", requestId: member.ordinal, result: construction });
+      const candidateGraph = composition ? applyConstructionFamilyComposition(generated.graph, composition, member.ordinal) : generated.graph;
+      const construction = await evaluateConstruction(candidateGraph); abort(signal);
+      BayConstructionWorkerReplySchema.parse({ schemaVersion: candidateGraph.schemaVersion, type: "bay-result", requestId: member.ordinal, result: construction });
       for (const layer of construction.surfaceComposition?.layers ?? []) {
         const target = layer.target;
         if (target.kind === "element" && !construction.ir.semanticIndex.some(entry =>
@@ -77,10 +91,10 @@ export async function resolveConstructionFamily(input: unknown, lineageInput: un
         }
       }
       const fingerprint = await geometryHash(construction); abort(signal);
-      const shape = generated.graph.nodes.filter(node => ["Footprint", "Storeys", "SplitBays"].includes(node.type))
+      const shape = candidateGraph.nodes.filter(node => ["Footprint", "Storeys", "SplitBays"].includes(node.type))
         .map(node => ({ type: node.type, parameters: "parameters" in node ? node.parameters : null }));
       const shapeHash = await hashCanonicalJson(shape); abort(signal);
-      if (usedGeometry.has(fingerprint) || usedShapes.has(shapeHash)) continue;
+      if (usedGeometry.has(fingerprint) || (!composition && usedShapes.has(shapeHash))) continue;
       usedGeometry.add(fingerprint); usedShapes.add(shapeHash);
       accepted = { documentId: member.documentId, buildingSeed, geometryHash: fingerprint, shapeHash, construction,
         lineage: { schemaVersion: "0.1.0", kind: "construction-generation-lineage", source: generated.source,

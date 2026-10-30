@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "family-variety-review",
+  "api": "webgpu",
+  "familySeed": "building-family-1",
+  "choices": [
+    {
+      "ordinal": 1,
+      "head": 0,
+      "sash": 2,
+      "frontage": 1,
+      "cornice": 1,
+      "parapet": 1
+    },
+    {
+      "ordinal": 2,
+      "head": 1,
+      "sash": 1,
+      "frontage": 0,
+      "cornice": 2,
+      "parapet": 1
+    },
+    {
+      "ordinal": 3,
+      "head": 0,
+      "sash": 0,
+      "frontage": 1,
+      "cornice": 0,
+      "parapet": 0
+    },
+    {
+      "ordinal": 4,
+      "head": 1,
+      "sash": 2,
+      "frontage": 1,
+      "cornice": 1,
+      "parapet": 1
+    },
+    {
+      "ordinal": 5,
+      "head": 0,
+      "sash": 1,
+      "frontage": 0,
+      "cornice": 2,
+      "parapet": 0
+    },
+    {
+      "ordinal": 6,
+      "head": 1,
+      "sash": 0,
+      "frontage": 0,
+      "cornice": 0,
+      "parapet": 0
+    }
+  ],
+  "sourceUnchanged": true,
+  "siblingsUnchanged": true,
+  "selectedMemberChanged": true,
+  "policyRetained": true,
+  "materialHash": "3feae06c59d16ea57029d815b13900184c8cb94b29369c58fe806168e3ee2d9c",
+  "providerCallsDelta": 0,
+  "reopenedMember": true
+}

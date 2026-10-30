@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { createBuildingConstructionGraph } from "../contracts/bayConstructionGraph";
 import { resolveConstructionFamilyPlan } from "../core/constructionFamilyPlan";
+import { resolveConstructionFamilyComposition } from "../core/constructionFamilyComposition";
 import { withConstructionOpeningWidth } from "../core/constructionOpeningEditGraph";
 import { resolveConstructionFamily } from "../state/constructionFamilyGeneration";
 import { defaultConstructionGenerationControls, resolveWorkbenchGeneration, type ConstructionGenerationLineage } from "../state/constructionGenerationState";
@@ -69,6 +70,16 @@ describe("persistent construction family source", () => {
       await expect(readConstructionFamilySource({ ...saved, unexpected: true })).rejects.toThrow();
       await expect(readConstructionFamilySource({ ...saved, schemaVersion: "0.1.0" })).rejects.toThrow(/lacks the original building/);
       expect(materialGeneration).not.toHaveBeenCalled(); materialGeneration.mockRestore();
+      const composition = resolveConstructionFamilyComposition({ schemaVersion: "0.1.0", kind: "construction-family-composition-request", familySeed: "seed", policy: { openings: true, frontage: true, roof: true }, openingLock: false });
+      const composed = await resolveConstructionFamily(plan, lineage, defaultConstructionGenerationControls, undefined, composition);
+      const composedSource = await createConstructionFamilySource({ ...input, familySeed: "seed", schemaVersion: "0.3.0", initialComposition: composition,
+        members: composed.members.map(member => ({ documentId: member.documentId, graph: member.construction.graph, generation: member.lineage })) });
+      const reopened = await readConstructionFamilySource(JSON.parse(JSON.stringify(composedSource)));
+      expect(reopened.schemaVersion).toBe("0.3.0");
+      if (reopened.schemaVersion === "0.3.0") expect(reopened.initialComposition).toEqual(composition);
+      const changed = structuredClone(composition); changed.members[0].head = changed.members[0].head === 0 ? 1 : 0;
+      await expect(createConstructionFamilySource({ ...input, familySeed: "seed", schemaVersion: "0.3.0", initialComposition: changed,
+        members: composedSource.members })).rejects.toThrow(/do not match/);
     } finally { vi.restoreAllMocks(); base.familyRuntime.dispose(); }
   }, 180000);
 });

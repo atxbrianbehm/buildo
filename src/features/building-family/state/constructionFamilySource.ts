@@ -7,17 +7,27 @@ import { constructionUsesOperator, validateConstructionSurfaceSources } from "..
 import { BuildingSourceFileSchema, parseBuildingSourceFile } from "./buildingSourceFile";
 import { ConstructionGenerationLineageSchema } from "./constructionGenerationState";
 import { validateGeneration } from "./bayConstructionProject";
+import { ConstructionFamilyCompositionPlanSchema } from "../contracts/constructionFamilyComposition";
+import { readConstructionFamilyCompositionPlan } from "../core/constructionFamilyComposition";
 
 const id = z.string().regex(/^[a-zA-Z][a-zA-Z0-9_.-]{0,79}$/);
-const payload = z.object({ schemaVersion: z.literal("0.2.0"), kind: z.literal("construction-family-source"),
+const common = {
+  kind: z.literal("construction-family-source"),
   familyId: id, sourceDocumentId: id, familySeed: z.string().min(1).max(128).refine(value => value.trim() === value),
   sourceGraph: BayConstructionGraphSchema, sourceGeneration: ConstructionGenerationLineageSchema, materialSource: BuildingSourceFileSchema,
   members: z.array(z.object({ documentId: id, graph: BayConstructionGraphSchema, generation: ConstructionGenerationLineageSchema }).strict()).length(6)
-}).strict();
+};
+const legacyPayload = z.object({ schemaVersion: z.literal("0.2.0"), ...common }).strict();
+const composedPayload = z.object({ schemaVersion: z.literal("0.3.0"), ...common, initialComposition: ConstructionFamilyCompositionPlanSchema }).strict();
+const payload = z.discriminatedUnion("schemaVersion", [legacyPayload, composedPayload]);
 const json = z.unknown().superRefine((value, context) => { const issue = findBuildingDocumentJsonIssue(value);
   if (issue) context.addIssue({ code: "custom", path: issue.path, message: issue.message }); });
-export const ConstructionFamilySourceSchema = json.pipe(payload.extend({ contentHash: z.string().regex(/^[a-f0-9]{64}$/) }).strict());
+export const ConstructionFamilySourceSchema = json.pipe(z.discriminatedUnion("schemaVersion", [
+  legacyPayload.extend({ contentHash: z.string().regex(/^[a-f0-9]{64}$/) }).strict(),
+  composedPayload.extend({ contentHash: z.string().regex(/^[a-f0-9]{64}$/) }).strict()
+]));
 export type ConstructionFamilySource = z.infer<typeof ConstructionFamilySourceSchema>;
+export type ConstructionFamilyPayload = z.infer<typeof payload>;
 
 function requireBuildingGraph(graph: z.infer<typeof BayConstructionGraphSchema>) {
   if (!["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0"].includes(graph.schemaVersion))
@@ -27,6 +37,10 @@ function requireBuildingGraph(graph: z.infer<typeof BayConstructionGraphSchema>)
 }
 
 async function validate(source: z.infer<typeof payload>) {
+  if (source.schemaVersion === "0.3.0") {
+    const composition = readConstructionFamilyCompositionPlan(source.initialComposition);
+    if (composition.source.familySeed !== source.familySeed) throw new Error("Family composition must retain the family seed.");
+  }
   const ids = new Set(source.members.map(member => member.documentId));
   if (ids.size !== 6 || ids.has(source.sourceDocumentId)) throw new Error("Family member identities must be unique and separate from the source building.");
   const seeds = new Set(source.members.map(member => member.generation.source.intent.seeds.building));

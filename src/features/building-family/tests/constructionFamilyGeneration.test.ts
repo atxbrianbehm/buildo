@@ -9,6 +9,7 @@ import { withConstructionOpeningWidth } from "../core/constructionOpeningEditGra
 import { emptyConstructionComposition, setConstructionSurface } from "../core/constructionSurfaceAuthoring";
 import { defaultConstructionGenerationControls, resolveWorkbenchGeneration, type ConstructionGenerationLineage } from "../state/constructionGenerationState";
 import { resolveConstructionFamily } from "../state/constructionFamilyGeneration";
+import { resolveConstructionFamilyComposition } from "../core/constructionFamilyComposition";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
 import { normalizeBuildingSpec } from "../core/specNormalizer";
 import { planConstructionReferenceMaterials } from "../materials/constructionReferenceMaterials";
@@ -26,6 +27,22 @@ async function fixture() {
 }
 
 describe("authored construction family generation", () => {
+  it("generates recorded architectural compositions without replacing material lineage", async () => {
+    const { lineage, plan } = await fixture();
+    const composition = resolveConstructionFamilyComposition({ schemaVersion: "0.1.0", kind: "construction-family-composition-request", familySeed: plan.source.familySeed,
+      policy: { openings: true, frontage: true, roof: true }, openingLock: false });
+    const family = await resolveConstructionFamily(plan, lineage, defaultConstructionGenerationControls, undefined, composition);
+    for (const [index, member] of family.members.entries()) {
+      const graph = member.construction.graph, choice = composition.members[index];
+      expect(graph.nodes.find(node => node.type === "PlaceOpening")!.parameters.upperFrontRoundHead).toBe(choice.head);
+      expect(graph.nodes.find(node => node.type === "AssembleWindow")!.parameters.layout).toBe(choice.sash);
+      expect(graph.nodes.find(node => node.type === "PlaceStorefront")!.parameters.mode).toBe(choice.frontage);
+      expect(graph.nodes.find(node => node.type === "BuildingRoof")!.parameters.corniceAssembly).toBe(choice.cornice);
+      expect(member.lineage.materialSourceHash).toBe(lineage.materialSourceHash);
+    }
+    expect(new Set(family.members.map(member => member.geometryHash)).size).toBe(6);
+    await expect(resolveConstructionFamily(plan, lineage, { ...defaultConstructionGenerationControls, lockOpenings: true }, undefined, composition)).rejects.toThrow(/opening-lock state/);
+  }, 90000);
   it("compiles six reproducible distinct buildings while preserving roof choices and pinned materials", async () => {
     const { lineage, graph, plan } = await fixture(), before = structuredClone({ plan, lineage, graph });
     const family = await resolveConstructionFamily(plan, lineage, defaultConstructionGenerationControls);
