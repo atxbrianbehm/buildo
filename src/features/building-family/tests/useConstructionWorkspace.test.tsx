@@ -61,6 +61,16 @@ it("recovers source into construction mode and retains the accepted session acro
   act(() => result.current.setMode(true)); expect(result.current.mode).toBe(true); expect(ports.acquire).toHaveBeenCalledTimes(1);
 });
 
+it("includes supplemental fabric identity and source in checkpoint writes", async () => {
+  ports.acquire.mockResolvedValueOnce(writer("fabric"));
+  const { result } = renderHook(() => useConstructionWorkspace("fabric"));
+  await waitFor(() => expect(result.current.status.state).toBe("ready"));
+  const fabric = { contentHash: "c".repeat(64) } as NonNullable<BayConstructionSession["materials"]["awningFabric"]>;
+  const accepted = { ...source, materials: { ...source.materials, awningFabric: fabric } };
+  act(() => result.current.acceptSession(accepted));
+  expect(ports.queues[0].save).toHaveBeenCalledWith(expect.stringContaining(fabric.contentHash), accepted.graph, accepted.materials.file, undefined, fabric);
+});
+
 it("discards stale document acquisition and closes its writer before another mount acquires the same document", async () => {
   const acquisition = deferred<ConstructionCheckpointWriter | undefined>(), closing = deferred<void>();
   const old = writer("switch-old", parsed); old.close.mockImplementation(() => closing.promise);

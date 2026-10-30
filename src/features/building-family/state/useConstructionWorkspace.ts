@@ -71,7 +71,9 @@ export function useConstructionWorkspace(documentId: string) {
   const acceptSession = useCallback((session: BayConstructionSession) => {
     const owner = ownerRef.current; if (!owner || owner.documentId !== documentId) return;
     setState(previous => previous.documentId === documentId ? { ...previous, session, recovering: false } : previous);
-    owner.queue?.save(sourceKey(session), session.graph, session.materials.file, session.generation ?? undefined, session.materials.awningFabric);
+    if (session.materials.awningFabric) owner.queue?.save(sourceKey(session), session.graph, session.materials.file, session.generation ?? undefined, session.materials.awningFabric);
+    else if (session.generation) owner.queue?.save(sourceKey(session), session.graph, session.materials.file, session.generation);
+    else owner.queue?.save(sourceKey(session), session.graph, session.materials.file);
   }, [documentId]);
   const setMode = useCallback((mode: boolean) => {
     setState(previous => previous.documentId === documentId ? { ...previous, mode } : previous);
