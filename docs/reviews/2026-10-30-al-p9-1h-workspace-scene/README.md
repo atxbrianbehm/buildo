@@ -4,4 +4,4 @@ Construction fixture preparation can now verify and own supplemental fabric befo
 
 The [textured fixture study](workspace-fixture.png) renders the actual prepared construction fixture in isolated WebGL with procedural demo masonry, graph-generated awnings and independent striped fabric. It is not an editable app screenshot. The rigid canopy has no support arms or cloth deformation, and no historic dimensions are claimed. Reproduce with `node docs/reviews/2026-10-30-al-p9-1h-workspace-scene/render.mjs`.
 
-Focused scene and existing surface tests passed, including missing source and repeated disposal. Typecheck and lint passed. Full repository validation is pending.
+Focused scene and existing surface tests passed, including missing source and repeated disposal. Typecheck and lint passed. All five repository checks passed: 2,058 tests across 157 files, the standard browser smoke suite, typecheck, lint and build. The build retains its large-chunk warning.
