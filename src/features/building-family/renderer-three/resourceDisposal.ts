@@ -35,6 +35,7 @@ export function disposeBuildingSceneResources(
 
   // A scene releases its composite lease even when the shared family atlas stays alive.
   runtime.surfaceLease?.release();
+  runtime.awningFabricLease?.release();
   const shouldDisposeMaterials = options.disposeMaterials ?? true;
   const materialsDisposed = shouldDisposeMaterials ? runtime.materialRegistry.listMaterials().length : 0;
   if (shouldDisposeMaterials) {

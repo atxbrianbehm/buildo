@@ -2,6 +2,10 @@ import { DataTexture, LinearFilter, LinearMipmapLinearFilter, MeshStandardMateri
 import { ConstructionAwningFabricArtifactSchema } from "../contracts/constructionAwningFabric";
 import { readConstructionAwningFabric } from "../materials/constructionAwningFabric";
 
+export const CONSTRUCTION_AWNING_FABRIC_SLOT = "supplemental.awning.fabric";
+export type ConstructionAwningFabricRuntime = Awaited<ReturnType<typeof prepareConstructionAwningFabricRuntime>>;
+export type ConstructionAwningFabricLease = ReturnType<ConstructionAwningFabricRuntime["acquire"]>;
+
 /** Own a supplemental fabric separately from the building atlas. UVs are in metres. */
 export async function prepareConstructionAwningFabricRuntime(input: unknown) {
   const owned = structuredClone(ConstructionAwningFabricArtifactSchema.parse(input));
