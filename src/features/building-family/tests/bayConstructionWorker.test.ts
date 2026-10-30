@@ -1,7 +1,7 @@
 import { BayConstructionClient, type BayConstructionWorkerEndpoint } from "../compiler/bayConstructionClient";
 import { BayConstructionWorkerRequestSchema } from "../compiler/bayConstructionWorkerProtocol";
 import { evaluateBayConstruction } from "../compiler/evaluateBayConstruction";
-import { createBayConstructionGraph } from "../contracts/bayConstructionGraph";
+import { BayConstructionGraphSchema, createBayConstructionGraph } from "../contracts/bayConstructionGraph";
 import { createBuildingConstructionGraph } from "../contracts/bayConstructionGraph";
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { withConstructionOpeningWidth } from "../core/constructionOpeningEditGraph";
@@ -26,6 +26,18 @@ class Endpoint implements BayConstructionWorkerEndpoint {
   }
 }
 describe("owned construction worker client", () => {
+  it("sends round-head protocol 0.10 and accepts its compiled geometry", async () => {
+    const endpoint = new Endpoint(), client = new BayConstructionClient(endpoint);
+    const base = withConstructionParapetSilhouette(createBuildingConstructionGraph(), 0);
+    const graph = BayConstructionGraphSchema.parse({ ...base, schemaVersion: "0.10.0", nodes: base.nodes.map(node =>
+      node.type === "PlaceOpening" ? { ...node, parameters: { ...node.parameters, upperFrontRoundHead: 1 } } : node) });
+    const pending = client.evaluate(graph), request = BayConstructionWorkerRequestSchema.parse(endpoint.messages[0]);
+    expect(request.schemaVersion).toBe("0.10.0");
+    const result = await evaluateConstruction(request.graph);
+    endpoint.emit({ schemaVersion: "0.10.0", type: "bay-result", requestId: request.requestId, result });
+    expect(await pending).toEqual(result);
+    client.dispose(); expect(endpoint.terminated).toBe(1);
+  });
   it("sends parapet protocol 0.9 and accepts the compiled raised silhouette", async () => {
     const endpoint = new Endpoint(), client = new BayConstructionClient(endpoint);
     const graph = withConstructionParapetSilhouette(withConstructionCorniceLayout(createBuildingConstructionGraph(), 2), 1);

@@ -1430,7 +1430,7 @@ The [street-segment packet plan](authored-street-segment.md) maps the current fi
 
 On October 30 the user reviewed the family against five reference images and stated that substantially more architectural variety is needed. The [reference-led language plan](architectural-language-diversity.md) makes this the next independent building/family work: real round-headed upper openings first, then authored family composition and a verified metagrinder evidence bridge. The accepted family is a starting direction, not street-ready. These packets do not waive the Phase F gate or assert upstream architectural coverage.
 
-AL.P0 now defines a validated round-headed aperture and glazing plan with owned source and deterministic replay. Six focused tests, typecheck and lint pass; [evidence](../reviews/2026-10-30-al-p0-round-head/README.md). This does not yet alter compiled geometry or the product. AL.P1 is the next packet.
+AL.P0 defines a validated round-headed aperture and glazing plan with owned source and deterministic replay. Six focused tests, typecheck and lint pass; [evidence](../reviews/2026-10-30-al-p0-round-head/README.md). AL.P1 connects a versioned graph and worker to a curved masonry cut, reveal, instanced frame and glazing. Sixty focused tests, typecheck and lint pass; [evidence](../reviews/2026-10-30-al-p1-round-head-geometry/README.md). The new assembly is currently a simple framed pane; casement layouts reject explicitly. Product controls, sash detail, portable continuation and native rendered review are AL.P2, the next packet.
 
 ### C6 — architectural variety, then deeper assemblies and materials
 
