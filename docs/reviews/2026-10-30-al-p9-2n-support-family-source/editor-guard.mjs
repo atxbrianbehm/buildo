@@ -48,8 +48,8 @@ try {
   await writeFile(`${out}/supported-family.json`, JSON.stringify(supported));
   await page.getByRole("button", { name: "Return to building" }).click();
   await page.waitForFunction(() => document.querySelector('.construction-workspace:not([hidden])')?.dataset.constructionPreview !== "family", undefined, { timeout: 180000 }); await ready();
-  const priorHash = await hash(); await page.getByLabel("Open family file").setInputFiles(`${out}/supported-family.json`);
-  await root().getByRole("alert").filter({ hasText: /Families with awning supports cannot yet be opened/i }).waitFor({ timeout: 180000 });
-  assert.equal(await hash(), priorHash); assert.deepEqual(errors, []);
-  console.log(JSON.stringify({ familyVersion: supported.schemaVersion, members: supported.members.length, retainedBuilding: true, editorGuard: true })); await context.close();
+  await page.getByLabel("Open family file").setInputFiles(`${out}/supported-family.json`);
+  await page.waitForFunction(() => document.querySelector('.construction-workspace:not([hidden])')?.dataset.constructionPreview === "family", undefined, { timeout: 180000 }); await ready();
+  assert.deepEqual(await save("Save family", "reopened-supported"), supported); assert.deepEqual(errors, []);
+  console.log(JSON.stringify({ familyVersion: supported.schemaVersion, members: supported.members.length, reopened: true })); await context.close();
 } finally { await browser?.close(); await server.close(); }

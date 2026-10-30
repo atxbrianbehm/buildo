@@ -20,7 +20,7 @@ import { canonicalJson } from "../core/canonicalJson";
 import { planConstructionReferenceMaterials } from "../materials/constructionReferenceMaterials";
 import { resolveConstructionFamilyPlan } from "../core/constructionFamilyPlan";
 import { resolveConstructionFamily } from "../state/constructionFamilyGeneration";
-import { createConstructionFamilySource, readConstructionFamilySource, type ConstructionFamilyPayload } from "../state/constructionFamilySource";
+import { createConstructionFamilySource, readConstructionFamilySource, withUpdatedConstructionFamilyMembers, type ConstructionFamilyPayload } from "../state/constructionFamilySource";
 import { resolveConstructionFamilyComposition } from "../core/constructionFamilyComposition";
 import { parseBuildingSourceFile } from "../state/buildingSourceFile";
 import { defaultConstructionGenerationControls, resolveWorkbenchGeneration, rebindGenerationSurfaceSources, type ConstructionGenerationLineage } from "../state/constructionGenerationState";
@@ -476,7 +476,8 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
           sourceGraph: source.fixture.construction.graph, sourceGeneration: source.generation!, materialSource: source.materials.file,
           members: family.members.map(member => ({ documentId: member.documentId, graph: member.construction.graph, generation: member.lineage })) };
         if (composition?.schemaVersion === "0.5.0" && !source.materials.awningFabric) throw new Error("Awning variation requires its saved fabric source.");
-        familySource.current = composition?.schemaVersion === "0.5.0" ? { ...familyBase, schemaVersion: "0.9.0", awningFabric: source.materials.awningFabric!, initialComposition: composition }
+        familySource.current = familyBase.sourceGraph.schemaVersion === "0.14.0" && source.materials.awningFabric ? { ...familyBase, schemaVersion: "0.10.0", awningFabric: source.materials.awningFabric, ...(composition ? { initialComposition: composition } : {}) }
+          : composition?.schemaVersion === "0.5.0" ? { ...familyBase, schemaVersion: "0.9.0", awningFabric: source.materials.awningFabric!, initialComposition: composition }
           : source.materials.awningFabric ? { ...familyBase, schemaVersion: "0.8.0", awningFabric: source.materials.awningFabric, ...(composition ? { initialComposition: composition } : {}) }
           : composition?.schemaVersion === "0.4.0" ? { ...familyBase, schemaVersion: "0.7.0", initialComposition: composition }
           : composition?.schemaVersion === "0.3.0" ? { ...familyBase, schemaVersion: "0.6.0", initialComposition: composition }
@@ -493,14 +494,14 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   }
   const updateFamilyMember = useCallback((session: BayConstructionSession) => {
     const source = familySource.current, id = memberEditId.current;
-    if (!source || source.schemaVersion === "0.10.0" || !id || session.graph.documentId !== id || !session.generation || session.materials.file.contentHash !== source.materialSource.contentHash ||
-        session.materials.awningFabric?.contentHash !== (source.schemaVersion === "0.8.0" || source.schemaVersion === "0.9.0" ? source.awningFabric.contentHash : undefined)) return;
+    if (!source || !id || session.graph.documentId !== id || !session.generation || session.materials.file.contentHash !== source.materialSource.contentHash ||
+        session.materials.awningFabric?.contentHash !== (source.schemaVersion === "0.8.0" || source.schemaVersion === "0.9.0" || source.schemaVersion === "0.10.0" ? source.awningFabric.contentHash : undefined)) return;
     const currentMember = source.members.find(member => member.documentId === id);
     if (!currentMember) return;
     if (canonicalJson(currentMember.graph) !== canonicalJson(session.graph) || canonicalJson(currentMember.generation) !== canonicalJson(session.generation)) {
       const members = source.members.map(member => member.documentId === id
         ? { documentId: id, graph: session.graph, generation: session.generation! } : member);
-      familySource.current = session.graph.schemaVersion === "0.12.0" && source.schemaVersion !== "0.6.0" && source.schemaVersion !== "0.7.0" && source.schemaVersion !== "0.8.0" && source.schemaVersion !== "0.9.0" ? { ...source, schemaVersion: "0.5.0", members } : { ...source, members };
+      familySource.current = withUpdatedConstructionFamilyMembers(source, members);
       setFamilyDetails(familySource.current.members.map(member => describeFamilyMember(member.graph)));
       setFamilyDirty(true);
     }
@@ -559,9 +560,8 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       const isCurrent = () => alive.current && sequence.current === token && !signal.aborted && current.current === previous;
       const source = await readConstructionFamilySource(JSON.parse(await file.text()));
       if (!isCurrent()) return;
-      if (source.schemaVersion === "0.10.0") throw new Error("Families with awning supports cannot yet be opened here. The current building is retained.");
       const parsed = await parseBuildingSourceFile(source.materialSource);
-      const materials = { ...parsed, file: source.materialSource, ...(source.schemaVersion === "0.8.0" || source.schemaVersion === "0.9.0" ? { awningFabric: source.awningFabric } : {}) };
+      const materials = { ...parsed, file: source.materialSource, ...(source.schemaVersion === "0.8.0" || source.schemaVersion === "0.9.0" || source.schemaVersion === "0.10.0" ? { awningFabric: source.awningFabric } : {}) };
       if (!isCurrent()) return;
       compiler.current ??= new BayConstructionClient(new Worker(new URL("../compiler/bayConstruction.worker.ts", import.meta.url), { type: "module" }));
       const originalResult = await compiler.current.evaluate(source.sourceGraph);

@@ -34,7 +34,8 @@ try {
   await page.getByRole("button", { name: "Undo construction" }).click(); await changed(afterHash); assert.equal(await hash(), beforeHash);
   await page.getByRole("button", { name: "Redo construction" }).click(); await changed(beforeHash); assert.equal(await hash(), afterHash);
   await page.getByRole("button", { name: "Preview family" }).click();
-  await root().getByRole("alert").filter({ hasText: /Family generation cannot yet retain awning support choices/i }).waitFor({ timeout: 120000 }); assert.equal(await hash(), afterHash);
+  await page.waitForFunction(() => document.querySelector('.construction-workspace:not([hidden])')?.dataset.constructionPreview === "family", undefined, { timeout: 180000 }); await ready();
+  await page.getByRole("button", { name: "Return to building" }).click(); await page.waitForFunction(() => document.querySelector('.construction-workspace:not([hidden])')?.dataset.constructionPreview !== "family", undefined, { timeout: 180000 }); await ready(); assert.equal(await hash(), afterHash);
   await page.locator('[aria-label="Construction recovery"][data-construction-recovery="saved"]').waitFor({ timeout: 120000 });
   await page.close(); page = await context.newPage(); wire(); await page.goto(url, { waitUntil: "domcontentloaded", timeout: 120000 }); await root().waitFor({ timeout: 120000 }); await ready();
   assert.equal(await hash(), afterHash); assert.deepEqual(await save("recovered"), after);
