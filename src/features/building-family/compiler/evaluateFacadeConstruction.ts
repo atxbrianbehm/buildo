@@ -19,6 +19,7 @@ import { constructionFacePose, constructionFacadeSolid, constructionProfileRing,
 import { constructionSurfaceAt } from "./constructionSurfaceProgram";
 import { resolveConstructionRoundHead } from "../core/constructionRoundHead";
 import { buildConstructionRoundHeadSash, buildConstructionRoundHeadWindow } from "./constructionRoundHeadGeometry";
+import { buildConstructionSillSeat } from "./constructionOpeningTrimGeometry";
 import { readConstructionGroupedBay, resolveConstructionGroupedBay } from "../core/constructionGroupedBay";
 import { canonicalJson } from "../core/canonicalJson";
 
@@ -335,7 +336,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
           if (!cell.storefrontPlan && (p.frameWidthM * 4 >= Math.min(opening.widthM, opening.heightM) || p.recessM + 0.08 >= cell.scope.sizeM[2])) throw new Error(`Node ${node.id}: frame or recess does not fit the wall.`);
           const sillM = Math.round((opening.centerYM - cell.scope.originM[1] - opening.heightM / 2) * 1e9) / 1e9;
           const metricTimberUvs=Boolean(cell.building);
-          const key = JSON.stringify(opening.roundHead ? [opening.widthM, opening.heightM, sillM, cell.scope.sizeM, p, "round-head-v1"] : cell.storefrontPlan ? [opening.widthM, opening.heightM, sillM, cell.storefrontPlan.source.parameters, "storefront-seated-sill-v2", ...(graph.storefrontDivision && (graph.storefrontDivision.displayLights !== 1 || graph.storefrontDivision.transomLights !== 1) ? [graph.storefrontDivision] : [])] : cell.localOpeningWidth ? [opening.widthM,opening.heightM,sillM,p,"local-opening-solid-trim-v1"] : metricTimberUvs ? [opening.widthM, opening.heightM, sillM, p, "metric-timber-uv-closed-trim-v2"] : [opening.widthM, opening.heightM, sillM, p]);
+          const key = JSON.stringify(opening.roundHead ? [opening.widthM, opening.heightM, sillM, cell.scope.sizeM, p, "round-head-seated-v2"] : cell.storefrontPlan ? [opening.widthM, opening.heightM, sillM, cell.storefrontPlan.source.parameters, "storefront-seated-sill-v2", ...(graph.storefrontDivision && (graph.storefrontDivision.displayLights !== 1 || graph.storefrontDivision.transomLights !== 1) ? [graph.storefrontDivision] : [])] : cell.localOpeningWidth ? [opening.widthM,opening.heightM,sillM,p,"local-opening-seated-trim-v2"] : metricTimberUvs ? [opening.widthM, opening.heightM, sillM, p, "metric-timber-uv-seated-trim-v3"] : [opening.widthM, opening.heightM, sillM, p]);
           if (!templates.has(key)) templates.set(key, (async () => {
             if (opening.roundHead) {
               const actual = roundPlan(cell), source = structuredClone(actual.source);
@@ -349,7 +350,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
                 sill.uvs[i*2] = nx > .9 ? sill.positions[pos+2] - sill.bounds.min[2] : sill.positions[pos] - sill.bounds.min[0];
                 sill.uvs[i*2+1] = ny > .9 ? sill.positions[pos+2] - sill.bounds.min[2] : sill.positions[pos+1] - sill.bounds.min[1];
               }
-              const pieces = { frame: [geometry.frame, ...buildConstructionRoundHeadSash(plan, p.layout ?? 0)], glass: [geometry.glass], trim: [sill] };
+              const pieces = { frame: [geometry.frame, ...buildConstructionRoundHeadSash(plan, p.layout ?? 0)], glass: [geometry.glass], trim: [sill, buildConstructionSillSeat(opening.widthM, sillM, p.recessM)] };
               const batches = (["frame", "glass", "trim"] as const).map(role => {
                 const combined = combinePrimitiveGeometry(pieces[role].map(front));
                 return { batchId: "round-head." + role, role, materialSlotId: materials[role], positions: combined.positions, normals: combined.normals, uvs: combined.uvs, indices: combined.indices };

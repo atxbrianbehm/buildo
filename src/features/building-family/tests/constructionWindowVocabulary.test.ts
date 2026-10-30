@@ -12,7 +12,7 @@ import { setConstructionSurface } from "../core/constructionSurfaceAuthoring";
 const windowOf = (graph: ReturnType<typeof createBuildingConstructionGraph>) => graph.nodes.find(node => node.type === "AssembleWindow")!;
 describe("versioned procedural window vocabulary", () => {
   it("pins the corrected legacy-source compiler result and all original recipes", async () => {
-    expect(await hashCanonicalJson(await evaluateConstruction(createBuildingConstructionGraph()))).toBe("6d29b0a682efe0139bfe0016355bdc34ae0a914c1912a9bf01359ea4d4900691");
+    expect(await hashCanonicalJson(await evaluateConstruction(createBuildingConstructionGraph()))).toBe("3fa73210cad319eb1a5f3320fac9907af68a4cee766298c7bdc06961968a0c47");
     for (const [id,hash] of [["restrained-masonry-rectangular","49ea533925dba5b5b0a59612bc8449685dc84437f990e2388f80acd946766add"],["deep-reveal-masonry","36a9abd965c3325b5aee39f38c8d6ddb8fccbc884b55005ecf6b00a8fbfcf3c3"],["projecting-cornice-masonry","c3f453f7f39c52cdae80e08d7b48635a1f2de1980fd45f4db5bda4841714dee3"]])
       expect((await constructionRecipeReference(id)).contentHash).toBe(hash);
   });

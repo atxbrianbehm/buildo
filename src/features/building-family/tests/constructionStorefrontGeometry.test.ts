@@ -70,7 +70,7 @@ describe("procedural storefront compiler", () => {
       expect(result.prototypes).toEqual(old.prototypes);
       expect(result.ir.semanticIndex).toEqual(old.ir.semanticIndex);
     }
-    expect(await hashCanonicalJson(await evaluateConstruction(createBuildingConstructionGraph()))).toBe("6d29b0a682efe0139bfe0016355bdc34ae0a914c1912a9bf01359ea4d4900691");
+    expect(await hashCanonicalJson(await evaluateConstruction(createBuildingConstructionGraph()))).toBe("3fa73210cad319eb1a5f3320fac9907af68a4cee766298c7bdc06961968a0c47");
   });
 
   it("builds three shared display bays and one glazed door without duplicate semantic assemblies", async () => {

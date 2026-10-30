@@ -5,7 +5,7 @@ import type { BuildingSurfaceComposition } from "../contracts/surfaceComposition
 import { expandBayWallPrimitives, MIN_FACADE_PIER_WIDTH_M, type FacadeBayScope } from "./facadeWallSubdivision";
 import { buildBayWindowGeometry } from "./bayWindowGeometry";
 import { extrudeProfileSolidAlongX } from "./profileSweepGeometry";
-import { extrudeConstructionOpeningTrim } from "./constructionOpeningTrimGeometry";
+import { buildConstructionSillSeat, extrudeConstructionOpeningTrim } from "./constructionOpeningTrimGeometry";
 import { combinePrimitiveGeometry, emptyBounds, expandBounds,
   type Bounds3, type PrimitiveGeometry } from "./primitiveGeometry";
 
@@ -147,7 +147,7 @@ export async function evaluateBayConstruction(
         value = { kind: "geometry", parts: [
           makePart(node.id, "frame", materials.frame, frame, "openings"),
           makePart(node.id, "glass", materials.glass, glass, "openings"),
-          makePart(node.id, "trim", materials.trim, [sill, lintel], "trim")
+          makePart(node.id, "trim", materials.trim, [sill, lintel, ...(options.metricTimberUvs && options.closedOpeningTrim ? [buildConstructionSillSeat(opening.widthM, opening.centerYM - opening.heightM / 2, recessM)] : [])], "trim")
         ] };
         break;
       }

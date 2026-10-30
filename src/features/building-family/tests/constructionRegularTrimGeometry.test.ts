@@ -39,7 +39,8 @@ describe("regular whole-building opening trim", () => {
       }
       expect([...edges.values()].every(count => count === 2)).toBe(true);
       for (const cap of caps) expect(cap).toBeCloseTo(sectionArea, 7);
-      expect(volume).toBeCloseTo(sectionArea * (right - left), 7);
+      const seatVolume = (right - left - 0.2) * 0.02 * p.recessM;
+      expect(volume).toBeCloseTo(sectionArea * (right - left) + seatVolume, 7);
     }
   });
 });

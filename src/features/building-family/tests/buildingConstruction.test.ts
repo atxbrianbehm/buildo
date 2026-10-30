@@ -10,15 +10,16 @@ function expectRetainedWindowGeometry(actual: NonNullable<Awaited<ReturnType<typ
     expect(actual.positions).toEqual(previous.positions); expect(actual.normals).toEqual(previous.normals); expect(actual.indices).toEqual(previous.indices);
     return;
   }
-  // The whole-building cap topology is repaired; retain its exact exterior profile.
+  // The exterior profiles remain exact; the added seat extends inside the reveal.
   const exterior = (part: typeof actual) => [...new Set([...part.positions!].flatMap((_, i) =>
-    i % 3 === 0 && Math.abs(part.normals![i]) < .9 && part.positions![i + 2] !== 0
+    i % 3 === 0 && Math.abs(part.normals![i]) < .9 && part.positions![i + 2] < 0
       ? [`${part.positions![i + 1]},${part.positions![i + 2]}`] : []))].sort();
   expect(exterior(actual)).toEqual(exterior(previous));
   for (const axis of [0, 1, 2]) {
     const values = (part: typeof actual) => [...part.positions!].filter((_, i) => i % 3 === axis);
     expect(Math.min(...values(actual))).toBe(Math.min(...values(previous)));
-    expect(Math.max(...values(actual))).toBe(Math.max(...values(previous)));
+    if (axis !== 2) expect(Math.max(...values(actual))).toBe(Math.max(...values(previous)));
+    else expect(Math.max(...values(actual))).toBeGreaterThan(Math.max(...values(previous)));
   }
   expect(actual.indices!.length).toBeGreaterThan(previous.indices!.length);
 }
