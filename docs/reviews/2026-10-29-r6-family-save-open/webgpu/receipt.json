@@ -1,0 +1,21 @@
+{
+  "backend": "webgpu",
+  "familyHash": "61400c895a4e58800dbc9f43a36b8025963ba640ec07b19a7f26e94f549ddcd2",
+  "resavedFamilyHash": "61400c895a4e58800dbc9f43a36b8025963ba640ec07b19a7f26e94f549ddcd2",
+  "memberIds": [
+    "preview_family_v01",
+    "preview_family_v02",
+    "preview_family_v03",
+    "preview_family_v04",
+    "preview_family_v05",
+    "preview_family_v06"
+  ],
+  "materialHash": "3feae06c59d16ea57029d815b13900184c8cb94b29369c58fe806168e3ee2d9c",
+  "originHash": "d60505da39b6b294668f844c5163af244e0b12fac9b2da094f0faa53a4edf49a",
+  "restoredHash": "d60505da39b6b294668f844c5163af244e0b12fac9b2da094f0faa53a4edf49a",
+  "coldHash": "d60505da39b6b294668f844c5163af244e0b12fac9b2da094f0faa53a4edf49a",
+  "providerCallsBefore": 24,
+  "providerCallsAfter": 24,
+  "invalidRetained": true,
+  "errors": []
+}

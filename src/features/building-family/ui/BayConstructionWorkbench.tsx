@@ -12,6 +12,8 @@ import { canonicalJson } from "../core/canonicalJson";
 import { planConstructionReferenceMaterials } from "../materials/constructionReferenceMaterials";
 import { resolveConstructionFamilyPlan } from "../core/constructionFamilyPlan";
 import { resolveConstructionFamily } from "../state/constructionFamilyGeneration";
+import { createConstructionFamilySource, readConstructionFamilySource, type ConstructionFamilySource } from "../state/constructionFamilySource";
+import { parseBuildingSourceFile } from "../state/buildingSourceFile";
 import { defaultConstructionGenerationControls, resolveWorkbenchGeneration, rebindGenerationSurfaceSources, type ConstructionGenerationLineage } from "../state/constructionGenerationState";
 import { ConstructionGenerationPanel } from "./ConstructionGenerationPanel";
 import { ZodError } from "zod";
@@ -95,13 +97,14 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   const [previewNode, setPreviewNode] = useState<string | null>(null);
   const [familyPreview, setFamilyPreview] = useState(false);
   const [familySeed, setFamilySeed] = useState("building-family-1");
+  const familySource = useRef<Omit<ConstructionFamilySource, "contentHash"> | null>(null);
   const shown = useRef<BayConstructionFixture | null>(null);
   const alive = useRef(false), sequence = useRef(0), abort = useRef<AbortController | null>(null);
   const compiler = useRef<BayConstructionClient | null>(null);
   const current = useRef<{ fixture: BayConstructionFixture; materials: BayConstructionMaterials; generation: ConstructionGenerationLineage | null } | null>(null);
   const owners = useRef(new Map<AssemblyHallFixture, Owner>());
   const viewer = useRef<BuildingFixtureViewerPreparer | null>(null);
-  const fileInput = useRef<HTMLInputElement>(null), downloads = useRef(new Map<string, number>());
+  const fileInput = useRef<HTMLInputElement>(null), familyInput = useRef<HTMLInputElement>(null), downloads = useRef(new Map<string, number>());
 
   const chooseFrame = useCallback((path: string | null) => {
     if (selectedFrameRef.current !== path) { selectedFrameRef.current = path; setSelectedFrame(path); setOpeningDirty(false); }
@@ -167,6 +170,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       if (nextGeneration) setGenerationControls(controls => ({ ...controls, ...controlsFrom(nextGeneration) }));
       setPreviewNode(null);
       setFamilyPreview(false);
+      familySource.current = null;
       setAccepted(candidate); setDraft(result.graph); setFields(fieldsFor(result.graph));
       setSelected(id => result.graph.nodes.some(node => node.id === id) ? id : result.graph.nodes[0].id);
       setDirty(false); setOpeningDirty(false); setError(null);
@@ -315,7 +319,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         if (viewer.current) prepared = await viewer.current(candidate, { signal });
         if (!isCurrent()) { prepared?.discard(); if (id) retire(candidate); return; }
         const finalize = prepared?.commit(), previous = shown.current;
-        shown.current = candidate; setAccepted(candidate); setPreviewNode(id); setFamilyPreview(false);
+        shown.current = candidate; setAccepted(candidate); setPreviewNode(id); setFamilyPreview(false); familySource.current = null;
         if (previous && previous !== source.fixture && previous !== candidate) retire(previous);
         finalize?.();
       } catch (failure) { prepared?.discard(); if (id) retire(candidate); throw failure; }
@@ -339,9 +343,71 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         if (!isCurrent()) { prepared?.discard(); retire(candidate); return; }
         const finalize = prepared?.commit(), previous = shown.current;
         shown.current = candidate; setAccepted(candidate); setPreviewNode(null); setFamilyPreview(true); chooseFrame(null);
+        familySource.current = { schemaVersion: "0.2.0", kind: "construction-family-source", familyId: plan.source.familyId,
+          sourceDocumentId: source.fixture.construction.graph.documentId, familySeed: plan.source.familySeed,
+          sourceGraph: source.fixture.construction.graph, sourceGeneration: source.generation!, materialSource: source.materials.file,
+          members: family.members.map(member => ({ documentId: member.documentId, graph: member.construction.graph, generation: member.lineage })) };
         if (previous && previous !== source.fixture && previous !== candidate) retire(previous);
         finalize?.();
       } catch (failure) { prepared?.discard(); retire(candidate); throw failure; }
+    });
+  }
+  function downloadJson(value: unknown, filename: string) {
+    const url = URL.createObjectURL(new Blob([JSON.stringify(value, null, 2)], { type: "application/json" }));
+    const link = document.createElement("a"); link.href = url; link.download = filename;
+    document.body.appendChild(link); link.click(); link.remove();
+    const timer = window.setTimeout(() => { URL.revokeObjectURL(url); downloads.current.delete(url); }, 1500);
+    downloads.current.set(url, timer);
+  }
+  async function saveFamily() {
+    const snapshot = familySource.current;
+    if (!snapshot) return;
+    setSaving(true); setError(null);
+    try {
+      const file = await createConstructionFamilySource(snapshot);
+      if (alive.current && familySource.current === snapshot) downloadJson(file, `${file.familyId}.buildo-family.json`);
+    } catch (failure) { if (alive.current && familySource.current === snapshot) setError(problem(failure)); }
+    finally { if (alive.current) setSaving(false); }
+  }
+  async function openFamily(file: File) {
+    await perform(async (token, signal) => {
+      const previous = current.current;
+      const isCurrent = () => alive.current && sequence.current === token && !signal.aborted && current.current === previous;
+      const source = await readConstructionFamilySource(JSON.parse(await file.text()));
+      if (!isCurrent()) return;
+      const parsed = await parseBuildingSourceFile(source.materialSource);
+      const materials = { ...parsed, file: source.materialSource };
+      if (!isCurrent()) return;
+      compiler.current ??= new BayConstructionClient(new Worker(new URL("../compiler/bayConstruction.worker.ts", import.meta.url), { type: "module" }));
+      const originalResult = await compiler.current.evaluate(source.sourceGraph);
+      if (!isCurrent()) return;
+      const results = [];
+      for (const member of source.members) { results.push(await compiler.current.evaluate(member.graph)); if (!isCurrent()) return; }
+      let original: BayConstructionFixture | undefined, candidate: BayConstructionFixture | undefined;
+      let prepared: PreparedBuildingFixtureView | undefined;
+      try {
+        original = await prepareBayConstructionFixture(base, originalResult, materials, signal);
+        if (!isCurrent()) { original.familyRuntime.dispose(); return; }
+        owners.current.set(original, { fixture: original, leases: 0, retired: false });
+        candidate = await prepareConstructionFamilyFixture(base, results, materials, signal);
+        if (!isCurrent()) { candidate.familyRuntime.dispose(); retire(original); return; }
+        owners.current.set(candidate, { fixture: candidate, leases: 0, retired: false });
+        if (viewer.current) prepared = await viewer.current(candidate, { signal });
+        if (!isCurrent()) { prepared?.discard(); retire(candidate); retire(original); return; }
+        const finalize = prepared?.commit(), previousShown = shown.current;
+        current.current = { fixture: original, materials, generation: source.sourceGeneration };
+        shown.current = candidate; setAccepted(candidate); setDraft(source.sourceGraph); setFields(fieldsFor(source.sourceGraph));
+        setSelected(source.sourceGraph.nodes[0].id); setGeneration(source.sourceGeneration);
+        setGenerationControls(controls => ({ ...controls, ...controlsFrom(source.sourceGeneration) }));
+        setFamilySeed(source.familySeed); setPreviewNode(null); setFamilyPreview(true); chooseFrame(null);
+        setDirty(false); setOpeningDirty(false); setError(null); referenceSequence.current++; setReferenceDraft(null);
+        const { contentHash: _hash, ...payload } = source; void _hash; familySource.current = payload;
+        history.record(source.sourceGraph, materials.file.contentHash, true, source.sourceGeneration);
+        onSessionChange({ graph: source.sourceGraph, materials, history: history.snapshot(), generation: source.sourceGeneration });
+        if (previous) retire(previous.fixture);
+        if (previousShown && previousShown !== previous?.fixture) retire(previousShown);
+        finalize?.();
+      } catch (failure) { prepared?.discard(); if (candidate) retire(candidate); if (original) retire(original); throw failure; }
     });
   }
   async function save() {
@@ -351,12 +417,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     try {
       const project = await createBayConstructionProject(source.fixture.construction.graph, source.materials.file, source.generation ?? undefined);
       if (!alive.current || current.current !== source) return;
-      const url = URL.createObjectURL(new Blob([JSON.stringify(project, null, 2)], { type: "application/json" }));
-      const link = document.createElement("a");
-      link.href = url; link.download = `${project.graph.documentId}.buildo-construction.json`;
-      document.body.appendChild(link); link.click(); link.remove();
-      const timer = window.setTimeout(() => { URL.revokeObjectURL(url); downloads.current.delete(url); }, 1500);
-      downloads.current.set(url, timer);
+      downloadJson(project, `${project.graph.documentId}.buildo-construction.json`);
     } catch (failure) { if (alive.current) setError(problem(failure)); }
     finally { if (alive.current) setSaving(false); }
   }
@@ -531,6 +592,10 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         <div className="control-panel__fields"><label><span>Family seed</span><input aria-label="Family seed" value={familySeed} disabled={pending || saving || familyPreview} onChange={event => setFamilySeed(event.currentTarget.value)} /></label></div>
         <div className="control-panel__actions">{familyPreview ? <button type="button" disabled={pending || saving || !viewerReady} onClick={() => void preview(null)}>Return to building</button>
           : <button type="button" disabled={disabled || dirty || !viewerReady || !generation || Boolean(previewNode) || !familySeed.trim()} onClick={() => void previewFamily()}>Preview family</button>}</div>
+        <div className="control-panel__actions"><button type="button" disabled={pending || saving || !familyPreview} onClick={() => void saveFamily()}>Save family</button>
+          <button type="button" disabled={pending || saving || dirty || !viewerReady} onClick={() => familyInput.current?.click()}>Open family</button>
+          <input ref={familyInput} type="file" accept=".json,application/json" hidden aria-label="Open family file"
+            onChange={event => { const file = event.currentTarget.files?.[0]; event.currentTarget.value = ""; if (file) void openFamily(file); }} /></div>
         {!generation ? <p>Generate the building once to pin its reference and material source.</p> : null}
       </section> : null}
 
