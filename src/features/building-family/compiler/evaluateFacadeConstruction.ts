@@ -18,7 +18,7 @@ import { constructionFacePose, constructionFacadeSolid, constructionProfileRing,
 import { constructionSurfaceAt } from "./constructionSurfaceProgram";
 import { resolveConstructionRoundHead } from "../core/constructionRoundHead";
 import { buildConstructionRoundHeadSash, buildConstructionRoundHeadWindow } from "./constructionRoundHeadGeometry";
-import { readConstructionGroupedBay } from "../core/constructionGroupedBay";
+import { readConstructionGroupedBay, resolveConstructionGroupedBay } from "../core/constructionGroupedBay";
 import { canonicalJson } from "../core/canonicalJson";
 
 type Cell = { localOpeningWidth?: boolean; storefrontPlan?: ConstructionStorefrontPlan; root: string; key: string; floorSplit: boolean; baySplit: boolean; scope: FacadeBayScope; face?: "front" | "right" | "rear" | "left"; pose?: ConstructionFacePose; building?: ConstructionBuilding };
@@ -55,13 +55,14 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
   previewNodeId?: string, groupedInput: readonly unknown[] = []): Promise<BayConstructionResult> {
   const graph = structuredClone(BayConstructionGraphSchema.parse(input));
   const grouped = groupedInput.map(readConstructionGroupedBay);
+  if (grouped.length && graph.upperBayGroups?.length) throw new Error("Use the graph grouping or an explicit experimental request, not both.");
   const groupedByScope = new Map(grouped.map(plan => [plan.source.scope.id, plan]));
   if (groupedByScope.size !== grouped.length) throw new Error("Grouped bay scope IDs must be unique.");
   const usedGroups = new Set<string>();
-  if (grouped.length && (graph.nodes.filter(node => node.type === "PlaceOpening" && !node.bypassed).length !== 1 ||
+  if ((grouped.length || graph.upperBayGroups?.length) && (graph.nodes.filter(node => node.type === "PlaceOpening" && !node.bypassed).length !== 1 ||
       graph.nodes.filter(node => node.type === "AssembleWindow" && !node.bypassed).length !== 1))
     throw new Error("Grouped bays require one active opening and window assembly.");
-  if (!["0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0"].includes(graph.schemaVersion)) throw new Error("Facade construction requires graph version 0.2.0 or 0.3.0.");
+  if (!["0.2.0", "0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0"].includes(graph.schemaVersion)) throw new Error("Facade construction requires a supported graph version.");
   const nodes = new Map(graph.nodes.map(node => [node.id, node]));
   if (previewNodeId && !nodes.has(previewNodeId)) throw new Error("The preview node is missing.");
   const values = new Map<string, Promise<Value>>(), trace: BayConstructionTrace[] = [];
@@ -266,6 +267,19 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
           scope.opening = { kind: "window", widthM, heightM, centerAlongM: scope.originM[0] + scope.sizeM[0] / 2, centerYM: scope.originM[1] + sillM + heightM / 2,
             ...(node.parameters.upperFrontRoundHead && face === "front" && scope.floorIndex > 0 ? { roundHead: true } : {}) };
         }
+        for (const directive of graph.upperBayGroups ?? []) {
+          const matches = cells.filter(cell => cell.root === directive.storeysNodeId && cell.face === "front" &&
+            cell.scope.floorIndex === directive.floorIndex && cell.scope.bayIndex === directive.bayIndex);
+          if (matches.length !== 1 || node.bypassed) throw new Error("The authored grouped bay no longer exists in the opening scopes.");
+          const cell = matches[0], window = graph.nodes.find(item => item.type === "AssembleWindow" && !item.bypassed);
+          if (!cell.building || window?.type !== "AssembleWindow") throw new Error("Grouped bays require a building and active window assembly.");
+          const plan = resolveConstructionGroupedBay({ schemaVersion: "0.1.0", kind: "construction-grouped-bay-request",
+            scope: { id: cell.key, face: "front", floorIndex: cell.scope.floorIndex, bayIndex: cell.scope.bayIndex,
+              originM: cell.scope.originM, sizeM: cell.scope.sizeM },
+            parameters: { memberCount: directive.memberCount, memberWidthM: directive.memberWidthM, pierWidthM: directive.pierWidthM,
+              heightM, sillM, frameWidthM: window.parameters.frameWidthM, recessM: window.parameters.recessM } });
+          grouped.push(plan); groupedByScope.set(cell.key, plan);
+        }
         const expanded = cells.flatMap(cell => {
           const plan = groupedByScope.get(cell.key);
           if (!plan || node.bypassed) return [cell];
@@ -301,7 +315,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
       }
       case "EmitWall": {
         const cells = await scopes(node.input.nodeId);
-        if (["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0"].includes(graph.schemaVersion) && cells.every(cell=>cell.building)) {
+        if (["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0"].includes(graph.schemaVersion) && cells.every(cell=>cell.building)) {
           const faces = new Map<string,Cell[]>(); for(const cell of cells) faces.set(cell.root,[...(faces.get(cell.root)??[]),cell]);
           value = { kind: "geometry", parts: node.bypassed ? [] : [...faces.values()].map(group=>{
             const cell={...group[0],key:group[0].root},part=makeMesh(node,cell,"wall",[constructionFacadeSolid(group.map(cell=>cell.scope),group.filter(cell=>cell.scope.opening?.roundHead).map(roundPlan))],"facade",materials.wall);
@@ -480,7 +494,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
     materialSlotId: group[0].prototype!.materialSlotId!, count: group.length,
     transforms: new Float32Array(group.flatMap(part => poseMatrix(part.translation!,part.pose))) }));
   const ir = RuntimeBuildingIRSchema.parse({ schemaVersion: "0.1.0", buildingId: graph.documentId, familyId: graph.documentId,
-    sourceGraphHash: await hashCanonicalJson(grouped.length ? { schemaVersion: "0.1.0", kind: "construction-grouped-geometry-request", graph, groups: grouped } : graph), bounds: union(parts.map(p => p.bounds)), meshBatches, instanceBatches, semanticIndex,
+    sourceGraphHash: await hashCanonicalJson(groupedInput.length ? { schemaVersion: "0.1.0", kind: "construction-grouped-geometry-request", graph, groups: grouped } : graph), bounds: union(parts.map(p => p.bounds)), meshBatches, instanceBatches, semanticIndex,
     metrics: { vertexCount: [...meshBatches, ...prototypes.values()].reduce((sum, batch) => sum + batch.positions!.length / 3, 0),
       triangleCount: parts.reduce((sum, part) => sum + (part.mesh ?? part.prototype)!.indices!.length / 3, 0),
       instanceCount: instanceBatches.reduce((sum, batch) => sum + batch.count, 0) } });

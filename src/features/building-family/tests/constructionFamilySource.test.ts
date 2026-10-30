@@ -11,6 +11,8 @@ import { createAssemblyHallFixture } from "../ui/assemblyHallFixture";
 import { createReferenceConstructionMaterials } from "../ui/bayConstructionFixture";
 import { defaultBuildingPromptControls } from "../state/buildingStore";
 import { ProceduralMaterialProvider } from "../materials/providers/proceduralMaterialProvider";
+import { withConstructionGroupedBays } from "../core/constructionGroupedBayGraph";
+import { evaluateConstruction } from "../compiler/evaluateConstruction";
 
 describe("persistent construction family source", () => {
   it("owns, validates and round-trips six independent graphs with one shared material artifact", async () => {
@@ -46,6 +48,13 @@ describe("persistent construction family source", () => {
         const project = await createBayConstructionProject(member.graph, restored.materialSource, member.generation);
         expect(project.materialSource.contentHash).toBe(restored.materialSource.contentHash);
       }
+      const groupedMembers = saved.members.map((member, index) => index === 0 ? { ...member, graph: withConstructionGroupedBays(member.graph,
+        [{ storeysNodeId: "facade", floorIndex: 1, bayIndex: 0, memberCount: 2, memberWidthM: 0.55, pierWidthM: 0.24 }]) } : member);
+      const groupedFamily = await createConstructionFamilySource({ ...input, familySeed: "seed", members: groupedMembers });
+      const reopenedGrouped = await readConstructionFamilySource(JSON.parse(JSON.stringify(groupedFamily)));
+      expect(reopenedGrouped.members[0].graph.upperBayGroups).toEqual(groupedMembers[0].graph.upperBayGroups);
+      expect(reopenedGrouped.materialSource).toEqual(saved.materialSource);
+      expect((await evaluateConstruction(reopenedGrouped.members[0].graph)).ir.semanticIndex.some(entry => entry.semanticPath.includes("/bay/0/opening/0/frame"))).toBe(true);
       const corrupted = structuredClone(saved); corrupted.familySeed = "tampered";
       await expect(readConstructionFamilySource(corrupted)).rejects.toThrow(/content does not match/);
       const mismatch = structuredClone(saved); mismatch.members[0].documentId = mismatch.members[1].documentId;

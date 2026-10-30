@@ -1,0 +1,7 @@
+# Grouped-bay graph integration notes
+
+The P5.1 compiler request contains absolute scope dimensions; copying that plan into an editable project would leave it stale after footprint or storey edits. P5.2 instead stores a bounded grouping directive addressed by front facade, floor and parent bay, with member count, width and pier dimensions. It rebuilds the placement from the evaluated scope, opening height/sill and active frame/recess, with stable member paths and rejection of impossible fit, removed scopes, round-headed targets and ambiguous parent-bay width overrides.
+
+Graph and worker format migration, project and family source admission, and legacy geometry parity are covered by this packet. Family source can store a grouped member, but generation and reroll reject grouped graphs until they can preserve the directives. Do not silently lose a grouping during future generation, dimensional edits or opening-lock handling.
+
+The current local selection target identifies a parent bay, not an individual group member. Until member-specific editing is implemented, keep those members out of the existing local-width picker or reject the operation with an actionable message; do not let multiple children resolve to the same target. Preserve the selected member's other semantic data and materials. The authoring packet must prove both renderer paths, histories, save/open and material isolation using real app output; a compiler clay render alone is insufficient.

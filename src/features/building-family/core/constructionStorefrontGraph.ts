@@ -21,7 +21,7 @@ function topology(graph: BayConstructionGraph) {
 export function withConstructionStorefront(input: unknown, mode: 0 | 1): BayConstructionGraph {
   const original = BayConstructionGraphSchema.parse(input);
   if (mode !== 0 && mode !== 1) throw new Error("Choose a supported ground frontage.");
-  if (["0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0"].includes(original.schemaVersion)) {
+  if (["0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0"].includes(original.schemaVersion)) {
     const graph = structuredClone(original), node = graph.nodes.find(item => item.id === "frontage");
     if (node?.type !== "PlaceStorefront") throw new Error("The registered frontage operator is missing.");
     node.parameters.mode = mode;
@@ -44,7 +44,7 @@ export function constructionHasStorefront(graph: BayConstructionGraph): boolean 
 /** Keep authored frontage over an immutable recipe, or explicitly release to punched openings. */
 export function retainConstructionStorefront(currentInput: unknown, generatedInput: unknown, preserve: boolean) {
   const current = BayConstructionGraphSchema.parse(currentInput);
-  if (!["0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0"].includes(current.schemaVersion)) return BayConstructionGraphSchema.parse(generatedInput);
+  if (!["0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0"].includes(current.schemaVersion)) return BayConstructionGraphSchema.parse(generatedInput);
   const graph = withConstructionStorefront(generatedInput, 0);
   if (preserve) {
     const authored = current.nodes.find(node => node.id === "frontage" && node.type === "PlaceStorefront");
