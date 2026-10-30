@@ -38,7 +38,11 @@ const memberFabricPayload = z.object({ schemaVersion: z.literal("0.11.0"), ...co
   initialComposition: z.union([ConstructionFamilyCompositionPlanV1Schema, ConstructionFamilyCompositionPlanV2Schema, ConstructionFamilyCompositionPlanV3Schema, ConstructionFamilyCompositionPlanV4Schema, ConstructionFamilyCompositionPlanV5Schema]).optional() }).strict();
 const entrancePayload = z.object({ schemaVersion: z.literal("0.12.0"), ...common, initialComposition: ConstructionFamilyCompositionPlanV6Schema,
   awningFabric: ConstructionAwningFabricArtifactSchema.optional(), fabricAssignments: ConstructionFamilyFabricAssignmentsSchema.optional() }).strict();
-const payload = z.discriminatedUnion("schemaVersion", [legacyPayload, composedPayload, groupedPayload, dividedPayload, variedStorefrontPayload, massingPayload, awningPayload, variedAwningPayload, supportPayload, memberFabricPayload, entrancePayload]);
+const pierPayload = z.object({ schemaVersion: z.literal("0.13.0"), ...common,
+  initialComposition: z.union([ConstructionFamilyCompositionPlanV1Schema, ConstructionFamilyCompositionPlanV2Schema, ConstructionFamilyCompositionPlanV3Schema,
+    ConstructionFamilyCompositionPlanV4Schema, ConstructionFamilyCompositionPlanV5Schema, ConstructionFamilyCompositionPlanV6Schema]).optional(),
+  awningFabric: ConstructionAwningFabricArtifactSchema.optional(), fabricAssignments: ConstructionFamilyFabricAssignmentsSchema.optional() }).strict();
+const payload = z.discriminatedUnion("schemaVersion", [legacyPayload, composedPayload, groupedPayload, dividedPayload, variedStorefrontPayload, massingPayload, awningPayload, variedAwningPayload, supportPayload, memberFabricPayload, entrancePayload, pierPayload]);
 const json = z.unknown().superRefine((value, context) => { const issue = findBuildingDocumentJsonIssue(value);
   if (issue) context.addIssue({ code: "custom", path: issue.path, message: issue.message }); });
 export const ConstructionFamilySourceSchema = json.pipe(z.discriminatedUnion("schemaVersion", [
@@ -52,41 +56,44 @@ export const ConstructionFamilySourceSchema = json.pipe(z.discriminatedUnion("sc
   variedAwningPayload.extend({ contentHash: z.string().regex(/^[a-f0-9]{64}$/) }).strict(),
   supportPayload.extend({ contentHash: z.string().regex(/^[a-f0-9]{64}$/) }).strict(),
   memberFabricPayload.extend({ contentHash: z.string().regex(/^[a-f0-9]{64}$/) }).strict(),
-  entrancePayload.extend({ contentHash: z.string().regex(/^[a-f0-9]{64}$/) }).strict()
+  entrancePayload.extend({ contentHash: z.string().regex(/^[a-f0-9]{64}$/) }).strict(),
+  pierPayload.extend({ contentHash: z.string().regex(/^[a-f0-9]{64}$/) }).strict()
 ]));
 export type ConstructionFamilySource = z.infer<typeof ConstructionFamilySourceSchema>;
 export type ConstructionFamilyPayload = z.infer<typeof payload>;
 
 function requireBuildingGraph(graph: z.infer<typeof BayConstructionGraphSchema>) {
-  if (!["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0", "0.14.0"].includes(graph.schemaVersion))
+  if (!["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0", "0.14.0", "0.15.0"].includes(graph.schemaVersion))
     throw new Error("Family buildings must use a whole-building graph version that supports generation lineage.");
   if (!constructionUsesOperator(graph, "Footprint") || !constructionUsesOperator(graph, "Storeys") || !constructionUsesOperator(graph, "EmitWall"))
     throw new Error("Family buildings must retain a connected whole-building graph.");
 }
 
 async function validate(source: z.infer<typeof payload>) {
-  if (source.schemaVersion === "0.3.0" || source.schemaVersion === "0.4.0" || source.schemaVersion === "0.6.0" || source.schemaVersion === "0.7.0" || source.schemaVersion === "0.9.0" || source.schemaVersion === "0.12.0" || (source.schemaVersion === "0.5.0" || source.schemaVersion === "0.8.0" || source.schemaVersion === "0.10.0" || source.schemaVersion === "0.11.0") && source.initialComposition) {
+  if (source.schemaVersion === "0.3.0" || source.schemaVersion === "0.4.0" || source.schemaVersion === "0.6.0" || source.schemaVersion === "0.7.0" || source.schemaVersion === "0.9.0" || source.schemaVersion === "0.12.0" || (source.schemaVersion === "0.5.0" || source.schemaVersion === "0.8.0" || source.schemaVersion === "0.10.0" || source.schemaVersion === "0.11.0" || source.schemaVersion === "0.13.0") && source.initialComposition) {
     const composition = readConstructionFamilyCompositionPlan(source.initialComposition);
     if (composition.source.familySeed !== source.familySeed) throw new Error("Family composition must retain the family seed.");
   }
   if (source.schemaVersion === "0.8.0" || source.schemaVersion === "0.9.0" || source.schemaVersion === "0.10.0" || source.schemaVersion === "0.11.0") await readConstructionAwningFabric(source.awningFabric);
-  if (source.schemaVersion === "0.12.0" && source.awningFabric) await readConstructionAwningFabric(source.awningFabric);
-  if (source.schemaVersion === "0.12.0" && !source.awningFabric && (source.fabricAssignments || [source.sourceGraph, ...source.members.map(member => member.graph)].some(graph => graph.schemaVersion === "0.13.0" || graph.schemaVersion === "0.14.0")))
+  if ((source.schemaVersion === "0.12.0" || source.schemaVersion === "0.13.0") && source.awningFabric) await readConstructionAwningFabric(source.awningFabric);
+  if ((source.schemaVersion === "0.12.0" || source.schemaVersion === "0.13.0") && !source.awningFabric && (source.fabricAssignments || [source.sourceGraph, ...source.members.map(member => member.graph)].some(graph => graph.schemaVersion === "0.13.0" || graph.schemaVersion === "0.14.0" || graph.schemaVersion === "0.15.0" && graph.awnings)))
     throw new Error("Awning family graphs and assignments require their inherited fabric.");
-  if (source.schemaVersion !== "0.8.0" && source.schemaVersion !== "0.9.0" && source.schemaVersion !== "0.10.0" && source.schemaVersion !== "0.11.0" && source.schemaVersion !== "0.12.0" && [source.sourceGraph, ...source.members.map(member => member.graph)].some(graph => graph.schemaVersion === "0.13.0"))
+  if (source.schemaVersion !== "0.8.0" && source.schemaVersion !== "0.9.0" && source.schemaVersion !== "0.10.0" && source.schemaVersion !== "0.11.0" && source.schemaVersion !== "0.12.0" && source.schemaVersion !== "0.13.0" && [source.sourceGraph, ...source.members.map(member => member.graph)].some(graph => graph.schemaVersion === "0.13.0"))
     throw new Error("Awning family graphs require family source version 0.8.0 and its fabric.");
   const supportedGraphs = [source.sourceGraph, ...source.members.map(member => member.graph)].some(graph => graph.schemaVersion === "0.14.0");
-  if (source.schemaVersion !== "0.11.0" && source.schemaVersion !== "0.12.0" && (source.schemaVersion === "0.10.0") !== supportedGraphs) throw new Error("Support family graphs require family source version 0.10.0.");
-  if (source.schemaVersion !== "0.5.0" && source.schemaVersion !== "0.6.0" && source.schemaVersion !== "0.7.0" && source.schemaVersion !== "0.8.0" && source.schemaVersion !== "0.9.0" && source.schemaVersion !== "0.10.0" && source.schemaVersion !== "0.11.0" && source.schemaVersion !== "0.12.0" && [source.sourceGraph, ...source.members.map(member => member.graph)].some(graph => graph.schemaVersion === "0.12.0"))
+  if (source.schemaVersion !== "0.11.0" && source.schemaVersion !== "0.12.0" && source.schemaVersion !== "0.13.0" && (source.schemaVersion === "0.10.0") !== supportedGraphs) throw new Error("Support family graphs require family source version 0.10.0.");
+  if (source.schemaVersion !== "0.5.0" && source.schemaVersion !== "0.6.0" && source.schemaVersion !== "0.7.0" && source.schemaVersion !== "0.8.0" && source.schemaVersion !== "0.9.0" && source.schemaVersion !== "0.10.0" && source.schemaVersion !== "0.11.0" && source.schemaVersion !== "0.12.0" && source.schemaVersion !== "0.13.0" && [source.sourceGraph, ...source.members.map(member => member.graph)].some(graph => graph.schemaVersion === "0.12.0"))
     throw new Error("Divided storefront family graphs require family source version 0.5.0.");
   if (source.schemaVersion === "0.11.0") await validateConstructionFamilyFabricScope(source.fabricAssignments, {
     familyId: source.familyId, sourceDocumentId: source.sourceDocumentId,
     memberIds: source.members.map(member => member.documentId), inheritedFabricHash: source.awningFabric.contentHash });
-  if (source.schemaVersion === "0.12.0" && source.fabricAssignments) {
+  if ((source.schemaVersion === "0.12.0" || source.schemaVersion === "0.13.0") && source.fabricAssignments) {
     if (!source.awningFabric) throw new Error("Family fabric assignments require their inherited fabric.");
     await validateConstructionFamilyFabricScope(source.fabricAssignments, { familyId: source.familyId, sourceDocumentId: source.sourceDocumentId,
       memberIds: source.members.map(member => member.documentId), inheritedFabricHash: source.awningFabric.contentHash });
   }
+  if (source.schemaVersion !== "0.13.0" && [source.sourceGraph, ...source.members.map(member => member.graph)].some(graph => graph.schemaVersion === "0.15.0"))
+    throw new Error("Facade pier family graphs require family source version 0.13.0.");
   const ids = new Set(source.members.map(member => member.documentId));
   if (ids.size !== 6 || ids.has(source.sourceDocumentId)) throw new Error("Family member identities must be unique and separate from the source building.");
   const seeds = new Set(source.members.map(member => member.generation.source.intent.seeds.building));
@@ -139,7 +146,7 @@ export function withUpdatedConstructionFamilyMembers(source: ConstructionFamilyP
       ? { ...prior, schemaVersion: "0.9.0", initialComposition, members }
       : { ...prior, schemaVersion: "0.8.0", ...(initialComposition ? { initialComposition } : {}), members };
   }
-  if (members.some(member => member.graph.schemaVersion === "0.12.0") && source.schemaVersion !== "0.6.0" && source.schemaVersion !== "0.7.0" && source.schemaVersion !== "0.8.0" && source.schemaVersion !== "0.9.0" && source.schemaVersion !== "0.10.0" && source.schemaVersion !== "0.11.0" && source.schemaVersion !== "0.12.0")
+  if (members.some(member => member.graph.schemaVersion === "0.12.0") && source.schemaVersion !== "0.6.0" && source.schemaVersion !== "0.7.0" && source.schemaVersion !== "0.8.0" && source.schemaVersion !== "0.9.0" && source.schemaVersion !== "0.10.0" && source.schemaVersion !== "0.11.0" && source.schemaVersion !== "0.12.0" && source.schemaVersion !== "0.13.0")
     return { ...source, schemaVersion: "0.5.0", members };
   return { ...source, members };
 }

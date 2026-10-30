@@ -15,6 +15,7 @@ import { withConstructionGroupedBays } from "../core/constructionGroupedBayGraph
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { withConstructionStorefrontDivision } from "../core/constructionStorefrontDivisionGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
+import { withConstructionFacadePiers } from "../core/constructionFacadePierGraph";
 import { withConstructionAwningSupports } from "../core/constructionAwningSupportGraph";
 import { withConstructionAwnings } from "../core/constructionAwningGraph";
 import { createConstructionFamilyFabricAssignments } from "../materials/constructionFamilyFabric";
@@ -99,6 +100,22 @@ describe("persistent construction family source", () => {
       const noFabric = await createConstructionFamilySource(noFabricInput);
       expect(await readConstructionFamilySource(JSON.parse(JSON.stringify(noFabric)))).toEqual(noFabric);
       await expect(createConstructionFamilySource({ ...noFabricInput, schemaVersion: "0.7.0" })).rejects.toThrow();
+      const pierDirective = { pierWidthM: 0.28, projectionM: 0.18, endHeightM: 0.15, clearanceM: 0.04 };
+      const pierInput = { ...individualInput, schemaVersion: "0.13.0", sourceGraph: withConstructionFacadePiers(individualInput.sourceGraph, pierDirective),
+        members: individualInput.members.map(member => ({ ...member, graph: withConstructionFacadePiers(member.graph, pierDirective) })) };
+      const pierFamily = await createConstructionFamilySource(pierInput);
+      expect(await readConstructionFamilySource(JSON.parse(JSON.stringify(pierFamily)))).toEqual(pierFamily);
+      expect((await evaluateConstruction(pierFamily.members[0].graph)).ir.meshBatches.filter(batch => batch.role === "facade-pier")).toHaveLength(10);
+      const { awningFabric: _pierFabric, ...pierMissingFabric } = pierInput; void _pierFabric;
+      await expect(createConstructionFamilySource(pierMissingFabric)).rejects.toThrow(/require their inherited fabric/);
+      await expect(createConstructionFamilySource({ ...pierInput, schemaVersion: "0.11.0" })).rejects.toThrow(/pier family graphs/);
+      await expect(createConstructionFamilySource({ ...pierInput, awningFabric: redFabric })).rejects.toThrow(/owning family/);
+      const { contentHash: _pierHash, ...pierPayload } = pierFamily; void _pierHash;
+      expect(withUpdatedConstructionFamilyMembers(pierPayload, pierPayload.members).schemaVersion).toBe("0.13.0");
+      const plainPierInput = { ...input, familySeed: "seed", schemaVersion: "0.13.0", sourceGraph: withConstructionFacadePiers(edited, pierDirective),
+        members: saved.members.map(member => ({ ...member, graph: withConstructionFacadePiers(member.graph, pierDirective) })) };
+      const plainPierFamily = await createConstructionFamilySource(plainPierInput);
+      expect(await readConstructionFamilySource(JSON.parse(JSON.stringify(plainPierFamily)))).toEqual(plainPierFamily);
       const individualFamily = await createConstructionFamilySource(individualInput);
       expect(await readConstructionFamilySource(JSON.parse(JSON.stringify(individualFamily)))).toEqual(individualFamily);
       await expect(createConstructionFamilySource({ ...individualInput, familyId: "wrong" })).rejects.toThrow(/owning family/);
