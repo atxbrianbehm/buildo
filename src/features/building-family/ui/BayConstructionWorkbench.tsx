@@ -32,6 +32,7 @@ import { withConstructionStorefrontSign, withoutConstructionStorefrontSign } fro
 import { withConstructionSignAwningClearance, withoutConstructionSignAwning } from "../core/constructionSignAwningGraph";
 import { parseBuildingSourceFile } from "../state/buildingSourceFile";
 import { defaultConstructionGenerationControls, resolveWorkbenchGeneration, rebindGenerationSurfaceSources, type ConstructionGenerationLineage } from "../state/constructionGenerationState";
+import { resolveConstructionSignGenerationStudy } from "../state/constructionSignGenerationStudy";
 import { ConstructionGenerationPanel } from "./ConstructionGenerationPanel";
 import { ZodError } from "zod";
 import { BayConstructionClient } from "../compiler/bayConstructionClient";
@@ -425,10 +426,15 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     if (!acceptedSource || dirty) return;
     const controls = structuredClone(generationControls), reference = referenceDraft ? structuredClone(referenceDraft) : undefined;
     await perform(async (token, signal) => {
-      const result = await resolveWorkbenchGeneration(acceptedSource.fixture.construction.graph, acceptedSource.generation, controls, reroll, reference);
+      const authoredGraph = acceptedSource.fixture.construction.graph, hasSign = Boolean(authoredGraph.storefrontSign);
+      if (hasSign && !acceptedSource.generation) throw new Error("Generate the building before adding a sign so its material source can be pinned.");
+      const result = hasSign ? await resolveConstructionSignGenerationStudy(authoredGraph, acceptedSource.generation, controls, reroll, reference)
+        : await resolveWorkbenchGeneration(authoredGraph, acceptedSource.generation, controls, reroll, reference);
       if (signal.aborted) return;
       const templateSpec = acceptedSource.generation?.materialPlan.templateSpec ?? base.spec;
       let plan = await planConstructionReferenceMaterials(templateSpec, result.source), materials = acceptedSource.materials;
+      if (hasSign && acceptedSource.generation?.materialPlan.materialInputsHash !== plan.materialInputsHash)
+        throw new Error("This sign-bearing building keeps its material library pinned. Restore its material inputs before generating.");
       if (acceptedSource.generation?.materialPlan.materialInputsHash !== plan.materialInputsHash) {
         const generated = await createReferenceConstructionMaterials(base, result.source, signal, templateSpec);
         plan = generated.plan; materials = { ...generated.materials, ...(acceptedSource.materials.awningFabric ? { awningFabric: acceptedSource.materials.awningFabric } : {}) };
@@ -920,7 +926,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
 
       {accepted ? <ConstructionSurfacePanel graph={draft} atlas={accepted.packedAtlas} selectedPath={selectedFrame} selectedNode={selected} disabled={pierProtected || signProtected || disabled || Boolean(previewNode)}
         onChange={(graph, id) => { changeGraph(graph); setSelected(id); }} /> : null}
-      {buildingMode && !familyMemberMode ? <details className="construction-generate"><summary>Generate & vary</summary><ConstructionGenerationPanel controls={generationControls} lineage={generation} reference={referenceDraft} onReferenceFile={file => void importReference(file)} disabled={signProtected || disabled || dirty || !viewerReady}
+      {buildingMode && !familyMemberMode ? <details className="construction-generate"><summary>Generate & vary</summary>{signProtected && !generation ? <p>Generate the building before adding a sign to establish its material lineage; sign-bearing generation keeps that material pinned.</p> : null}<ConstructionGenerationPanel controls={generationControls} lineage={generation} reference={referenceDraft} onReferenceFile={file => void importReference(file)} disabled={(signProtected && !generation) || disabled || dirty || !viewerReady} materialChangesLocked={signProtected}
         onChange={setGenerationControls} onGenerate={reroll => void generateBuilding(reroll)} /></details> : null}
       {buildingMode && !familyMemberMode ? <section className="construction-generate" aria-label="Building family preview"><h3>Related buildings</h3>
         <p>Preview six related buildings using this building's material. Choose which architectural details may vary; unchecked groups keep your authored choices. The current choices use a small demo catalog.</p>
