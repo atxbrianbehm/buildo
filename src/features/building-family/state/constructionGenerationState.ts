@@ -78,7 +78,7 @@ function assertTopology(current: BayConstructionGraph, generated: BayConstructio
 export async function resolveWorkbenchGeneration(currentInput: unknown, previousInput: ConstructionGenerationLineage | null,
   controlsInput: ConstructionGenerationControls, reroll = false, referenceInput?: unknown) {
   const inputGraph = structuredClone(BayConstructionGraphSchema.parse(currentInput));
-  if (inputGraph.schemaVersion === "0.16.0") throw new Error("Sign-bearing graphs are not yet supported in building generation.");
+  if (inputGraph.schemaVersion === "0.16.0" || inputGraph.schemaVersion === "0.17.0") throw new Error("Sign-bearing graphs are not yet supported in building generation.");
   const authoredPiers = inputGraph.facadePiers;
   let current = authoredPiers ? withoutConstructionFacadePiers(inputGraph) : inputGraph;
   const authoredSupports = current.awningSupports, authoredAwnings = current.awnings;
