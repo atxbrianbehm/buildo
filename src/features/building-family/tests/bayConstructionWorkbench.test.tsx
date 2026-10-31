@@ -14,6 +14,13 @@ import * as familySources from "../state/constructionFamilySource";
 import { defaultConstructionGenerationControls, resolveWorkbenchGeneration } from "../state/constructionGenerationState";
 import { resolveConstructionFamilyPlan } from "../core/constructionFamilyPlan";
 import { resolveConstructionFamily } from "../state/constructionFamilyGeneration";
+import { resolveConstructionFamilyComposition } from "../core/constructionFamilyComposition";
+import { withConstructionAwnings } from "../core/constructionAwningGraph";
+import { withConstructionStorefrontSign } from "../core/constructionStorefrontSignGraph";
+import { withConstructionSignAwningClearance } from "../core/constructionSignAwningGraph";
+import { createConstructionAwningFabric } from "../materials/constructionAwningFabric";
+import { createGroupedRhythmFamilyArchive } from "../state/constructionGroupedRhythmFamilyArchive";
+import * as rhythmArchives from "../state/constructionGroupedRhythmFamilyArchive";
 import { defaultBuildingPromptControls } from "../state/buildingStore";
 import { createBayConstructionProject, readBayConstructionProject } from "../state/bayConstructionProject";
 import { createBayConstructionGraph, repeatBayAsFacade, createBuildingConstructionGraph } from "../contracts/bayConstructionGraph";
@@ -207,6 +214,47 @@ describe("live construction controls and ownership", () => {
       expect(workspace.dataset.constructionPreview).toBe("output");
       expect(view.onSessionChange).toHaveBeenCalledTimes(1);
     } finally { view.unmount(); }
+  }, 30000);
+
+  it("opens a verified rhythm archive as a read-only family preview and returns to the original building", async () => {
+    const initial = await resolveWorkbenchGeneration(createBuildingConstructionGraph("archive_preview"), null, defaultConstructionGenerationControls);
+    const generated = await fixtures.createReferenceConstructionMaterials(base, initial.source, new AbortController().signal, base.spec);
+    const lineage = { schemaVersion: "0.1.0" as const, kind: "construction-generation-lineage" as const, source: initial.source,
+      resolution: initial.resolution, materialPlan: generated.plan, materialSourceHash: generated.materials.file.contentHash };
+    const storefront = withConstructionStorefront(initial.graph, 1), awnings = withConstructionAwnings(storefront, [{ bayIndex: 0, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }]);
+    const graph = withConstructionSignAwningClearance(withConstructionStorefrontSign(awnings, { bayIndex: 0, heightM: 0.18, projectionM: 0.08, frameWidthM: 0.035 }), 0.04);
+    const fabric = await createConstructionAwningFabric({ schemaVersion: "0.1.0", kind: "construction-awning-fabric-request", seed: "preview-fabric", pattern: "striped", primary: [224, 213, 187], secondary: [69, 99, 78], physicalSizeM: [1, 1] });
+    const sourceProject = await createBayConstructionProject(graph, generated.materials.file, lineage, fabric);
+    const plan = resolveConstructionFamilyPlan({ schemaVersion: "0.1.0", kind: "construction-family-request", familyId: "archive_preview_family", familySeed: "sign-family-seed", graph });
+    const composition = resolveConstructionFamilyComposition({ schemaVersion: "0.4.0", kind: "construction-family-composition-request", familySeed: plan.source.familySeed, openingLock: false,
+      policy: { openings: true, frontage: false, roof: true, groupedBays: false, storefrontLights: false, massing: true } });
+    const archive = await createGroupedRhythmFamilyArchive({ schemaVersion: "0.1.0", kind: "construction-grouped-rhythm-family-archive-request", sourceProject, plan, composition,
+      policy: { schemaVersion: "0.1.0", kind: "construction-grouped-rhythm-family-policy", scope: "all-upper-front", memberCount: 2, memberWidthM: 0.55, pierWidthM: 0.24 }, controls: defaultConstructionGenerationControls });
+    const prepared = vi.spyOn(fixtures, "prepareConstructionFamilyFixture"), view = mount({ graph: createBuildingConstructionGraph(), materials });
+    try {
+      await ready(); const workspace = view.container.querySelector<HTMLElement>(".construction-workspace")!, before = workspace.dataset.constructionHash;
+      fireEvent.change(screen.getByLabelText("Open family file"), { target: { files: [new File([JSON.stringify(archive)], "rhythm.json", { type: "application/json" })] } });
+      await waitFor(() => expect(screen.getByText(/Archived family preview is read-only/)).toBeInTheDocument(), { timeout: 120000 });
+      expect(workspace.dataset.constructionPreview).toBe("family"); expect(screen.getByRole("button", { name: "Save family" })).toBeDisabled();
+      expect(screen.queryByRole("button", { name: "Edit selected building" })).not.toBeInTheDocument(); expect(view.onSessionChange).toHaveBeenCalledTimes(1);
+      const displayed = await prepared.mock.results.at(-1)!.value as fixtures.BayConstructionFixture;
+      expect(displayed.familyRuntime.metrics.buildingCount).toBe(6);
+      fireEvent.click(screen.getByRole("button", { name: "Return to building" }));
+      await waitFor(() => expect(workspace.dataset.constructionPreview).toBe("output"));
+      expect(workspace.dataset.constructionHash).toBe(before); expect(displayed.familyRuntime.disposed).toBe(true);
+    } finally { view.unmount(); prepared.mockRestore(); }
+  }, 180000);
+
+  it("keeps the current building when rhythm archive verification fails", async () => {
+    const read = vi.spyOn(rhythmArchives, "readGroupedRhythmFamilyArchive").mockRejectedValueOnce(new Error("Archive verification failed"));
+    const view = mount({ graph: createBuildingConstructionGraph(), materials });
+    try {
+      await ready(); const workspace = view.container.querySelector<HTMLElement>(".construction-workspace")!, before = workspace.dataset.constructionHash;
+      fireEvent.change(screen.getByLabelText("Open family file"), { target: { files: [new File(['{"kind":"construction-grouped-rhythm-family-archive"}'], "bad.json")] } });
+      await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("Archive verification failed"));
+      expect(workspace.dataset.constructionHash).toBe(before); expect(workspace.dataset.constructionPreview).toBe("output");
+      expect(view.onSessionChange).toHaveBeenCalledTimes(1);
+    } finally { view.unmount(); read.mockRestore(); }
   }, 30000);
 
   it("ignores an older family load after a newer load fails", async () => {
