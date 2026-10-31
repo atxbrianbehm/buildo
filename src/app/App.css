@@ -1857,6 +1857,9 @@ h1 {
   padding: 14px;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 14px 36px rgba(22, 29, 25, 0.08),
+    inset 0 0 0 1px rgba(24, 32, 28, 0.1);
 }
 
 .assembly-hall__visual-qa-header {
@@ -1888,10 +1891,6 @@ h1 {
 .assembly-hall__visual-qa-header button:focus-visible {
   outline: 3px solid rgba(70, 118, 86, 0.28);
   outline-offset: 2px;
-}
-  box-shadow:
-    0 14px 36px rgba(22, 29, 25, 0.08),
-    inset 0 0 0 1px rgba(24, 32, 28, 0.1);
 }
 
 .assembly-hall__compatibility-header {
@@ -2634,7 +2633,7 @@ h1 {
   overflow-wrap: anywhere;
   color: #18201c;
   font-size: 0.84rem;
-  font-family: " SFMono-Regular\, Consolas, \Liberation Mono\, monospace;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
 .art-kit-lab__controls {
@@ -2703,7 +2702,7 @@ h1 {
 .art-kit-lab__preview-caption {
  fill: #4a554f;
  font-size: 8px;
- font-family: \SFMono-Regular\, Consolas, \Liberation Mono\, monospace;
+ font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
 .art-kit-lab__module-body {

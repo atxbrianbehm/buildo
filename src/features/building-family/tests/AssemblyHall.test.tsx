@@ -3,7 +3,6 @@ import { vi } from "vitest";
 import type { AssemblyRendererActivation } from "../renderer-three/assemblyRendererFactory";
 import { AssemblyHall } from "../ui/AssemblyHall";
 import { createAssemblyHallFixture } from "../ui/assemblyHallFixture";
-import { VISUAL_QA_PACKET_KIND } from "../qa/visualQaPacket";
 
 function fakeRendererFactory(
   activeBackend: AssemblyRendererActivation["activeBackend"] = "webgl",

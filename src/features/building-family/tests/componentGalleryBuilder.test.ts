@@ -84,7 +84,7 @@ describe("buildComponentGallery", () => {
       batchId: "mesh.wall-panels",
       stage: "facade",
       materialSlotId: "wall.primary",
-      sampleSemanticPath: expect.stringContaining("/wall/panel")
+      sampleSemanticPath: expect.stringContaining("/wall/subdivided/piece")
     });
     expect(wallPanel?.metrics.elementCount).toBe(
       ir.semanticIndex.filter((entry) => entry.batchId === "mesh.wall-panels").length
@@ -153,12 +153,13 @@ describe("buildComponentGallery", () => {
     });
     expect(verticalTrim).toMatchObject({
       label: "Pilaster / vertical trim",
-      source: "instanceBatch",
-      atlasSlotIds: ["trim.vertical.primary"],
-      metrics: expect.objectContaining({
-        instanceCount: 8
-      })
+      source: "meshBatch",
+      batchId: "mesh.vertical-pilasters",
+      atlasSlotIds: ["trim.vertical.primary"]
     });
+    expect(verticalTrim?.metrics.elementCount).toBe(
+      ir.semanticIndex.filter((entry) => entry.batchId === "mesh.vertical-pilasters").length
+    );
     expect(windowFrame?.dimensionsM.depth).toBeGreaterThanOrEqual(0.28);
     expect(windowFrame?.anchorIds).toEqual(expect.arrayContaining(["origin", "sill-center", "lintel-center"]));
     expect(gallery.entries.every((entry) => entry.atlasSlotIds.length > 0)).toBe(true);
