@@ -54,7 +54,7 @@ describe("retained-sign family study", () => {
   it("rejects unsupported variation and release of authored choices", async () => {
     const { plan, lineage, composition } = await fixture();
     const mixed = resolveConstructionFamilyComposition({ ...composition.source, policy: { openings: false, frontage: true, roof: true } });
-    await expect(resolveConstructionRetainedSignFamilyStudy(plan, lineage, defaultConstructionGenerationControls, mixed)).rejects.toThrow(/roof, massing and openings/);
+    await expect(resolveConstructionRetainedSignFamilyStudy(plan, lineage, defaultConstructionGenerationControls, mixed)).rejects.toThrow(/roof, massing, openings and grouped-bay/);
     await expect(resolveConstructionRetainedSignFamilyStudy(plan, lineage, { ...defaultConstructionGenerationControls, preserveAuthored: false }, composition)).rejects.toThrow(/requires preserving/);
     const controller = new AbortController(); controller.abort();
     await expect(resolveConstructionRetainedSignFamilyStudy(plan, lineage, defaultConstructionGenerationControls, composition, controller.signal)).rejects.toMatchObject({ name: "AbortError" });
@@ -135,5 +135,22 @@ describe("retained-sign family study", () => {
       conflict.nodes.find(node => node.type === "PlaceOpening")!.parameters.upperFrontRoundHead = value === 0 ? 1 : 0;
       await expect(resolveConstructionRetainedSignFamilyStudy(resolveConstructionFamilyPlan({ ...plan.source, graph: conflict }), pinnedLineage, defaultConstructionGenerationControls, composition)).rejects.toThrow(/authored opening head conflicts/i);
     }
+  }, 120000);
+  it("coordinates grouped bays and round heads with massing while retaining the storefront", async () => {
+    const { graph, plan, lineage } = await fixture();
+    const composition = resolveConstructionFamilyComposition({ schemaVersion: "0.4.0", kind: "construction-family-composition-request", familySeed: plan.source.familySeed, openingLock: false,
+      policy: { openings: true, frontage: false, roof: true, groupedBays: true, storefrontLights: false, massing: true } });
+    const result = await resolveConstructionRetainedSignFamilyStudy(plan, lineage, defaultConstructionGenerationControls, composition);
+    const groups = result.members.flatMap(member => member.construction.graph.upperBayGroups ?? []);
+    expect(new Set(groups.map(group => group.memberCount))).toEqual(new Set([2, 3]));
+    expect(result.members.some(member => member.construction.graph.nodes.find(node => node.type === "PlaceOpening")!.parameters.upperFrontRoundHead === 1)).toBe(true);
+    for (const member of result.members) {
+      const head = member.construction.graph.nodes.find(node => node.type === "PlaceOpening")!.parameters.upperFrontRoundHead;
+      if (member.construction.graph.upperBayGroups?.length) expect(head).toBe(0);
+      expect(member.construction.graph.storefrontSign).toEqual(graph.storefrontSign);
+      expect(member.construction.graph.awnings).toEqual(graph.awnings);
+      expect(member.lineage.materialPlan.materialInputsHash).toBe(lineage.materialPlan.materialInputsHash);
+    }
+    expect(result.receipt.schemaVersion).toBe("0.2.0");
   }, 120000);
 });
