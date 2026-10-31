@@ -17,6 +17,7 @@ import { withConstructionAwningSupports } from "../core/constructionAwningSuppor
 import { withConstructionAwnings } from "../core/constructionAwningGraph";
 import { constructionHasStorefront } from "../core/constructionStorefrontGraph";
 import { applyConstructionFamilyPierVariation, readConstructionFamilyPierVariation } from "../core/constructionFamilyPierVariation";
+import { withoutConstructionStorefrontSign } from "../core/constructionStorefrontSignGraph";
 
 const controlsSchema = z.object({ recipeId: z.string().min(1).max(512).optional(), floorCount: z.number().int().min(2).max(6),
   bayCount: z.number().int().min(3).max(6), buildingSeed: z.string().trim().min(1).max(256),
@@ -39,8 +40,13 @@ async function geometryHash(result: Awaited<ReturnType<typeof evaluateConstructi
 }
 
 /** Resolve a complete owned family or fail without publishing a partial result. */
-export async function resolveConstructionFamily(input: unknown, lineageInput: unknown, controlsInput: ConstructionGenerationControls, signal?: AbortSignal, compositionInput?: unknown, pierVariationInput?: unknown) {
+export async function resolveConstructionFamily(input: unknown, lineageInput: unknown, controlsInput: ConstructionGenerationControls, signal?: AbortSignal, compositionInput?: unknown, pierVariationInput?: unknown, signedSourceInput?: unknown) {
   const plan = readConstructionFamilyPlan(input);
+  const signedSource = signedSourceInput === undefined ? null : BayConstructionGraphSchema.parse(signedSourceInput);
+  if (signedSource && ((!signedSource.storefrontSign || !["0.16.0", "0.17.0"].includes(signedSource.schemaVersion)) ||
+      canonicalJson(withoutConstructionStorefrontSign(signedSource)) !== canonicalJson(plan.source.graph)))
+    throw new Error("Signed family source must match the unsigned family plan.");
+  const implicitSignedDivision = Boolean(signedSource && !signedSource.storefrontDivision && plan.source.graph.storefrontDivision?.displayLights === 1 && plan.source.graph.storefrontDivision?.transomLights === 1);
   const lineage = structuredClone(ConstructionGenerationLineageSchema.parse(lineageInput));
   const controls = controlsSchema.parse(controlsInput);
   if (!controls.preserveAuthored) throw new Error("Family generation requires preserving authored choices.");
@@ -75,7 +81,7 @@ export async function resolveConstructionFamily(input: unknown, lineageInput: un
     if (!sourceStoreys || !priorStoreys || !sourceBays || !priorBays || sourceStoreys.parameters.count !== priorStoreys.parameters.count || sourceBays.parameters.count !== priorBays.parameters.count)
       throw new Error("Family massing variation cannot overwrite authored storey or bay counts.");
   }
-  if (varyStorefrontLights && plan.source.graph.storefrontDivision)
+  if (varyStorefrontLights && plan.source.graph.storefrontDivision && !implicitSignedDivision)
     throw new Error("Storefront variation cannot overwrite authored divisions. Reset them or turn off storefront-light variation.");
   if (plan.source.graph.storefrontDivision && composition?.source.policy.frontage)
     throw new Error("Ground-frontage variation cannot currently coexist with retained storefront divisions. Disable that variation or reset the divisions.");
@@ -142,7 +148,7 @@ export async function resolveConstructionFamily(input: unknown, lineageInput: un
           const { awnings: _removed, awningSupports: _supports, ...prior } = candidateGraph; void _removed; void _supports;
           candidateGraph = BayConstructionGraphSchema.parse({ ...prior, schemaVersion: "0.12.0" });
         }
-        if (varyStorefrontLights && !plan.source.graph.storefrontDivision && candidateGraph.schemaVersion === "0.12.0") {
+        if (varyStorefrontLights && (!plan.source.graph.storefrontDivision || implicitSignedDivision) && candidateGraph.schemaVersion === "0.12.0") {
           if (candidateGraph.storefrontDivision?.displayLights !== 1 || candidateGraph.storefrontDivision?.transomLights !== 1)
             throw new Error("Storefront variation cannot replace generated non-default divisions.");
           const { storefrontDivision: _implicitDefault, ...prior } = candidateGraph; void _implicitDefault;
