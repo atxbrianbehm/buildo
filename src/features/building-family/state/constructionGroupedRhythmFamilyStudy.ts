@@ -11,7 +11,8 @@ export async function resolveConstructionGroupedRhythmFamilyStudy(input: unknown
   const policy = GroupedRhythmFamilyPolicySchema.parse(policyInput);
   const abort = () => { if (signal?.aborted) throw new DOMException("Family generation cancelled.", "AbortError"); };
   abort();
-  const base = await resolveConstructionRetainedSignFamilyStudy(input, lineage, controls, composition, signal), members = [];
+  const base = await resolveConstructionRetainedSignFamilyStudy(input, lineage, controls, composition, signal,
+    policy.schemaVersion === "0.3.0" ? policy.pierVariation : undefined), members = [];
   for (const member of base.members) {
     abort();
     const graph = member.construction.graph, opening = graph.nodes.find(node => node.type === "PlaceOpening"),
