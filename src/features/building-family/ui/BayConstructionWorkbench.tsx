@@ -140,6 +140,8 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   const [rhythmPreviewScope, setRhythmPreviewScope] = useState<"all-upper-front" | "top-upper-front">("all-upper-front");
   const [rhythmPiers, setRhythmPiers] = useState(false);
   const [rhythmPreviewPiers, setRhythmPreviewPiers] = useState(false);
+  const [rhythmStorefrontLights, setRhythmStorefrontLights] = useState(false);
+  const [rhythmPreviewStorefrontLights, setRhythmPreviewStorefrontLights] = useState(false);
   const [familyVariation, setFamilyVariation] = useState({ openings: false, frontage: false, roof: false, groupedBays: false, storefrontLights: false, massing: false, awnings: false, entranceBay: false });
   const [familyPierVariation, setFamilyPierVariation] = useState(false);
   const [signBay, setSignBay] = useState(0);
@@ -530,6 +532,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       shown.current = candidate; setAccepted(candidate); setPreviewNode(null); setFamilyPreview(true); setRhythmArchivePreview(true); setFamilyDirty(false);
       familySource.current = null; rhythmArchive.current = archive; setRhythmPreviewWindowCount(archive.request.policy.memberCount); setRhythmPreviewScope(archive.request.policy.scope); setFamilyFabricView(null);
       setRhythmPreviewPiers(archive.request.policy.schemaVersion === "0.3.0" && archive.request.policy.pierVariation.source.enabled);
+      setRhythmPreviewStorefrontLights("storefrontLights" in archive.request.composition.source.policy && archive.request.composition.source.policy.storefrontLights);
       setFamilyDetails(archive.result.members.map(member => describeFamilyMember(member.graph))); setMemberIndex(0); chooseFrame(null);
       memberHistories.current.clear();
       if (previousShown && previousShown !== previous?.fixture && previousShown !== candidate) retire(previousShown);
@@ -546,7 +549,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       if (!isCurrent()) return;
       const plan = resolveConstructionFamilyPlan({ schemaVersion: "0.1.0", kind: "construction-family-request", familyId: "preview_rhythm_family", familySeed, graph });
       const composition = resolveConstructionFamilyComposition({ schemaVersion: "0.4.0", kind: "construction-family-composition-request", familySeed,
-        openingLock: generationControls.lockOpenings, policy: { openings: true, frontage: false, roof: true, groupedBays: false, storefrontLights: false, massing: true } });
+        openingLock: generationControls.lockOpenings, policy: { openings: true, frontage: false, roof: true, groupedBays: false, storefrontLights: rhythmStorefrontLights, massing: true } });
       const pierVariation = rhythmPiers ? resolveConstructionFamilyPierVariation({ schemaVersion: "0.1.0", kind: "construction-family-pier-variation-request", familySeed, enabled: true, openingLock: generationControls.lockOpenings }) : undefined;
       const archive = await createGroupedRhythmFamilyArchive({ schemaVersion: "0.1.0", kind: "construction-grouped-rhythm-family-archive-request", sourceProject, plan, composition,
         policy: { schemaVersion: pierVariation ? "0.3.0" : rhythmScope === "all-upper-front" ? "0.1.0" : "0.2.0", kind: "construction-grouped-rhythm-family-policy", scope: rhythmScope, memberCount: rhythmWindowCount, memberWidthM: 0.55, pierWidthM: 0.24, ...(pierVariation ? { pierVariation } : {}) }, controls: generationControls });
@@ -1012,7 +1015,9 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
             <option value="2">Pairs</option><option value="3">Groups of three</option></select></label>
             <label><span>Grouped window placement</span><select aria-label="Grouped window placement" value={rhythmArchivePreview ? rhythmPreviewScope : rhythmScope} disabled={pending || saving || familyPreview} onChange={event => setRhythmScope(event.currentTarget.value === "top-upper-front" ? "top-upper-front" : "all-upper-front")}>
               <option value="all-upper-front">All upper storeys</option><option value="top-upper-front">Top upper storey</option></select></label>
-            <label><input type="checkbox" checked={rhythmArchivePreview ? rhythmPreviewPiers : rhythmPiers} disabled={pending || saving || familyPreview} onChange={event => setRhythmPiers(event.currentTarget.checked)} /> Vary upper facade piers</label></div>
+            <label><input type="checkbox" checked={rhythmArchivePreview ? rhythmPreviewPiers : rhythmPiers} disabled={pending || saving || familyPreview} onChange={event => setRhythmPiers(event.currentTarget.checked)} /> Vary upper facade piers</label>
+            <label><input type="checkbox" checked={rhythmArchivePreview ? rhythmPreviewStorefrontLights : rhythmStorefrontLights} disabled={pending || saving || familyPreview} onChange={event => setRhythmStorefrontLights(event.currentTarget.checked)} /> Vary storefront panes</label></div>
+          {(rhythmArchivePreview ? rhythmPreviewStorefrontLights : rhythmStorefrontLights) ? <p>Demo pane counts vary by building. Existing storefront divisions are protected; turn this option off to retain them.</p> : null}
           {(rhythmArchivePreview ? rhythmPreviewPiers : rhythmPiers) ? <p>Demo pier treatments vary by building; existing authored piers are retained. Some window groups or seeds need more clearance; try paired windows or a different seed if preview is rejected.</p> : null}</>
           : <p>Add an awning beneath the sign to use the grouped family demo.</p>}
         {familyVariation.entranceBay ? <p>Entrance variation requires an unchanged entrance bay and a storefront without authored awnings. Turn off ground-frontage and additional-awning variation.</p> : null}
