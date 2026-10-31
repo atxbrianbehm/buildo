@@ -37,12 +37,41 @@ describe("grouped bay graph source", () => {
     expect(b.ir.meshBatches).toEqual(a.ir.meshBatches); expect(b.ir.instanceBatches).toEqual(a.ir.instanceBatches);
     expect(b.ir.semanticIndex).toEqual(a.ir.semanticIndex); expect(b.prototypes).toEqual(a.prototypes);
   });
-  it("rejects missing scopes, ambiguous old overrides and unsupported round heads", async () => {
+  it("rejects missing scopes and ambiguous old overrides", async () => {
     const missing = graph(); missing.upperBayGroups![0].bayIndex = 19;
     await expect(evaluateConstruction(missing)).rejects.toThrow(/no longer exists/);
     const edited = withConstructionOpeningWidth(graph(), { target: { documentId: "authored-building", storeysNodeId: "facade", windowNodeId: "window", face: "front", floorIndex: 1, bayIndex: 0 }, widthM: 1 });
     await expect(evaluateConstruction(edited)).rejects.toThrow(/missing or ambiguous/);
-    await expect(evaluateConstruction(withConstructionRoundHead(graph(), 1))).rejects.toThrow(/does not match/);
+  });
+  it("compiles individually curved grouped openings without changing their stable semantic identities", async () => {
+    const rectangular = graph(), curved = withConstructionRoundHead(rectangular, 1), before = structuredClone(curved);
+    const [flat, arches] = await Promise.all([evaluateConstruction(rectangular), evaluateConstruction(curved)]);
+    expect(curved).toEqual(before);
+    const paths = (result: typeof flat) => result.ir.semanticIndex.filter(item => item.semanticPath.includes("/bay/0/opening/")).map(item => item.semanticPath);
+    expect(paths(arches)).toEqual(paths(flat)); expect(paths(arches)).toHaveLength(6);
+    expect(arches.ir.meshBatches.find(batch => batch.role === "wall")!.positions).not.toEqual(flat.ir.meshBatches.find(batch => batch.role === "wall")!.positions);
+    expect(arches.prototypes).not.toEqual(flat.prototypes);
+    const wall = arches.ir.meshBatches.find(batch => batch.role === "wall" && batch.batchId.includes("/facade/"))!;
+    const covers = (mesh: typeof wall, x: number, y: number) => {
+      const p = mesh.positions!, indices = mesh.indices!;
+      for (let i = 0; i < indices.length; i += 3) {
+        const points = [...indices.slice(i, i + 3)].map(index => [p[index * 3], p[index * 3 + 1], p[index * 3 + 2]]);
+        if (points.some(point => Math.abs(point[2] + 4.2) > 1e-5)) continue;
+        const cross = (a: number[], b: number[]) => (b[0] - a[0]) * (y - a[1]) - (b[1] - a[1]) * (x - a[0]);
+        const signs = [cross(points[0], points[1]), cross(points[1], points[2]), cross(points[2], points[0])];
+        if (signs.every(value => value >= -1e-7) || signs.every(value => value <= 1e-7)) return true;
+      }
+      return false;
+    };
+    // The two apertures and their curved shoulders must align with the actual grouped centers.
+    for (const center of [-4.77, -3.63]) { expect(covers(wall, center, 6.8)).toBe(false); expect(covers(wall, center + 0.4, 6.8)).toBe(true); }
+    expect(covers(wall, -4.2, 6.3)).toBe(true);
+    const triple = withConstructionRoundHead(withConstructionGroupedBays(createBuildingConstructionGraph(), [{ ...directive(), memberCount: 3, memberWidthM: 0.55 }]), 1);
+    const tripleResult = await evaluateConstruction(triple), tripleWall = tripleResult.ir.meshBatches.find(batch => batch.role === "wall" && batch.batchId.includes("/facade/"))!;
+    expect(paths(tripleResult)).toHaveLength(9);
+    for (const center of [-4.99, -4.2, -3.41]) { expect(covers(tripleWall, center, 6.85)).toBe(false); expect(covers(tripleWall, center + 0.25, 6.85)).toBe(true); }
+    const replay = await evaluateConstruction(JSON.parse(JSON.stringify(curved)));
+    expect(replay.ir.meshBatches).toEqual(arches.ir.meshBatches); expect(replay.prototypes).toEqual(arches.prototypes);
   });
   it("preserves groups during roof edits and generation", async () => {
     const input = graph(), roof = withConstructionParapetSilhouette(withConstructionCorniceLayout(input, 1), 1);

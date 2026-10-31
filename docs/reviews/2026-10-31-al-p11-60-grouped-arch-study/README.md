@@ -1,0 +1,11 @@
+# Grouped round-headed openings: geometry study
+
+The compiler can now evaluate a grouped upper bay whose opening head is round. Each member retains its stable semantic path and gets its own curved wall aperture, recessed frame, glazing, sash and sill. Flat groups and ungrouped arches continue through their existing paths. This expands a graph combination that previously failed compilation; it does not change the authored graph or introduce a preassembled mesh.
+
+An initial render exposed dark triangular artifacts at the arch heads. The wall cutout had been centered on the subdivided scope rather than the grouped opening center; the corrected render aligns the curved wall, frame and glass. The focused test checks both paired and triple groups: open regions at each arch, masonry at the curved shoulders and between members, stable semantic paths and deterministic replay. It also exercises prior flat and round geometry.
+
+The WebGL render alternates flat and round grouped windows on an isolated six-building signed-storefront family. It is a demo awaiting visual review, not historical evidence, an artist-facing grouped-arch control, or a finished street. Most facade composition and materials remain repeated. Three-member examples at 0.55 m and 0.46 m conflicted with the existing piers in this particular family; those combinations were rejected and are not shown. Reproduce with `node docs/reviews/2026-10-31-al-p11-60-grouped-arch-study/render.mjs`.
+
+A pre-change family archive from AL.P11.59 (three ungrouped round-head members and three flat grouped members) reopened with identical contents and replayed geometry hashes after the final compiler change. To repeat, at predecessor commit `6c379937a80556bab102e27d1cf75703f28ab4a3` run the AL.P11.59 WebGPU workflow and retain `first.json`, then on this revision pass that file to `node docs/reviews/2026-10-31-al-p11-60-grouped-arch-study/compat.mjs <first.json>`.
+
+Validation passed: typecheck, lint, production build, full suite (2,141 tests in 183 files), focused paired/triple geometry checks, pre-change archive replay, standard browser smoke, and final WebGL rendering. An initial full run was stopped to narrow the wall-alignment correction to grouped members and then rerun. The build retains its existing chunk-size warning.

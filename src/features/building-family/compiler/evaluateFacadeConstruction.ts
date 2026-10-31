@@ -39,7 +39,7 @@ import { resolveConstructionSignAwningSupports } from "../core/constructionSignA
 import { buildConstructionSignAwningArrangementGeometry } from "./constructionSignAwningArrangementGeometry";
 import { buildConstructionSignAwningSupportGeometry } from "./constructionSignAwningSupportGeometry";
 
-type Cell = { localOpeningWidth?: boolean; storefrontPlan?: ConstructionStorefrontPlan; root: string; key: string; floorSplit: boolean; baySplit: boolean; scope: FacadeBayScope; face?: "front" | "right" | "rear" | "left"; pose?: ConstructionFacePose; building?: ConstructionBuilding };
+type Cell = { localOpeningWidth?: boolean; groupedOpening?: boolean; storefrontPlan?: ConstructionStorefrontPlan; root: string; key: string; floorSplit: boolean; baySplit: boolean; scope: FacadeBayScope; face?: "front" | "right" | "rear" | "left"; pose?: ConstructionFacePose; building?: ConstructionBuilding };
 type Stage = "facade" | "openings" | "trim" | "roof";
 type Part = { id: string; stage: Stage; bounds: Bounds3; mesh?: MeshBatchIR; prototype?: MeshBatchIR;
   translation?: [number, number, number]; pose?: ConstructionFacePose; wallCells?: Cell[]; cell?: Cell; role: string; nodeId: string };
@@ -118,7 +118,8 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
     const p = windows[0].parameters, scope = cell.scope;
     if (p.recessM + 0.08 > scope.sizeM[2]) throw new Error("Round-headed frame depth exceeds its wall.");
     return resolveConstructionRoundHead({ schemaVersion: "0.1.0", kind: "construction-round-head-request",
-      scope: { id: cell.key, face: "front", floorIndex: scope.floorIndex, bayIndex: scope.bayIndex, originM: scope.originM, sizeM: scope.sizeM },
+      scope: { id: cell.key, face: "front", floorIndex: scope.floorIndex, bayIndex: scope.bayIndex,
+        originM: cell.groupedOpening ? [opening.centerAlongM - scope.sizeM[0] / 2, scope.originM[1], scope.originM[2]] : scope.originM, sizeM: scope.sizeM },
       parameters: { widthM: opening.widthM, heightM: opening.heightM, sillM: opening.centerYM - scope.originM[1] - opening.heightM / 2,
         frameWidthM: p.frameWidthM, revealDepthM: p.recessM, masonryMarginM: 0.08 } });
   }
@@ -376,22 +377,23 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
           if (outerMargin <= 0.12) throw new Error(`Grouped bay ${cell.key} needs more outer masonry for its trim and neighboring bays.`);
           const windows = graph.nodes.filter(item => item.type === "AssembleWindow" && !item.bypassed);
           const window = windows[0];
-          if (!cell.building || cell.face !== "front" || scope.floorIndex === 0 || scope.opening?.roundHead ||
+          if (!cell.building || cell.face !== "front" || scope.floorIndex === 0 ||
               requested.face !== cell.face || requested.floorIndex !== scope.floorIndex || requested.bayIndex !== scope.bayIndex ||
               canonicalJson(requested.originM) !== canonicalJson(scope.originM) || canonicalJson(requested.sizeM) !== canonicalJson(scope.sizeM) ||
               p.heightM !== heightM || p.sillM !== sillM || window?.type !== "AssembleWindow" ||
               p.frameWidthM !== window.parameters.frameWidthM || p.recessM !== window.parameters.recessM)
-            throw new Error(`Grouped bay ${cell.key} does not match the active rectangular building scope and assembly.`);
+            throw new Error(`Grouped bay ${cell.key} does not match the active building scope and assembly.`);
           usedGroups.add(cell.key);
           return plan.members.map((member, index) => {
             const left = index === 0 ? scope.originM[0] : (plan.members[index-1].centerAlongM + member.centerAlongM) / 2;
             const right = index === plan.members.length-1 ? scope.originM[0]+scope.sizeM[0] : (member.centerAlongM+plan.members[index+1].centerAlongM)/2;
             const child = structuredClone(cell);
             child.key = member.id;
+            child.groupedOpening = true;
             child.scope.originM[0] = left;
             child.scope.sizeM[0] = right-left;
             child.scope.opening = { kind: "window", widthM: member.widthM, heightM: member.heightM,
-              centerAlongM: member.centerAlongM, centerYM: member.centerYM };
+              centerAlongM: member.centerAlongM, centerYM: member.centerYM, ...(scope.opening?.roundHead ? { roundHead: true } : {}) };
             return child;
           });
         });
