@@ -10,13 +10,13 @@ import { resolveConstructionFamily } from "./constructionFamilyGeneration";
 import { resolveConstructionSignGenerationStudy } from "./constructionSignGenerationStudy";
 import type { ConstructionGenerationControls, ConstructionGenerationLineage } from "./constructionGenerationState";
 
-/** Experimental roof and massing family; the receipt describes the final signed geometry. */
+/** Experimental roof, massing and opening family; the receipt describes the final signed geometry. */
 export async function resolveConstructionRetainedSignFamilyStudy(input: unknown, lineage: ConstructionGenerationLineage,
   controls: ConstructionGenerationControls, compositionInput: unknown, signal?: AbortSignal) {
   const plan = readConstructionFamilyPlan(input), composition = readConstructionFamilyCompositionPlan(compositionInput), source = plan.source.graph;
   if (!source.storefrontSign || (source.schemaVersion !== "0.16.0" && source.schemaVersion !== "0.17.0")) throw new Error("Choose a sign-bearing family source.");
   const policy = composition.source.policy;
-  if (!policy.roof || Object.entries(policy).some(([key, value]) => !["roof", "massing"].includes(key) && value)) throw new Error("This study supports roof and massing variation while retaining the storefront.");
+  if (!policy.roof || Object.entries(policy).some(([key, value]) => !["roof", "massing", "openings"].includes(key) && value)) throw new Error("This study supports roof, massing and openings variation while retaining the storefront.");
   if (signal?.aborted) throw new DOMException("Family generation cancelled.", "AbortError");
   await resolveConstructionSignGenerationStudy(source, lineage, controls);
   const unsignedPlan = resolveConstructionFamilyPlan({ ...plan.source, graph: withoutConstructionStorefrontSign(source) });
@@ -40,12 +40,12 @@ export async function resolveConstructionRetainedSignFamilyStudy(input: unknown,
     if (hashes.has(geometryHash)) throw new Error("Retaining the storefront produced duplicate family geometry.");
     hashes.add(geometryHash); members.push({ ...member, construction, geometryHash });
   }
-  const massing = "massing" in policy && policy.massing;
-  const receipt = ConstructionRetainedSignFamilyStudyReceiptSchema.parse({ schemaVersion: massing ? "0.2.0" : "0.1.0", kind: "construction-retained-sign-family-study",
+  const expanded = Object.entries(policy).some(([key, value]) => key !== "roof" && value);
+  const receipt = ConstructionRetainedSignFamilyStudyReceiptSchema.parse({ schemaVersion: expanded ? "0.2.0" : "0.1.0", kind: "construction-retained-sign-family-study",
     familyId: plan.source.familyId, sourceGraphHash: await hashCanonicalJson(source), materialSourceHash: family.receipt.materialSourceHash,
     referenceContentHash: family.receipt.referenceContentHash, members: members.map(member => ({ documentId: member.documentId,
       sourceContentHash: member.lineage.source.contentHash, geometryHash: member.geometryHash })),
-    ...(massing ? { familySeed: plan.source.familySeed, compositionHash: await hashCanonicalJson(composition) } : {}) });
+    ...(expanded ? { familySeed: plan.source.familySeed, compositionHash: await hashCanonicalJson(composition) } : {}) });
   if (signal?.aborted) throw new DOMException("Family generation cancelled.", "AbortError");
   return { receipt, members };
 }

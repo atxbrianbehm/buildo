@@ -14,6 +14,8 @@ import { resolveConstructionRetainedSignFamilyStudy } from "../state/constructio
 import stylePack from "../style-packs/late-19c-commercial-demo.json";
 import { ConstructionRetainedSignFamilyStudyReceiptSchema } from "../contracts/constructionRetainedSignFamilyStudy";
 import { hashCanonicalJson } from "../core/contentHash";
+import { captureConstructionGenerationSource } from "../core/constructionGenerationSource";
+import { resolveConstructionGeneration } from "../core/constructionGenerationResolver";
 
 async function fixture() {
   const initial = await resolveWorkbenchGeneration(createBuildingConstructionGraph("family_sign_source"), null, defaultConstructionGenerationControls);
@@ -49,13 +51,40 @@ describe("retained-sign family study", () => {
     const replay = await resolveConstructionRetainedSignFamilyStudy(plan, lineage, defaultConstructionGenerationControls, composition);
     expect(replay.receipt).toEqual(result.receipt);
   }, 120000);
-  it("rejects non-roof variation and release of authored choices", async () => {
+  it("rejects unsupported variation and release of authored choices", async () => {
     const { plan, lineage, composition } = await fixture();
-    const mixed = resolveConstructionFamilyComposition({ ...composition.source, policy: { openings: true, frontage: false, roof: true } });
-    await expect(resolveConstructionRetainedSignFamilyStudy(plan, lineage, defaultConstructionGenerationControls, mixed)).rejects.toThrow(/roof and massing/);
+    const mixed = resolveConstructionFamilyComposition({ ...composition.source, policy: { openings: false, frontage: true, roof: true } });
+    await expect(resolveConstructionRetainedSignFamilyStudy(plan, lineage, defaultConstructionGenerationControls, mixed)).rejects.toThrow(/roof, massing and openings/);
     await expect(resolveConstructionRetainedSignFamilyStudy(plan, lineage, { ...defaultConstructionGenerationControls, preserveAuthored: false }, composition)).rejects.toThrow(/requires preserving/);
     const controller = new AbortController(); controller.abort();
     await expect(resolveConstructionRetainedSignFamilyStudy(plan, lineage, defaultConstructionGenerationControls, composition, controller.signal)).rejects.toMatchObject({ name: "AbortError" });
+  }, 120000);
+  it("varies upper openings and massing while preserving the signed storefront and opening locks", async () => {
+    const { graph, plan, lineage } = await fixture();
+    const request = { schemaVersion: "0.4.0" as const, kind: "construction-family-composition-request" as const, familySeed: plan.source.familySeed, openingLock: false,
+      policy: { openings: true, frontage: false, roof: true, groupedBays: false, storefrontLights: false, massing: true } };
+    const composition = resolveConstructionFamilyComposition(request);
+    const result = await resolveConstructionRetainedSignFamilyStudy(plan, lineage, defaultConstructionGenerationControls, composition);
+    expect(result.receipt.schemaVersion).toBe("0.2.0");
+    if (result.receipt.schemaVersion !== "0.2.0") throw new Error("Expected expanded receipt.");
+    expect(result.receipt.compositionHash).toBe(await hashCanonicalJson(composition));
+    expect(new Set(result.members.map(member => member.construction.graph.nodes.find(node => node.type === "PlaceOpening")!.parameters.upperFrontRoundHead)).size).toBe(2);
+    expect(new Set(result.members.map(member => member.construction.graph.nodes.find(node => node.type === "AssembleWindow")!.parameters.layout)).size).toBeGreaterThan(1);
+    expect(new Set(result.members.map(member => member.construction.graph.nodes.find(node => node.type === "Storeys")!.parameters.count)).size).toBeGreaterThan(1);
+    for (const member of result.members) {
+      expect(member.construction.graph.storefrontSign).toEqual(graph.storefrontSign); expect(member.construction.graph.awnings).toEqual(graph.awnings);
+      expect(member.construction.graph.awningSupports).toEqual(graph.awningSupports); expect(member.construction.graph.signAwningGapM).toBe(graph.signAwningGapM);
+      expect(member.lineage.materialSourceHash).toBe(lineage.materialSourceHash);
+    }
+    expect(() => resolveConstructionFamilyComposition({ ...request, openingLock: true })).toThrow(/Unlock openings/);
+    await expect(resolveConstructionRetainedSignFamilyStudy(plan, lineage, { ...defaultConstructionGenerationControls, lockOpenings: true }, composition)).rejects.toThrow(/lock|controls/i);
+    const old = lineage.source, pinned = await captureConstructionGenerationSource({ schemaVersion: "0.1.0", kind: "construction-generation-input", documentId: old.documentId,
+      intent: { ...old.intent, locks: [{ semanticPath: "construction/opening/upperFrontRoundHead", scope: "building", lockedValue: 0, reason: "Imported pin" }] },
+      recipe: old.recipe, reference: old.reference, intentionalExceptions: old.intentionalExceptions });
+    await expect(resolveConstructionGeneration(pinned)).rejects.toThrow(/Unsupported construction lock/);
+    const openingsOnly = resolveConstructionFamilyComposition({ ...request, policy: { ...request.policy, massing: false } });
+    const openingsResult = await resolveConstructionRetainedSignFamilyStudy(plan, lineage, defaultConstructionGenerationControls, openingsOnly);
+    expect(openingsResult.receipt.schemaVersion).toBe("0.2.0");
   }, 120000);
   it("varies massing without losing the signed storefront or pinned materials", async () => {
     const { graph, plan, lineage } = await fixture();
