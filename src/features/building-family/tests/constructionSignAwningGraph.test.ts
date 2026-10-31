@@ -19,6 +19,10 @@ describe("versioned sign and awning graph", () => {
     const graph = withConstructionSignAwningClearance(signed, 0.04), original = structuredClone(graph);
     expect(supportsGroupedConstruction(graph)).toBe(true);
     expect(withoutConstructionStorefrontSign(graph)).toEqual(base);
+    const adjusted = withConstructionStorefrontSign(graph, { ...sign, projectionM: 0.1 });
+    expect(adjusted.schemaVersion).toBe("0.17.0"); expect(adjusted.signAwningGapM).toBe(graph.signAwningGapM);
+    expect(adjusted.awnings).toEqual(graph.awnings); expect(adjusted.awningSupports).toEqual(graph.awningSupports);
+    expect(BayConstructionGraphSchema.safeParse({ ...adjusted, storefrontSign: { ...sign, bayIndex: 2 } }).success).toBe(false);
     await expect(evaluateConstruction(signed)).rejects.toThrow(/shared clearance/);
     const result = await evaluateConstruction(JSON.parse(JSON.stringify(graph)));
     const study = await evaluateConstructionSignAwningBuildingStudy({ schemaVersion: "0.1.0", kind: "construction-sign-awning-building-study-request", graph: base, ...sign, gapM: 0.04 });
