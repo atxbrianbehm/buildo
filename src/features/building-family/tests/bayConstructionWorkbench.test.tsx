@@ -233,6 +233,7 @@ describe("live construction controls and ownership", () => {
       policy: { openings: true, frontage: false, roof: true, groupedBays: false, storefrontLights: false, massing: true } });
     const archive = await createGroupedRhythmFamilyArchive({ schemaVersion: "0.1.0", kind: "construction-grouped-rhythm-family-archive-request", sourceProject, plan, composition,
       policy: { schemaVersion: "0.1.0", kind: "construction-grouped-rhythm-family-policy", scope: "all-upper-front", memberCount: 2, memberWidthM: 0.55, pierWidthM: 0.24 }, controls: defaultConstructionGenerationControls });
+    const entranceArchive = await createGroupedRhythmFamilyArchive({ ...archive.request, policy: { ...archive.request.policy, schemaVersion: "0.4.0", uncoveredEntrances: true } });
     const assignments = await resolveConstructionFamilyFabricStudy({ schemaVersion: "0.1.0", kind: "construction-family-fabric-study-request", familyId: plan.source.familyId,
       sourceDocumentId: graph.documentId, memberIds: archive.result.members.map(member => member.graph.documentId), materialSeed: "demo", inheritedFabric: fabric });
     const fabricArchive = await createGroupedRhythmFabricArchive({ schemaVersion: "0.1.0", kind: "construction-grouped-rhythm-fabric-archive", family: archive, fabricAssignments: assignments });
@@ -249,6 +250,11 @@ describe("live construction controls and ownership", () => {
       fireEvent.click(screen.getByRole("button", { name: "Return to building" }));
       await waitFor(() => expect(workspace.dataset.constructionPreview).toBe("output"));
       expect(workspace.dataset.constructionHash).toBe(before); expect(displayed.familyRuntime.disposed).toBe(true);
+      fireEvent.change(screen.getByLabelText("Open family file"), { target: { files: [new File([JSON.stringify(entranceArchive)], "entrances.json", { type: "application/json" })] } });
+      await waitFor(() => expect(screen.getByText(/Saved entrances use demo positions/)).toBeInTheDocument(), { timeout: 120000 });
+      fireEvent.click(screen.getByRole("button", { name: "Return to building" }));
+      await waitFor(() => expect(workspace.dataset.constructionPreview).toBe("output"));
+      expect(workspace.dataset.constructionHash).toBe(before);
       fireEvent.change(screen.getByLabelText("Open family file"), { target: { files: [new File([JSON.stringify(fabricArchive)], "fabric.json", { type: "application/json" })] } });
       await waitFor(() => expect(screen.getByText(/Building geometry is read-only in this family preview/)).toBeInTheDocument(), { timeout: 120000 });
       expect(prepared.mock.calls.at(-1)![4]).toEqual(assignments);

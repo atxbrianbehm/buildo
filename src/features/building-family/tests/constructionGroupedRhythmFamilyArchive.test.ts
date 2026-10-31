@@ -62,6 +62,26 @@ it("replays a portable rhythm family with real material and fabric source and re
     expect(reopenedPiers.result.members.some(member => Boolean(member.graph.facadePiers) && Boolean(member.graph.upperBayGroups?.length))).toBe(true);
     expect(reopenedPiers.result.members.every(member => JSON.stringify(member.graph.storefrontSign) === JSON.stringify(graph.storefrontSign))).toBe(true);
     expect(reopenedPiers.request.sourceProject.materialSource).toEqual(materials.file);
+    const entrancePolicy = { ...request.policy, schemaVersion: "0.4.0" as const, uncoveredEntrances: true as const };
+    const withEntrances = await createGroupedRhythmFamilyArchive({ ...request, policy: entrancePolicy });
+    expect(await readGroupedRhythmFamilyArchive(JSON.parse(JSON.stringify(withEntrances)))).toEqual(withEntrances);
+    for (const member of withEntrances.result.members) {
+      expect(member.graph.awnings).toEqual(graph.awnings);
+      expect(member.graph.storefrontSign).toEqual(graph.storefrontSign);
+      expect(member.graph.awnings!.map(awning => awning.bayIndex)).not.toContain(member.graph.nodes.find(node => node.type === "PlaceDoor")!.parameters.bayIndex);
+    }
+    expect(withEntrances.request.sourceProject.materialSource).toEqual(materials.file);
+    const entranceFabrics = await createGroupedRhythmFabricArchive({ schemaVersion: "0.1.0", kind: "construction-grouped-rhythm-fabric-archive", family: withEntrances, fabricAssignments: assignments });
+    expect(await readGroupedRhythmFabricArchive(JSON.parse(JSON.stringify(entranceFabrics)))).toEqual(entranceFabrics);
+    const entranceAndPiers = await createGroupedRhythmFamilyArchive({ ...request, policy: { ...entrancePolicy, pierVariation: variation } });
+    expect(await readGroupedRhythmFamilyArchive(JSON.parse(JSON.stringify(entranceAndPiers)))).toEqual(entranceAndPiers);
+    expect(entranceAndPiers.result.members.some(member => Boolean(member.graph.facadePiers))).toBe(true);
+    const badEntrance = structuredClone(withEntrances);
+    badEntrance.result.members[0].graph.nodes.find(node => node.type === "PlaceDoor")!.parameters.bayIndex = 0;
+    const { contentHash: _entranceHash, ...entrancePayload } = badEntrance; void _entranceHash;
+    badEntrance.contentHash = await hashCanonicalJson(entrancePayload);
+    await expect(readGroupedRhythmFamilyArchive(badEntrance)).rejects.toThrow(/does not replay/);
+    await expect(createGroupedRhythmFamilyArchive({ ...request, policy: entrancePolicy, controls: { ...request.controls, lockOpenings: true } })).rejects.toThrow();
     const altered = structuredClone(withPiers);
     if (altered.request.policy.schemaVersion !== "0.3.0") throw new Error("Expected pier policy");
     altered.request.policy.pierVariation = resolveConstructionFamilyPierVariation({ ...variation.source, enabled: false });

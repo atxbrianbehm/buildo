@@ -10,7 +10,8 @@ const policyFields = { kind: z.literal("construction-grouped-rhythm-family-polic
 export const GroupedRhythmFamilyPolicySchema = json.pipe(z.discriminatedUnion("schemaVersion", [
   z.object({ schemaVersion: z.literal("0.1.0"), ...policyFields, scope: z.literal("all-upper-front") }).strict(),
   z.object({ schemaVersion: z.literal("0.2.0"), ...policyFields, scope: z.enum(["all-upper-front", "top-upper-front"]) }).strict(),
-  z.object({ schemaVersion: z.literal("0.3.0"), ...policyFields, scope: z.enum(["all-upper-front", "top-upper-front"]), pierVariation: ConstructionFamilyPierVariationPlanSchema }).strict()
+  z.object({ schemaVersion: z.literal("0.3.0"), ...policyFields, scope: z.enum(["all-upper-front", "top-upper-front"]), pierVariation: ConstructionFamilyPierVariationPlanSchema }).strict(),
+  z.object({ schemaVersion: z.literal("0.4.0"), ...policyFields, scope: z.enum(["all-upper-front", "top-upper-front"]), uncoveredEntrances: z.literal(true), pierVariation: ConstructionFamilyPierVariationPlanSchema.optional() }).strict()
 ]));
 export const GroupedRhythmFamilyReceiptSchema = json.pipe(z.object({ schemaVersion: z.literal("0.1.0"), kind: z.literal("construction-grouped-rhythm-family-receipt"),
   familyId: z.string().min(1), baseReceiptHash: hash, policyHash: hash, materialSourceHash: hash, referenceContentHash: hash,
