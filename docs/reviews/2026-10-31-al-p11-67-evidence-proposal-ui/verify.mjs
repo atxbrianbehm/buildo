@@ -1,0 +1,46 @@
+import { chromium } from "@playwright/test";
+import { createServer } from "vite";
+import { mkdir, readFile } from "node:fs/promises";
+import assert from "node:assert/strict";
+const api = process.argv[2], out = process.argv[3]; assert(["webgl", "webgpu"].includes(api) && out); await mkdir(out, { recursive: false });
+const server = await createServer({ cacheDir: `test-results/al-p11-67-${api}`, plugins: [{ name: "observe-material-calls", enforce: "pre", transform(code, id) {
+  if (!id.replaceAll("\\", "/").endsWith("/materials/providers/proceduralMaterialProvider.ts")) return;
+  return { code: code + "\nconst oldGenerate = ProceduralMaterialProvider.prototype.generate; ProceduralMaterialProvider.prototype.generate = function(...args) { globalThis.__evidenceProviderCalls = (globalThis.__evidenceProviderCalls ?? 0) + 1; return oldGenerate.apply(this, args); };", map: null };
+} }], server: { host: "127.0.0.1", port: 0 } });
+const synthetic = { inputId: "synthetic-input", claims: [{ claimId: "claim-1", text: "Synthetic example: upper front windows have rounded heads.", category: "architecture-and-streetscape", confidence: "medium", sourceInputIds: ["source-a", "source-b"], sourceChunkIds: ["chunk-a", "chunk-b"], attributionMode: "inferred" }], evidence: [{ note: "Synthetic content, not historical evidence." }] };
+let browser;
+try {
+  await server.listen(); browser = await chromium.launch({ channel: "chromium", args: api === "webgpu" ? ["--enable-unsafe-webgpu"] : [] });
+  const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, acceptDownloads: true });
+  await context.addInitScript(disable => { if (disable) Object.defineProperty(navigator, "gpu", { value: undefined, configurable: true }); }, api === "webgl");
+  const page = await context.newPage(), errors = []; page.on("pageerror", error => errors.push(error.message));
+  await page.goto(server.resolvedUrls.local[0] + `#document=evidence-inspection-${api}`, { waitUntil: "domcontentloaded", timeout: 120000 });
+  const root = page.locator(".construction-workspace:visible"); await root.waitFor({ timeout: 120000 });
+  await page.waitForFunction(() => { const el = document.querySelector(".construction-workspace"); return el?.dataset.constructionHash && el.querySelector('[aria-label="Construction inspector"]')?.getAttribute("aria-busy") === "false"; }, undefined, { timeout: 180000 });
+  assert.equal(await root.locator("canvas:visible").first().getAttribute("data-renderer-backend"), api);
+  const before = await root.getAttribute("data-construction-hash"), calls = await page.evaluate(() => globalThis.__evidenceProviderCalls ?? 0);
+  await page.locator("summary").filter({ hasText: /^Generate & vary$/ }).click(); await page.getByText("Inspect research extract", { exact: true }).click();
+  const file = page.getByLabel("Open research file input");
+  await file.setInputFiles({ name: "synthetic-extract.json", mimeType: "application/json", buffer: Buffer.from(JSON.stringify(synthetic)) });
+  await page.getByText("1 architecture candidate · Unreviewed · Coverage unknown").waitFor({ timeout: 180000 });
+  await page.getByText("Source identifiers", { exact: true }).click();
+  assert(await page.getByText("Inputs: source-a, source-b").isVisible()); assert(await page.getByText("Chunks: chunk-a, chunk-b").isVisible());
+  await page.getByLabel("Use this claim for an interpretation").check();
+  await page.getByLabel("Proposed opening head").selectOption("round");
+  await page.getByRole("button", { name: "Create interpretation" }).click();
+  await page.getByText(/Proposed round upper-front opening head/).waitFor();
+  const panel = page.locator(".construction-research-review"); await panel.scrollIntoViewIfNeeded(); await panel.screenshot({ path: `${out}/desktop.png` });
+  const proposedDownload = page.waitForEvent("download"); await page.getByRole("button", { name: "Save interpretation" }).click(); await (await proposedDownload).saveAs(`${out}/proposal.json`);
+  const proposal = JSON.parse(await readFile(`${out}/proposal.json`, "utf8")); assert.equal(proposal.status, "proposed"); assert.equal(proposal.choice.value, "round"); assert.equal(proposal.staged.candidates[0].review, "unreviewed");
+  await page.getByLabel("Open interpretation file input").setInputFiles(`${out}/proposal.json`); await page.getByText(/Proposed round upper-front opening head/).waitFor();
+  const download = page.waitForEvent("download"); await page.getByRole("button", { name: "Save staged file" }).click(); await (await download).saveAs(`${out}/staged.json`);
+  const saved = JSON.parse(await readFile(`${out}/staged.json`, "utf8")); assert.deepEqual(saved.artifact, synthetic); assert.equal(saved.architectureCoverage, "unknown"); assert.equal(saved.candidates[0].review, "unreviewed");
+  await file.setInputFiles({ name: "bad.json", mimeType: "application/json", buffer: Buffer.from("not json") }); await page.getByRole("alert").filter({ hasText: "previous extract is retained" }).waitFor();
+  assert(await page.getByText(synthetic.claims[0].text).isVisible()); await file.setInputFiles(`${out}/staged.json`);
+  await page.getByRole("alert").filter({ hasText: "previous extract is retained" }).waitFor({ state: "hidden" }); assert(await page.getByText(synthetic.claims[0].text).isVisible());
+  await page.getByLabel("Open interpretation file input").setInputFiles(`${out}/proposal.json`); await page.getByText(/Proposed round upper-front opening head/).waitFor();
+  await page.setViewportSize({ width: 390, height: 844 }); await panel.scrollIntoViewIfNeeded(); await panel.screenshot({ path: `${out}/mobile.png` });
+  assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)); assert.equal(await root.getAttribute("data-construction-hash"), before);
+  assert.equal(await page.evaluate(() => globalThis.__evidenceProviderCalls ?? 0), calls); assert.deepEqual(errors, []);
+  console.log(JSON.stringify({ api, staged: true, preserved: true, reopened: true, invalidRetained: true, buildingUnchanged: true, materialProviderCalls: 0 })); await context.close();
+} finally { await browser?.close(); await server.close(); }

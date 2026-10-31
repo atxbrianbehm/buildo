@@ -4,6 +4,8 @@ import type { ConstructionReferenceSnapshot } from "../contracts/constructionGen
 import type { ConstructionGenerationControls, ConstructionGenerationLineage } from "../state/constructionGenerationState";
 import { MetagrinderEvidenceReview } from "./MetagrinderEvidenceReview";
 import type { stageMetagrinderExtract } from "../core/metagrinderExtractStaging";
+import type { BayConstructionGraph } from "../contracts/bayConstructionGraph";
+import type { createConstructionEvidenceProposal } from "../core/constructionEvidenceProposal";
 
 interface Props {
   controls: ConstructionGenerationControls; lineage: ConstructionGenerationLineage | null;
@@ -11,8 +13,10 @@ interface Props {
   disabled: boolean; onChange: (controls: ConstructionGenerationControls) => void; onGenerate: (reroll: boolean) => void;
   materialChangesLocked?: boolean;
   onSaveResearch: (value: Awaited<ReturnType<typeof stageMetagrinderExtract>>) => void;
+  proposalGraph?: BayConstructionGraph | null;
+  onSaveProposal?: (value: Awaited<ReturnType<typeof createConstructionEvidenceProposal>>) => void;
 }
-export function ConstructionGenerationPanel({ controls, lineage, reference, onReferenceFile, disabled, onChange, onGenerate, materialChangesLocked, onSaveResearch }: Props) {
+export function ConstructionGenerationPanel({ controls, lineage, reference, onReferenceFile, disabled, onChange, onGenerate, materialChangesLocked, onSaveResearch, proposalGraph, onSaveProposal }: Props) {
   const recipes = getConstructionRecipeOptions();
   const recipeId = controls.recipeId ?? lineage?.source.recipe.id ?? DEFAULT_CONSTRUCTION_RECIPE_ID;
   const recipe = recipes.find(item => item.id === recipeId);
@@ -51,7 +55,7 @@ export function ConstructionGenerationPanel({ controls, lineage, reference, onRe
           <button type="button" onClick={() => onGenerate(true)}>Reroll unlocked</button></div>
       </fieldset>
     </form>
-    <MetagrinderEvidenceReview onSave={onSaveResearch} />
+    <MetagrinderEvidenceReview onSave={onSaveResearch} graph={proposalGraph} onSaveProposal={onSaveProposal} />
     {lineage ? <details><summary>Generation sources and locks</summary>
       <p>{lineage.source.reference.id} · revision {lineage.source.reference.revision} · {lineage.source.reference.origin.kind}</p>
       <p>Architecture coverage: {lineage.source.reference.architectureCoverage}. {lineage.source.reference.coverageNotes}</p>
