@@ -236,6 +236,7 @@ describe("live construction controls and ownership", () => {
       fireEvent.change(screen.getByLabelText("Open family file"), { target: { files: [new File([JSON.stringify(archive)], "rhythm.json", { type: "application/json" })] } });
       await waitFor(() => expect(screen.getByText(/Archived family preview is read-only/)).toBeInTheDocument(), { timeout: 120000 });
       expect(workspace.dataset.constructionPreview).toBe("family"); expect(screen.getByRole("button", { name: "Save family" })).toBeEnabled();
+      expect(screen.getByLabelText("Grouped window placement")).toHaveValue("all-upper-front");
       expect(screen.queryByRole("button", { name: "Edit selected building" })).not.toBeInTheDocument(); expect(view.onSessionChange).toHaveBeenCalledTimes(1);
       const displayed = await prepared.mock.results.at(-1)!.value as fixtures.BayConstructionFixture;
       expect(displayed.familyRuntime.metrics.buildingCount).toBe(6);
