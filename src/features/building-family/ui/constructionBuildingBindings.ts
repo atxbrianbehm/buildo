@@ -10,7 +10,7 @@ export function supportsGroupedConstruction(graph: BayConstructionGraph) {
     nodes: input.nodes.map(node => ({ id: node.id, type: node.type,
       ...("input" in node ? { input: node.input } : {}), ...("inputs" in node ? { inputs: node.inputs } : {}) })).sort((a,b) => a.id.localeCompare(b.id)) });
   const base = createBuildingConstructionGraph(graph.documentId);
-  return ["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0", "0.14.0", "0.15.0", "0.16.0"].includes(graph.schemaVersion) && signature(graph) === signature(["0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0", "0.14.0", "0.15.0", "0.16.0"].includes(graph.schemaVersion) ? withConstructionOpeningEdits(base) : graph.schemaVersion === "0.6.0" ? withConstructionStorefront(base, 0) : base);
+  return ["0.4.0", "0.5.0", "0.6.0", "0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0", "0.14.0", "0.15.0", "0.16.0", "0.17.0"].includes(graph.schemaVersion) && signature(graph) === signature(["0.7.0", "0.8.0", "0.9.0", "0.10.0", "0.11.0", "0.12.0", "0.13.0", "0.14.0", "0.15.0", "0.16.0", "0.17.0"].includes(graph.schemaVersion) ? withConstructionOpeningEdits(base) : graph.schemaVersion === "0.6.0" ? withConstructionStorefront(base, 0) : base);
 }
 
 /** Options come from accepted semantic entries, never guessed instance positions. */
