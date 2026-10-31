@@ -84,11 +84,11 @@ export function ConstructionBuildingControls({ graph, fields, windowCount, store
             {frontageChosen ? <>
               {storefront ? <>
                 <label className="construction-grouped__field construction-grouped__assembly"><span><strong>Display lights</strong><small>Separate panes across each front display window.</small></span>
-                  <select aria-label="Display lights" disabled={pierProtected} value={graph.storefrontDivision?.displayLights ?? 1} onChange={event => onStorefrontDivisionChange("displayLights", Number(event.currentTarget.value))}>
+                  <select aria-label="Display lights" value={graph.storefrontDivision?.displayLights ?? 1} onChange={event => onStorefrontDivisionChange("displayLights", Number(event.currentTarget.value))}>
                     <option value={1}>One pane</option><option value={2}>Two panes</option>
                   </select></label>
                 <label className="construction-grouped__field construction-grouped__assembly"><span><strong>Transom lights</strong><small>Separate panes above each display and the entrance.</small></span>
-                  <select aria-label="Transom lights" disabled={pierProtected} value={graph.storefrontDivision?.transomLights ?? 1} onChange={event => onStorefrontDivisionChange("transomLights", Number(event.currentTarget.value))}>
+                  <select aria-label="Transom lights" value={graph.storefrontDivision?.transomLights ?? 1} onChange={event => onStorefrontDivisionChange("transomLights", Number(event.currentTarget.value))}>
                     <option value={1}>One pane</option><option value={2}>Two panes</option><option value={3}>Three panes</option>
                   </select></label>
                 {graph.storefrontDivision ? <p>Keep edited assemblies or lock openings to retain these divisions when generating.</p> : null}
