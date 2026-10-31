@@ -19,7 +19,7 @@ export async function resolveConstructionGroupedRhythmFamilyStudy(input: unknown
     if (!opening || !storeys || !bays) throw new Error("Family member lacks the operators needed for a facade rhythm.");
     const applied = opening.parameters.upperFrontRoundHead !== 1;
     const construction = applied ? (await compileSourceAwareGroupedFacadeRhythmStudy({ schemaVersion: "0.1.0", kind: "construction-grouped-facade-rhythm-study", graph,
-      firstFloor: 1, lastFloor: storeys.parameters.count - 1, firstBay: 0, lastBay: bays.parameters.count - 1,
+      firstFloor: policy.scope === "top-upper-front" ? storeys.parameters.count - 1 : 1, lastFloor: storeys.parameters.count - 1, firstBay: 0, lastBay: bays.parameters.count - 1,
       memberCount: policy.memberCount, memberWidthM: policy.memberWidthM, pierWidthM: policy.pierWidthM }, member.lineage, { lockOpenings: controls.lockOpenings })).construction : member.construction;
     abort();
     BayConstructionWorkerReplySchema.parse({ schemaVersion: construction.graph.schemaVersion, type: "bay-result", requestId: members.length + 1, result: construction });

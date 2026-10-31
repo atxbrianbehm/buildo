@@ -35,6 +35,10 @@ it("replays a portable rhythm family with real material and fabric source and re
     const archive = await createGroupedRhythmFamilyArchive(request), reopened = await readGroupedRhythmFamilyArchive(JSON.parse(JSON.stringify(archive)));
     expect(reopened).toEqual(archive); expect(reopened.request.sourceProject.materialSource).toEqual(materials.file); expect(reopened.request.sourceProject.awningFabric).toEqual(fabric);
     expect(reopened.result.members).toHaveLength(6); expect(reopened.result.members.filter(member => member.graph.upperBayGroups?.length)).toHaveLength(3);
+    const top = await createGroupedRhythmFamilyArchive({ ...request, policy: { ...request.policy, schemaVersion: "0.2.0", scope: "top-upper-front" } });
+    const reopenedTop = await readGroupedRhythmFamilyArchive(JSON.parse(JSON.stringify(top)));
+    expect(reopenedTop).toEqual(top);
+    expect(reopenedTop.result.members.some(member => (member.graph.upperBayGroups ?? []).length > 0 && member.graph.upperBayGroups!.every(group => group.floorIndex === member.graph.nodes.find(node => node.type === "Storeys")!.parameters.count - 1))).toBe(true);
     const edited = structuredClone(archive); edited.result.members[0].graph.nodes.find(node => node.type === "Storeys")!.parameters.count = 6;
     const { contentHash: _old, ...payload } = edited; void _old; edited.contentHash = await hashCanonicalJson(payload);
     await expect(readGroupedRhythmFamilyArchive(edited)).rejects.toThrow(/does not replay/);
