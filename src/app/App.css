@@ -3620,6 +3620,7 @@ h1 {
 .construction-workspace--grouped { grid-template-columns: minmax(0, 1.85fr) minmax(360px, 1fr); gap: 20px; }
 .construction-workspace__toolbar { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
 .construction-workspace__toolbar > p { font-size: 1rem; font-weight: 500; margin: 0; color: #435149; }
+.construction-evidence-notice { grid-column: 1 / -1; margin: 0; font-size: .85rem; line-height: 1.4; color: #435149; }
 .construction-project-actions, .construction-project-actions .construction-history { display: flex; align-items: center; gap: 8px; margin: 0; }
 .construction-workspace__toolbar button { min-height: 42px; padding: 9px 18px; }
 .construction-workspace--grouped .assembly-hall__intro { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); }

@@ -73,3 +73,20 @@ it("lets an artist save and reopen an explicit interpretation, rejecting a chang
   expect(await screen.findByRole("alert")).toHaveTextContent("changed building");
   expect(screen.getByText(synthetic.claims[0].text)).toBeInTheDocument();
 });
+
+it("requires an explicit unlocked apply action and marks the same proposal as applied", async () => {
+  const graph = createBuildingConstructionGraph("apply_review"), apply = vi.fn(), save = vi.fn();
+  const view = render(<MetagrinderEvidenceReview onSave={() => {}} graph={graph} onSaveProposal={save} onApplyProposal={apply} applicationLocked />);
+  fireEvent.click(screen.getByText("Inspect research extract"));
+  fireEvent.change(screen.getByLabelText("Open research file input"), { target: { files: [file(JSON.stringify(synthetic))] } });
+  await screen.findByText(synthetic.claims[0].text);
+  fireEvent.click(screen.getByLabelText("Use this claim for an interpretation"));
+  fireEvent.change(screen.getByLabelText("Proposed opening head"), { target: { value: "round" } });
+  fireEvent.click(screen.getByRole("button", { name: "Create interpretation" }));
+  expect(await screen.findByRole("button", { name: "Apply to building" })).toBeDisabled();
+  view.rerender(<MetagrinderEvidenceReview onSave={() => {}} graph={graph} onSaveProposal={save} onApplyProposal={apply} />);
+  fireEvent.click(screen.getByRole("button", { name: "Apply to building" })); expect(apply).toHaveBeenCalledTimes(1);
+  view.rerender(<MetagrinderEvidenceReview onSave={() => {}} graph={graph} onSaveProposal={save} onApplyProposal={apply} appliedProposalHash={apply.mock.calls[0][0].contentHash} />);
+  expect(screen.getByText(/Applied round upper-front opening head/)).toHaveTextContent("Saving the building includes this evidence record");
+  expect(screen.getByRole("button", { name: "Apply to building" })).toBeDisabled();
+});

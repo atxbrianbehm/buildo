@@ -15,8 +15,11 @@ interface Props {
   onSaveResearch: (value: Awaited<ReturnType<typeof stageMetagrinderExtract>>) => void;
   proposalGraph?: BayConstructionGraph | null;
   onSaveProposal?: (value: Awaited<ReturnType<typeof createConstructionEvidenceProposal>>) => void;
+  onApplyProposal?: (value: Awaited<ReturnType<typeof createConstructionEvidenceProposal>>) => void;
+  applicationLocked?: boolean;
+  appliedProposalHash?: string;
 }
-export function ConstructionGenerationPanel({ controls, lineage, reference, onReferenceFile, disabled, onChange, onGenerate, materialChangesLocked, onSaveResearch, proposalGraph, onSaveProposal }: Props) {
+export function ConstructionGenerationPanel({ controls, lineage, reference, onReferenceFile, disabled, onChange, onGenerate, materialChangesLocked, onSaveResearch, proposalGraph, onSaveProposal, onApplyProposal, applicationLocked, appliedProposalHash }: Props) {
   const recipes = getConstructionRecipeOptions();
   const recipeId = controls.recipeId ?? lineage?.source.recipe.id ?? DEFAULT_CONSTRUCTION_RECIPE_ID;
   const recipe = recipes.find(item => item.id === recipeId);
@@ -55,7 +58,7 @@ export function ConstructionGenerationPanel({ controls, lineage, reference, onRe
           <button type="button" onClick={() => onGenerate(true)}>Reroll unlocked</button></div>
       </fieldset>
     </form>
-    <MetagrinderEvidenceReview onSave={onSaveResearch} graph={proposalGraph} onSaveProposal={onSaveProposal} />
+    <MetagrinderEvidenceReview onSave={onSaveResearch} graph={proposalGraph} onSaveProposal={onSaveProposal} onApplyProposal={onApplyProposal} applicationLocked={applicationLocked} appliedProposalHash={appliedProposalHash} />
     {lineage ? <details><summary>Generation sources and locks</summary>
       <p>{lineage.source.reference.id} · revision {lineage.source.reference.revision} · {lineage.source.reference.origin.kind}</p>
       <p>Architecture coverage: {lineage.source.reference.architectureCoverage}. {lineage.source.reference.coverageNotes}</p>
