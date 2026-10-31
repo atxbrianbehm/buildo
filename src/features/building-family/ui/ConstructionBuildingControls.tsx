@@ -25,10 +25,11 @@ const frontageProportions = [
   ["frontage", "recessM", "Storefront recess (m)", "Distance from masonry face to the storefront frame."]
 ] as const;
 
-export function ConstructionBuildingControls({ graph, fields, windowCount, storefrontCount = 0, localWidthCount = 0, disabled, dirty, onFieldChange, onStorefrontDivisionChange, onApply, onRevert, onAdvanced }: {
+export function ConstructionBuildingControls({ graph, fields, windowCount, storefrontCount = 0, localWidthCount = 0, disabled, dirty, onFieldChange, onStorefrontDivisionChange, onClearStorefrontDivision, onApply, onRevert, onAdvanced }: {
   graph: BayConstructionGraph; fields: Fields; windowCount: number; storefrontCount?: number; localWidthCount?: number; disabled: boolean; dirty: boolean;
   onFieldChange: (nodeId: string, field: string, text: string) => void; onApply: () => void; onRevert: () => void; onAdvanced: () => void;
   onStorefrontDivisionChange: (field: "displayLights" | "transomLights", value: number) => void;
+  onClearStorefrontDivision: () => void;
 }) {
   const pierProtected = graph.schemaVersion === "0.15.0" || graph.schemaVersion === "0.16.0" || graph.schemaVersion === "0.17.0";
   const [active, setActive] = useState<string | null>("openings"), prefix = useId();
@@ -92,6 +93,10 @@ export function ConstructionBuildingControls({ graph, fields, windowCount, store
                     <option value={1}>One pane</option><option value={2}>Two panes</option><option value={3}>Three panes</option>
                   </select></label>
                 {graph.storefrontDivision ? <p>Keep edited assemblies or lock openings to retain these divisions when generating.</p> : null}
+                {graph.storefrontDivision && ["0.12.0", "0.15.0", "0.16.0", "0.17.0"].includes(graph.schemaVersion) ? <>
+                  <button type="button" onClick={onClearStorefrontDivision}>Clear pane divisions</button>
+                  <p>Clear the saved pane choice and return to single panes. Apply changes to keep the reset.</p>
+                </> : null}
               </> : <p>Apply the storefront first to choose its glazing divisions.</p>}
               <label className="construction-grouped__field"><span><strong>Entrance bay</strong><small id={prefix+"entrance"}>Front bays are numbered from left to right.</small></span>
                 <select aria-label="Entrance bay" aria-describedby={prefix+"entrance"} value={fields.entrance?.bayIndex ?? "1"} disabled={frontageBypassed} onChange={event => onFieldChange("entrance","bayIndex",event.currentTarget.value)}>

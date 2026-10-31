@@ -3,7 +3,7 @@ import { CONSTRUCTION_CORNICE_LAYOUTS, withConstructionCorniceLayout } from "../
 import { CONSTRUCTION_PARAPET_SILHOUETTES, withConstructionParapetSilhouette } from "../core/constructionParapetVocabulary";
 import { withConstructionRoundHead } from "../core/constructionRoundHeadVocabulary";
 import { withConstructionStorefront, constructionHasStorefront, CONSTRUCTION_FRONTAGE_OPTIONS } from "../core/constructionStorefrontGraph";
-import { withConstructionStorefrontDivision } from "../core/constructionStorefrontDivisionGraph";
+import { withConstructionStorefrontDivision, withoutConstructionStorefrontDivision } from "../core/constructionStorefrontDivisionGraph";
 import { CONSTRUCTION_WINDOW_LAYOUTS, upgradeConstructionWindowVocabulary } from "../core/constructionWindowVocabulary";
 import { ConstructionBuildingControls } from "./ConstructionBuildingControls";
 import { ConstructionOpeningControls } from "./ConstructionOpeningControls";
@@ -935,6 +935,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       </section> : null}
       {buildingMode && !advancedOpen && accepted ? <ConstructionBuildingControls graph={draft} fields={fields} windowCount={groupedWindowCount(accepted.construction.graph,accepted.ir)} storefrontCount={groupedStorefrontCount(accepted.construction.graph,accepted.ir)} localWidthCount={constructionOpeningOptions(accepted.construction.graph,accepted.ir).filter(option=>option.overridden).length}
         disabled={disabled || !viewerReady || Boolean(previewNode)} dirty={buildingDirty}
+        onClearStorefrontDivision={() => { setDraft(withoutConstructionStorefrontDivision(draft)); setDirty(true); }}
         onStorefrontDivisionChange={(field, value) => {
           const division = { displayLights: 1, transomLights: 1, ...draft.storefrontDivision, [field]: value };
           if (division.displayLights === 1 && division.transomLights === 1 && draft.schemaVersion === "0.12.0") {
