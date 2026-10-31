@@ -417,11 +417,14 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
               throw new Error("Facade pier study requires all upper-front floors and bays in the wall output.");
             const band = graph.nodes.find(item => item.type === "ProfileTrim" && !item.bypassed);
             const roof = graph.nodes.find(item => item.type === "BuildingRoof" && !item.bypassed);
+            const meetBands = pierStudy.schemaVersion === "0.2.0" && band?.type === "ProfileTrim";
+            if (pierStudy.schemaVersion === "0.2.0" && !meetBands) throw new Error("The pier junction study requires an active storey band.");
             const floors = floorIndices.map(floorIndex => {
               const floorCells = frontCells.filter(cell => cell.scope.floorIndex === floorIndex), scope = floorCells[0].scope;
-              const topReserve = floorIndex === building.floorTopsM.length - 1 ? (roof?.type === "BuildingRoof" ? roof.parameters.corniceHeightM : 0) : (band?.type === "ProfileTrim" ? band.parameters.heightM : 0);
-              return { floorIndex, bottomM: scope.originM[1] + pierStudy.clearanceM,
-                topM: scope.originM[1] + scope.sizeM[1] - topReserve - pierStudy.clearanceM,
+              const topFloor = floorIndex === building.floorTopsM.length - 1;
+              const topReserve = topFloor ? (roof?.type === "BuildingRoof" ? roof.parameters.corniceHeightM : 0) : (band?.type === "ProfileTrim" ? band.parameters.heightM : 0);
+              return { floorIndex, bottomM: scope.originM[1] + (meetBands ? 0 : pierStudy.clearanceM),
+                topM: scope.originM[1] + scope.sizeM[1] - topReserve - (meetBands && !topFloor ? 0 : pierStudy.clearanceM),
                 openingSpans: floorCells.map(cell => [cell.scope.opening!.centerAlongM - cell.scope.opening!.widthM / 2 - 0.1,
                   cell.scope.opening!.centerAlongM + cell.scope.opening!.widthM / 2 + 0.1] as [number, number]) };
             });

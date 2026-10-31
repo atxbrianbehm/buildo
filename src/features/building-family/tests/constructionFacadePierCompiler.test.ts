@@ -40,6 +40,25 @@ describe("facade pier compiler study", () => {
     expect(study.ir.meshBatches.filter(batch => batch.role !== "facade-pier")).toEqual(baseline.ir.meshBatches);
     expect(study.ir.instanceBatches).toEqual(baseline.ir.instanceBatches);
   });
+  it("studies pier ends meeting storey bands without changing legacy geometry", async () => {
+    const input = request(), old = await evaluateConstructionFacadePierStudy(input);
+    const study = { ...input, schemaVersion: "0.2.0", junction: "meet-storey-bands" };
+    const result = await evaluateConstructionFacadePierStudy(study);
+    const oldPiers = old.ir.meshBatches.filter(batch => batch.role === "facade-pier"), piers = result.ir.meshBatches.filter(batch => batch.role === "facade-pier");
+    expect(result.graph).toEqual(input.graph);
+    expect(result.ir.meshBatches.filter(batch => batch.role !== "facade-pier")).toEqual(old.ir.meshBatches.filter(batch => batch.role !== "facade-pier"));
+    expect(result.ir.instanceBatches).toEqual(old.ir.instanceBatches); expect(result.prototypes).toEqual(old.prototypes);
+    for (const [index, pier] of piers.entries()) {
+      const ys = (batch: typeof pier) => Array.from(batch.positions!).filter((_, i) => i % 3 === 1);
+      expect(Math.min(...ys(pier))).toBeCloseTo(Math.min(...ys(oldPiers[index])) - input.clearanceM, 4);
+      const floor = Number(pier.batchId.match(/\/floor\/(\d+)\//)![1]);
+      expect(Math.max(...ys(pier))).toBeCloseTo(Math.max(...ys(oldPiers[index])) + (floor === 2 ? 0 : input.clearanceM), 4);
+    }
+    expect(await evaluateConstructionFacadePierStudy(study)).toEqual(result);
+    expect(await evaluateConstructionFacadePierStudy(input)).toEqual(old);
+    const noBand = structuredClone(study); noBand.graph.nodes.find(node => node.type === "ProfileTrim")!.bypassed = true;
+    await expect(evaluateConstructionFacadePierStudy(noBand)).rejects.toThrow(/active storey band/);
+  });
   it("derives grouped opening clearances and rejects oversized piers without changing the original graph", async () => {
     const input = request(); input.graph = withConstructionGroupedBays(input.graph, [{ storeysNodeId: "facade", floorIndex: 1, bayIndex: 0, memberCount: 2, memberWidthM: 0.6, pierWidthM: 0.24 }]);
     const before = structuredClone(input.graph), result = await evaluateConstructionFacadePierStudy(input);
