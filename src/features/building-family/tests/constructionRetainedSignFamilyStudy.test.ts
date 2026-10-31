@@ -3,10 +3,12 @@ import { createBuildingConstructionGraph } from "../contracts/bayConstructionGra
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { withConstructionAwnings } from "../core/constructionAwningGraph";
 import { withConstructionAwningSupports } from "../core/constructionAwningSupportGraph";
-import { withConstructionStorefrontSign } from "../core/constructionStorefrontSignGraph";
+import { withConstructionStorefrontSign, withoutConstructionStorefrontSign } from "../core/constructionStorefrontSignGraph";
+import { withConstructionFacadePiers } from "../core/constructionFacadePierGraph";
 import { withConstructionSignAwningClearance } from "../core/constructionSignAwningGraph";
 import { resolveConstructionFamilyPlan } from "../core/constructionFamilyPlan";
 import { resolveConstructionFamilyComposition } from "../core/constructionFamilyComposition";
+import { resolveConstructionFamilyPierVariation } from "../core/constructionFamilyPierVariation";
 import { normalizeBuildingSpec } from "../core/specNormalizer";
 import { planConstructionReferenceMaterials } from "../materials/constructionReferenceMaterials";
 import { defaultConstructionGenerationControls, resolveWorkbenchGeneration, type ConstructionGenerationLineage } from "../state/constructionGenerationState";
@@ -171,6 +173,31 @@ describe("retained-sign family study", () => {
     }
     const snapshot = structuredClone(result.receipt);
     expect((await resolveConstructionRetainedSignFamilyStudy(plan, lineage, defaultConstructionGenerationControls, composition)).receipt).toEqual(snapshot);
+  }, 120000);
+  it("varies facade piers while retaining the signed storefront and records its policy", async () => {
+    const { graph, plan, lineage } = await fixture();
+    const composition = resolveConstructionFamilyComposition({ schemaVersion: "0.4.0", kind: "construction-family-composition-request", familySeed: plan.source.familySeed, openingLock: false,
+      policy: { openings: false, frontage: false, roof: true, groupedBays: false, storefrontLights: false, massing: true } });
+    const variation = resolveConstructionFamilyPierVariation({ schemaVersion: "0.1.0", kind: "construction-family-pier-variation-request", familySeed: plan.source.familySeed, enabled: true, openingLock: false });
+    const family = await resolveConstructionRetainedSignFamilyStudy(plan, lineage, defaultConstructionGenerationControls, composition, undefined, variation);
+    expect(family.receipt.schemaVersion).toBe("0.3.0");
+    if (family.receipt.schemaVersion !== "0.3.0") throw new Error("Expected pier variation receipt.");
+    expect(family.receipt.pierVariationHash).toBe(await hashCanonicalJson(variation));
+    expect(new Set(variation.members.map(member => member.treatment))).toEqual(new Set(["none", "slender", "projecting"]));
+    for (const [index, member] of family.members.entries()) {
+      expect(Boolean(member.construction.graph.facadePiers)).toBe(variation.members[index].treatment !== "none");
+      expect(member.construction.ir.meshBatches.some(batch => batch.role === "facade-pier")).toBe(variation.members[index].treatment !== "none");
+      expect(member.construction.graph.storefrontSign).toEqual(graph.storefrontSign); expect(member.construction.graph.awnings).toEqual(graph.awnings);
+      expect(member.construction.graph.awningSupports).toEqual(graph.awningSupports); expect(member.construction.graph.signAwningGapM).toBe(graph.signAwningGapM);
+      expect(member.lineage.materialPlan.materialInputsHash).toBe(lineage.materialPlan.materialInputsHash);
+    }
+    expect((await resolveConstructionRetainedSignFamilyStudy(plan, lineage, defaultConstructionGenerationControls, composition, undefined, variation)).receipt).toEqual(family.receipt);
+    const mismatched = resolveConstructionFamilyPierVariation({ ...variation.source, familySeed: "another-seed" });
+    await expect(resolveConstructionRetainedSignFamilyStudy(plan, lineage, defaultConstructionGenerationControls, composition, undefined, mismatched)).rejects.toThrow(/seed/);
+    const directive = { pierWidthM: 0.28, projectionM: 0.18, endHeightM: 0.15, clearanceM: 0.04 };
+    const authored = withConstructionSignAwningClearance(withConstructionStorefrontSign(withConstructionFacadePiers(withoutConstructionStorefrontSign(graph), directive), graph.storefrontSign!), graph.signAwningGapM!);
+    const retained = await resolveConstructionRetainedSignFamilyStudy(resolveConstructionFamilyPlan({ ...plan.source, graph: authored }), lineage, defaultConstructionGenerationControls, composition, undefined, variation);
+    expect(retained.members.every(member => JSON.stringify(member.construction.graph.facadePiers) === JSON.stringify(directive))).toBe(true);
   }, 120000);
   it("records final source-aware rhythm geometry across a mixed-head family", async () => {
     const { graph, plan, lineage } = await fixture();
