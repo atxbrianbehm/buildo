@@ -7,14 +7,15 @@ interface Props {
   controls: ConstructionGenerationControls; lineage: ConstructionGenerationLineage | null;
   reference: ConstructionReferenceSnapshot | null; onReferenceFile: (file: File) => void;
   disabled: boolean; onChange: (controls: ConstructionGenerationControls) => void; onGenerate: (reroll: boolean) => void;
+  materialChangesLocked?: boolean;
 }
-export function ConstructionGenerationPanel({ controls, lineage, reference, onReferenceFile, disabled, onChange, onGenerate }: Props) {
+export function ConstructionGenerationPanel({ controls, lineage, reference, onReferenceFile, disabled, onChange, onGenerate, materialChangesLocked }: Props) {
   const recipes = getConstructionRecipeOptions();
   const recipeId = controls.recipeId ?? lineage?.source.recipe.id ?? DEFAULT_CONSTRUCTION_RECIPE_ID;
   const recipe = recipes.find(item => item.id === recipeId);
   const referenceFile = useRef<HTMLInputElement>(null);
   const text = (field: "buildingSeed" | "materialSeed" | "trimSeed", label: string) => <label><span>{label}</span>
-    <input aria-label={label} value={controls[field]} onChange={event => onChange({ ...controls, [field]: event.currentTarget.value })} /></label>;
+    <input aria-label={label} disabled={materialChangesLocked && field === "materialSeed"} value={controls[field]} onChange={event => onChange({ ...controls, [field]: event.currentTarget.value })} /></label>;
   return <section className="construction-generation" aria-label="Building generation" data-generation-source={lineage?.source.contentHash}
     data-generation-material-inputs={lineage?.materialPlan.materialInputsHash} data-generation-recipe={lineage?.source.recipe.id}>
     <form onSubmit={event => { event.preventDefault(); onGenerate(false); }}>
@@ -42,7 +43,7 @@ export function ConstructionGenerationPanel({ controls, lineage, reference, onRe
           {([ ["lockFootprint", "Lock footprint"], ["lockStoreys", "Lock storeys"], ["lockOpenings", "Lock openings"], ["preserveAuthored", "Keep edited dimensions and assemblies"] ] as const).map(([field, label]) =>
             <label key={field}><input type="checkbox" aria-label={label} checked={controls[field]} onChange={event => onChange({ ...controls, [field]: event.currentTarget.checked })} /><span>{label}</span></label>)}
         </div>
-        <p>Reroll varies unlocked construction. Keep edited dimensions and assemblies retains your cornice treatment. That setting, or Lock openings, retains your window assembly, grouped openings and ground frontage. Surface finishes stay yours. A changed material seed replaces the material library and starts a new undo history.</p>
+        <p>Reroll varies unlocked construction. Keep edited dimensions and assemblies retains your cornice treatment. That setting, or Lock openings, retains your window assembly, grouped openings and ground frontage. Surface finishes stay yours. {materialChangesLocked ? "For a sign-bearing building, keep edited choices enabled; its existing material library is pinned." : "A changed material seed replaces the material library and starts a new undo history."}</p>
         <div className="control-panel__actions"><button type="submit">Generate building</button>
           <button type="button" onClick={() => onGenerate(true)}>Reroll unlocked</button></div>
       </fieldset>
