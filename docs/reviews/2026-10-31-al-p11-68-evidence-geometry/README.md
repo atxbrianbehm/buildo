@@ -1,0 +1,9 @@
+# AL.P11.68: Apply a proposed opening-head interpretation
+
+The application operation takes a proposal, its exact original graph, and a caller-declared generation source (or explicit null). It checks the proposal, rejects an opening-head pin in the supplied source, requires the registered opening operator to reach the compiled output, changes the upper-front head, and compiles the result. Newer graph versions retain their existing directives rather than being downgraded. A versioned application record retains the original graph, proposed claim, declared source and resulting graph; reopening replays the operation.
+
+The source declaration must come from the owning workspace: a null value is not proof that no external lock exists, and matching a document ID does not authenticate lineage. The current workbench does not yet apply this operation, store the record in a building project, or enforce its live UI locks. The next integration must supply the actual lineage and protect pending edits and locks. The source claim remains unreviewed, and this is not a historical validation or live UTDG connection.
+
+The [before](before.png) and [after](after.png) images are actual WebGL renders using a synthetic claim and the same demo materials. The application changes flat upper heads to round geometry while retaining grouped windows, piers, sign, awning and supports. Reproduce with `node docs/reviews/2026-10-31-al-p11-68-evidence-geometry/render.mjs`. Focused tests check changed wall geometry, version 0.17 retention, stale proposals, a pinned opening, foreign lineage, replay and tampering. Visual approval remains separate.
+
+Validation passed: typecheck, lint, production build, focused geometry and replay tests, full suite (2,152 tests in 188 files), standard browser smoke, and the before-and-after WebGL render. The production build retains its existing chunk-size warning. The images are also in the Buildo phone review gallery.
