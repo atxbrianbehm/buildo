@@ -1,6 +1,8 @@
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { withConstructionCorniceLayout } from "../core/constructionCorniceVocabulary";
 import { withConstructionParapetSilhouette } from "../core/constructionParapetVocabulary";
+import { withConstructionFacadePiers } from "../core/constructionFacadePierGraph";
+import { withConstructionStorefrontSign } from "../core/constructionStorefrontSignGraph";
 import { groupedStorefrontCount } from "../ui/constructionBuildingBindings";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
@@ -9,6 +11,19 @@ import { supportsGroupedConstruction, groupedWindowCount } from "../ui/construct
 import { createBuildingConstructionGraph } from "../contracts/bayConstructionGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
 afterEach(cleanup);
+
+it("offers glazing divisions without unlocking unrelated controls on a signed pier building", () => {
+  const storefront = withConstructionStorefront(createBuildingConstructionGraph(), 1);
+  const graph = withConstructionStorefrontSign(withConstructionFacadePiers(storefront, { pierWidthM: 0.28, projectionM: 0.18, endHeightM: 0.15, clearanceM: 0.04 }), { bayIndex: 0, heightM: 0.18, projectionM: 0.08, frameWidthM: 0.035 });
+  const view = mount(graph);
+  fireEvent.click(screen.getByText("Ground floor", { selector: "summary" }));
+  expect(screen.getByRole("combobox", { name: "Ground frontage" })).toBeDisabled();
+  const display = screen.getByRole("combobox", { name: "Display lights" }), transom = screen.getByRole("combobox", { name: "Transom lights" });
+  expect(display).toBeEnabled(); expect(transom).toBeEnabled();
+  fireEvent.change(display, { target: { value: "2" } }); fireEvent.change(transom, { target: { value: "3" } });
+  expect(view.onStorefrontDivisionChange).toHaveBeenCalledWith("displayLights", 2);
+  expect(view.onStorefrontDivisionChange).toHaveBeenCalledWith("transomLights", 3);
+});
 
 it("offers the front parapet choice while preserving the grouped graph", () => {
   const graph = withConstructionParapetSilhouette(withConstructionCorniceLayout(createBuildingConstructionGraph(), 2), 1);
