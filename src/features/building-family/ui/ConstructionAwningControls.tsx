@@ -3,28 +3,30 @@ import type { BayConstructionGraph } from "../contracts/bayConstructionGraph";
 import type { ConstructionAwningFabricArtifact } from "../contracts/constructionAwningFabric";
 
 /** A single explicit front-bay scope; multiple bays can be authored one at a time. */
-export function ConstructionAwningControls({ graph, disabled, unavailableReason, onChange, fabric, fabricDisabled, onFabricChange, supportDisabled, onSupportChange }: {
+export function ConstructionAwningControls({ graph, disabled, unavailableReason, onChange, fabric, fabricDisabled, onFabricChange, supportDisabled, onSupportChange, lockedBayIndex, dimensionsOnly }: {
   graph: BayConstructionGraph; disabled: boolean; unavailableReason?: string; onChange: (bayIndex: number, enabled: boolean, dimensions?: { projectionM: number; dropM: number; valanceHeightM: number }) => void;
   fabric?: ConstructionAwningFabricArtifact; fabricDisabled?: boolean; supportDisabled?: boolean; onSupportChange?: (bayIndex: number, enabled: boolean) => void;
+  lockedBayIndex?: number; dimensionsOnly?: boolean;
   onFabricChange?: (pattern: "solid" | "striped", primary: [number, number, number], secondary: [number, number, number]) => void;
 }) {
   const [bayIndex, setBay] = useState(0);
   const count = graph.nodes.find(node => node.type === "SplitBays")?.parameters.count ?? 0;
-  const selected = Math.min(bayIndex, Math.max(0, count - 1));
+  const selected = Math.min(lockedBayIndex ?? bayIndex, Math.max(0, count - 1));
   const awning = graph.awnings?.find(item => item.bayIndex === selected);
   const present = Boolean(awning);
   if (!count) return null;
   return <section className="construction-grouped-bay" aria-label="Storefront awnings">
     <h3>Storefront awnings</h3>
     <p>Choose a front bay. The first awning starts with striped demo fabric; its source is saved separately.</p>
+    {dimensionsOnly ? <p>This awning shares a bay with the sign. Its dimensions can be adjusted while the other awning controls remain unavailable.</p> : null}
     {unavailableReason ? <p>{unavailableReason}</p> : null}
     <fieldset disabled={disabled}>
-      <label>Bay <select aria-label="Awning bay" value={selected} onChange={event => setBay(Number(event.currentTarget.value))}>
+      <label>Bay <select aria-label="Awning bay" value={selected} disabled={lockedBayIndex !== undefined} onChange={event => setBay(Number(event.currentTarget.value))}>
         {Array.from({ length: count }, (_, index) => <option key={index} value={index}>Bay {index + 1}</option>)}
       </select></label>
-      <button type="button" onClick={() => onChange(selected, !present)}>{present ? "Remove awning" : "Add awning"}</button>
+      <button type="button" disabled={dimensionsOnly} onClick={() => onChange(selected, !present)}>{present ? "Remove awning" : "Add awning"}</button>
       {awning && onSupportChange ? <div>
-        <button type="button" disabled={supportDisabled} onClick={() => onSupportChange(selected, !graph.awningSupports?.some(item => item.bayIndex === selected))}>{graph.awningSupports?.some(item => item.bayIndex === selected) ? "Remove support rods" : "Add support rods"}</button>
+        <button type="button" disabled={supportDisabled || dimensionsOnly} onClick={() => onSupportChange(selected, !graph.awningSupports?.some(item => item.bayIndex === selected))}>{graph.awningSupports?.some(item => item.bayIndex === selected) ? "Remove support rods" : "Add support rods"}</button>
         {supportDisabled ? <p>Support editing is unavailable in a family member.</p> : null}
       </div> : null}
       {awning ? <form key={`${selected}:${awning.projectionM}:${awning.dropM}:${awning.valanceHeightM}`} onSubmit={event => {
@@ -39,7 +41,7 @@ export function ConstructionAwningControls({ graph, disabled, unavailableReason,
       {fabric && onFabricChange ? <div>
         <p>Fabric applies to all awnings in this building and its generated family. Fabric changes are separate from construction undo.</p>
         {fabricDisabled ? <p>To change shared fabric, return to the original building.</p> : null}
-        <fieldset disabled={fabricDisabled}>
+        <fieldset disabled={fabricDisabled || dimensionsOnly}>
           <form key={fabric.contentHash} onSubmit={event => {
             event.preventDefault(); const fields = new FormData(event.currentTarget);
             const color = (name: string): [number, number, number] => { const value = String(fields.get(name)); return [1, 3, 5].map(offset => parseInt(value.slice(offset, offset + 2), 16)) as [number, number, number]; };

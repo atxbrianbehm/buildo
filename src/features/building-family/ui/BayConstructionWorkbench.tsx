@@ -359,6 +359,11 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       const awnings = (original.awnings ?? []).filter(awning => awning.bayIndex !== bayIndex);
       if (enabled) awnings.push({ bayIndex, ...(dimensions ?? { projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }) });
       awnings.sort((a, b) => a.bayIndex - b.bayIndex);
+      if (original.schemaVersion === "0.17.0") {
+        if (!enabled || bayIndex !== original.storefrontSign?.bayIndex || !dimensions) throw new Error("Only dimensions can be edited for this combined awning.");
+        await publish(BayConstructionGraphSchema.parse({ ...original, awnings }), source.materials, token, signal);
+        return;
+      }
       let baseGraph = original;
       if (!enabled && original.awningSupports) {
         const remaining = original.awningSupports.filter(support => support.bayIndex !== bayIndex);
@@ -808,7 +813,8 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         graph={accepted.construction.graph} dirty={groupDirty} disabled={signProtected || pending || saving || openingDirty || buildingDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode)}
         onDraftChange={value => { setGroupDirty(value); if (!value) setError(null); }} onApply={edit => void applyGroupedBay(edit)} /> : null}
       {buildingMode && !advancedOpen && accepted && supportsGroupedConstruction(accepted.construction.graph) && constructionHasStorefront(accepted.construction.graph) ? <ConstructionAwningControls
-        graph={accepted.construction.graph} disabled={signProtected || pending || saving || openingDirty || buildingDirty || groupDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode) || (familyMemberMode && !startingSession?.materials.awningFabric)}
+        graph={accepted.construction.graph} disabled={(signProtected && !combinedProtected) || pending || saving || openingDirty || buildingDirty || groupDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode) || (familyMemberMode && !startingSession?.materials.awningFabric)}
+        lockedBayIndex={combinedProtected ? accepted.construction.graph.storefrontSign?.bayIndex : undefined} dimensionsOnly={combinedProtected}
         unavailableReason={familyMemberMode && !startingSession?.materials.awningFabric ? "Add an awning to the original building before creating this family." : undefined}
         supportDisabled={familyMemberMode} onSupportChange={(bay, enabled) => void changeAwningSupport(bay, enabled)}
         fabric={awningFabric} fabricDisabled={familyMemberMode}
