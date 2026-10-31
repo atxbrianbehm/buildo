@@ -10,6 +10,7 @@ import { ConstructionOpeningControls } from "./ConstructionOpeningControls";
 import { ConstructionGroupedBayControls, type GroupedBayEdit } from "./ConstructionGroupedBayControls";
 import { ConstructionFamilyFabricControls } from "./ConstructionFamilyFabricControls";
 import { createConstructionFamilyFabricAssignments } from "../materials/constructionFamilyFabric";
+import { resolveConstructionFamilyFabricStudy } from "../materials/constructionFamilyFabricStudy";
 import type { ConstructionFamilyFabricAssignments } from "../contracts/constructionFamilyFabric";
 import type { ConstructionAwningFabricArtifact } from "../contracts/constructionAwningFabric";
 import { ConstructionAwningControls } from "./ConstructionAwningControls";
@@ -34,7 +35,7 @@ import { parseBuildingSourceFile } from "../state/buildingSourceFile";
 import { defaultConstructionGenerationControls, resolveWorkbenchGeneration, rebindGenerationSurfaceSources, type ConstructionGenerationLineage } from "../state/constructionGenerationState";
 import { resolveConstructionSignGenerationStudy } from "../state/constructionSignGenerationStudy";
 import { createGroupedRhythmFamilyArchive, readGroupedRhythmFamilyArchive } from "../state/constructionGroupedRhythmFamilyArchive";
-import { readGroupedRhythmFabricArchive } from "../state/constructionGroupedRhythmFabricArchive";
+import { createGroupedRhythmFabricArchive, readGroupedRhythmFabricArchive } from "../state/constructionGroupedRhythmFabricArchive";
 import { ConstructionGenerationPanel } from "./ConstructionGenerationPanel";
 import { ZodError } from "zod";
 import { BayConstructionClient } from "../compiler/bayConstructionClient";
@@ -143,6 +144,8 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   const [rhythmPreviewPiers, setRhythmPreviewPiers] = useState(false);
   const [rhythmStorefrontLights, setRhythmStorefrontLights] = useState(false);
   const [rhythmPreviewStorefrontLights, setRhythmPreviewStorefrontLights] = useState(false);
+  const [rhythmFabricVariation, setRhythmFabricVariation] = useState(false);
+  const [rhythmPreviewFabricVariation, setRhythmPreviewFabricVariation] = useState(false);
   const [familyVariation, setFamilyVariation] = useState({ openings: false, frontage: false, roof: false, groupedBays: false, storefrontLights: false, massing: false, awnings: false, entranceBay: false });
   const [familyPierVariation, setFamilyPierVariation] = useState(false);
   const [signBay, setSignBay] = useState(0);
@@ -151,6 +154,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   const familySource = useRef<ConstructionFamilyPayload | null>(null);
   const rhythmArchive = useRef<Awaited<ReturnType<typeof readGroupedRhythmFamilyArchive>> | null>(null);
   const rhythmFabricArchive = useRef<Awaited<ReturnType<typeof readGroupedRhythmFabricArchive>> | null>(null);
+  const rhythmFabricCache = useRef<{ key: string; assignments: ConstructionFamilyFabricAssignments } | null>(null);
   const [memberIndex, setMemberIndex] = useState(0);
   const [memberEdit, setMemberEdit] = useState<{ documentId: string; number: number; session: BayConstructionSession } | null>(null);
   const memberEditId = useRef<string | null>(null);
@@ -535,6 +539,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       familySource.current = null; rhythmArchive.current = archive; rhythmFabricArchive.current = fabricArchive ?? null; setRhythmPreviewWindowCount(archive.request.policy.memberCount); setRhythmPreviewScope(archive.request.policy.scope); setFamilyFabricView(null);
       setRhythmPreviewPiers(archive.request.policy.schemaVersion === "0.3.0" && archive.request.policy.pierVariation.source.enabled);
       setRhythmPreviewStorefrontLights("storefrontLights" in archive.request.composition.source.policy && archive.request.composition.source.policy.storefrontLights);
+      setRhythmPreviewFabricVariation(Boolean(fabricArchive?.fabricAssignments.members.some(member => member.mode === "override")));
       setFamilyDetails(archive.result.members.map(member => describeFamilyMember(member.graph))); setMemberIndex(0); chooseFrame(null);
       memberHistories.current.clear();
       if (previousShown && previousShown !== previous?.fixture && previousShown !== candidate) retire(previousShown);
@@ -544,6 +549,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   async function previewRhythmFamily() {
     const source = current.current;
     if (!source?.generation || !source.materials.awningFabric || dirty) return;
+    const inheritedFabric = source.materials.awningFabric;
     await perform(async (token, signal) => {
       const isCurrent = () => alive.current && sequence.current === token && !signal.aborted && current.current === source;
       const graph = source.fixture.construction.graph;
@@ -556,7 +562,17 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       const archive = await createGroupedRhythmFamilyArchive({ schemaVersion: "0.1.0", kind: "construction-grouped-rhythm-family-archive-request", sourceProject, plan, composition,
         policy: { schemaVersion: pierVariation ? "0.3.0" : rhythmScope === "all-upper-front" ? "0.1.0" : "0.2.0", kind: "construction-grouped-rhythm-family-policy", scope: rhythmScope, memberCount: rhythmWindowCount, memberWidthM: 0.55, pierWidthM: 0.24, ...(pierVariation ? { pierVariation } : {}) }, controls: generationControls });
       if (!isCurrent()) return;
-      await displayRhythmArchive(archive, token, signal, source);
+      if (rhythmFabricVariation) {
+        const request = { schemaVersion: "0.1.0", kind: "construction-family-fabric-study-request", familyId: plan.source.familyId,
+          sourceDocumentId: graph.documentId, memberIds: archive.result.members.map(member => member.graph.documentId), materialSeed: generationControls.materialSeed, inheritedFabric };
+        const key = JSON.stringify([request.familyId, request.sourceDocumentId, request.memberIds, request.materialSeed, request.inheritedFabric.contentHash]);
+        const assignments = rhythmFabricCache.current?.key === key ? rhythmFabricCache.current.assignments : await resolveConstructionFamilyFabricStudy(request);
+        if (!isCurrent()) return;
+        rhythmFabricCache.current = { key, assignments };
+        const fabricArchive = await createGroupedRhythmFabricArchive({ schemaVersion: "0.1.0", kind: "construction-grouped-rhythm-fabric-archive", family: archive, fabricAssignments: assignments });
+        if (!isCurrent()) return;
+        await displayRhythmArchive(archive, token, signal, source, fabricArchive);
+      } else await displayRhythmArchive(archive, token, signal, source);
     });
   }
   async function previewFamily() {
@@ -1026,7 +1042,9 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
             <label><span>Grouped window placement</span><select aria-label="Grouped window placement" value={rhythmArchivePreview ? rhythmPreviewScope : rhythmScope} disabled={pending || saving || familyPreview} onChange={event => setRhythmScope(event.currentTarget.value === "top-upper-front" ? "top-upper-front" : "all-upper-front")}>
               <option value="all-upper-front">All upper storeys</option><option value="top-upper-front">Top upper storey</option></select></label>
             <label><input type="checkbox" checked={rhythmArchivePreview ? rhythmPreviewPiers : rhythmPiers} disabled={pending || saving || familyPreview} onChange={event => setRhythmPiers(event.currentTarget.checked)} /> Vary upper facade piers</label>
-            <label><input type="checkbox" checked={rhythmArchivePreview ? rhythmPreviewStorefrontLights : rhythmStorefrontLights} disabled={pending || saving || familyPreview} onChange={event => setRhythmStorefrontLights(event.currentTarget.checked)} /> Vary storefront panes</label></div>
+            <label><input type="checkbox" checked={rhythmArchivePreview ? rhythmPreviewStorefrontLights : rhythmStorefrontLights} disabled={pending || saving || familyPreview} onChange={event => setRhythmStorefrontLights(event.currentTarget.checked)} /> Vary storefront panes</label>
+            <label><input type="checkbox" checked={rhythmArchivePreview ? rhythmPreviewFabricVariation : rhythmFabricVariation} disabled={pending || saving || familyPreview} onChange={event => setRhythmFabricVariation(event.currentTarget.checked)} /> {rhythmArchivePreview ? "Saved member fabric overrides" : "Vary awning fabrics (demo)"}</label></div>
+          {(rhythmArchivePreview ? rhythmPreviewFabricVariation : rhythmFabricVariation) ? <p>Member fabrics use explicit overrides. New previews use a demo palette and retain the original fabric.</p> : null}
           {(rhythmArchivePreview ? rhythmPreviewStorefrontLights : rhythmStorefrontLights) ? <p>Demo pane counts vary by building. Existing storefront divisions are protected; turn this option off to retain them.</p> : null}
           {(rhythmArchivePreview ? rhythmPreviewPiers : rhythmPiers) ? <p>Demo pier treatments vary by building; existing authored piers are retained. Some window groups or seeds need more clearance; try paired windows or a different seed if preview is rejected.</p> : null}</>
           : <p>Add an awning beneath the sign to use the grouped family demo.</p>}
