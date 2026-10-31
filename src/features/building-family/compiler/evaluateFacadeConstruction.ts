@@ -33,6 +33,11 @@ import { canonicalJson } from "../core/canonicalJson";
 import { resolveConstructionAwning } from "../core/constructionAwning";
 import { buildConstructionAwningGeometry } from "./constructionAwningGeometry";
 import { CONSTRUCTION_AWNING_FABRIC_SLOT } from "../contracts/constructionAwningFabric";
+import { ConstructionSignAwningBuildingStudyRequestSchema, type ConstructionSignAwningBuildingStudyRequest } from "../contracts/constructionSignAwningBuildingStudy";
+import { resolveConstructionSignAwningArrangement } from "../core/constructionSignAwningArrangement";
+import { resolveConstructionSignAwningSupports } from "../core/constructionSignAwningSupports";
+import { buildConstructionSignAwningArrangementGeometry } from "./constructionSignAwningArrangementGeometry";
+import { buildConstructionSignAwningSupportGeometry } from "./constructionSignAwningSupportGeometry";
 
 type Cell = { localOpeningWidth?: boolean; storefrontPlan?: ConstructionStorefrontPlan; root: string; key: string; floorSplit: boolean; baySplit: boolean; scope: FacadeBayScope; face?: "front" | "right" | "rear" | "left"; pose?: ConstructionFacePose; building?: ConstructionBuilding };
 type Stage = "facade" | "openings" | "trim" | "roof";
@@ -65,8 +70,16 @@ function front(primitive: PrimitiveGeometry): PrimitiveGeometry {
 
 /** Scope collections feed the same wall subtractor and accepted C1 window geometry. */
 export async function evaluateFacadeConstruction(input: unknown, materials: BayConstructionMaterials = DEFAULT_BAY_MATERIALS,
-  previewNodeId?: string, groupedInput: readonly unknown[] = [], pierStudyInput?: ConstructionFacadePierStudyRequest, signStudyInput?: ConstructionStorefrontSignStudyRequest): Promise<BayConstructionResult> {
+  previewNodeId?: string, groupedInput: readonly unknown[] = [], pierStudyInput?: ConstructionFacadePierStudyRequest, signStudyInput?: ConstructionStorefrontSignStudyRequest,
+  signAwningStudyInput?: ConstructionSignAwningBuildingStudyRequest): Promise<BayConstructionResult> {
   const graph = structuredClone(BayConstructionGraphSchema.parse(input));
+  const signAwningStudy = signAwningStudyInput && ConstructionSignAwningBuildingStudyRequestSchema.parse(signAwningStudyInput);
+  if (signAwningStudy && (signStudyInput || graph.storefrontSign || pierStudyInput || previewNodeId || groupedInput.length || canonicalJson(signAwningStudy.graph) !== canonicalJson(graph)))
+    throw new Error("Sign and awning study requires its complete matching graph and no other experimental study.");
+  if (signAwningStudy && !graph.awnings?.some(awning => awning.bayIndex === signAwningStudy.bayIndex))
+    throw new Error("Sign and awning study requires an existing awning in its storefront bay.");
+  if (signAwningStudy) signStudyInput = ConstructionStorefrontSignStudyRequestSchema.parse({ schemaVersion: "0.1.0", kind: "construction-storefront-sign-study-request", graph,
+    bayIndex: signAwningStudy.bayIndex, heightM: signAwningStudy.heightM, projectionM: signAwningStudy.projectionM, frameWidthM: signAwningStudy.frameWidthM });
   if (signStudyInput && graph.storefrontSign) throw new Error("Use either the graph sign directive or an experimental sign study.");
   const signStudy = signStudyInput === undefined ? graph.storefrontSign ? ConstructionStorefrontSignStudyRequestSchema.parse({ schemaVersion: "0.1.0", kind: "construction-storefront-sign-study-request", graph, ...graph.storefrontSign }) : undefined : ConstructionStorefrontSignStudyRequestSchema.parse(signStudyInput);
   if (signStudy && pierStudyInput) throw new Error("Use graph-authored piers instead of combining two experimental studies.");
@@ -136,6 +149,20 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
     if (!directive || !cell.storefrontPlan || cell.face !== "front" || cell.scope.floorIndex !== 0) return [];
     const plan = resolveConstructionAwning({ schemaVersion: "0.1.0", kind: "construction-awning-request", storefront: cell.storefrontPlan,
       projectionM: directive.projectionM, dropM: directive.dropM, valanceHeightM: directive.valanceHeightM });
+    if (signAwningStudy && directive.bayIndex === signAwningStudy.bayIndex) {
+      const arrangement = resolveConstructionSignAwningArrangement({ schemaVersion: "0.1.0", kind: "construction-sign-awning-arrangement-request", storefront: cell.storefrontPlan,
+        sign: { heightM: signAwningStudy.heightM, projectionM: signAwningStudy.projectionM, frameWidthM: signAwningStudy.frameWidthM },
+        awning: { projectionM: directive.projectionM, dropM: directive.dropM, valanceHeightM: directive.valanceHeightM }, gapM: signAwningStudy.gapM });
+      const support = graph.awningSupports?.find(item => item.bayIndex === directive.bayIndex);
+      const supported = support ? buildConstructionSignAwningSupportGeometry(resolveConstructionSignAwningSupports({ schemaVersion: "0.1.0", kind: "construction-sign-awning-support-request", arrangement,
+        anchorRiseM: support.anchorRiseM, thicknessM: support.thicknessM })) : undefined;
+      const combined = supported ?? buildConstructionSignAwningArrangementGeometry(arrangement);
+      const shift: [number, number, number] = [cell.scope.originM[0], cell.scope.originM[1], 0];
+      const move = (part: PrimitiveGeometry): PrimitiveGeometry => ({ ...part, positions: part.positions.map((value, index) => value + shift[index % 3]), bounds: shifted(part.bounds, shift) });
+      return [makeMesh(node, cell, "awning.canopy", [move(combined.awning.roof)], "openings", CONSTRUCTION_AWNING_FABRIC_SLOT),
+        makeMesh(node, cell, "awning.valance", [move(combined.awning.valance)], "openings", CONSTRUCTION_AWNING_FABRIC_SLOT),
+        ...(supported ? [makeMesh(node, cell, "awning.support", supported.rods.map(move), "openings", "ornament.primary")] : [])];
+    }
     const geometry = buildConstructionAwningGeometry(plan);
     const translate = (part: PrimitiveGeometry): PrimitiveGeometry => ({ ...part,
       positions: part.positions.map((value, index) => index % 3 === 0 ? value + plan.centerAlongM : index % 3 === 1 ? value + cell.scope.originM[1] : value),
@@ -150,7 +177,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
     if (!signStudy || cell.face !== "front" || cell.scope.floorIndex !== 0 || cell.scope.bayIndex !== signStudy.bayIndex || !cell.storefrontPlan) return [];
     const plan = resolveConstructionStorefrontSign({ schemaVersion: "0.1.0", kind: "construction-storefront-sign-request", storefront: cell.storefrontPlan,
       heightM: signStudy.heightM, projectionM: signStudy.projectionM, frameWidthM: signStudy.frameWidthM,
-      awningPresent: Boolean(graph.awnings?.some(awning => awning.bayIndex === cell.scope.bayIndex)) });
+      awningPresent: !signAwningStudy && Boolean(graph.awnings?.some(awning => awning.bayIndex === cell.scope.bayIndex)) });
     const geometry = buildConstructionStorefrontSignGeometry(plan), shift: [number, number, number] = [cell.scope.originM[0], cell.scope.originM[1], 0];
     const translate = (part: PrimitiveGeometry): PrimitiveGeometry => ({ ...part, positions: part.positions.map((value, index) => value + shift[index % 3]), bounds: shifted(part.bounds, shift) });
     return [makeMesh(node, cell, "sign.panel", [translate(geometry.panel)], "openings", "ornament.primary"),
@@ -611,7 +638,7 @@ export async function evaluateFacadeConstruction(input: unknown, materials: BayC
     materialSlotId: group[0].prototype!.materialSlotId!, count: group.length,
     transforms: new Float32Array(group.flatMap(part => poseMatrix(part.translation!,part.pose))) }));
   const ir = RuntimeBuildingIRSchema.parse({ schemaVersion: "0.1.0", buildingId: graph.documentId, familyId: graph.documentId,
-    sourceGraphHash: await hashCanonicalJson(signStudyInput ?? pierStudyInput ?? (groupedInput.length ? { schemaVersion: "0.1.0", kind: "construction-grouped-geometry-request", graph, groups: grouped } : graph)), bounds: union(parts.map(p => p.bounds)), meshBatches, instanceBatches, semanticIndex,
+    sourceGraphHash: await hashCanonicalJson(signAwningStudyInput ?? signStudyInput ?? pierStudyInput ?? (groupedInput.length ? { schemaVersion: "0.1.0", kind: "construction-grouped-geometry-request", graph, groups: grouped } : graph)), bounds: union(parts.map(p => p.bounds)), meshBatches, instanceBatches, semanticIndex,
     metrics: { vertexCount: [...meshBatches, ...prototypes.values()].reduce((sum, batch) => sum + batch.positions!.length / 3, 0),
       triangleCount: parts.reduce((sum, part) => sum + (part.mesh ?? part.prototype)!.indices!.length / 3, 0),
       instanceCount: instanceBatches.reduce((sum, batch) => sum + batch.count, 0) } });
