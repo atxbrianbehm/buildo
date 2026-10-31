@@ -4,6 +4,7 @@ import { withConstructionStorefrontDivision } from "../core/constructionStorefro
 import { withConstructionAwnings } from "../core/constructionAwningGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
 import { createConstructionFamilyFabricAssignments } from "../materials/constructionFamilyFabric";
+import { resolveConstructionFamilyFabricStudy } from "../materials/constructionFamilyFabricStudy";
 import { createConstructionAwningFabric } from "../materials/constructionAwningFabric";
 import { createAssemblyHallFixture } from "../ui/assemblyHallFixture";
 import { createBayConstructionMaterials, prepareBayConstructionFixture, prepareConstructionFamilyFixture } from "../ui/bayConstructionFixture";
@@ -45,5 +46,14 @@ it("prepares and releases graph-generated awnings with the real construction fix
     const other = await createConstructionFamilyFabricAssignments({ ...assignmentPayload, members: assignmentPayload.members.map((member, index) => index === 1 ? { ...member, documentId: "wrong" } : member) });
     await expect(prepareConstructionFamilyFixture(base, results, { ...materials, awningFabric: fabric }, undefined, other)).rejects.toThrow(/do not match/);
     await expect(prepareConstructionFamilyFixture(base, results, { ...materials, awningFabric: red }, undefined, assignments)).rejects.toThrow(/do not match/);
+    const geometry = () => results.map(result => ({ graph: result.ir.sourceGraphHash, meshes: result.ir.meshBatches.map(batch => ({ positions: Array.from(batch.positions ?? []), indices: Array.from(batch.indices ?? []) })),
+      instances: result.ir.instanceBatches.map(batch => Array.from(batch.transforms ?? [])) }));
+    const before = geometry(), study = await resolveConstructionFamilyFabricStudy({ schemaVersion: "0.1.0", kind: "construction-family-fabric-study-request", familyId: plan.source.familyId,
+      sourceDocumentId: graph.documentId, memberIds: results.map(item => item.ir.buildingId), materialSeed: "demo-fabric", inheritedFabric: fabric });
+    const studied = await prepareConstructionFamilyFixture(base, results, { ...materials, awningFabric: fabric }, undefined, study);
+    const studiedMaterials = [...studied.familyRuntime.buildingRuntimes.values()].map(runtime => [...runtime.semanticLookup.values()].find(entry => entry.object.userData.role === "awning.canopy")!.object.material);
+    expect(new Set(studiedMaterials.map(material => material.userData.fabricContentHash)).size).toBe(6); expect(geometry()).toEqual(before);
+    const disposedStudy = studiedMaterials.map(material => { const spy = vi.fn(); material.addEventListener("dispose", spy); return spy; });
+    studied.familyRuntime.dispose(); studied.familyRuntime.dispose(); expect(disposedStudy.every(spy => spy.mock.calls.length === 1)).toBe(true);
   } finally { base.familyRuntime.dispose(); }
 }, 120000);
