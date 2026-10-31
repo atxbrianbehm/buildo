@@ -219,7 +219,7 @@ describe("live construction controls and ownership", () => {
     } finally { view.unmount(); }
   }, 30000);
 
-  it("opens a verified rhythm archive as a read-only family preview and returns to the original building", async () => {
+  it("opens a verified rhythm archive, retains the original and edits only the selected member fabric", async () => {
     const initial = await resolveWorkbenchGeneration(createBuildingConstructionGraph("archive_preview"), null, defaultConstructionGenerationControls);
     const generated = await fixtures.createReferenceConstructionMaterials(base, initial.source, new AbortController().signal, base.spec);
     const lineage = { schemaVersion: "0.1.0" as const, kind: "construction-generation-lineage" as const, source: initial.source,
@@ -240,7 +240,7 @@ describe("live construction controls and ownership", () => {
     try {
       await ready(); const workspace = view.container.querySelector<HTMLElement>(".construction-workspace")!, before = workspace.dataset.constructionHash;
       fireEvent.change(screen.getByLabelText("Open family file"), { target: { files: [new File([JSON.stringify(archive)], "rhythm.json", { type: "application/json" })] } });
-      await waitFor(() => expect(screen.getByText(/Archived family preview is read-only/)).toBeInTheDocument(), { timeout: 120000 });
+      await waitFor(() => expect(screen.getByText(/Building geometry is read-only in this family preview/)).toBeInTheDocument(), { timeout: 120000 });
       expect(workspace.dataset.constructionPreview).toBe("family"); expect(screen.getByRole("button", { name: "Save family" })).toBeEnabled();
       expect(screen.getByLabelText("Grouped window placement")).toHaveValue("all-upper-front");
       expect(screen.queryByRole("button", { name: "Edit selected building" })).not.toBeInTheDocument(); expect(view.onSessionChange).toHaveBeenCalledTimes(1);
@@ -250,14 +250,21 @@ describe("live construction controls and ownership", () => {
       await waitFor(() => expect(workspace.dataset.constructionPreview).toBe("output"));
       expect(workspace.dataset.constructionHash).toBe(before); expect(displayed.familyRuntime.disposed).toBe(true);
       fireEvent.change(screen.getByLabelText("Open family file"), { target: { files: [new File([JSON.stringify(fabricArchive)], "fabric.json", { type: "application/json" })] } });
-      await waitFor(() => expect(screen.getByText(/Archived family preview is read-only/)).toBeInTheDocument(), { timeout: 120000 });
+      await waitFor(() => expect(screen.getByText(/Building geometry is read-only in this family preview/)).toBeInTheDocument(), { timeout: 120000 });
       expect(prepared.mock.calls.at(-1)![4]).toEqual(assignments);
       const fabricDisplayed = await prepared.mock.results.at(-1)!.value as fixtures.BayConstructionFixture;
       const actual = [...fabricDisplayed.familyRuntime.buildingRuntimes.values()].map(runtime => [...runtime.semanticLookup.values()].find(entry => entry.object.userData.role === "awning.canopy")!.object.material.userData.fabricContentHash);
       expect(new Set(actual).size).toBe(6);
-      fireEvent.click(screen.getByRole("button", { name: "Return to building" }));
-      await waitFor(() => expect(workspace.dataset.constructionPreview).toBe("output"));
-      expect(workspace.dataset.constructionHash).toBe(before); expect(fabricDisplayed.familyRuntime.disposed).toBe(true);
+      fireEvent.change(screen.getByLabelText("Family member"), { target: { value: "1" } });
+      fireEvent.change(screen.getByLabelText("Family fabric primary color"), { target: { value: "#123456" } });
+      fireEvent.click(screen.getByRole("button", { name: "Apply individual fabric" }));
+      await waitFor(() => expect(screen.getByText(/Family changes are unsaved/)).toBeInTheDocument(), { timeout: 120000 });
+      const changed = prepared.mock.calls.at(-1)![4] as typeof assignments;
+      expect(changed.members[1].mode).toBe("override");
+      if (changed.members[1].mode === "override") expect(changed.members[1].fabric.source.primary).toEqual([18, 52, 86]);
+      expect(changed.members.filter((entry, index) => index !== 1)).toEqual(assignments.members.filter((entry, index) => index !== 1));
+      expect(screen.getByRole("button", { name: "Return to building" })).toBeDisabled();
+      expect(fabricDisplayed.familyRuntime.disposed).toBe(true);
     } finally { view.unmount(); prepared.mockRestore(); }
   }, 240000);
 
