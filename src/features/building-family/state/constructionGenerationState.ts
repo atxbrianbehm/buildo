@@ -90,8 +90,12 @@ export async function resolveWorkbenchGeneration(currentInput: unknown, previous
   const controls = controlsSchema.parse(controlsInput);
   const reference = referenceInput === undefined ? undefined : ConstructionReferenceSnapshotSchema.parse(referenceInput);
   const oldSource = previous ? await readConstructionGenerationSource(previous.source) : null;
-  if (oldSource?.intent.locks.some(lock => lock.semanticPath === "construction/opening/upperFrontRoundHead"))
-    throw new Error("A pinned opening head cannot yet be retained safely by the workbench. The current building is retained.");
+  const headPin = oldSource?.intent.locks.find(lock => lock.semanticPath === "construction/opening/upperFrontRoundHead");
+  if (headPin && (controls.preserveAuthored || controls.lockOpenings)) {
+    const currentHead = current.nodes.find(node => node.type === "PlaceOpening")?.parameters.upperFrontRoundHead;
+    if (currentHead !== undefined && currentHead !== headPin.lockedValue)
+      throw new Error("The authored opening head conflicts with the pinned opening head. The current building is retained.");
+  }
   const input: ConstructionGenerationInput = oldSource ? {
     schemaVersion: "0.1.0", kind: "construction-generation-input", documentId: current.documentId,
     intent: structuredClone(oldSource.intent), recipe: structuredClone(oldSource.recipe), reference: structuredClone(oldSource.reference),
@@ -162,6 +166,7 @@ export async function resolveWorkbenchGeneration(currentInput: unknown, previous
   const keepStorefront = preserve || source.intent.locks.some(lock => ["construction/opening", "construction/window", "construction/frontage", "construction/storefrontDivision"]
     .some(path => path === lock.semanticPath || path.startsWith(lock.semanticPath + "/") || lock.semanticPath.startsWith(path + "/")));
   let graph = retainConstructionRoundHead(current, retainConstructionParapetVocabulary(current, retainConstructionCorniceVocabulary(current, retainConstructionOpeningEdits(current, retainConstructionStorefront(current, retainConstructionWindowVocabulary(current, structuredClone(resolution.graph), preserve), keepStorefront), preserve), controls.preserveAuthored), controls.preserveAuthored), preserve);
+  if (headPin) graph = withConstructionRoundHead(graph, headPin.lockedValue as 0 | 1);
   const keepGroups = preserve || source.intent.locks.some(lock => ["construction/opening", "construction/window", "construction/upperBayGroups"]
     .some(path => path === lock.semanticPath || path.startsWith(lock.semanticPath + "/") || lock.semanticPath.startsWith(path + "/")));
   if (["0.11.0", "0.12.0"].includes(current.schemaVersion) && keepGroups) {

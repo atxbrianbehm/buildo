@@ -84,7 +84,7 @@ describe("retained-sign family study", () => {
     const pinnedResolution = await resolveConstructionGeneration(pinned);
     const pinnedLineage = { ...lineage, source: pinned, resolution: pinnedResolution, materialPlan: await planConstructionReferenceMaterials(lineage.materialPlan.templateSpec, pinned) };
     expect(pinnedLineage.materialPlan.materialInputsHash).toBe(lineage.materialPlan.materialInputsHash);
-    await expect(resolveConstructionRetainedSignFamilyStudy(plan, pinnedLineage, defaultConstructionGenerationControls, composition)).rejects.toThrow(/pinned opening head/i);
+    await expect(resolveConstructionRetainedSignFamilyStudy(plan, pinnedLineage, defaultConstructionGenerationControls, composition)).rejects.toThrow(/pinned lock/i);
     const openingsOnly = resolveConstructionFamilyComposition({ ...request, policy: { ...request.policy, massing: false } });
     const openingsResult = await resolveConstructionRetainedSignFamilyStudy(plan, lineage, defaultConstructionGenerationControls, openingsOnly);
     expect(openingsResult.receipt.schemaVersion).toBe("0.2.0");
@@ -107,5 +107,33 @@ describe("retained-sign family study", () => {
     const distant = structuredClone(graph); distant.storefrontSign!.bayIndex = 3; distant.awnings![0].bayIndex = 3; distant.awningSupports![0].bayIndex = 3;
     const distantPlan = resolveConstructionFamilyPlan({ ...plan.source, graph: distant });
     await expect(resolveConstructionRetainedSignFamilyStudy(distantPlan, lineage, defaultConstructionGenerationControls, composition)).rejects.toThrow(/retained awning|retain the storefront/i);
+  }, 120000);
+  it("retains a pinned upper head during signed-building rerolls and a roof-varying family", async () => {
+    const { graph, plan, lineage, composition } = await fixture();
+    for (const value of [0, 1] as const) {
+      const old = lineage.source, pinned = await captureConstructionGenerationSource({ schemaVersion: "0.1.0", kind: "construction-generation-input", documentId: old.documentId,
+        intent: { ...old.intent, locks: [{ semanticPath: "construction/opening/upperFrontRoundHead", scope: "family", lockedValue: value, reason: "Imported pin" }] },
+        recipe: old.recipe, reference: old.reference, intentionalExceptions: old.intentionalExceptions });
+      const pinnedLineage = { ...lineage, source: pinned, resolution: await resolveConstructionGeneration(pinned), materialPlan: await planConstructionReferenceMaterials(lineage.materialPlan.templateSpec, pinned) };
+      const editedBase = structuredClone(pinnedLineage.resolution.graph);
+      editedBase.nodes.find(node => node.type === "PlaceOpening")!.parameters.upperFrontRoundHead = value === 0 ? 1 : 0;
+      await expect(resolveWorkbenchGeneration(editedBase, pinnedLineage, defaultConstructionGenerationControls)).rejects.toThrow(/authored opening head conflicts/i);
+      await expect(resolveWorkbenchGeneration(editedBase, pinnedLineage, { ...defaultConstructionGenerationControls, preserveAuthored: false, lockOpenings: true })).rejects.toThrow(/authored opening head conflicts/i);
+      const released = await resolveWorkbenchGeneration(editedBase, pinnedLineage, { ...defaultConstructionGenerationControls, preserveAuthored: false }, true);
+      expect(released.graph.nodes.find(node => node.type === "PlaceOpening")!.parameters.upperFrontRoundHead).toBe(value);
+      expect(released.source.intent.locks).toContainEqual(expect.objectContaining({ semanticPath: "construction/opening/upperFrontRoundHead", lockedValue: value }));
+      const matching = structuredClone(graph);
+      matching.nodes.find(node => node.type === "PlaceOpening")!.parameters.upperFrontRoundHead = value;
+      const signedPlan = resolveConstructionFamilyPlan({ ...plan.source, graph: matching });
+      const result = await resolveConstructionRetainedSignFamilyStudy(signedPlan, pinnedLineage, defaultConstructionGenerationControls, composition);
+      for (const member of result.members) {
+        expect(member.construction.graph.nodes.find(node => node.type === "PlaceOpening")!.parameters.upperFrontRoundHead).toBe(value);
+        expect(member.construction.graph.storefrontSign).toEqual(matching.storefrontSign);
+        expect(member.lineage.materialPlan.materialInputsHash).toBe(lineage.materialPlan.materialInputsHash);
+      }
+      const conflict = structuredClone(matching);
+      conflict.nodes.find(node => node.type === "PlaceOpening")!.parameters.upperFrontRoundHead = value === 0 ? 1 : 0;
+      await expect(resolveConstructionRetainedSignFamilyStudy(resolveConstructionFamilyPlan({ ...plan.source, graph: conflict }), pinnedLineage, defaultConstructionGenerationControls, composition)).rejects.toThrow(/authored opening head conflicts/i);
+    }
   }, 120000);
 });
