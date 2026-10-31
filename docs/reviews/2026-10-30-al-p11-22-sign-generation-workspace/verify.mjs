@@ -31,7 +31,7 @@ try {
   const generatedHash = await hash(); await page.getByLabel("Awning bay").selectOption("0"); await page.getByRole("button", { name: "Add awning", exact: true }).click(); await changed(generatedHash);
   const awningHash = await hash(); await page.getByRole("button", { name: "Add support rods" }).click(); await changed(awningHash);
   const rodHash = await hash(); await page.getByLabel("Sign bay").selectOption("0"); await page.getByRole("button", { name: "Add sign", exact: true }).click(); await changed(rodHash);
-  assert(await page.getByLabel("Material seed").isDisabled()); assert(await page.getByRole("button", { name: "Preview family" }).isDisabled());
+  assert(await page.getByLabel("Material seed").isDisabled()); assert(await page.getByRole("button", { name: "Preview grouped family" }).isEnabled());
   const before = await save("before"), beforeSource = await generationHash(), beforeGraph = await hash(), calls = await page.evaluate(() => globalThis.__signGenerationProviderCalls ?? 0);
   assert(before.generation && before.awningFabric); assert.equal(before.graph.signAwningGapM, 0.04);
   await page.getByLabel("Keep edited dimensions and assemblies").uncheck(); await page.getByRole("button", { name: "Reroll unlocked" }).click();

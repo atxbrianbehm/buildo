@@ -51,7 +51,7 @@ try {
   });
   await page.getByLabel("Open family file").setInputFiles({ name: "rhythm.json", mimeType: "application/json", buffer: Buffer.from(archive) });
   await page.getByText("Archived family preview is read-only.", { exact: false }).waitFor({ timeout: 180000 });
-  assert.equal(await root().getAttribute("data-construction-preview"), "family"); assert(await page.getByRole("button", { name: "Save family" }).isDisabled());
+  assert.equal(await root().getAttribute("data-construction-preview"), "family"); assert(await page.getByRole("button", { name: "Save family" }).isEnabled());
   assert.equal(await page.getByRole("button", { name: "Edit selected building" }).count(), 0);
   await root().locator("canvas:visible").first().screenshot({ path: `${out}/family.png` });
   await page.getByRole("button", { name: "Return to building" }).click();
