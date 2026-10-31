@@ -16,6 +16,10 @@ import { createGroupedRhythmFamilyArchive, readGroupedRhythmFamilyArchive } from
 import { createGroupedRhythmFabricArchive, readGroupedRhythmFabricArchive } from "../state/constructionGroupedRhythmFabricArchive";
 import { resolveConstructionFamilyFabricStudy } from "../materials/constructionFamilyFabricStudy";
 import { createConstructionFamilyFabricAssignments } from "../materials/constructionFamilyFabric";
+import { captureConstructionGenerationSource } from "../core/constructionGenerationSource";
+import { resolveConstructionGeneration } from "../core/constructionGenerationResolver";
+import { planConstructionReferenceMaterials } from "../materials/constructionReferenceMaterials";
+import { resolveConstructionGroupedRhythmFamilyStudy } from "../state/constructionGroupedRhythmFamilyStudy";
 import { createAssemblyHallFixture } from "../ui/assemblyHallFixture";
 import { createReferenceConstructionMaterials } from "../ui/bayConstructionFixture";
 import { defaultBuildingPromptControls } from "../state/buildingStore";
@@ -82,6 +86,12 @@ it("replays a portable rhythm family with real material and fabric source and re
     badEntrance.contentHash = await hashCanonicalJson(entrancePayload);
     await expect(readGroupedRhythmFamilyArchive(badEntrance)).rejects.toThrow(/does not replay/);
     await expect(createGroupedRhythmFamilyArchive({ ...request, policy: entrancePolicy, controls: { ...request.controls, lockOpenings: true } })).rejects.toThrow();
+    const oldSource = lineage.source;
+    const pinned = await captureConstructionGenerationSource({ schemaVersion: "0.1.0", kind: "construction-generation-input", documentId: oldSource.documentId,
+      intent: { ...oldSource.intent, locks: [{ semanticPath: "construction/entrance/bayIndex", scope: "family", lockedValue: 0, reason: "Imported pin" }] },
+      recipe: oldSource.recipe, reference: oldSource.reference, intentionalExceptions: oldSource.intentionalExceptions });
+    const pinnedLineage = { ...lineage, source: pinned, resolution: await resolveConstructionGeneration(pinned), materialPlan: await planConstructionReferenceMaterials(base.spec, pinned) };
+    await expect(resolveConstructionGroupedRhythmFamilyStudy(plan, pinnedLineage, defaultConstructionGenerationControls, composition, entrancePolicy)).rejects.toThrow(/pinned lock.*entrance/);
     const altered = structuredClone(withPiers);
     if (altered.request.policy.schemaVersion !== "0.3.0") throw new Error("Expected pier policy");
     altered.request.policy.pierVariation = resolveConstructionFamilyPierVariation({ ...variation.source, enabled: false });

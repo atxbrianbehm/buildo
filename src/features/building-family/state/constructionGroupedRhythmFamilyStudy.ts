@@ -3,7 +3,7 @@ import { hashCanonicalJson } from "../core/contentHash";
 import { BayConstructionWorkerReplySchema } from "../compiler/bayConstructionWorkerProtocol";
 import { resolveConstructionRetainedSignFamilyStudy } from "./constructionRetainedSignFamilyStudy";
 import { compileSourceAwareGroupedFacadeRhythmStudy } from "./constructionGroupedFacadeRhythmStudy";
-import { resolveConstructionUncoveredEntranceStudy } from "../core/constructionUncoveredEntranceStudy";
+import { assertUncoveredEntranceLocks, resolveConstructionUncoveredEntranceStudy } from "../core/constructionUncoveredEntranceStudy";
 import { readConstructionFamilyPlan } from "../core/constructionFamilyPlan";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
 import type { ConstructionGenerationControls, ConstructionGenerationLineage } from "./constructionGenerationState";
@@ -13,6 +13,7 @@ export async function resolveConstructionGroupedRhythmFamilyStudy(input: unknown
   controls: ConstructionGenerationControls, composition: unknown, policyInput: unknown, signal?: AbortSignal) {
   const policy = GroupedRhythmFamilyPolicySchema.parse(policyInput);
   const entranceSeed = policy.schemaVersion === "0.4.0" ? readConstructionFamilyPlan(input).source.familySeed : undefined;
+  if (policy.schemaVersion === "0.4.0") assertUncoveredEntranceLocks(lineage.source.intent.locks);
   const abort = () => { if (signal?.aborted) throw new DOMException("Family generation cancelled.", "AbortError"); };
   abort();
   const base = await resolveConstructionRetainedSignFamilyStudy(input, lineage, controls, composition, signal,
