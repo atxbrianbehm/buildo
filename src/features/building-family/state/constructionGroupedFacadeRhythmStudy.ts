@@ -3,10 +3,14 @@ import { BayConstructionGraphSchema } from "../contracts/bayConstructionGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
 import { readConstructionGenerationLineage } from "./constructionGenerationState";
 
-const requestSchema = z.object({ schemaVersion: z.literal("0.1.0"), kind: z.literal("construction-grouped-facade-rhythm-study"),
+const requestFields = { kind: z.literal("construction-grouped-facade-rhythm-study"),
   graph: BayConstructionGraphSchema, firstFloor: z.number().int().min(1), lastFloor: z.number().int().min(1),
   firstBay: z.number().int().min(0), lastBay: z.number().int().min(0), memberCount: z.union([z.literal(2), z.literal(3)]),
-  memberWidthM: z.number().finite().positive(), pierWidthM: z.number().finite().gt(0.2) }).strict();
+  memberWidthM: z.number().finite().positive(), pierWidthM: z.number().finite().gt(0.2) };
+const requestSchema = z.discriminatedUnion("schemaVersion", [
+  z.object({ schemaVersion: z.literal("0.1.0"), ...requestFields }).strict(),
+  z.object({ schemaVersion: z.literal("0.2.0"), ...requestFields, allowRoundHeads: z.literal(true) }).strict()
+]);
 
 /** Compile an explicit bounded rhythm without replacing existing local edits or publishing a partial result. */
 export async function compileConstructionGroupedFacadeRhythmStudy(input: unknown) {
@@ -14,7 +18,7 @@ export async function compileConstructionGroupedFacadeRhythmStudy(input: unknown
   if (graph.schemaVersion !== "0.17.0" || !graph.storefrontSign) throw new Error("Choose a signed storefront with an explicit awning clearance.");
   const storeys = graph.nodes.find(node => node.type === "Storeys"), bays = graph.nodes.find(node => node.type === "SplitBays"),
     opening = graph.nodes.find(node => node.type === "PlaceOpening"), edits = graph.nodes.find(node => node.type === "EditOpeningWidth");
-  if (!storeys || !bays || bays.bypassed || !opening || opening.bypassed || opening.parameters.upperFrontRoundHead === 1)
+  if (!storeys || !bays || bays.bypassed || !opening || opening.bypassed || (request.schemaVersion === "0.1.0" && opening.parameters.upperFrontRoundHead === 1))
     throw new Error("Grouped facade rhythm requires active storeys, bays and flat upper openings.");
   if (request.firstFloor > request.lastFloor || request.lastFloor >= storeys.parameters.count || request.firstBay > request.lastBay || request.lastBay >= bays.parameters.count)
     throw new Error("Choose an existing upper-floor and bay range.");

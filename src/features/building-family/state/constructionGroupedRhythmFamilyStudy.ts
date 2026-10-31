@@ -12,22 +12,23 @@ import type { ConstructionGenerationControls, ConstructionGenerationLineage } fr
 export async function resolveConstructionGroupedRhythmFamilyStudy(input: unknown, lineage: ConstructionGenerationLineage,
   controls: ConstructionGenerationControls, composition: unknown, policyInput: unknown, signal?: AbortSignal) {
   const policy = GroupedRhythmFamilyPolicySchema.parse(policyInput);
-  const entranceSeed = policy.schemaVersion === "0.4.0" ? readConstructionFamilyPlan(input).source.familySeed : undefined;
-  if (policy.schemaVersion === "0.4.0") assertUncoveredEntranceLocks(lineage.source.intent.locks);
+  const varyEntrances = policy.schemaVersion === "0.4.0" || (policy.schemaVersion === "0.5.0" && policy.uncoveredEntrances === true);
+  const entranceSeed = varyEntrances ? readConstructionFamilyPlan(input).source.familySeed : undefined;
+  if (varyEntrances) assertUncoveredEntranceLocks(lineage.source.intent.locks);
   const abort = () => { if (signal?.aborted) throw new DOMException("Family generation cancelled.", "AbortError"); };
   abort();
   const base = await resolveConstructionRetainedSignFamilyStudy(input, lineage, controls, composition, signal,
-    policy.schemaVersion === "0.3.0" || policy.schemaVersion === "0.4.0" ? policy.pierVariation : undefined), members = [];
+    policy.schemaVersion === "0.3.0" || policy.schemaVersion === "0.4.0" || policy.schemaVersion === "0.5.0" ? policy.pierVariation : undefined), members = [];
   for (const member of base.members) {
     abort();
     const graph = member.construction.graph, opening = graph.nodes.find(node => node.type === "PlaceOpening"),
       storeys = graph.nodes.find(node => node.type === "Storeys"), bays = graph.nodes.find(node => node.type === "SplitBays");
     if (!opening || !storeys || !bays) throw new Error("Family member lacks the operators needed for a facade rhythm.");
-    const applied = opening.parameters.upperFrontRoundHead !== 1;
-    let construction = applied ? (await compileSourceAwareGroupedFacadeRhythmStudy({ schemaVersion: "0.1.0", kind: "construction-grouped-facade-rhythm-study", graph,
+    const applied = opening.parameters.upperFrontRoundHead !== 1 || policy.schemaVersion === "0.5.0";
+    let construction = applied ? (await compileSourceAwareGroupedFacadeRhythmStudy({ schemaVersion: policy.schemaVersion === "0.5.0" ? "0.2.0" : "0.1.0", kind: "construction-grouped-facade-rhythm-study", graph,
       firstFloor: policy.scope === "top-upper-front" ? storeys.parameters.count - 1 : 1, lastFloor: storeys.parameters.count - 1, firstBay: 0, lastBay: bays.parameters.count - 1,
-      memberCount: policy.memberCount, memberWidthM: policy.memberWidthM, pierWidthM: policy.pierWidthM }, member.lineage, { lockOpenings: controls.lockOpenings })).construction : member.construction;
-    if (policy.schemaVersion === "0.4.0") {
+      memberCount: policy.memberCount, memberWidthM: policy.memberWidthM, pierWidthM: policy.pierWidthM, ...(policy.schemaVersion === "0.5.0" ? { allowRoundHeads: true } : {}) }, member.lineage, { lockOpenings: controls.lockOpenings })).construction : member.construction;
+    if (varyEntrances) {
       const entrance = resolveConstructionUncoveredEntranceStudy({ schemaVersion: "0.1.0", kind: "construction-uncovered-entrance-study",
         familySeed: entranceSeed, openingLock: controls.lockOpenings, graph: construction.graph });
       construction = await evaluateConstruction(entrance.graph);

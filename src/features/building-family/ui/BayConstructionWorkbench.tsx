@@ -144,6 +144,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   const [rhythmPreviewPiers, setRhythmPreviewPiers] = useState(false);
   const [rhythmEntrances, setRhythmEntrances] = useState(false);
   const [rhythmPreviewEntrances, setRhythmPreviewEntrances] = useState(false);
+  const [rhythmPreviewGroupedArches, setRhythmPreviewGroupedArches] = useState(false);
   const [rhythmStorefrontLights, setRhythmStorefrontLights] = useState(false);
   const [rhythmPreviewStorefrontLights, setRhythmPreviewStorefrontLights] = useState(false);
   const [rhythmFabricVariation, setRhythmFabricVariation] = useState(false);
@@ -540,8 +541,9 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       shown.current = candidate; setAccepted(candidate); setPreviewNode(null); setFamilyPreview(true); setRhythmArchivePreview(true); setFamilyDirty(false);
       familySource.current = null; rhythmArchive.current = archive; rhythmFabricArchive.current = fabricArchive ?? null; setRhythmPreviewWindowCount(archive.request.policy.memberCount); setRhythmPreviewScope(archive.request.policy.scope);
       setFamilyFabricView(source.awningFabric ? { inherited: source.awningFabric, memberIds: archive.result.members.map(member => member.graph.documentId), assignments: fabricArchive?.fabricAssignments } : null);
-      setRhythmPreviewPiers((archive.request.policy.schemaVersion === "0.3.0" || archive.request.policy.schemaVersion === "0.4.0") && Boolean(archive.request.policy.pierVariation?.source.enabled));
-      setRhythmPreviewEntrances(archive.request.policy.schemaVersion === "0.4.0");
+      setRhythmPreviewPiers((archive.request.policy.schemaVersion === "0.3.0" || archive.request.policy.schemaVersion === "0.4.0" || archive.request.policy.schemaVersion === "0.5.0") && Boolean(archive.request.policy.pierVariation?.source.enabled));
+      setRhythmPreviewEntrances(archive.request.policy.schemaVersion === "0.4.0" || (archive.request.policy.schemaVersion === "0.5.0" && archive.request.policy.uncoveredEntrances === true));
+      setRhythmPreviewGroupedArches(archive.request.policy.schemaVersion === "0.5.0");
       setRhythmPreviewStorefrontLights("storefrontLights" in archive.request.composition.source.policy && archive.request.composition.source.policy.storefrontLights);
       setRhythmPreviewFabricVariation(Boolean(fabricArchive?.fabricAssignments.members.some(member => member.mode === "override")));
       setFamilyDetails(archive.result.members.map(member => describeFamilyMember(member.graph))); setMemberIndex(0); chooseFrame(null);
@@ -1089,6 +1091,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
             <label><input type="checkbox" checked={rhythmArchivePreview ? rhythmPreviewEntrances : rhythmEntrances} disabled={pending || saving || familyPreview} onChange={event => setRhythmEntrances(event.currentTarget.checked)} /> Vary entrance positions (demo)</label>
             <label><input type="checkbox" checked={rhythmArchivePreview ? rhythmPreviewFabricVariation : rhythmFabricVariation} disabled={pending || saving || familyPreview} onChange={event => setRhythmFabricVariation(event.currentTarget.checked)} /> {rhythmArchivePreview ? "Saved member fabric overrides" : "Vary awning fabrics (demo)"}</label></div>
           {(rhythmArchivePreview ? rhythmPreviewFabricVariation : rhythmFabricVariation) ? <p>Member fabrics use explicit overrides. New previews use a demo palette and retain the original fabric.</p> : null}
+          {rhythmArchivePreview && rhythmPreviewGroupedArches ? <p>Saved grouped windows include round-headed members where the family uses arched openings.</p> : null}
           {(rhythmArchivePreview ? rhythmPreviewEntrances : rhythmEntrances) ? <p>Demo entrances use bays without authored awnings. Unlock openings and leave an uncovered bay on each building.</p> : null}
           {(rhythmArchivePreview ? rhythmPreviewStorefrontLights : rhythmStorefrontLights) ? <p>Demo pane counts vary by building. Existing storefront divisions are protected; turn this option off to retain them.</p> : null}
           {(rhythmArchivePreview ? rhythmPreviewPiers : rhythmPiers) ? <p>Demo pier treatments vary by building; existing authored piers are retained. Some window groups or seeds need more clearance; try paired windows or a different seed if preview is rejected.</p> : null}</>
