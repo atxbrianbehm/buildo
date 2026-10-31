@@ -42,7 +42,12 @@ import { BayConstructionClient } from "../compiler/bayConstructionClient";
 import { BayConstructionGraphSchema, BayConstructionNodeSchema, constructionOutputSocket, createBuildingConstructionGraph, type BayConstructionGraph, type BayConstructionNode } from "../contracts/bayConstructionGraph";
 import { constructionUsesOperator, completeFacadeAsBuilding, repeatConstructionWithSurfaces, validateConstructionSurfaceSources } from "../core/constructionSurfaceAuthoring";
 import { createBayConstructionProject, readBayConstructionProject } from "../state/bayConstructionProject";
-import { ConstructionHistory, type ConstructionHistorySnapshot } from "../state/constructionHistory";
+import { ConstructionHistory, readConstructionHistorySnapshot, type ConstructionHistorySnapshot } from "../state/constructionHistory";
+import { applyConstructionEvidenceProposal } from "../core/constructionEvidenceApplication";
+import { createConstructionEvidenceProject, readConstructionEvidenceProject } from "../state/constructionEvidenceProject";
+import type { createConstructionEvidenceProposal } from "../core/constructionEvidenceProposal";
+type EvidenceApplication = Awaited<ReturnType<typeof applyConstructionEvidenceProposal>>;
+type EvidenceProposal = Awaited<ReturnType<typeof createConstructionEvidenceProposal>>;
 import { constructionRecoveryText, type ConstructionRecoveryStatus } from "../state/useConstructionWorkspace";
 import type { BuildingFixtureViewerPreparer, PreparedBuildingFixtureView } from "../state/buildingRunController";
 import { AssemblyHall, type AssemblyHallWindowSelection } from "./AssemblyHall";
@@ -202,15 +207,17 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   }, []);
 
   const publish = useCallback(async (graph: BayConstructionGraph, materials: BayConstructionMaterials, token: number, signal: AbortSignal,
-    historyAction: "edit" | "open" | "undo" | "redo" = "edit", lineage?: ConstructionGenerationLineage | null) => {
+    historyAction: "edit" | "open" | "undo" | "redo" = "edit", lineage?: ConstructionGenerationLineage | null, evidence?: EvidenceApplication | null) => {
     const isCurrent = () => alive.current && sequence.current === token && !signal.aborted;
     if (!isCurrent()) return;
     const previous = current.current;
     const nextGeneration = lineage === undefined ? previous?.generation ?? null : lineage;
+    const nextEvidence = evidence !== undefined ? evidence : historyAction === "undo" || historyAction === "redo" ? history.targetEvidenceApplication(historyAction)
+      : historyAction === "edit" && canonicalJson(history.current) === canonicalJson(graph) && canonicalJson(history.currentGeneration) === canonicalJson(nextGeneration) ? history.currentEvidenceApplication : null;
     if (previous && shown.current === previous.fixture && JSON.stringify(previous.fixture.construction.graph) === JSON.stringify(graph) &&
-        previous.materials.file.contentHash === materials.file.contentHash && previous.materials.awningFabric?.contentHash === materials.awningFabric?.contentHash && canonicalJson(previous.generation) === canonicalJson(nextGeneration)) {
+        previous.materials.file.contentHash === materials.file.contentHash && previous.materials.awningFabric?.contentHash === materials.awningFabric?.contentHash && canonicalJson(previous.generation) === canonicalJson(nextGeneration) && canonicalJson(history.currentEvidenceApplication) === canonicalJson(nextEvidence)) {
       setDraft(graph); setFields(fieldsFor(graph)); setDirty(false); setOpeningDirty(false); setGroupDirty(false); setError(null);
-      if (historyAction === "open") { history.record(graph, materials.file.contentHash, true, nextGeneration); onSessionChange({ graph, materials, history: history.snapshot(), generation: nextGeneration }); }
+      if (historyAction === "open") { history.record(graph, materials.file.contentHash, true, nextGeneration, nextEvidence); onSessionChange({ graph, materials, history: history.snapshot(), generation: nextGeneration }); }
       return;
     }
     validateConstructionSurfaceSources(graph, materials.packedAtlas);
@@ -245,7 +252,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       setSelected(id => result.graph.nodes.some(node => node.id === id) ? id : result.graph.nodes[0].id);
       setDirty(false); setOpeningDirty(false); setGroupDirty(false); setError(null);
       if (historyAction === "undo" || historyAction === "redo") history.acceptTraversal(historyAction, result.graph);
-      else history.record(result.graph, materials.file.contentHash, historyAction === "open", nextGeneration);
+      else history.record(result.graph, materials.file.contentHash, historyAction === "open", nextGeneration, nextEvidence);
       onSessionChange({ graph: result.graph, materials, history: history.snapshot(), generation: nextGeneration });
       if (previous) retire(previous.fixture);
       if (previousShown && previousShown !== previous?.fixture) retire(previousShown);
@@ -261,6 +268,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     const urls = downloads.current, owned = owners.current;
     void (async () => {
       try {
+        if (startingSession?.history?.evidenceApplications) await readConstructionHistorySnapshot(startingSession.history);
         const materials = startingSession?.materials ?? await createBayConstructionMaterials(base, controller.signal, undefined, "building");
         await publish(startingSession?.graph ?? createBuildingConstructionGraph(), materials, token, controller.signal, "edit", startingSession?.generation ?? null);
       } catch (failure) {
@@ -311,8 +319,21 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   }
   async function open(file: File) {
     await perform(async (token, signal) => {
-      const { project, materials } = await readBayConstructionProject(JSON.parse(await file.text()));
-      await publish(project.graph, { ...materials, file: project.materialSource, ...(project.awningFabric ? { awningFabric: project.awningFabric } : {}) }, token, signal, "open", project.generation ?? null);
+      const value: unknown = JSON.parse(await file.text());
+      const isEvidenceProject = value !== null && typeof value === "object" && "kind" in value && value.kind === "construction-evidence-project";
+      const evidenceProject = isEvidenceProject ? await readConstructionEvidenceProject(value) : null;
+      const { project, materials } = await readBayConstructionProject(evidenceProject?.project ?? value);
+      await publish(project.graph, { ...materials, file: project.materialSource, ...(project.awningFabric ? { awningFabric: project.awningFabric } : {}) }, token, signal, "open", project.generation ?? null, evidenceProject?.application ?? null);
+    });
+  }
+  async function applyEvidence(proposal: EvidenceProposal) {
+    const source = current.current;
+    if (!source || dirty || disabled || !viewerReady || generationControls.lockOpenings) return;
+    await perform(async (token, signal) => {
+      const application = await applyConstructionEvidenceProposal({ schemaVersion: "0.1.0", kind: "construction-evidence-application-request", proposal,
+        sourceGraph: source.fixture.construction.graph, generationSource: source.generation?.source ?? null });
+      if (signal.aborted || current.current !== source) return;
+      await publish(application.resultGraph, source.materials, token, signal, "edit", source.generation, application);
     });
   }
   async function changeFacadePiers(enabled: boolean) {
@@ -846,8 +867,10 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     setSaving(true); setError(null);
     try {
       const project = await createBayConstructionProject(source.fixture.construction.graph, source.materials.file, source.generation ?? undefined, source.materials.awningFabric);
+      const application = history.currentEvidenceApplication;
+      const saved = application ? await createConstructionEvidenceProject(project, application) : project;
       if (!alive.current || current.current !== source) return;
-      downloadJson(project, `${project.graph.documentId}.buildo-construction.json`);
+      downloadJson(saved, `${project.graph.documentId}.buildo-construction.json`);
     } catch (failure) { if (alive.current) setError(problem(failure)); }
     finally { if (alive.current) setSaving(false); }
   }
@@ -873,8 +896,9 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     const same = draft.nodes.filter(item => item.type === value.type);
     return names[value.type] + (same.length > 1 ? ` ${same.findIndex(item => item.id === value.id) + 1}` : "");
   };
+  const unlinkedEvidence = !history.currentEvidenceApplication && Boolean(history.snapshot()?.evidenceApplications?.some(Boolean));
   const fileActions = <>
-        <button type="button" aria-label="Save construction" disabled={disabled || !accepted || dirty} onClick={() => void save()}>{saving ? "Saving…" : buildingMode ? "Save" : "Save construction"}</button>
+        <button type="button" aria-label="Save construction" disabled={disabled || !accepted || dirty} onClick={() => void save()}>{saving ? "Saving…" : unlinkedEvidence ? "Save unlinked" : history.currentEvidenceApplication ? "Save with evidence" : buildingMode ? "Save" : "Save construction"}</button>
         <button type="button" aria-label="Open construction" disabled={disabled} onClick={() => fileInput.current?.click()}>{buildingMode ? "Open" : "Open construction"}</button>
         <input ref={fileInput} type="file" accept=".json,application/json" hidden aria-label="Open construction file"
           onChange={event => { const file = event.currentTarget.files?.[0]; event.currentTarget.value = ""; if (file) void open(file); }} />
@@ -948,6 +972,8 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     data-construction-hash={accepted?.ir.sourceGraphHash} data-construction-triangles={accepted?.ir.metrics.triangleCount}
     data-construction-kind={buildingMode ? "building" : facadeMode ? "facade" : "bay"} data-surface-layer-count={accepted?.construction.surfaceComposition?.layers.length ?? 0} data-construction-preview={familyPreview ? "family" : previewNode ?? "output"}>
     {buildingMode ? <header className="construction-workspace__toolbar"><p>{familyMemberMode ? `Building ${familyMemberNumber ?? ""} of 6` : "Building construction"}</p><div className="construction-project-actions">{historyActions}{!familyMemberMode ? fileActions : <button type="button" disabled={disabled || dirty || familyReturning} onClick={onReturn}>{familyReturning ? "Updating family…" : "Back to family"}</button>}</div></header> : null}
+    {buildingMode && !familyMemberMode && history.currentEvidenceApplication ? <p className="construction-evidence-notice" role="status">Saving this building includes its interpretation and the full staged research extract.</p> : null}
+    {buildingMode && !familyMemberMode && unlinkedEvidence ? <p className="construction-evidence-notice" role="status">An interpretation belongs to a different undo state. This save will not include it; return to that state to save its linked snapshot.</p> : null}
     <div className="building-workspace__stage">
       {accepted ? <AssemblyHall workspace constructionFrameSelection={!familyPreview} selectedConstructionPath={selectedFrame} onWindowSelectionChange={selectFrame} fixture={accepted} acquireFixtureViewerLease={acquireLease} registerFixtureViewer={registerViewer} rendererFactory={rendererFactory}
         title={buildingMode ? "Building construction" : facadeMode ? "Facade construction" : "Facade bay"} description={buildingMode ? "Footprint, storeys, openings and continuous architectural profiles" : facadeMode ? "Connected scopes, openings and shared procedural assemblies" : "An authored opening, sash and masonry scope"} showFamilyTools={false} lighting={buildingMode ? "construction" : "bay"} conciseFallback framing={buildingMode || facadeMode ? "facade" : "building"} />
@@ -1067,10 +1093,11 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
 
       {accepted ? <ConstructionSurfacePanel graph={draft} atlas={accepted.packedAtlas} selectedPath={selectedFrame} selectedNode={selected} disabled={pierProtected || signProtected || disabled || Boolean(previewNode)}
         onChange={(graph, id) => { changeGraph(graph); setSelected(id); }} /> : null}
-      {buildingMode && !familyMemberMode ? <details className="construction-generate"><summary>Generate & vary</summary>{signProtected && !generation ? <p>Generate the building before adding a sign to establish its material lineage; sign-bearing generation keeps that material pinned.</p> : null}<ConstructionGenerationPanel controls={generationControls} lineage={generation} reference={referenceDraft} onReferenceFile={file => void importReference(file)} onSaveResearch={value => downloadJson(value, "metagrinder-staging.json")} proposalGraph={!dirty && !disabled && viewerReady ? accepted?.construction.graph : null} onSaveProposal={value => downloadJson(value, "construction-evidence-proposal.json")} disabled={(signProtected && !generation) || disabled || dirty || !viewerReady} materialChangesLocked={signProtected}
+      {buildingMode && !familyMemberMode ? <details className="construction-generate"><summary>Generate & vary</summary>{signProtected && !generation ? <p>Generate the building before adding a sign to establish its material lineage; sign-bearing generation keeps that material pinned.</p> : null}{history.currentEvidenceApplication ? <p role="status">This building includes a proposed interpretation from claim {history.currentEvidenceApplication.proposal.claimId}. Saving includes its evidence record and full staged extract; a later edit creates a separate history state.</p> : null}<ConstructionGenerationPanel controls={generationControls} lineage={generation} reference={referenceDraft} onReferenceFile={file => void importReference(file)} onSaveResearch={value => downloadJson(value, "metagrinder-staging.json")} proposalGraph={!dirty && !disabled && viewerReady ? accepted?.construction.graph : null} onSaveProposal={value => downloadJson(value, "construction-evidence-proposal.json")} onApplyProposal={value => void applyEvidence(value)} applicationLocked={generationControls.lockOpenings} appliedProposalHash={history.currentEvidenceApplication?.proposal.contentHash} disabled={(signProtected && !generation) || disabled || dirty || !viewerReady} materialChangesLocked={signProtected}
         onChange={setGenerationControls} onGenerate={reroll => void generateBuilding(reroll)} /></details> : null}
       {buildingMode && !familyMemberMode ? <section className="construction-generate" aria-label="Building family preview"><h3>Related buildings</h3>
         <p>Preview six related buildings using this building's material. Choose which architectural details may vary; unchecked groups keep your authored choices. The current choices use a small demo catalog.</p>
+        {history.currentEvidenceApplication ? <p>Family previews and family files do not yet carry this interpretation record. Save the linked building separately first.</p> : null}
         <div className="control-panel__fields"><label><span>Family seed</span><input aria-label="Family seed" value={familySeed} disabled={pending || saving || familyPreview} onChange={event => setFamilySeed(event.currentTarget.value)} /></label></div>
         {!signProtected ? <fieldset className="construction-family-variation" disabled={pending || saving || familyPreview}><legend>Vary architectural details</legend>
           <label><input type="checkbox" checked={familyVariation.openings} onChange={event => { const checked = event.currentTarget.checked; setFamilyVariation(value => ({ ...value, openings: checked })); }} /> Opening heads and sash</label>
