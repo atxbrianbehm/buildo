@@ -1,0 +1,42 @@
+import { createServer } from "vite";
+import { chromium } from "@playwright/test";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+const out = path.dirname(fileURLToPath(import.meta.url));
+const server = await createServer({ cacheDir: "test-results/al-p11-42-render-vite", server: { host: "127.0.0.1", port: 0 } });
+let browser;
+try {
+  await server.listen(); browser = await chromium.launch(); const page = await browser.newPage({ viewport: { width: 1600, height: 900 } });
+  await page.goto(server.resolvedUrls.local[0]);
+  const evidence = await page.evaluate(async () => {
+    const THREE = await import("/node_modules/three/build/three.module.js");
+    const { createBuildingConstructionGraph } = await import("/src/features/building-family/contracts/bayConstructionGraph.ts");
+    const { withConstructionStorefront } = await import("/src/features/building-family/core/constructionStorefrontGraph.ts");
+    const { withConstructionGroupedBays } = await import("/src/features/building-family/core/constructionGroupedBayGraph.ts");
+    const { evaluateConstructionFacadePierStudy } = await import("/src/features/building-family/compiler/evaluateConstructionFacadePierStudy.ts");
+    const { defaultConstructionGenerationControls, resolveWorkbenchGeneration } = await import("/src/features/building-family/state/constructionGenerationState.ts");
+    const { createAssemblyHallFixture } = await import("/src/features/building-family/ui/assemblyHallFixture.ts");
+    const { createReferenceConstructionMaterials, prepareBayConstructionFixture } = await import("/src/features/building-family/ui/bayConstructionFixture.ts");
+    const { defaultBuildingPromptControls } = await import("/src/features/building-family/state/buildingStore.ts");
+    const initial = await resolveWorkbenchGeneration(createBuildingConstructionGraph("pier_junction_render"), null, defaultConstructionGenerationControls);
+    const graph = withConstructionGroupedBays(withConstructionStorefront(initial.graph, 1), [{ storeysNodeId: "facade", floorIndex: 1, bayIndex: 0, memberCount: 2, memberWidthM: 0.6, pierWidthM: 0.24 }]);
+    const base = await createAssemblyHallFixture({ promptControls: structuredClone(defaultBuildingPromptControls) });
+    const { materials } = await createReferenceConstructionMaterials(base, initial.source, new AbortController().signal, base.spec);
+    const request = { schemaVersion: "0.1.0", kind: "construction-facade-pier-study-request", graph, pierWidthM: 0.28, projectionM: 0.18, endHeightM: 0.15, clearanceM: 0.04 };
+    const legacy = await evaluateConstructionFacadePierStudy(request), joined = await evaluateConstructionFacadePierStudy({ ...request, schemaVersion: "0.2.0", junction: "meet-storey-bands" });
+    const fixtures = [await prepareBayConstructionFixture(base, legacy, materials), await prepareBayConstructionFixture(base, joined, materials)];
+    document.body.replaceChildren(); document.body.style.margin = "0"; const renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setSize(1600, 900); renderer.setClearColor(0xeae9e4); document.body.append(renderer.domElement);
+    const scene = new THREE.Scene(); scene.add(fixtures[0].familyRuntime.root); scene.add(new THREE.HemisphereLight(0xffffff, 0x888888, 2)); const light = new THREE.DirectionalLight(0xffffff, 2); light.position.set(-5, 12, 14); scene.add(light);
+    const camera = new THREE.PerspectiveCamera(30, 1600 / 900, .1, 500); camera.position.set(0, 7.8, -32); camera.lookAt(0, 7.5, 0); renderer.render(scene, camera);
+    globalThis.__junction = { renderer, scene, camera, fixtures };
+    return { oldGraphHash: legacy.ir.sourceGraphHash, studyHash: joined.ir.sourceGraphHash, pierCount: joined.ir.meshBatches.filter(x => x.role === "facade-pier").length };
+  });
+  await page.screenshot({ path: path.join(out, "before.png") });
+  await page.evaluate(() => { const { renderer, scene, camera, fixtures } = globalThis.__junction; scene.remove(fixtures[0].familyRuntime.root); scene.add(fixtures[1].familyRuntime.root); renderer.render(scene, camera); });
+  await page.screenshot({ path: path.join(out, "after.png") });
+  await page.evaluate(() => { const { renderer, scene, camera, fixtures } = globalThis.__junction; scene.remove(fixtures[1].familyRuntime.root); scene.add(fixtures[0].familyRuntime.root); camera.position.set(0, 7.8, -18); camera.lookAt(0, 7.5, 0); renderer.render(scene, camera); });
+  await page.screenshot({ path: path.join(out, "before-detail.png") });
+  await page.evaluate(() => { const { renderer, scene, camera, fixtures } = globalThis.__junction; scene.remove(fixtures[0].familyRuntime.root); scene.add(fixtures[1].familyRuntime.root); renderer.render(scene, camera); });
+  await page.screenshot({ path: path.join(out, "after-detail.png") });
+  process.stdout.write(`${JSON.stringify(evidence)}\n`);
+} finally { await browser?.close(); await server.close(); }
