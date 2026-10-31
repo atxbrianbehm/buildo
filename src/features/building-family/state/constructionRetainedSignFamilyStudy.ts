@@ -1,6 +1,7 @@
 import { ConstructionRetainedSignFamilyStudyReceiptSchema } from "../contracts/constructionRetainedSignFamilyStudy";
 import { readConstructionFamilyPlan, resolveConstructionFamilyPlan } from "../core/constructionFamilyPlan";
 import { readConstructionFamilyCompositionPlan } from "../core/constructionFamilyComposition";
+import { readConstructionFamilyPierVariation } from "../core/constructionFamilyPierVariation";
 import { withConstructionStorefrontSign, withoutConstructionStorefrontSign } from "../core/constructionStorefrontSignGraph";
 import { withConstructionSignAwningClearance } from "../core/constructionSignAwningGraph";
 import { hashCanonicalJson } from "../core/contentHash";
@@ -12,15 +13,16 @@ import type { ConstructionGenerationControls, ConstructionGenerationLineage } fr
 
 /** Experimental family variation; the receipt describes the final signed geometry. */
 export async function resolveConstructionRetainedSignFamilyStudy(input: unknown, lineage: ConstructionGenerationLineage,
-  controls: ConstructionGenerationControls, compositionInput: unknown, signal?: AbortSignal) {
+  controls: ConstructionGenerationControls, compositionInput: unknown, signal?: AbortSignal, pierVariationInput?: unknown) {
   const plan = readConstructionFamilyPlan(input), composition = readConstructionFamilyCompositionPlan(compositionInput), source = plan.source.graph;
+  const pierVariation = pierVariationInput === undefined ? undefined : readConstructionFamilyPierVariation(pierVariationInput);
   if (!source.storefrontSign || (source.schemaVersion !== "0.16.0" && source.schemaVersion !== "0.17.0")) throw new Error("Choose a sign-bearing family source.");
   const policy = composition.source.policy;
   if (!policy.roof || Object.entries(policy).some(([key, value]) => !["roof", "massing", "openings", "groupedBays", "awnings"].includes(key) && value)) throw new Error("This study supports roof, massing, openings, grouped-bay and additional-awning variation while retaining the storefront.");
   if (signal?.aborted) throw new DOMException("Family generation cancelled.", "AbortError");
   await resolveConstructionSignGenerationStudy(source, lineage, controls);
   const unsignedPlan = resolveConstructionFamilyPlan({ ...plan.source, graph: withoutConstructionStorefrontSign(source) });
-  const family = await resolveConstructionFamily(unsignedPlan, lineage, controls, signal, composition);
+  const family = await resolveConstructionFamily(unsignedPlan, lineage, controls, signal, composition, pierVariation);
   const members = [], hashes = new Set<string>();
   for (const member of family.members) {
     if (signal?.aborted) throw new DOMException("Family generation cancelled.", "AbortError");
@@ -41,11 +43,12 @@ export async function resolveConstructionRetainedSignFamilyStudy(input: unknown,
     hashes.add(geometryHash); members.push({ ...member, construction, geometryHash });
   }
   const expanded = Object.entries(policy).some(([key, value]) => key !== "roof" && value);
-  const receipt = ConstructionRetainedSignFamilyStudyReceiptSchema.parse({ schemaVersion: expanded ? "0.2.0" : "0.1.0", kind: "construction-retained-sign-family-study",
+  const receipt = ConstructionRetainedSignFamilyStudyReceiptSchema.parse({ schemaVersion: pierVariation ? "0.3.0" : expanded ? "0.2.0" : "0.1.0", kind: "construction-retained-sign-family-study",
     familyId: plan.source.familyId, sourceGraphHash: await hashCanonicalJson(source), materialSourceHash: family.receipt.materialSourceHash,
     referenceContentHash: family.receipt.referenceContentHash, members: members.map(member => ({ documentId: member.documentId,
       sourceContentHash: member.lineage.source.contentHash, geometryHash: member.geometryHash })),
-    ...(expanded ? { familySeed: plan.source.familySeed, compositionHash: await hashCanonicalJson(composition) } : {}) });
+    ...(expanded || pierVariation ? { familySeed: plan.source.familySeed, compositionHash: await hashCanonicalJson(composition) } : {}),
+    ...(pierVariation ? { pierVariationHash: await hashCanonicalJson(pierVariation) } : {}) });
   if (signal?.aborted) throw new DOMException("Family generation cancelled.", "AbortError");
   return { receipt, members };
 }

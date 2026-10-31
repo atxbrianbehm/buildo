@@ -9,7 +9,8 @@ const common = { kind: z.literal("construction-retained-sign-family-study"), fam
     sourceContentHash: hash, geometryHash: hash }).strict()).length(6) };
 const v1 = z.object({ schemaVersion: z.literal("0.1.0"), ...common }).strict();
 const v2 = z.object({ schemaVersion: z.literal("0.2.0"), ...common, familySeed: z.string().min(1).max(128), compositionHash: hash }).strict();
-export const ConstructionRetainedSignFamilyStudyReceiptSchema = json.pipe(z.discriminatedUnion("schemaVersion", [v1, v2]).superRefine((receipt, context) => {
+const v3 = z.object({ schemaVersion: z.literal("0.3.0"), ...common, familySeed: z.string().min(1).max(128), compositionHash: hash, pierVariationHash: hash }).strict();
+export const ConstructionRetainedSignFamilyStudyReceiptSchema = json.pipe(z.discriminatedUnion("schemaVersion", [v1, v2, v3]).superRefine((receipt, context) => {
   if (new Set(receipt.members.map(member => member.documentId)).size !== 6 || new Set(receipt.members.map(member => member.geometryHash)).size !== 6)
     context.addIssue({ code: "custom", path: ["members"], message: "Family members and their final geometries must be distinct." });
 }));
