@@ -9,6 +9,7 @@ import { canonicalJson } from "./canonicalJson";
 import { hashCanonicalJson } from "./contentHash";
 import { readConstructionGenerationSource } from "./constructionGenerationSource";
 import { createSeedTree } from "./seedTree";
+import { withConstructionRoundHead } from "./constructionRoundHeadVocabulary";
 
 const choiceSchema = z.object({
   target: z.string().min(1), value: z.number().finite(), basis: z.enum(["default", "seeded", "requested", "derived", "locked"])
@@ -88,6 +89,10 @@ export async function resolveConstructionGeneration(input: unknown): Promise<Con
   if (profile) for (const [target, value] of Object.entries(profile)) { const [, id, field] = target.split("/"); set(id, field, value, trimBasis); }
   const locks = new Map<string, number>();
   for (const lock of source.intent.locks) {
+    if (lock.semanticPath === "construction/opening/upperFrontRoundHead" && lock.scope !== "element" && (lock.lockedValue === 0 || lock.lockedValue === 1)) {
+      locks.set(lock.semanticPath, lock.lockedValue);
+      continue;
+    }
     if (lock.scope === "element" || !values.has(lock.semanticPath) || typeof lock.lockedValue !== "number" || !Number.isFinite(lock.lockedValue))
       throw new Error("Unsupported construction lock: " + lock.semanticPath + ". Use an implemented numeric construction parameter with building or family scope.");
     const previous = values.get(lock.semanticPath)!;
@@ -103,7 +108,8 @@ export async function resolveConstructionGeneration(input: unknown): Promise<Con
   for (const [target, value] of locks) values.set(target, { target, value, basis: "locked" });
   for (const node of graph.nodes) if ("parameters" in node) for (const field of Object.keys(node.parameters))
     Object.assign(node.parameters, { [field]: values.get("construction/" + node.id + "/" + field)!.value });
-  const admitted = BayConstructionGraphSchema.parse(graph);
+  const head = locks.get("construction/opening/upperFrontRoundHead");
+  const admitted = BayConstructionGraphSchema.parse(head === undefined ? graph : withConstructionRoundHead(graph, head as 0 | 1));
   const payload = {
     schemaVersion: "0.1.0" as const, kind: "construction-generation-resolution" as const, resolverVersion: definition.resolverVersion,
     sourceContentHash: source.contentHash, graph: admitted, graphContentHash: await hashCanonicalJson(admitted),

@@ -90,6 +90,8 @@ export async function resolveWorkbenchGeneration(currentInput: unknown, previous
   const controls = controlsSchema.parse(controlsInput);
   const reference = referenceInput === undefined ? undefined : ConstructionReferenceSnapshotSchema.parse(referenceInput);
   const oldSource = previous ? await readConstructionGenerationSource(previous.source) : null;
+  if (oldSource?.intent.locks.some(lock => lock.semanticPath === "construction/opening/upperFrontRoundHead"))
+    throw new Error("A pinned opening head cannot yet be retained safely by the workbench. The current building is retained.");
   const input: ConstructionGenerationInput = oldSource ? {
     schemaVersion: "0.1.0", kind: "construction-generation-input", documentId: current.documentId,
     intent: structuredClone(oldSource.intent), recipe: structuredClone(oldSource.recipe), reference: structuredClone(oldSource.reference),
