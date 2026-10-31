@@ -88,3 +88,13 @@ it("allows the combined bay's rods to be toggled without unlocking other bays", 
   expect(screen.getByLabelText("Awning bay")).toBeDisabled(); fireEvent.click(screen.getByRole("button", { name: "Add support rods" }));
   expect(support).toHaveBeenCalledWith(1, true);
 });
+
+it("allows shared fabric editing on a locked combined bay", async () => {
+  const graph = withConstructionAwnings(withConstructionStorefront(createBuildingConstructionGraph(), 1), [{ bayIndex: 1, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }]);
+  const fabric = await createConstructionAwningFabric({ schemaVersion: "0.1.0", kind: "construction-awning-fabric-request", seed: "combined", pattern: "striped", primary: [224, 213, 187], secondary: [69, 99, 78], physicalSizeM: [1, 1] });
+  const change = vi.fn();
+  render(<ConstructionAwningControls graph={graph} disabled={false} onChange={() => {}} lockedBayIndex={1} dimensionsOnly allowFabric fabric={fabric} onFabricChange={change} />);
+  fireEvent.change(screen.getByLabelText("Awning fabric pattern"), { target: { value: "solid" } });
+  fireEvent.click(screen.getByRole("button", { name: "Apply awning fabric" }));
+  expect(change).toHaveBeenCalledWith("solid", [224, 213, 187], [69, 99, 78]); expect(screen.getByLabelText("Awning bay")).toBeDisabled();
+});

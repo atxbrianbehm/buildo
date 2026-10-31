@@ -828,10 +828,10 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         onDraftChange={value => { setGroupDirty(value); if (!value) setError(null); }} onApply={edit => void applyGroupedBay(edit)} /> : null}
       {buildingMode && !advancedOpen && accepted && supportsGroupedConstruction(accepted.construction.graph) && constructionHasStorefront(accepted.construction.graph) ? <ConstructionAwningControls
         graph={accepted.construction.graph} disabled={pending || saving || openingDirty || buildingDirty || groupDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode) || (familyMemberMode && !startingSession?.materials.awningFabric)}
-        lockedBayIndex={signProtected ? accepted.construction.graph.storefrontSign?.bayIndex : undefined} dimensionsOnly={combinedProtected} allowRemoval={combinedProtected} allowSupport={combinedProtected}
+        lockedBayIndex={signProtected ? accepted.construction.graph.storefrontSign?.bayIndex : undefined} dimensionsOnly={combinedProtected} allowRemoval={combinedProtected} allowSupport={combinedProtected} allowFabric={combinedProtected}
         unavailableReason={familyMemberMode && !startingSession?.materials.awningFabric ? "Add an awning to the original building before creating this family." : undefined}
         supportDisabled={familyMemberMode || (signProtected && !combinedProtected)} onSupportChange={(bay, enabled) => void changeAwningSupport(bay, enabled)}
-        fabric={awningFabric} fabricDisabled={familyMemberMode || signProtected}
+        fabric={awningFabric} fabricDisabled={familyMemberMode || (signProtected && !combinedProtected)}
         onFabricChange={(pattern, primary, secondary) => void changeAwningFabric(pattern, primary, secondary)}
         onChange={(bay, enabled, dimensions) => void changeAwning(bay, enabled, dimensions)} /> : null}
       {buildingMode && !advancedOpen && !familyMemberMode && accepted && supportsGroupedConstruction(accepted.construction.graph) && constructionHasStorefront(accepted.construction.graph) ? <section className="construction-generate" aria-label="Storefront sign">

@@ -3,10 +3,10 @@ import type { BayConstructionGraph } from "../contracts/bayConstructionGraph";
 import type { ConstructionAwningFabricArtifact } from "../contracts/constructionAwningFabric";
 
 /** A single explicit front-bay scope; multiple bays can be authored one at a time. */
-export function ConstructionAwningControls({ graph, disabled, unavailableReason, onChange, fabric, fabricDisabled, onFabricChange, supportDisabled, onSupportChange, lockedBayIndex, dimensionsOnly, allowRemoval, allowSupport }: {
+export function ConstructionAwningControls({ graph, disabled, unavailableReason, onChange, fabric, fabricDisabled, onFabricChange, supportDisabled, onSupportChange, lockedBayIndex, dimensionsOnly, allowRemoval, allowSupport, allowFabric }: {
   graph: BayConstructionGraph; disabled: boolean; unavailableReason?: string; onChange: (bayIndex: number, enabled: boolean, dimensions?: { projectionM: number; dropM: number; valanceHeightM: number }) => void;
   fabric?: ConstructionAwningFabricArtifact; fabricDisabled?: boolean; supportDisabled?: boolean; onSupportChange?: (bayIndex: number, enabled: boolean) => void;
-  lockedBayIndex?: number; dimensionsOnly?: boolean; allowRemoval?: boolean; allowSupport?: boolean;
+  lockedBayIndex?: number; dimensionsOnly?: boolean; allowRemoval?: boolean; allowSupport?: boolean; allowFabric?: boolean;
   onFabricChange?: (pattern: "solid" | "striped", primary: [number, number, number], secondary: [number, number, number]) => void;
 }) {
   const [bayIndex, setBay] = useState(0);
@@ -18,7 +18,7 @@ export function ConstructionAwningControls({ graph, disabled, unavailableReason,
   return <section className="construction-grouped-bay" aria-label="Storefront awnings">
     <h3>Storefront awnings</h3>
     <p>Choose a front bay. The first awning starts with striped demo fabric; its source is saved separately.</p>
-    {dimensionsOnly ? <p>This awning shares a bay with the sign. Removing it also removes its support rods; the sign and fabric stay. Fabric controls remain unavailable.</p> : null}
+    {dimensionsOnly ? <p>This awning shares a bay with the sign. Removing it also removes its support rods; the sign and fabric stay.</p> : null}
     {unavailableReason ? <p>{unavailableReason}</p> : null}
     <fieldset disabled={disabled}>
       <label>Bay <select aria-label="Awning bay" value={selected} disabled={lockedBayIndex !== undefined} onChange={event => setBay(Number(event.currentTarget.value))}>
@@ -41,7 +41,7 @@ export function ConstructionAwningControls({ graph, disabled, unavailableReason,
       {fabric && onFabricChange ? <div>
         <p>Fabric applies to all awnings in this building and its generated family. Fabric changes are separate from construction undo.</p>
         {fabricDisabled ? <p>To change shared fabric, return to the original building.</p> : null}
-        <fieldset disabled={fabricDisabled || dimensionsOnly}>
+        <fieldset disabled={fabricDisabled || (dimensionsOnly && !allowFabric)}>
           <form key={fabric.contentHash} onSubmit={event => {
             event.preventDefault(); const fields = new FormData(event.currentTarget);
             const color = (name: string): [number, number, number] => { const value = String(fields.get(name)); return [1, 3, 5].map(offset => parseInt(value.slice(offset, offset + 2), 16)) as [number, number, number]; };
