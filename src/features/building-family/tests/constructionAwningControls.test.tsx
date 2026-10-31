@@ -64,3 +64,10 @@ it("locks the combined bay and permits only its dimensions to change", () => {
   fireEvent.click(screen.getByRole("button", { name: "Apply awning dimensions" }));
   expect(change).toHaveBeenCalledWith(1, true, { projectionM: 0.9, dropM: 0.55, valanceHeightM: 0.2 }); expect(support).not.toHaveBeenCalled();
 });
+
+it("adds an awning in the locked sign bay rather than the previously selected bay", () => {
+  const graph = withConstructionStorefront(createBuildingConstructionGraph(), 1), change = vi.fn();
+  render(<ConstructionAwningControls graph={graph} disabled={false} onChange={change} lockedBayIndex={2} />);
+  expect(screen.getByLabelText("Awning bay")).toHaveValue("2"); expect(screen.getByLabelText("Awning bay")).toBeDisabled();
+  fireEvent.click(screen.getByRole("button", { name: "Add awning" })); expect(change).toHaveBeenCalledWith(2, true);
+});
