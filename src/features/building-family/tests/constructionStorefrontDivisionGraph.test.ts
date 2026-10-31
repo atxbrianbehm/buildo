@@ -4,6 +4,11 @@ import { withConstructionStorefront } from "../core/constructionStorefrontGraph"
 import { withConstructionStorefrontDivision } from "../core/constructionStorefrontDivisionGraph";
 import { withConstructionGroupedBays } from "../core/constructionGroupedBayGraph";
 import { withConstructionCorniceLayout } from "../core/constructionCorniceVocabulary";
+import { withConstructionFacadePiers } from "../core/constructionFacadePierGraph";
+import { withConstructionAwnings } from "../core/constructionAwningGraph";
+import { withConstructionAwningSupports } from "../core/constructionAwningSupportGraph";
+import { withConstructionStorefrontSign } from "../core/constructionStorefrontSignGraph";
+import { withConstructionSignAwningClearance } from "../core/constructionSignAwningGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
 import { BayConstructionWorkerRequestSchema, BayConstructionWorkerReplySchema } from "../compiler/bayConstructionWorkerProtocol";
 import { defaultConstructionGenerationControls, resolveWorkbenchGeneration } from "../state/constructionGenerationState";
@@ -14,6 +19,23 @@ import { defaultBuildingPromptControls } from "../state/buildingStore";
 
 const base = () => withConstructionGroupedBays(withConstructionStorefront(createBuildingConstructionGraph(), 1), []);
 describe("storefront division graph", () => {
+  it("edits storefront lights on pier, signed and shared-awning graphs while retaining other choices", async () => {
+    const piers = withConstructionFacadePiers(base(), { pierWidthM: 0.28, projectionM: 0.18, endHeightM: 0.15, clearanceM: 0.04 });
+    const awnings = withConstructionAwnings(piers, [{ bayIndex: 0, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }]);
+    const supported = withConstructionAwningSupports(awnings, [{ bayIndex: 0, anchorRiseM: 0.15, thicknessM: 0.03 }]);
+    const sign = { bayIndex: 0, heightM: 0.18, projectionM: 0.08, frameWidthM: 0.035 };
+    const signed = withConstructionStorefrontSign(piers, sign);
+    const combined = withConstructionSignAwningClearance(withConstructionStorefrontSign(supported, sign), 0.04);
+    for (const graph of [piers, signed, combined]) {
+      const before = structuredClone(graph), edited = withConstructionStorefrontDivision(graph, { displayLights: 2, transomLights: 3 });
+      expect(graph).toEqual(before); expect(edited).toEqual({ ...before, storefrontDivision: { displayLights: 2, transomLights: 3 } });
+      const a = await evaluateConstruction(graph), b = await evaluateConstruction(edited);
+      const retained = (role: string) => role === "facade-pier" || role.startsWith("awning.") || role.startsWith("sign.");
+      expect(b.ir.meshBatches.filter(batch => retained(batch.role))).toEqual(a.ir.meshBatches.filter(batch => retained(batch.role)));
+      expect(b.prototypes).not.toEqual(a.prototypes);
+      expect((await evaluateConstruction(JSON.parse(JSON.stringify(edited)))).prototypes).toEqual(b.prototypes);
+    }
+  });
   it("retains legacy geometry for one light and executes divided geometry", async () => {
     const prior = base(), one = withConstructionStorefrontDivision(prior, { displayLights: 1, transomLights: 1 });
     const divided = withConstructionStorefrontDivision(prior, { displayLights: 2, transomLights: 3 });
