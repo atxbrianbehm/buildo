@@ -9,7 +9,7 @@ import { evaluateConstruction } from "../compiler/evaluateConstruction";
 import { evaluateConstructionSignAwningBuildingStudy } from "../compiler/evaluateConstructionSignAwningBuildingStudy";
 import { BayConstructionWorkerReplySchema, BayConstructionWorkerRequestSchema } from "../compiler/bayConstructionWorkerProtocol";
 import { defaultConstructionGenerationControls, resolveWorkbenchGeneration } from "../state/constructionGenerationState";
-import { createBayConstructionProject } from "../state/bayConstructionProject";
+import { assertConstructionWorkspaceSupported } from "../state/constructionWorkspaceAdmission";
 
 describe("versioned sign and awning graph", () => {
   it("retains authored geometry and matches the building study", async () => {
@@ -30,7 +30,7 @@ describe("versioned sign and awning graph", () => {
     expect(BayConstructionWorkerReplySchema.safeParse({ schemaVersion: "0.17.0", type: "bay-result", requestId: 1, result }).success).toBe(true);
     expect(BayConstructionWorkerReplySchema.safeParse({ schemaVersion: "0.16.0", type: "bay-result", requestId: 1, result }).success).toBe(false);
     await expect(resolveWorkbenchGeneration(graph, null, defaultConstructionGenerationControls)).rejects.toThrow(/not yet supported/);
-    await expect(createBayConstructionProject(graph, null)).rejects.toThrow(/not yet supported/);
+    expect(() => assertConstructionWorkspaceSupported(graph)).toThrow(/not yet supported/);
     await expect(evaluateConstruction(graph, "window")).rejects.toThrow(/complete matching graph/);
   });
 });
