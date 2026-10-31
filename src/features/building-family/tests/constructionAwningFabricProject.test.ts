@@ -9,6 +9,7 @@ import { createConstructionCheckpoint, readConstructionCheckpoint } from "../sta
 import { hashCanonicalJson } from "../core/contentHash";
 import { withConstructionFacadePiers } from "../core/constructionFacadePierGraph";
 import { withConstructionStorefrontSign } from "../core/constructionStorefrontSignGraph";
+import { withConstructionSignAwningClearance } from "../core/constructionSignAwningGraph";
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { withConstructionStorefrontDivision } from "../core/constructionStorefrontDivisionGraph";
 import { withConstructionAwningSupports } from "../core/constructionAwningSupportGraph";
@@ -48,6 +49,16 @@ it("stores a separate fabric source without changing the saved atlas during stru
     const pierProject = await createBayConstructionProject(pierced, materials.file, undefined, fabric);
     const signed = withConstructionStorefrontSign(pierced, { bayIndex: 2, heightM: 0.18, projectionM: 0.08, frameWidthM: 0.035 });
     const signProject = await createBayConstructionProject(signed, materials.file, undefined, fabric);
+    const combined = withConstructionSignAwningClearance(withConstructionStorefrontSign(pierced, { bayIndex: 0, heightM: 0.18, projectionM: 0.08, frameWidthM: 0.035 }), 0.04);
+    const combinedProject = await createBayConstructionProject(combined, materials.file, undefined, fabric);
+    expect(combinedProject.schemaVersion).toBe("0.19.0"); expect(combinedProject.awningFabric).toEqual(fabric); expect(combinedProject.materialSource).toEqual(pierProject.materialSource);
+    const reopenedCombined = (await readBayConstructionProject(JSON.parse(JSON.stringify(combinedProject)))).project;
+    expect(reopenedCombined).toEqual(combinedProject);
+    expect((await evaluateConstruction(reopenedCombined.graph)).ir).toEqual((await evaluateConstruction(combined)).ir);
+    const combinedCheckpoint = await createConstructionCheckpoint("combined-workspace", combined, materials.file, undefined, fabric);
+    expect((await readConstructionCheckpoint(JSON.parse(JSON.stringify(combinedCheckpoint)))).project).toEqual(combinedProject);
+    await expect(createBayConstructionProject(combined, materials.file)).rejects.toThrow(/versions must agree/);
+    await expect(readBayConstructionProject({ ...combinedProject, schemaVersion: "0.18.0" })).rejects.toThrow(/versions must agree/);
     expect(signProject.schemaVersion).toBe("0.18.0");
     expect((await readBayConstructionProject(JSON.parse(JSON.stringify(signProject)))).project).toEqual(signProject);
     expect(signProject.materialSource).toEqual(pierProject.materialSource); expect(signProject.awningFabric).toEqual(fabric);

@@ -37,6 +37,7 @@ import { BayConstructionClient } from "../compiler/bayConstructionClient";
 import { BayConstructionGraphSchema, BayConstructionNodeSchema, constructionOutputSocket, createBuildingConstructionGraph, type BayConstructionGraph, type BayConstructionNode } from "../contracts/bayConstructionGraph";
 import { constructionUsesOperator, completeFacadeAsBuilding, repeatConstructionWithSurfaces, validateConstructionSurfaceSources } from "../core/constructionSurfaceAuthoring";
 import { createBayConstructionProject, readBayConstructionProject } from "../state/bayConstructionProject";
+import { assertConstructionWorkspaceSupported } from "../state/constructionWorkspaceAdmission";
 import { ConstructionHistory, type ConstructionHistorySnapshot } from "../state/constructionHistory";
 import { constructionRecoveryText, type ConstructionRecoveryStatus } from "../state/useConstructionWorkspace";
 import type { BuildingFixtureViewerPreparer, PreparedBuildingFixtureView } from "../state/buildingRunController";
@@ -287,6 +288,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   async function open(file: File) {
     await perform(async (token, signal) => {
       const { project, materials } = await readBayConstructionProject(JSON.parse(await file.text()));
+      assertConstructionWorkspaceSupported(project.graph);
       await publish(project.graph, { ...materials, file: project.materialSource, ...(project.awningFabric ? { awningFabric: project.awningFabric } : {}) }, token, signal, "open", project.generation ?? null);
     });
   }

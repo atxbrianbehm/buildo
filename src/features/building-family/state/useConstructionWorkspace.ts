@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { canonicalJson } from "../core/canonicalJson";
 import type { BayConstructionSession } from "../ui/BayConstructionWorkbench";
 import { acquireConstructionCheckpointWriter, ConstructionCheckpointQueue, type ConstructionCheckpointWriter } from "./constructionCheckpointWriter";
+import { assertConstructionWorkspaceSupported } from "./constructionWorkspaceAdmission";
 
 export interface ConstructionRecoveryStatus {
   state: "loading" | "ready" | "saving" | "saved" | "recovered" | "busy" | "unsupported" | "failed";
@@ -46,6 +47,7 @@ export function useConstructionWorkspace(documentId: string) {
         if (!writer) { update({ status: { state: "busy" } }); return; }
         const parsed = await writer.read();
         if (!active) return;
+        if (parsed) assertConstructionWorkspaceSupported(parsed.project.graph);
         const session: BayConstructionSession | null = parsed ? { graph: parsed.project.graph, materials: parsed.materials, ...(parsed.project.generation ? { generation: parsed.project.generation } : {}) } : null;
         queue = new ConstructionCheckpointQueue(writer, event => {
           if (!active) return;
