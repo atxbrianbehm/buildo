@@ -536,7 +536,8 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       if (!isCurrent()) { prepared?.discard(); retire(candidate); return; }
       const finalize = prepared?.commit(), previousShown = shown.current;
       shown.current = candidate; setAccepted(candidate); setPreviewNode(null); setFamilyPreview(true); setRhythmArchivePreview(true); setFamilyDirty(false);
-      familySource.current = null; rhythmArchive.current = archive; rhythmFabricArchive.current = fabricArchive ?? null; setRhythmPreviewWindowCount(archive.request.policy.memberCount); setRhythmPreviewScope(archive.request.policy.scope); setFamilyFabricView(null);
+      familySource.current = null; rhythmArchive.current = archive; rhythmFabricArchive.current = fabricArchive ?? null; setRhythmPreviewWindowCount(archive.request.policy.memberCount); setRhythmPreviewScope(archive.request.policy.scope);
+      setFamilyFabricView(source.awningFabric ? { inherited: source.awningFabric, memberIds: archive.result.members.map(member => member.graph.documentId), assignments: fabricArchive?.fabricAssignments } : null);
       setRhythmPreviewPiers(archive.request.policy.schemaVersion === "0.3.0" && archive.request.policy.pierVariation.source.enabled);
       setRhythmPreviewStorefrontLights("storefrontLights" in archive.request.composition.source.policy && archive.request.composition.source.policy.storefrontLights);
       setRhythmPreviewFabricVariation(Boolean(fabricArchive?.fabricAssignments.members.some(member => member.mode === "override")));
@@ -681,6 +682,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     });
   }
   async function changeFamilyFabric(pattern: "solid" | "striped" | null, primary?: [number, number, number], secondary?: [number, number, number]) {
+    if (rhythmArchivePreview) { await changeRhythmFabric(pattern, primary, secondary); return; }
     const source = familySource.current, original = current.current, member = source?.members[memberIndex];
     if (!source || !original || !member || !("awningFabric" in source) || !source.awningFabric || !familyPreview) return;
     const inheritedFabric = source.awningFabric;
@@ -713,6 +715,43 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       } catch (failure) { prepared?.discard(); retire(candidate); throw failure; }
     });
   }
+  async function changeRhythmFabric(pattern: "solid" | "striped" | null, primary?: [number, number, number], secondary?: [number, number, number]) {
+    const family = rhythmArchive.current, priorArchive = rhythmFabricArchive.current, original = current.current;
+    const inherited = family?.request.sourceProject.awningFabric, member = family?.result.members[memberIndex];
+    if (!family || !original || !inherited || !member) return;
+    await perform(async (token, signal) => {
+      const isCurrent = () => alive.current && sequence.current === token && !signal.aborted && current.current === original && rhythmArchive.current === family && rhythmFabricArchive.current === priorArchive;
+      const prior = priorArchive?.fabricAssignments.members ?? family.result.members.map(item => ({ documentId: item.graph.documentId, mode: "inherit" as const }));
+      const selected = prior.find(item => item.documentId === member.graph.documentId)!;
+      const oldFabric = selected.mode === "override" ? selected.fabric : inherited;
+      const replacement = pattern === null ? { documentId: member.graph.documentId, mode: "inherit" as const }
+        : { documentId: member.graph.documentId, mode: "override" as const, fabric: await createConstructionAwningFabric({ ...oldFabric.source, pattern, primary, secondary }) };
+      if (!isCurrent()) return;
+      const assignments = await createConstructionFamilyFabricAssignments({ schemaVersion: "0.1.0", kind: "construction-family-fabric-assignments", familyId: family.request.plan.source.familyId,
+        sourceDocumentId: family.request.sourceProject.graph.documentId, inheritedFabric: inherited, members: prior.map(item => item.documentId === member.graph.documentId ? replacement : item) });
+      const archive = await createGroupedRhythmFabricArchive({ schemaVersion: "0.1.0", kind: "construction-grouped-rhythm-fabric-archive", family, fabricAssignments: assignments });
+      if (!isCurrent()) return;
+      const parsed = await readBayConstructionProject(family.request.sourceProject);
+      if (!isCurrent()) return;
+      const materials = { ...parsed.materials, file: family.request.sourceProject.materialSource, awningFabric: inherited };
+      const results = []; compiler.current ??= new BayConstructionClient(new Worker(new URL("../compiler/bayConstruction.worker.ts", import.meta.url), { type: "module" }));
+      for (const item of family.result.members) { results.push(await compiler.current.evaluate(item.graph)); if (!isCurrent()) return; }
+      const candidate = await prepareConstructionFamilyFixture(base, results, materials, signal, assignments);
+      if (!isCurrent()) { candidate.familyRuntime.dispose(); return; }
+      owners.current.set(candidate, { fixture: candidate, leases: 0, retired: false });
+      let prepared: PreparedBuildingFixtureView | undefined;
+      try {
+        if (viewer.current) prepared = await viewer.current(candidate, { signal });
+        if (!isCurrent()) { prepared?.discard(); retire(candidate); return; }
+        const finalize = prepared?.commit(), previous = shown.current;
+        shown.current = candidate; setAccepted(candidate); rhythmFabricArchive.current = archive;
+        setFamilyFabricView({ inherited, memberIds: family.result.members.map(item => item.graph.documentId), assignments });
+        setRhythmPreviewFabricVariation(assignments.members.some(item => item.mode === "override")); setFamilyDirty(true);
+        if (previous && previous !== original.fixture && previous !== candidate) retire(previous);
+        finalize?.();
+      } catch (failure) { prepared?.discard(); retire(candidate); throw failure; }
+    });
+  }
   function downloadJson(value: unknown, filename: string) {
     const url = URL.createObjectURL(new Blob([JSON.stringify(value, null, 2)], { type: "application/json" }));
     const link = document.createElement("a"); link.href = url; link.download = filename;
@@ -724,6 +763,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     if (rhythmArchivePreview && rhythmArchive.current) {
       const file = rhythmFabricArchive.current ?? rhythmArchive.current;
       downloadJson(file, `${rhythmArchive.current.request.plan.source.familyId}.buildo-rhythm-family.json`);
+      setFamilyDirty(false);
       return;
     }
     const snapshot = familySource.current;
@@ -1066,7 +1106,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
             return <ConstructionFamilyFabricControls buildingNumber={memberIndex + 1} fabric={fabric} inherited={assignment?.mode !== "override"} disabled={pending || saving}
               onApply={(pattern, primary, secondary) => void changeFamilyFabric(pattern, primary, secondary)} onReset={() => void changeFamilyFabric(null)} />;
           })() : null}
-          {rhythmArchivePreview ? <p>Archived family preview is read-only. You can save a copy; return to your building to keep editing.</p> : <div className="control-panel__actions"><button type="button" disabled={pending || saving} onClick={editFamilyMember}>Edit selected building</button></div>}</> : null}
+          {rhythmArchivePreview ? <p>Building geometry is read-only in this family preview. Individual fabric changes are saved with the family.</p> : <div className="control-panel__actions"><button type="button" disabled={pending || saving} onClick={editFamilyMember}>Edit selected building</button></div>}</> : null}
         {familyDirty ? <p role="status">Family changes are unsaved. Save the family before returning to the original building or opening another family.</p> : null}
         {!generation ? <p>Generate the building once to pin its reference and material source.</p> : null}
       </section> : null}
