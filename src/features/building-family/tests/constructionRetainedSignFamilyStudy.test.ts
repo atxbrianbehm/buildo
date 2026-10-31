@@ -209,4 +209,26 @@ describe("retained-sign family study", () => {
     const controller = new AbortController(); controller.abort();
     await expect(resolveConstructionGroupedRhythmFamilyStudy(plan, lineage, defaultConstructionGenerationControls, composition, policy, controller.signal)).rejects.toMatchObject({ name: "AbortError" });
   }, 120000);
+  it("limits grouped rhythm to the top upper storey with a versioned policy", async () => {
+    const { graph, plan, lineage } = await fixture();
+    const composition = resolveConstructionFamilyComposition({ schemaVersion: "0.4.0", kind: "construction-family-composition-request", familySeed: plan.source.familySeed, openingLock: false,
+      policy: { openings: true, frontage: false, roof: true, groupedBays: false, storefrontLights: false, massing: true } });
+    const policy = { schemaVersion: "0.2.0" as const, kind: "construction-grouped-rhythm-family-policy" as const, scope: "top-upper-front" as const,
+      memberCount: 2 as const, memberWidthM: 0.55, pierWidthM: 0.24 };
+    const family = await resolveConstructionGroupedRhythmFamilyStudy(plan, lineage, defaultConstructionGenerationControls, composition, policy);
+    expect(family.receipt.policyHash).toBe(await hashCanonicalJson(policy));
+    expect(family.members.filter(member => member.applied)).toHaveLength(3);
+    for (const member of family.members) {
+      expect(member.construction.graph.storefrontSign).toEqual(graph.storefrontSign);
+      expect(member.lineage.materialPlan.materialInputsHash).toBe(lineage.materialPlan.materialInputsHash);
+      if (member.applied) {
+        const floors = member.construction.graph.nodes.find(node => node.type === "Storeys")!.parameters.count;
+        const bays = member.construction.graph.nodes.find(node => node.type === "SplitBays")!.parameters.count;
+        expect(member.construction.graph.upperBayGroups).toHaveLength(bays);
+        expect(member.construction.graph.upperBayGroups!.every(group => group.floorIndex === floors - 1)).toBe(true);
+      }
+    }
+    expect((await resolveConstructionGroupedRhythmFamilyStudy(plan, lineage, defaultConstructionGenerationControls, composition, policy)).receipt).toEqual(family.receipt);
+    await expect(resolveConstructionGroupedRhythmFamilyStudy(plan, lineage, defaultConstructionGenerationControls, composition, { ...policy, schemaVersion: "0.1.0" })).rejects.toThrow();
+  }, 120000);
 });
