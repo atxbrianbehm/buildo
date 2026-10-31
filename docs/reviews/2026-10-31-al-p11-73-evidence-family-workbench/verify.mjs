@@ -1,0 +1,70 @@
+import { chromium } from "@playwright/test";
+import { createServer } from "vite";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import assert from "node:assert/strict";
+const api = process.argv[2], out = process.argv[3]; assert(["webgpu", "webgl"].includes(api) && out); await mkdir(out, { recursive: false });
+const plain = process.argv[4] === "plain";
+const server = await createServer({ cacheDir: `test-results/al-p11-73-${api}`, plugins: [{ name: "observe-material-calls", enforce: "pre", transform(code, id) {
+  if (!id.replaceAll("\\", "/").endsWith("/materials/providers/proceduralMaterialProvider.ts")) return;
+  return { code: code + "\nconst oldGenerate = ProceduralMaterialProvider.prototype.generate; ProceduralMaterialProvider.prototype.generate = function(...args) { globalThis.__evidenceFamilyMaterialCalls = (globalThis.__evidenceFamilyMaterialCalls ?? 0) + 1; return oldGenerate.apply(this, args); };", map: null };
+} }], server: { host: "127.0.0.1", port: 0 } });
+const synthetic = { inputId: "synthetic-source", claims: [{ claimId: "claim-1", text: "Synthetic example: upper front windows have rounded heads.", category: "architecture-and-streetscape", confidence: "low", sourceInputIds: ["source-a"], sourceChunkIds: ["chunk-a"], attributionMode: "inferred" }] };
+let browser;
+try {
+  await server.listen(); browser = await chromium.launch({ channel: "chromium", args: api === "webgpu" ? ["--enable-unsafe-webgpu"] : [] });
+  const context = await browser.newContext({ viewport: { width: 1493, height: 1054 }, acceptDownloads: true });
+  await context.addInitScript(disable => { if (disable) Object.defineProperty(navigator, "gpu", { value: undefined, configurable: true }); }, api === "webgl");
+  const page = await context.newPage(), errors = []; page.on("pageerror", error => errors.push(error.message));
+  const root = () => page.locator(".construction-workspace:visible");
+  const ready = () => page.waitForFunction(() => [...document.querySelectorAll(".construction-workspace")].some(el => el.getClientRects().length && el.dataset.constructionHash && el.querySelector('[aria-label="Construction inspector"]')?.getAttribute("aria-busy") === "false"), undefined, { timeout: 180000 });
+  const hash = () => root().getAttribute("data-construction-hash");
+  async function changed(before) { await page.waitForFunction(h => document.querySelector(".construction-workspace:not([hidden])")?.dataset.constructionHash !== h, before, { timeout: 180000 }); await ready(); }
+  async function saveFamily(name) { const download = page.waitForEvent("download", { timeout: 180000 }); await page.getByRole("button", { name: "Save family" }).click(); await (await download).saveAs(`${out}/${name}.json`); return JSON.parse(await readFile(`${out}/${name}.json`, "utf8")); }
+  await page.goto(server.resolvedUrls.local[0] + `#document=evidence-family-${api}`, { waitUntil: "domcontentloaded", timeout: 120000 }); await root().waitFor({ timeout: 120000 }); await ready();
+  assert.equal(await root().locator("canvas:visible").first().getAttribute("data-renderer-backend"), api);
+  const initial = await hash(); await root().locator("summary").filter({ hasText: /^Ground floor$/ }).click(); await page.getByRole("combobox", { name: "Ground frontage" }).selectOption("1"); await page.getByRole("button", { name: "Apply construction" }).first().click(); await changed(initial);
+  await page.locator("summary").filter({ hasText: /^Generate & vary$/ }).click(); await page.getByRole("button", { name: "Generate building", exact: true }).click();
+  await page.waitForFunction(() => document.querySelector('[aria-label="Building generation"]')?.dataset.generationSource, undefined, { timeout: 180000 }); await ready();
+  let prior = await hash(); await page.getByRole("button", { name: "Add facade piers" }).click(); await changed(prior);
+  prior = await hash(); await page.getByLabel("Awning bay").selectOption("0"); await page.getByRole("button", { name: "Add awning", exact: true }).click(); await changed(prior);
+  prior = await hash(); await page.getByRole("button", { name: "Add support rods" }).click(); await changed(prior);
+  prior = await hash(); await page.getByLabel("Sign bay").selectOption("0"); await page.getByRole("button", { name: "Add sign", exact: true }).click(); await changed(prior);
+  const unlinkedHash = await hash(), unlinkedDownload = page.waitForEvent("download", { timeout: 180000 });
+  await page.getByRole("button", { name: "Save construction", exact: true }).click(); await (await unlinkedDownload).saveAs(`${out}/unlinked-source.json`);
+  const calls = await page.evaluate(() => globalThis.__evidenceFamilyMaterialCalls ?? 0);
+  await page.getByText("Inspect research extract", { exact: true }).click();
+  await page.getByLabel("Open research file input").setInputFiles({ name: "synthetic.json", mimeType: "application/json", buffer: Buffer.from(JSON.stringify(synthetic)) });
+  await page.getByText(synthetic.claims[0].text).waitFor({ timeout: 180000 }); await page.getByLabel("Use this claim for an interpretation").check();
+  await page.getByLabel("Proposed opening head").selectOption("round"); await page.getByRole("button", { name: "Create interpretation" }).click();
+  await page.getByText(/Proposed round upper-front opening head/).waitFor(); prior = await hash(); await page.getByRole("button", { name: "Apply to building" }).click(); await changed(prior);
+  const sourceHash = await hash(); await page.getByText(/This building includes a proposed interpretation from claim claim-1/).waitFor();
+  if (!plain) await page.getByLabel("Vary awning fabrics (demo)").check();
+  await page.getByRole("button", { name: "Preview grouped family" }).click();
+  await Promise.race([page.getByLabel("Family source interpretation").waitFor({ timeout: 240000 }), root().getByRole("alert").waitFor({ timeout: 240000 })]);
+  if (await root().getByRole("alert").isVisible()) throw new Error(`Preview rejected: ${await root().getByRole("alert").innerText()}`);
+  assert((await page.getByLabel("Family source interpretation").innerText()).includes("unreviewed"));
+  await root().locator("canvas:visible").first().screenshot({ path: `${out}/family.png` });
+  const first = await saveFamily("first"); assert.equal(first.kind, "construction-evidence-rhythm-family"); assert.equal(first.application.proposal.claimId, "claim-1"); assert.equal(first.family.kind, plain ? "construction-grouped-rhythm-family-archive" : "construction-grouped-rhythm-fabric-archive");
+  assert.equal(first.members.length, 6); assert.deepEqual(first.application.proposal.staged.artifact, synthetic);
+  for (let i = 0; i < 6; i++) { await page.getByLabel("Family member").selectOption(String(i)); const text = await page.getByLabel("Family source interpretation").innerText();
+    assert(text.includes(first.members[i].openingHead === "matches-source" ? "matches the source choice" : first.members[i].openingHead === "differs-from-source" ? "differs from the source choice" : "cannot be compared with the source choice")); }
+  await page.getByLabel("Family member").selectOption("0");
+  await page.getByLabel("Family fabric pattern").selectOption("solid"); await page.getByRole("button", { name: "Apply individual fabric" }).click();
+  await page.getByText("Family changes are unsaved.", { exact: false }).waitFor({ timeout: 240000 });
+  const edited = await saveFamily("edited"); assert.equal(edited.kind, first.kind); assert.equal(edited.family.kind, "construction-grouped-rhythm-fabric-archive"); assert.deepEqual(edited.members, first.members); assert.deepEqual(edited.application, first.application);
+  await page.getByRole("button", { name: "Return to building" }).click(); await ready(); assert.equal(await hash(), sourceHash);
+  await page.getByLabel("Open construction file").setInputFiles(`${out}/unlinked-source.json`); await page.waitForFunction(h => document.querySelector(".construction-workspace:not([hidden])")?.dataset.constructionHash === h, unlinkedHash, { timeout: 180000 }); await ready();
+  await page.getByLabel("Open family file").setInputFiles(`${out}/edited.json`); await page.getByLabel("Family source interpretation").waitFor({ timeout: 240000 });
+  const reopened = await saveFamily("reopened"); assert.deepEqual(reopened, edited);
+  const bad = structuredClone(edited); bad.members[0].openingHead = bad.members[0].openingHead === "matches-source" ? "differs-from-source" : "matches-source";
+  await page.getByLabel("Open family file").setInputFiles({ name: "invalid-family.json", mimeType: "application/json", buffer: Buffer.from(JSON.stringify(bad)) });
+  await root().getByRole("alert").waitFor({ timeout: 240000 }); assert(await page.getByLabel("Family source interpretation").isVisible());
+  await page.setViewportSize({ width: 390, height: 844 }); const relation = page.getByLabel("Family source interpretation"); await relation.scrollIntoViewIfNeeded(); await relation.screenshot({ path: `${out}/mobile-relation.png` });
+  assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)); assert.equal(await page.evaluate(() => globalThis.__evidenceFamilyMaterialCalls ?? 0), calls); assert.deepEqual(errors, []);
+  await page.getByRole("button", { name: "Return to building" }).click(); await ready(); assert.equal(await hash(), unlinkedHash);
+  await writeFile(`${out}/unlinked-family.json`, JSON.stringify(first.family)); await page.getByLabel("Open family file").setInputFiles(`${out}/unlinked-family.json`);
+  await page.getByText("Building geometry is read-only in this family preview.", { exact: false }).waitFor({ timeout: 240000 });
+  assert.equal(await page.getByLabel("Family source interpretation").count(), 0);
+  const unlinkedFamily = await saveFamily("unlinked-family-resaved"); assert.deepEqual(unlinkedFamily, first.family);
+  console.log(JSON.stringify({ api, linked: true, fabricEdited: true, reopened: true, sourceRetained: true, materialProviderCalls: 0 })); await context.close();
+} finally { await browser?.close(); await server.close(); }
