@@ -252,6 +252,7 @@ describe("live construction controls and ownership", () => {
       expect(workspace.dataset.constructionHash).toBe(before); expect(displayed.familyRuntime.disposed).toBe(true);
       fireEvent.change(screen.getByLabelText("Open family file"), { target: { files: [new File([JSON.stringify(entranceArchive)], "entrances.json", { type: "application/json" })] } });
       await waitFor(() => expect(screen.getByLabelText("Vary entrance positions (demo)")).toBeChecked(), { timeout: 120000 });
+      expect(screen.getByLabelText("Group round-headed windows (demo)")).not.toBeChecked();
       fireEvent.click(screen.getByRole("button", { name: "Return to building" }));
       await waitFor(() => expect(workspace.dataset.constructionPreview).toBe("output"));
       expect(workspace.dataset.constructionHash).toBe(before);
