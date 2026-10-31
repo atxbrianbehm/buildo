@@ -4,7 +4,7 @@ import { withConstructionStorefront } from "../core/constructionStorefrontGraph"
 import { withConstructionAwnings } from "../core/constructionAwningGraph";
 import { withConstructionAwningSupports } from "../core/constructionAwningSupportGraph";
 import { withConstructionStorefrontSign, withoutConstructionStorefrontSign } from "../core/constructionStorefrontSignGraph";
-import { withConstructionSignAwningClearance } from "../core/constructionSignAwningGraph";
+import { withConstructionSignAwningClearance, withoutConstructionSignAwning } from "../core/constructionSignAwningGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
 import { evaluateConstructionSignAwningBuildingStudy } from "../compiler/evaluateConstructionSignAwningBuildingStudy";
 import { BayConstructionWorkerReplySchema, BayConstructionWorkerRequestSchema } from "../compiler/bayConstructionWorkerProtocol";
@@ -38,4 +38,16 @@ describe("versioned sign and awning graph", () => {
     await expect(resolveWorkbenchGeneration(graph, null, defaultConstructionGenerationControls)).rejects.toThrow(/not yet supported/);
     await expect(evaluateConstruction(graph, "window")).rejects.toThrow(/complete matching graph/);
   });
+});
+
+it("removes only the shared awning and its rods while keeping the sign and other bay", async () => {
+  const base = withConstructionAwningSupports(withConstructionAwnings(withConstructionStorefront(createBuildingConstructionGraph("remove_combined"), 1),
+    [{ bayIndex: 0, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }, { bayIndex: 1, projectionM: 0.8, dropM: 0.4, valanceHeightM: 0.2 }]),
+    [{ bayIndex: 0, anchorRiseM: 0.15, thicknessM: 0.03 }, { bayIndex: 1, anchorRiseM: 0.15, thicknessM: 0.03 }]);
+  const sign = { bayIndex: 0, heightM: 0.18, projectionM: 0.08, frameWidthM: 0.035 }, combined = withConstructionSignAwningClearance(withConstructionStorefrontSign(base, sign), 0.04);
+  const result = withoutConstructionSignAwning(combined);
+  expect(result.schemaVersion).toBe("0.16.0"); expect(result.storefrontSign).toEqual(sign); expect(result.signAwningGapM).toBeUndefined();
+  expect(result.awnings).toEqual([base.awnings![1]]); expect(result.awningSupports).toEqual([base.awningSupports![1]]);
+  expect((await evaluateConstruction(result)).ir.meshBatches.some(batch => batch.role === "sign.panel")).toBe(true);
+  expect(combined.awnings).toEqual(base.awnings); expect(() => withoutConstructionSignAwning(result)).toThrow(/combined/);
 });
