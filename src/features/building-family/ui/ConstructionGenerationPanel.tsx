@@ -2,14 +2,17 @@ import { DEFAULT_CONSTRUCTION_RECIPE_ID, getConstructionRecipeOptions } from "..
 import { useRef } from "react";
 import type { ConstructionReferenceSnapshot } from "../contracts/constructionGeneration";
 import type { ConstructionGenerationControls, ConstructionGenerationLineage } from "../state/constructionGenerationState";
+import { MetagrinderEvidenceReview } from "./MetagrinderEvidenceReview";
+import type { stageMetagrinderExtract } from "../core/metagrinderExtractStaging";
 
 interface Props {
   controls: ConstructionGenerationControls; lineage: ConstructionGenerationLineage | null;
   reference: ConstructionReferenceSnapshot | null; onReferenceFile: (file: File) => void;
   disabled: boolean; onChange: (controls: ConstructionGenerationControls) => void; onGenerate: (reroll: boolean) => void;
   materialChangesLocked?: boolean;
+  onSaveResearch: (value: Awaited<ReturnType<typeof stageMetagrinderExtract>>) => void;
 }
-export function ConstructionGenerationPanel({ controls, lineage, reference, onReferenceFile, disabled, onChange, onGenerate, materialChangesLocked }: Props) {
+export function ConstructionGenerationPanel({ controls, lineage, reference, onReferenceFile, disabled, onChange, onGenerate, materialChangesLocked, onSaveResearch }: Props) {
   const recipes = getConstructionRecipeOptions();
   const recipeId = controls.recipeId ?? lineage?.source.recipe.id ?? DEFAULT_CONSTRUCTION_RECIPE_ID;
   const recipe = recipes.find(item => item.id === recipeId);
@@ -48,6 +51,7 @@ export function ConstructionGenerationPanel({ controls, lineage, reference, onRe
           <button type="button" onClick={() => onGenerate(true)}>Reroll unlocked</button></div>
       </fieldset>
     </form>
+    <MetagrinderEvidenceReview onSave={onSaveResearch} />
     {lineage ? <details><summary>Generation sources and locks</summary>
       <p>{lineage.source.reference.id} · revision {lineage.source.reference.revision} · {lineage.source.reference.origin.kind}</p>
       <p>Architecture coverage: {lineage.source.reference.architectureCoverage}. {lineage.source.reference.coverageNotes}</p>
