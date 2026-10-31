@@ -136,6 +136,8 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   const [familySeed, setFamilySeed] = useState("building-family-1");
   const [rhythmWindowCount, setRhythmWindowCount] = useState<2 | 3>(2);
   const [rhythmPreviewWindowCount, setRhythmPreviewWindowCount] = useState<2 | 3>(2);
+  const [rhythmScope, setRhythmScope] = useState<"all-upper-front" | "top-upper-front">("all-upper-front");
+  const [rhythmPreviewScope, setRhythmPreviewScope] = useState<"all-upper-front" | "top-upper-front">("all-upper-front");
   const [familyVariation, setFamilyVariation] = useState({ openings: false, frontage: false, roof: false, groupedBays: false, storefrontLights: false, massing: false, awnings: false, entranceBay: false });
   const [familyPierVariation, setFamilyPierVariation] = useState(false);
   const [signBay, setSignBay] = useState(0);
@@ -524,7 +526,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       if (!isCurrent()) { prepared?.discard(); retire(candidate); return; }
       const finalize = prepared?.commit(), previousShown = shown.current;
       shown.current = candidate; setAccepted(candidate); setPreviewNode(null); setFamilyPreview(true); setRhythmArchivePreview(true); setFamilyDirty(false);
-      familySource.current = null; rhythmArchive.current = archive; setRhythmPreviewWindowCount(archive.request.policy.memberCount); setFamilyFabricView(null);
+      familySource.current = null; rhythmArchive.current = archive; setRhythmPreviewWindowCount(archive.request.policy.memberCount); setRhythmPreviewScope(archive.request.policy.scope); setFamilyFabricView(null);
       setFamilyDetails(archive.result.members.map(member => describeFamilyMember(member.graph))); setMemberIndex(0); chooseFrame(null);
       memberHistories.current.clear();
       if (previousShown && previousShown !== previous?.fixture && previousShown !== candidate) retire(previousShown);
@@ -543,7 +545,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       const composition = resolveConstructionFamilyComposition({ schemaVersion: "0.4.0", kind: "construction-family-composition-request", familySeed,
         openingLock: generationControls.lockOpenings, policy: { openings: true, frontage: false, roof: true, groupedBays: false, storefrontLights: false, massing: true } });
       const archive = await createGroupedRhythmFamilyArchive({ schemaVersion: "0.1.0", kind: "construction-grouped-rhythm-family-archive-request", sourceProject, plan, composition,
-        policy: { schemaVersion: "0.1.0", kind: "construction-grouped-rhythm-family-policy", scope: "all-upper-front", memberCount: rhythmWindowCount, memberWidthM: 0.55, pierWidthM: 0.24 }, controls: generationControls });
+        policy: { schemaVersion: rhythmScope === "all-upper-front" ? "0.1.0" : "0.2.0", kind: "construction-grouped-rhythm-family-policy", scope: rhythmScope, memberCount: rhythmWindowCount, memberWidthM: 0.55, pierWidthM: 0.24 }, controls: generationControls });
       if (!isCurrent()) return;
       await displayRhythmArchive(archive, token, signal, source);
     });
@@ -1003,7 +1005,9 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
           <label><input type="checkbox" checked={familyPierVariation} onChange={event => setFamilyPierVariation(event.currentTarget.checked)} /> Upper facade piers</label>
         </fieldset> : combinedProtected ? <><p>Grouped demo: varied heights, bay counts, upper heads and cornices, with grouped windows across eligible facades. Existing sign, awning and materials are retained.</p>
           <div className="control-panel__fields"><label><span>Grouped windows</span><select aria-label="Grouped windows" value={rhythmArchivePreview ? rhythmPreviewWindowCount : rhythmWindowCount} disabled={pending || saving || familyPreview} onChange={event => setRhythmWindowCount(event.currentTarget.value === "3" ? 3 : 2)}>
-            <option value="2">Pairs</option><option value="3">Groups of three</option></select></label></div></>
+            <option value="2">Pairs</option><option value="3">Groups of three</option></select></label>
+            <label><span>Grouped window placement</span><select aria-label="Grouped window placement" value={rhythmArchivePreview ? rhythmPreviewScope : rhythmScope} disabled={pending || saving || familyPreview} onChange={event => setRhythmScope(event.currentTarget.value === "top-upper-front" ? "top-upper-front" : "all-upper-front")}>
+              <option value="all-upper-front">All upper storeys</option><option value="top-upper-front">Top upper storey</option></select></label></div></>
           : <p>Add an awning beneath the sign to use the grouped family demo.</p>}
         {familyVariation.entranceBay ? <p>Entrance variation requires an unchanged entrance bay and a storefront without authored awnings. Turn off ground-frontage and additional-awning variation.</p> : null}
         {familyPierVariation ? <p>Vary demo piers across the family. Existing authored piers are retained; openings need enough clearance.</p> : null}
