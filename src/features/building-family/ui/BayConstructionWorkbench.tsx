@@ -364,6 +364,13 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         await publish(BayConstructionGraphSchema.parse({ ...original, awnings }), source.materials, token, signal);
         return;
       }
+      if (original.schemaVersion === "0.16.0") {
+        if (!enabled || bayIndex !== original.storefrontSign?.bayIndex || dimensions) throw new Error("Add an awning to the sign's bay before editing it.");
+        const graph = withConstructionSignAwningClearance(BayConstructionGraphSchema.parse({ ...original, awnings }), 0.04);
+        const fabric = source.materials.awningFabric ?? await createConstructionAwningFabric({ schemaVersion: "0.1.0", kind: "construction-awning-fabric-request", seed: "buildo-awning-demo-v1", pattern: "striped", primary: [224, 213, 187], secondary: [69, 99, 78], physicalSizeM: [1, 1] });
+        if (!signal.aborted) await publish(graph, { ...source.materials, awningFabric: fabric }, token, signal);
+        return;
+      }
       let baseGraph = original;
       if (!enabled && original.awningSupports) {
         const remaining = original.awningSupports.filter(support => support.bayIndex !== bayIndex);
@@ -813,11 +820,11 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         graph={accepted.construction.graph} dirty={groupDirty} disabled={signProtected || pending || saving || openingDirty || buildingDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode)}
         onDraftChange={value => { setGroupDirty(value); if (!value) setError(null); }} onApply={edit => void applyGroupedBay(edit)} /> : null}
       {buildingMode && !advancedOpen && accepted && supportsGroupedConstruction(accepted.construction.graph) && constructionHasStorefront(accepted.construction.graph) ? <ConstructionAwningControls
-        graph={accepted.construction.graph} disabled={(signProtected && !combinedProtected) || pending || saving || openingDirty || buildingDirty || groupDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode) || (familyMemberMode && !startingSession?.materials.awningFabric)}
-        lockedBayIndex={combinedProtected ? accepted.construction.graph.storefrontSign?.bayIndex : undefined} dimensionsOnly={combinedProtected}
+        graph={accepted.construction.graph} disabled={pending || saving || openingDirty || buildingDirty || groupDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode) || (familyMemberMode && !startingSession?.materials.awningFabric)}
+        lockedBayIndex={signProtected ? accepted.construction.graph.storefrontSign?.bayIndex : undefined} dimensionsOnly={combinedProtected}
         unavailableReason={familyMemberMode && !startingSession?.materials.awningFabric ? "Add an awning to the original building before creating this family." : undefined}
-        supportDisabled={familyMemberMode} onSupportChange={(bay, enabled) => void changeAwningSupport(bay, enabled)}
-        fabric={awningFabric} fabricDisabled={familyMemberMode}
+        supportDisabled={familyMemberMode || signProtected} onSupportChange={(bay, enabled) => void changeAwningSupport(bay, enabled)}
+        fabric={awningFabric} fabricDisabled={familyMemberMode || signProtected}
         onFabricChange={(pattern, primary, secondary) => void changeAwningFabric(pattern, primary, secondary)}
         onChange={(bay, enabled, dimensions) => void changeAwning(bay, enabled, dimensions)} /> : null}
       {buildingMode && !advancedOpen && !familyMemberMode && accepted && supportsGroupedConstruction(accepted.construction.graph) && constructionHasStorefront(accepted.construction.graph) ? <section className="construction-generate" aria-label="Storefront sign">
