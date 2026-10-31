@@ -4,6 +4,7 @@ import { withConstructionStorefront } from "../core/constructionStorefrontGraph"
 import { withConstructionAwnings } from "../core/constructionAwningGraph";
 import { withConstructionStorefrontSign } from "../core/constructionStorefrontSignGraph";
 import { withConstructionSignAwningClearance } from "../core/constructionSignAwningGraph";
+import { withConstructionFacadePiers } from "../core/constructionFacadePierGraph";
 import { resolveConstructionFamilyPlan } from "../core/constructionFamilyPlan";
 import { resolveConstructionFamilyComposition } from "../core/constructionFamilyComposition";
 import { resolveConstructionFamilyPierVariation } from "../core/constructionFamilyPierVariation";
@@ -54,6 +55,19 @@ it("replays a portable rhythm family with real material and fabric source and re
     const { contentHash: _pierHash, ...pierPayload } = altered; void _pierHash; altered.contentHash = await hashCanonicalJson(pierPayload);
     await expect(readGroupedRhythmFamilyArchive(altered)).rejects.toThrow(/does not replay/);
     await expect(createGroupedRhythmFamilyArchive({ ...request, policy: { ...request.policy, schemaVersion: "0.3.0", pierVariation: resolveConstructionFamilyPierVariation({ ...variation.source, familySeed: "different" }) } })).rejects.toThrow(/seed/);
+    const pierced = withConstructionFacadePiers(storefront, { pierWidthM: 0.28, projectionM: 0.18, endHeightM: 0.15, clearanceM: 0.04 });
+    const piercedAwning = withConstructionAwnings(pierced, [{ bayIndex: 0, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }]);
+    const lightsGraph = withConstructionSignAwningClearance(withConstructionStorefrontSign(piercedAwning, graph.storefrontSign!), graph.signAwningGapM!);
+    expect(lightsGraph.storefrontDivision).toBeUndefined();
+    const lightsProject = await createBayConstructionProject(lightsGraph, materials.file, lineage, fabric);
+    const lightsPlan = resolveConstructionFamilyPlan({ ...plan.source, graph: lightsGraph });
+    const lightsComposition = resolveConstructionFamilyComposition({ ...composition.source, policy: { ...composition.source.policy, openings: false, storefrontLights: true, massing: false } });
+    const lightsArchive = await createGroupedRhythmFamilyArchive({ ...request, sourceProject: lightsProject, plan: lightsPlan, composition: lightsComposition });
+    const reopenedLights = await readGroupedRhythmFamilyArchive(JSON.parse(JSON.stringify(lightsArchive)));
+    expect(reopenedLights).toEqual(lightsArchive);
+    expect(new Set(reopenedLights.result.members.map(member => JSON.stringify(member.graph.storefrontDivision ?? { displayLights: 1, transomLights: 1 }))).size).toBeGreaterThan(1);
+    expect(reopenedLights.result.members.every(member => Boolean(member.graph.upperBayGroups?.length) && JSON.stringify(member.graph.storefrontSign) === JSON.stringify(lightsGraph.storefrontSign))).toBe(true);
+    expect(reopenedLights.request.sourceProject.materialSource).toEqual(materials.file); expect(reopenedLights.request.sourceProject.awningFabric).toEqual(fabric);
     const edited = structuredClone(archive); edited.result.members[0].graph.nodes.find(node => node.type === "Storeys")!.parameters.count = 6;
     const { contentHash: _old, ...payload } = edited; void _old; edited.contentHash = await hashCanonicalJson(payload);
     await expect(readGroupedRhythmFamilyArchive(edited)).rejects.toThrow(/does not replay/);
