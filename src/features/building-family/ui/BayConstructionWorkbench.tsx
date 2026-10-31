@@ -29,7 +29,7 @@ import { createConstructionFamilySource, readConstructionFamilySource, withUpdat
 import { resolveConstructionFamilyComposition } from "../core/constructionFamilyComposition";
 import { resolveConstructionFamilyPierVariation } from "../core/constructionFamilyPierVariation";
 import { withConstructionStorefrontSign, withoutConstructionStorefrontSign } from "../core/constructionStorefrontSignGraph";
-import { withConstructionSignAwningClearance } from "../core/constructionSignAwningGraph";
+import { withConstructionSignAwningClearance, withoutConstructionSignAwning } from "../core/constructionSignAwningGraph";
 import { parseBuildingSourceFile } from "../state/buildingSourceFile";
 import { defaultConstructionGenerationControls, resolveWorkbenchGeneration, rebindGenerationSurfaceSources, type ConstructionGenerationLineage } from "../state/constructionGenerationState";
 import { ConstructionGenerationPanel } from "./ConstructionGenerationPanel";
@@ -360,8 +360,9 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       if (enabled) awnings.push({ bayIndex, ...(dimensions ?? { projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }) });
       awnings.sort((a, b) => a.bayIndex - b.bayIndex);
       if (original.schemaVersion === "0.17.0") {
-        if (!enabled || bayIndex !== original.storefrontSign?.bayIndex || !dimensions) throw new Error("Only dimensions can be edited for this combined awning.");
-        await publish(BayConstructionGraphSchema.parse({ ...original, awnings }), source.materials, token, signal);
+        if (bayIndex !== original.storefrontSign?.bayIndex || (enabled && !dimensions)) throw new Error("Choose the combined awning before editing it.");
+        const graph = enabled ? BayConstructionGraphSchema.parse({ ...original, awnings }) : withoutConstructionSignAwning(original);
+        await publish(graph, source.materials, token, signal);
         return;
       }
       if (original.schemaVersion === "0.16.0") {
@@ -821,7 +822,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         onDraftChange={value => { setGroupDirty(value); if (!value) setError(null); }} onApply={edit => void applyGroupedBay(edit)} /> : null}
       {buildingMode && !advancedOpen && accepted && supportsGroupedConstruction(accepted.construction.graph) && constructionHasStorefront(accepted.construction.graph) ? <ConstructionAwningControls
         graph={accepted.construction.graph} disabled={pending || saving || openingDirty || buildingDirty || groupDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode) || (familyMemberMode && !startingSession?.materials.awningFabric)}
-        lockedBayIndex={signProtected ? accepted.construction.graph.storefrontSign?.bayIndex : undefined} dimensionsOnly={combinedProtected}
+        lockedBayIndex={signProtected ? accepted.construction.graph.storefrontSign?.bayIndex : undefined} dimensionsOnly={combinedProtected} allowRemoval={combinedProtected}
         unavailableReason={familyMemberMode && !startingSession?.materials.awningFabric ? "Add an awning to the original building before creating this family." : undefined}
         supportDisabled={familyMemberMode || signProtected} onSupportChange={(bay, enabled) => void changeAwningSupport(bay, enabled)}
         fabric={awningFabric} fabricDisabled={familyMemberMode || signProtected}

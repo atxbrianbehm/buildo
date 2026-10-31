@@ -71,3 +71,12 @@ it("adds an awning in the locked sign bay rather than the previously selected ba
   expect(screen.getByLabelText("Awning bay")).toHaveValue("2"); expect(screen.getByLabelText("Awning bay")).toBeDisabled();
   fireEvent.click(screen.getByRole("button", { name: "Add awning" })); expect(change).toHaveBeenCalledWith(2, true);
 });
+
+it("allows removal in a combined bay without enabling support editing", () => {
+  const graph = withConstructionAwningSupports(withConstructionAwnings(withConstructionStorefront(createBuildingConstructionGraph(), 1),
+    [{ bayIndex: 1, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }]), [{ bayIndex: 1, anchorRiseM: 0.15, thicknessM: 0.03 }]);
+  const change = vi.fn();
+  render(<ConstructionAwningControls graph={graph} disabled={false} onChange={change} onSupportChange={() => {}} lockedBayIndex={1} dimensionsOnly allowRemoval />);
+  fireEvent.click(screen.getByRole("button", { name: "Remove awning" })); expect(change).toHaveBeenCalledWith(1, false);
+  expect(screen.getByRole("button", { name: "Remove support rods" })).toBeDisabled();
+});
