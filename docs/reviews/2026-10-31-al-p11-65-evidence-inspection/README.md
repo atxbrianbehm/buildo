@@ -1,0 +1,9 @@
+# Inspecting a staged research extract
+
+The existing Generate & vary inspector now contains a collapsed **Inspect research extract** section. It opens a local Metagrinder extract in the declared May 2026 format or an existing staged file, lists architecture-category candidates as unreviewed with categorical extractor confidence and attribution, and reveals source-input and chunk IDs on demand. The complete extract can be saved to a local staged JSON file and reopened. A malformed or oversized file keeps the last valid staged extract visible; files are limited to 4 MiB in this interface.
+
+Inspection is local and does not modify the building, generation snapshot or material source. The workspace does not automatically persist the staged extract with the project: save the staged file separately. The format declaration is not authenticated, and the interface does not review, approve or map claims to architecture. No historical coverage or live UTDG connection is asserted. The content in the captures is synthetic and not historical evidence.
+
+The app workflow checks import, source IDs, save/reopen, invalid-file retention, unchanged construction hash and no material-provider calls. Focused tests also cover a later file superseding a slow earlier read and the size limit. Reproduce with `node docs/reviews/2026-10-31-al-p11-65-evidence-inspection/verify.mjs webgl <new-output-dir>` or `webgpu`.
+
+Validation passed: typecheck, lint, production build, full suite (2,147 tests in 186 files), focused inspector and stale-file tests, solo standard browser smoke, both WebGL and WebGPU app workflows at desktop and phone widths, and the Impeccable design detector. Earlier checks were stopped when save and confidence wording was clarified, then rerun. The build retains its existing chunk-size warning.
