@@ -3,6 +3,7 @@ import { withConstructionCorniceLayout } from "../core/constructionCorniceVocabu
 import { withConstructionParapetSilhouette } from "../core/constructionParapetVocabulary";
 import { withConstructionFacadePiers } from "../core/constructionFacadePierGraph";
 import { withConstructionStorefrontSign } from "../core/constructionStorefrontSignGraph";
+import { withConstructionStorefrontDivision } from "../core/constructionStorefrontDivisionGraph";
 import { groupedStorefrontCount } from "../ui/constructionBuildingBindings";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
@@ -23,6 +24,15 @@ it("offers glazing divisions without unlocking unrelated controls on a signed pi
   fireEvent.change(display, { target: { value: "2" } }); fireEvent.change(transom, { target: { value: "3" } });
   expect(view.onStorefrontDivisionChange).toHaveBeenCalledWith("displayLights", 2);
   expect(view.onStorefrontDivisionChange).toHaveBeenCalledWith("transomLights", 3);
+});
+
+it("offers an explicit pane reset for a compatible signed building", () => {
+  const storefront = withConstructionStorefront(createBuildingConstructionGraph(), 1);
+  const signed = withConstructionStorefrontSign(storefront, { bayIndex: 0, heightM: 0.18, projectionM: 0.08, frameWidthM: 0.035 });
+  const graph = withConstructionStorefrontDivision(signed, { displayLights: 2, transomLights: 3 });
+  const view = mount(graph); fireEvent.click(screen.getByText("Ground floor", { selector: "summary" }));
+  fireEvent.click(screen.getByRole("button", { name: "Clear pane divisions" })); expect(view.onClearStorefrontDivision).toHaveBeenCalledOnce();
+  expect(screen.getByText(/Apply changes to keep the reset/)).toBeInTheDocument();
 });
 
 it("offers the front parapet choice while preserving the grouped graph", () => {
@@ -47,9 +57,9 @@ it("offers one named four-elevation cornice choice and respects bypass/custom bo
 });
 function mount(graph = createBuildingConstructionGraph(), dirty = false, counts = { window: 47, storefront: 0 }) {
   const fields = Object.fromEntries(graph.nodes.filter(node => "parameters" in node).map(node => [node.id,Object.fromEntries(Object.entries(node.parameters).map(([key,value]) => [key,String(value)]))]));
-  const onFieldChange=vi.fn(),onStorefrontDivisionChange=vi.fn(),onApply=vi.fn(),onRevert=vi.fn(),onAdvanced=vi.fn();
-  const view=render(<ConstructionBuildingControls graph={graph} fields={fields} windowCount={counts.window} storefrontCount={counts.storefront} disabled={false} dirty={dirty} onFieldChange={onFieldChange} onStorefrontDivisionChange={onStorefrontDivisionChange} onApply={onApply} onRevert={onRevert} onAdvanced={onAdvanced}/>);
-  return {...view,fields,onFieldChange,onStorefrontDivisionChange,onApply,onRevert,onAdvanced};
+  const onFieldChange=vi.fn(),onStorefrontDivisionChange=vi.fn(),onClearStorefrontDivision=vi.fn(),onApply=vi.fn(),onRevert=vi.fn(),onAdvanced=vi.fn();
+  const view=render(<ConstructionBuildingControls graph={graph} fields={fields} windowCount={counts.window} storefrontCount={counts.storefront} disabled={false} dirty={dirty} onFieldChange={onFieldChange} onStorefrontDivisionChange={onStorefrontDivisionChange} onClearStorefrontDivision={onClearStorefrontDivision} onApply={onApply} onRevert={onRevert} onAdvanced={onAdvanced}/>);
+  return {...view,fields,onFieldChange,onStorefrontDivisionChange,onClearStorefrontDivision,onApply,onRevert,onAdvanced};
 }
 it("reports real generated window frames, excludes the entrance and follows scope filtering",async()=>{
   const graph=createBuildingConstructionGraph();expect(groupedWindowCount(graph,(await evaluateConstruction(graph)).ir)).toBe(47);
