@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { BayConstructionGraphSchema } from "../contracts/bayConstructionGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
+import { readConstructionGenerationLineage } from "./constructionGenerationState";
 
 const requestSchema = z.object({ schemaVersion: z.literal("0.1.0"), kind: z.literal("construction-grouped-facade-rhythm-study"),
   graph: BayConstructionGraphSchema, firstFloor: z.number().int().min(1), lastFloor: z.number().int().min(1),
@@ -27,4 +28,22 @@ export async function compileConstructionGroupedFacadeRhythmStudy(input: unknown
   const admitted = BayConstructionGraphSchema.parse({ ...graph, upperBayGroups: groups });
   const construction = await evaluateConstruction(admitted);
   return { graph: admitted, construction };
+}
+
+/** Bind a rhythm study to verified generation lineage before using it with authored source. */
+export async function compileSourceAwareGroupedFacadeRhythmStudy(input: unknown, lineageInput: unknown, controlsInput: unknown) {
+  const request = requestSchema.parse(input), controls = z.object({ lockOpenings: z.boolean() }).strict().parse(controlsInput);
+  const lineage = await readConstructionGenerationLineage(lineageInput);
+  if (request.graph.documentId !== lineage.source.documentId) throw new Error("Rhythm graph and generation lineage must identify the same document.");
+  if (controls.lockOpenings) throw new Error("Unlock openings before applying grouped facade rhythm.");
+  const affected = ["construction/opening", "construction/window", "construction/upperBayGroups"];
+  for (const lock of lineage.source.intent.locks) if (affected.some(path => path === lock.semanticPath || path.startsWith(lock.semanticPath + "/") || lock.semanticPath.startsWith(path + "/")))
+    throw new Error(`Grouped facade rhythm conflicts with the pinned lock ${lock.semanticPath}.`);
+  for (const lock of lineage.source.intent.locks) {
+    const [root, id, field, ...rest] = lock.semanticPath.split("/");
+    const node = request.graph.nodes.find(item => item.id === id);
+    if (root !== "construction" || rest.length || !node || !("parameters" in node) || (node.parameters as Record<string, unknown>)[field] !== lock.lockedValue)
+      throw new Error(`Rhythm graph does not retain the pinned lock ${lock.semanticPath}.`);
+  }
+  return compileConstructionGroupedFacadeRhythmStudy(request);
 }
