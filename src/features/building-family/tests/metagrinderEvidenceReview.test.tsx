@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
 import { MetagrinderEvidenceReview } from "../ui/MetagrinderEvidenceReview";
+import { createBuildingConstructionGraph } from "../contracts/bayConstructionGraph";
 
 const synthetic = { inputId: "synthetic-source", claims: [{ claimId: "claim-1", text: "Synthetic example: a storefront has an awning.",
   category: "architecture-and-streetscape", confidence: "medium", sourceInputIds: ["source-a", "source-b"], sourceChunkIds: ["chunk-a", "chunk-b"], attributionMode: "inferred" }], evidence: [{ arbitrary: "retained" }] };
@@ -45,4 +46,30 @@ it("ignores a stale file read after a newer extract is opened", async () => {
   await act(async () => { finish(JSON.stringify(synthetic)); await new Promise(resolve => setTimeout(resolve, 25)); });
   await waitFor(() => expect(screen.getByText("Newer synthetic claim.")).toBeInTheDocument());
   expect(screen.queryByText(synthetic.claims[0].text)).not.toBeInTheDocument();
+});
+
+it("lets an artist save and reopen an explicit interpretation, rejecting a changed building", async () => {
+  const graph = createBuildingConstructionGraph("review_building"), saveProposal = vi.fn();
+  const view = render(<MetagrinderEvidenceReview onSave={() => {}} graph={graph} onSaveProposal={saveProposal} />);
+  fireEvent.click(screen.getByText("Inspect research extract"));
+  fireEvent.change(screen.getByLabelText("Open research file input"), { target: { files: [file(JSON.stringify(synthetic))] } });
+  await screen.findByText(synthetic.claims[0].text);
+  fireEvent.click(screen.getByLabelText("Use this claim for an interpretation"));
+  fireEvent.change(screen.getByLabelText("Proposed opening head"), { target: { value: "round" } });
+  fireEvent.click(screen.getByRole("button", { name: "Create interpretation" }));
+  expect(await screen.findByText(/Proposed round upper-front opening head/)).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Save interpretation" }));
+  await waitFor(() => expect(saveProposal).toHaveBeenCalledTimes(1));
+  const proposal = saveProposal.mock.calls[0][0];
+  expect(proposal.staged.artifact).toEqual(synthetic); expect(proposal.staged.candidates[0].review).toBe("unreviewed");
+  fireEvent.change(screen.getByLabelText("Open interpretation file input"), { target: { files: [file(JSON.stringify(proposal))] } });
+  await waitFor(() => expect(screen.getByRole("button", { name: "Save interpretation" })).toBeEnabled());
+  const changed = structuredClone(graph); changed.nodes.find(node => node.type === "Footprint")!.parameters.widthM = 20;
+  view.rerender(<MetagrinderEvidenceReview onSave={() => {}} graph={changed} onSaveProposal={saveProposal} />);
+  fireEvent.click(screen.getByRole("button", { name: "Save interpretation" }));
+  expect(await screen.findByRole("alert")).toHaveTextContent("no longer matches");
+  expect(saveProposal).toHaveBeenCalledTimes(1);
+  fireEvent.change(screen.getByLabelText("Open interpretation file input"), { target: { files: [file(JSON.stringify(proposal))] } });
+  expect(await screen.findByRole("alert")).toHaveTextContent("changed building");
+  expect(screen.getByText(synthetic.claims[0].text)).toBeInTheDocument();
 });
