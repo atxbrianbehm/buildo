@@ -81,7 +81,10 @@ describe("retained-sign family study", () => {
     const old = lineage.source, pinned = await captureConstructionGenerationSource({ schemaVersion: "0.1.0", kind: "construction-generation-input", documentId: old.documentId,
       intent: { ...old.intent, locks: [{ semanticPath: "construction/opening/upperFrontRoundHead", scope: "building", lockedValue: 0, reason: "Imported pin" }] },
       recipe: old.recipe, reference: old.reference, intentionalExceptions: old.intentionalExceptions });
-    await expect(resolveConstructionGeneration(pinned)).rejects.toThrow(/Unsupported construction lock/);
+    const pinnedResolution = await resolveConstructionGeneration(pinned);
+    const pinnedLineage = { ...lineage, source: pinned, resolution: pinnedResolution, materialPlan: await planConstructionReferenceMaterials(lineage.materialPlan.templateSpec, pinned) };
+    expect(pinnedLineage.materialPlan.materialInputsHash).toBe(lineage.materialPlan.materialInputsHash);
+    await expect(resolveConstructionRetainedSignFamilyStudy(plan, pinnedLineage, defaultConstructionGenerationControls, composition)).rejects.toThrow(/pinned opening head/i);
     const openingsOnly = resolveConstructionFamilyComposition({ ...request, policy: { ...request.policy, massing: false } });
     const openingsResult = await resolveConstructionRetainedSignFamilyStudy(plan, lineage, defaultConstructionGenerationControls, openingsOnly);
     expect(openingsResult.receipt.schemaVersion).toBe("0.2.0");

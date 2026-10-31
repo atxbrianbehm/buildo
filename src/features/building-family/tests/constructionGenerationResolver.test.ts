@@ -99,6 +99,21 @@ describe("seeded construction generation through actual operators", () => {
     }
   });
 
+  it("resolves, compiles and replays explicit upper-head pins without changing unpinned output", async () => {
+    const original = await source(), baseline = await resolveConstructionGeneration(original);
+    for (const value of [0, 1] as const) {
+      const pinned = await recapture(original, input => { input.intent.locks = [{ semanticPath: "construction/opening/upperFrontRoundHead", scope: "family", lockedValue: value }]; });
+      const { resolution, construction } = await compileConstructionGeneration(pinned);
+      expect(parameter(resolution.graph, "opening", "upperFrontRoundHead")).toBe(value);
+      expect(resolution.choices).toContainEqual({ target: "construction/opening/upperFrontRoundHead", value, basis: "locked" });
+      expect(await readConstructionGenerationResolution(resolution, pinned)).toEqual(resolution);
+      expect(construction.ir.sourceGraphHash).toBe(resolution.graphContentHash);
+    }
+    expect(await resolveConstructionGeneration(original)).toEqual(baseline);
+    const invalid = await recapture(original, input => { input.intent.locks = [{ semanticPath: "construction/opening/upperFrontRoundHead", scope: "family", lockedValue: 2 }]; });
+    await expect(resolveConstructionGeneration(invalid)).rejects.toThrow(/Unsupported construction lock/);
+  });
+
   it.each(["path", "element", "value", "count-conflict"] as const)("diagnoses unsupported or conflicting locks: %s", async kind => {
     const captured = await source(input => {
       input.intent.locks = [{ semanticPath: "construction/facade/count", scope: "building", lockedValue: 3 }];
