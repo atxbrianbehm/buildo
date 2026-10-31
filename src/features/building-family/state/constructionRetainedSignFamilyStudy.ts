@@ -18,7 +18,7 @@ export async function resolveConstructionRetainedSignFamilyStudy(input: unknown,
   const pierVariation = pierVariationInput === undefined ? undefined : readConstructionFamilyPierVariation(pierVariationInput);
   if (!source.storefrontSign || (source.schemaVersion !== "0.16.0" && source.schemaVersion !== "0.17.0")) throw new Error("Choose a sign-bearing family source.");
   const policy = composition.source.policy;
-  if (!policy.roof || Object.entries(policy).some(([key, value]) => !["roof", "massing", "openings", "groupedBays", "awnings"].includes(key) && value)) throw new Error("This study supports roof, massing, openings, grouped-bay and additional-awning variation while retaining the storefront.");
+  if (!policy.roof || Object.entries(policy).some(([key, value]) => !["roof", "massing", "openings", "groupedBays", "awnings", "storefrontLights"].includes(key) && value)) throw new Error("This study supports roof, massing, openings, grouped-bay, storefront-light and additional-awning variation while retaining the storefront.");
   if (signal?.aborted) throw new DOMException("Family generation cancelled.", "AbortError");
   await resolveConstructionSignGenerationStudy(source, lineage, controls);
   const unsignedPlan = resolveConstructionFamilyPlan({ ...plan.source, graph: withoutConstructionStorefrontSign(source) });

@@ -142,6 +142,12 @@ export async function resolveConstructionFamily(input: unknown, lineageInput: un
           const { awnings: _removed, awningSupports: _supports, ...prior } = candidateGraph; void _removed; void _supports;
           candidateGraph = BayConstructionGraphSchema.parse({ ...prior, schemaVersion: "0.12.0" });
         }
+        if (varyStorefrontLights && !plan.source.graph.storefrontDivision && candidateGraph.schemaVersion === "0.12.0") {
+          if (candidateGraph.storefrontDivision?.displayLights !== 1 || candidateGraph.storefrontDivision?.transomLights !== 1)
+            throw new Error("Storefront variation cannot replace generated non-default divisions.");
+          const { storefrontDivision: _implicitDefault, ...prior } = candidateGraph; void _implicitDefault;
+          candidateGraph = BayConstructionGraphSchema.parse({ ...prior, schemaVersion: "0.11.0" });
+        }
         candidateGraph = applyConstructionFamilyComposition(candidateGraph, composition, member.ordinal);
         if (awnings) candidateGraph = withConstructionAwnings(candidateGraph, awnings);
         candidateGraph = applyConstructionFamilyAwningVariation(candidateGraph, composition, member.ordinal);

@@ -5,6 +5,7 @@ import { withConstructionAwnings } from "../core/constructionAwningGraph";
 import { withConstructionAwningSupports } from "../core/constructionAwningSupportGraph";
 import { withConstructionStorefrontSign, withoutConstructionStorefrontSign } from "../core/constructionStorefrontSignGraph";
 import { withConstructionFacadePiers } from "../core/constructionFacadePierGraph";
+import { withConstructionStorefrontDivision } from "../core/constructionStorefrontDivisionGraph";
 import { withConstructionSignAwningClearance } from "../core/constructionSignAwningGraph";
 import { resolveConstructionFamilyPlan } from "../core/constructionFamilyPlan";
 import { resolveConstructionFamilyComposition } from "../core/constructionFamilyComposition";
@@ -198,6 +199,30 @@ describe("retained-sign family study", () => {
     const authored = withConstructionSignAwningClearance(withConstructionStorefrontSign(withConstructionFacadePiers(withoutConstructionStorefrontSign(graph), directive), graph.storefrontSign!), graph.signAwningGapM!);
     const retained = await resolveConstructionRetainedSignFamilyStudy(resolveConstructionFamilyPlan({ ...plan.source, graph: authored }), lineage, defaultConstructionGenerationControls, composition, undefined, variation);
     expect(retained.members.every(member => JSON.stringify(member.construction.graph.facadePiers) === JSON.stringify(directive))).toBe(true);
+  }, 120000);
+  it("varies storefront glazing on a signed family without overwriting authored divisions", async () => {
+    const { lineage } = await fixture();
+    const storefront = withConstructionStorefront(createBuildingConstructionGraph("family_sign_source"), 1);
+    const piers = withConstructionFacadePiers(storefront, { pierWidthM: 0.28, projectionM: 0.18, endHeightM: 0.15, clearanceM: 0.04 });
+    const awnings = withConstructionAwnings(piers, [{ bayIndex: 0, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }]);
+    const supported = withConstructionAwningSupports(awnings, [{ bayIndex: 0, anchorRiseM: 0.15, thicknessM: 0.03 }]);
+    const graph = withConstructionSignAwningClearance(withConstructionStorefrontSign(supported, { bayIndex: 0, heightM: 0.18, projectionM: 0.08, frameWidthM: 0.035 }), 0.04);
+    expect(graph.storefrontDivision).toBeUndefined();
+    const plan = resolveConstructionFamilyPlan({ schemaVersion: "0.1.0", kind: "construction-family-request", familyId: "signed_lights", familySeed: "sign-family-seed", graph });
+    const composition = resolveConstructionFamilyComposition({ schemaVersion: "0.4.0", kind: "construction-family-composition-request", familySeed: plan.source.familySeed, openingLock: false,
+      policy: { openings: false, frontage: false, roof: true, groupedBays: false, storefrontLights: true, massing: false } });
+    const family = await resolveConstructionRetainedSignFamilyStudy(plan, lineage, defaultConstructionGenerationControls, composition);
+    expect(new Set(family.members.map(member => JSON.stringify(member.construction.graph.storefrontDivision ?? { displayLights: 1, transomLights: 1 }))).size).toBeGreaterThan(1);
+    for (const member of family.members) {
+      expect(member.construction.graph.storefrontSign).toEqual(graph.storefrontSign); expect(member.construction.graph.awnings).toEqual(graph.awnings);
+      expect(member.construction.graph.awningSupports).toEqual(graph.awningSupports); expect(member.construction.graph.facadePiers).toEqual(graph.facadePiers);
+      expect(member.construction.graph.signAwningGapM).toBe(graph.signAwningGapM); expect(member.lineage.materialPlan.materialInputsHash).toBe(lineage.materialPlan.materialInputsHash);
+    }
+    expect((await resolveConstructionRetainedSignFamilyStudy(plan, lineage, defaultConstructionGenerationControls, composition)).receipt).toEqual(family.receipt);
+    const authored = withConstructionStorefrontDivision(graph, { displayLights: 2, transomLights: 3 });
+    await expect(resolveConstructionRetainedSignFamilyStudy(resolveConstructionFamilyPlan({ ...plan.source, graph: authored }), lineage, defaultConstructionGenerationControls, composition)).rejects.toThrow(/cannot overwrite authored divisions/);
+    const authoredDefault = withConstructionStorefrontDivision(graph, { displayLights: 1, transomLights: 1 });
+    await expect(resolveConstructionRetainedSignFamilyStudy(resolveConstructionFamilyPlan({ ...plan.source, graph: authoredDefault }), lineage, defaultConstructionGenerationControls, composition)).rejects.toThrow(/cannot overwrite authored divisions/);
   }, 120000);
   it("records final source-aware rhythm geometry across a mixed-head family", async () => {
     const { graph, plan, lineage } = await fixture();
