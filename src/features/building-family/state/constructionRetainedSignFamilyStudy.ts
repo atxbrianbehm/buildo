@@ -22,7 +22,7 @@ export async function resolveConstructionRetainedSignFamilyStudy(input: unknown,
   if (signal?.aborted) throw new DOMException("Family generation cancelled.", "AbortError");
   await resolveConstructionSignGenerationStudy(source, lineage, controls);
   const unsignedPlan = resolveConstructionFamilyPlan({ ...plan.source, graph: withoutConstructionStorefrontSign(source) });
-  const family = await resolveConstructionFamily(unsignedPlan, lineage, controls, signal, composition, pierVariation);
+  const family = await resolveConstructionFamily(unsignedPlan, lineage, controls, signal, composition, pierVariation, source);
   const members = [], hashes = new Set<string>();
   for (const member of family.members) {
     if (signal?.aborted) throw new DOMException("Family generation cancelled.", "AbortError");

@@ -5,7 +5,7 @@ import { withConstructionAwnings } from "../core/constructionAwningGraph";
 import { withConstructionAwningSupports } from "../core/constructionAwningSupportGraph";
 import { withConstructionStorefrontSign, withoutConstructionStorefrontSign } from "../core/constructionStorefrontSignGraph";
 import { withConstructionFacadePiers } from "../core/constructionFacadePierGraph";
-import { withConstructionStorefrontDivision } from "../core/constructionStorefrontDivisionGraph";
+import { withConstructionStorefrontDivision, withoutConstructionStorefrontDivision } from "../core/constructionStorefrontDivisionGraph";
 import { withConstructionSignAwningClearance } from "../core/constructionSignAwningGraph";
 import { resolveConstructionFamilyPlan } from "../core/constructionFamilyPlan";
 import { resolveConstructionFamilyComposition } from "../core/constructionFamilyComposition";
@@ -20,6 +20,7 @@ import { hashCanonicalJson } from "../core/contentHash";
 import { captureConstructionGenerationSource } from "../core/constructionGenerationSource";
 import { resolveConstructionGeneration } from "../core/constructionGenerationResolver";
 import { resolveConstructionGroupedRhythmFamilyStudy } from "../state/constructionGroupedRhythmFamilyStudy";
+import { resolveConstructionFamily } from "../state/constructionFamilyGeneration";
 import { GroupedRhythmFamilyReceiptSchema } from "../contracts/constructionGroupedRhythmFamilyStudy";
 
 async function fixture() {
@@ -223,6 +224,25 @@ describe("retained-sign family study", () => {
     await expect(resolveConstructionRetainedSignFamilyStudy(resolveConstructionFamilyPlan({ ...plan.source, graph: authored }), lineage, defaultConstructionGenerationControls, composition)).rejects.toThrow(/cannot overwrite authored divisions/);
     const authoredDefault = withConstructionStorefrontDivision(graph, { displayLights: 1, transomLights: 1 });
     await expect(resolveConstructionRetainedSignFamilyStudy(resolveConstructionFamilyPlan({ ...plan.source, graph: authoredDefault }), lineage, defaultConstructionGenerationControls, composition)).rejects.toThrow(/cannot overwrite authored divisions/);
+  }, 120000);
+  it("distinguishes a cleared no-pier signed source from its required unsigned placeholder", async () => {
+    const { graph: original, lineage } = await fixture(), graph = withoutConstructionStorefrontDivision(original);
+    expect(graph.facadePiers).toBeUndefined(); expect(graph.storefrontDivision).toBeUndefined();
+    const plan = resolveConstructionFamilyPlan({ schemaVersion: "0.1.0", kind: "construction-family-request", familyId: "signed_lights_no_piers", familySeed: "sign-family-seed", graph });
+    const composition = resolveConstructionFamilyComposition({ schemaVersion: "0.4.0", kind: "construction-family-composition-request", familySeed: plan.source.familySeed, openingLock: false,
+      policy: { openings: false, frontage: false, roof: true, groupedBays: false, storefrontLights: true, massing: false } });
+    const family = await resolveConstructionRetainedSignFamilyStudy(plan, lineage, defaultConstructionGenerationControls, composition);
+    expect(new Set(family.members.map(member => JSON.stringify(member.construction.graph.storefrontDivision ?? { displayLights: 1, transomLights: 1 }))).size).toBeGreaterThan(1);
+    expect(family.members.every(member => JSON.stringify(member.construction.graph.storefrontSign) === JSON.stringify(graph.storefrontSign) && JSON.stringify(member.construction.graph.awnings) === JSON.stringify(graph.awnings))).toBe(true);
+    expect(family.members.every(member => member.lineage.materialPlan.materialInputsHash === lineage.materialPlan.materialInputsHash)).toBe(true);
+    expect((await resolveConstructionRetainedSignFamilyStudy(plan, lineage, defaultConstructionGenerationControls, composition)).receipt).toEqual(family.receipt);
+    const authored = withConstructionStorefrontDivision(graph, { displayLights: 1, transomLights: 1 });
+    await expect(resolveConstructionRetainedSignFamilyStudy(resolveConstructionFamilyPlan({ ...plan.source, graph: authored }), lineage, defaultConstructionGenerationControls, composition)).rejects.toThrow(/cannot overwrite authored divisions/);
+    const unsignedPlan = resolveConstructionFamilyPlan({ ...plan.source, graph: withoutConstructionStorefrontSign(graph) });
+    const mismatched = structuredClone(graph); mismatched.nodes.find(node => node.type === "Footprint")!.parameters.widthM += 1;
+    await expect(resolveConstructionFamily(unsignedPlan, lineage, defaultConstructionGenerationControls, undefined, composition, undefined, mismatched)).rejects.toThrow(/must match the unsigned family plan/);
+    await expect(resolveConstructionFamily(unsignedPlan, lineage, defaultConstructionGenerationControls, undefined, composition, undefined, authored)).rejects.toThrow(/cannot overwrite authored divisions/);
+    await expect(resolveConstructionFamily(unsignedPlan, lineage, defaultConstructionGenerationControls, undefined, composition)).rejects.toThrow(/cannot overwrite authored divisions/);
   }, 120000);
   it("records final source-aware rhythm geometry across a mixed-head family", async () => {
     const { graph, plan, lineage } = await fixture();
