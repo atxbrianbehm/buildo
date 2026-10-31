@@ -722,6 +722,8 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       const previous = current.current;
       const isCurrent = () => alive.current && sequence.current === token && !signal.aborted && current.current === previous;
       const input: unknown = JSON.parse(await file.text());
+      if (input && typeof input === "object" && "kind" in input && input.kind === "construction-grouped-rhythm-fabric-archive")
+        throw new Error("Fabric family archives are not yet supported in the workspace.");
       if (input && typeof input === "object" && "kind" in input && input.kind === "construction-grouped-rhythm-family-archive") {
         const archive = await readGroupedRhythmFamilyArchive(input);
         if (!isCurrent()) return;
