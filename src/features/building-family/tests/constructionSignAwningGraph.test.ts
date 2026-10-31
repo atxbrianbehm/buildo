@@ -3,7 +3,7 @@ import { BayConstructionGraphSchema, createBuildingConstructionGraph } from "../
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
 import { withConstructionAwnings } from "../core/constructionAwningGraph";
 import { withConstructionAwningSupports } from "../core/constructionAwningSupportGraph";
-import { withConstructionStorefrontSign } from "../core/constructionStorefrontSignGraph";
+import { withConstructionStorefrontSign, withoutConstructionStorefrontSign } from "../core/constructionStorefrontSignGraph";
 import { withConstructionSignAwningClearance } from "../core/constructionSignAwningGraph";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
 import { evaluateConstructionSignAwningBuildingStudy } from "../compiler/evaluateConstructionSignAwningBuildingStudy";
@@ -18,6 +18,7 @@ describe("versioned sign and awning graph", () => {
     const sign = { bayIndex: 0, heightM: 0.18, projectionM: 0.08, frameWidthM: 0.035 }, signed = withConstructionStorefrontSign(base, sign);
     const graph = withConstructionSignAwningClearance(signed, 0.04), original = structuredClone(graph);
     expect(supportsGroupedConstruction(graph)).toBe(true);
+    expect(withoutConstructionStorefrontSign(graph)).toEqual(base);
     await expect(evaluateConstruction(signed)).rejects.toThrow(/shared clearance/);
     const result = await evaluateConstruction(JSON.parse(JSON.stringify(graph)));
     const study = await evaluateConstructionSignAwningBuildingStudy({ schemaVersion: "0.1.0", kind: "construction-sign-awning-building-study-request", graph: base, ...sign, gapM: 0.04 });

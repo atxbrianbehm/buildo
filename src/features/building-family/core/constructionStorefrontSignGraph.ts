@@ -12,8 +12,8 @@ export function withConstructionStorefrontSign(input: unknown, directive: unknow
 /** Remove only the sign, returning to the newest required pre-sign graph format. */
 export function withoutConstructionStorefrontSign(input: unknown): BayConstructionGraph {
   const original = BayConstructionGraphSchema.parse(input);
-  if (original.schemaVersion !== "0.16.0") return structuredClone(original);
-  const { storefrontSign: _removed, ...prior } = original; void _removed;
+  if (original.schemaVersion !== "0.16.0" && original.schemaVersion !== "0.17.0") return structuredClone(original);
+  const { storefrontSign: _removed, signAwningGapM: _gap, ...prior } = original; void _removed; void _gap;
   if (original.facadePiers) return BayConstructionGraphSchema.parse({ ...prior, schemaVersion: "0.15.0" });
   if (original.awningSupports) return BayConstructionGraphSchema.parse({ ...prior, schemaVersion: "0.14.0", upperBayGroups: original.upperBayGroups ?? [], storefrontDivision: original.storefrontDivision ?? { displayLights: 1, transomLights: 1 } });
   if (original.awnings) return BayConstructionGraphSchema.parse({ ...prior, schemaVersion: "0.13.0", upperBayGroups: original.upperBayGroups ?? [], storefrontDivision: original.storefrontDivision ?? { displayLights: 1, transomLights: 1 } });

@@ -29,6 +29,7 @@ import { createConstructionFamilySource, readConstructionFamilySource, withUpdat
 import { resolveConstructionFamilyComposition } from "../core/constructionFamilyComposition";
 import { resolveConstructionFamilyPierVariation } from "../core/constructionFamilyPierVariation";
 import { withConstructionStorefrontSign, withoutConstructionStorefrontSign } from "../core/constructionStorefrontSignGraph";
+import { withConstructionSignAwningClearance } from "../core/constructionSignAwningGraph";
 import { parseBuildingSourceFile } from "../state/buildingSourceFile";
 import { defaultConstructionGenerationControls, resolveWorkbenchGeneration, rebindGenerationSurfaceSources, type ConstructionGenerationLineage } from "../state/constructionGenerationState";
 import { ConstructionGenerationPanel } from "./ConstructionGenerationPanel";
@@ -303,8 +304,10 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     const source = current.current;
     if (!source || dirty || previewNode || shown.current !== source.fixture) return;
     await perform(async (token, signal) => {
-      const graph = enabled ? withConstructionStorefrontSign(source.fixture.construction.graph, { bayIndex, ...(dimensions ?? { heightM: 0.18, projectionM: 0.08, frameWidthM: 0.035 }) })
-        : withoutConstructionStorefrontSign(source.fixture.construction.graph);
+      const original = source.fixture.construction.graph;
+      let graph = enabled ? withConstructionStorefrontSign(original, { bayIndex, ...(dimensions ?? { heightM: 0.18, projectionM: 0.08, frameWidthM: 0.035 }) })
+        : withoutConstructionStorefrontSign(original);
+      if (enabled && original.awnings?.some(awning => awning.bayIndex === bayIndex)) graph = withConstructionSignAwningClearance(graph, 0.04);
       await publish(graph, source.materials, token, signal);
     });
   }
@@ -813,12 +816,12 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         onChange={(bay, enabled, dimensions) => void changeAwning(bay, enabled, dimensions)} /> : null}
       {buildingMode && !advancedOpen && !familyMemberMode && accepted && supportsGroupedConstruction(accepted.construction.graph) && constructionHasStorefront(accepted.construction.graph) ? <section className="construction-generate" aria-label="Storefront sign">
         <h3>Storefront sign</h3>
-        <p>{combinedProtected ? "The sign and awning share this bay. Their controls are retained while editing the building." : "A blank framed demo sign fits one bay's head band. It cannot share a bay with an awning yet."}</p>
+        <p>{combinedProtected ? "The sign and awning share this bay. The awning is lowered to leave room for the sign." : "A blank framed demo sign fits one bay's head band. An awning in that bay is lowered to make room."}</p>
         <label>Bay <select aria-label="Sign bay" value={effectiveSignBay}
           disabled={disabled || dirty || Boolean(accepted.construction.graph.storefrontSign)} onChange={event => setSignBay(Number(event.currentTarget.value))}>
           {Array.from({ length: accepted.construction.graph.nodes.find(node => node.type === "SplitBays")?.parameters.count ?? 0 }, (_, index) => <option key={index} value={index}>Bay {index + 1}</option>)}
         </select></label>
-        <button type="button" disabled={combinedProtected || disabled || dirty || openingDirty || groupDirty || !viewerReady || Boolean(previewNode)} onClick={() => void changeStorefrontSign(!signProtected, effectiveSignBay)}>{signProtected ? "Remove sign" : "Add sign"}</button>
+        <button type="button" disabled={disabled || dirty || openingDirty || groupDirty || !viewerReady || Boolean(previewNode)} onClick={() => void changeStorefrontSign(!signProtected, effectiveSignBay)}>{signProtected ? "Remove sign" : "Add sign"}</button>
         {accepted.construction.graph.storefrontSign ? <form key={JSON.stringify(accepted.construction.graph.storefrontSign)} onSubmit={event => {
           event.preventDefault(); const fields = new FormData(event.currentTarget);
           void changeStorefrontSign(true, effectiveSignBay, { heightM: Number(fields.get("height")), projectionM: Number(fields.get("projection")), frameWidthM: Number(fields.get("frame")) });
