@@ -13,6 +13,9 @@ import { createConstructionAwningFabric } from "../materials/constructionAwningF
 import { defaultConstructionGenerationControls, resolveWorkbenchGeneration } from "../state/constructionGenerationState";
 import { createBayConstructionProject } from "../state/bayConstructionProject";
 import { createGroupedRhythmFamilyArchive, readGroupedRhythmFamilyArchive } from "../state/constructionGroupedRhythmFamilyArchive";
+import { createGroupedRhythmFabricArchive, readGroupedRhythmFabricArchive } from "../state/constructionGroupedRhythmFabricArchive";
+import { resolveConstructionFamilyFabricStudy } from "../materials/constructionFamilyFabricStudy";
+import { createConstructionFamilyFabricAssignments } from "../materials/constructionFamilyFabric";
 import { createAssemblyHallFixture } from "../ui/assemblyHallFixture";
 import { createReferenceConstructionMaterials } from "../ui/bayConstructionFixture";
 import { defaultBuildingPromptControls } from "../state/buildingStore";
@@ -37,6 +40,16 @@ it("replays a portable rhythm family with real material and fabric source and re
     const archive = await createGroupedRhythmFamilyArchive(request), reopened = await readGroupedRhythmFamilyArchive(JSON.parse(JSON.stringify(archive)));
     expect(reopened).toEqual(archive); expect(reopened.request.sourceProject.materialSource).toEqual(materials.file); expect(reopened.request.sourceProject.awningFabric).toEqual(fabric);
     expect(reopened.result.members).toHaveLength(6); expect(reopened.result.members.filter(member => member.graph.upperBayGroups?.length)).toHaveLength(3);
+    const assignments = await resolveConstructionFamilyFabricStudy({ schemaVersion: "0.1.0", kind: "construction-family-fabric-study-request", familyId: plan.source.familyId,
+      sourceDocumentId: graph.documentId, memberIds: archive.result.members.map(member => member.graph.documentId), materialSeed: "demo-fabric", inheritedFabric: fabric });
+    const fabricArchive = await createGroupedRhythmFabricArchive({ schemaVersion: "0.1.0", kind: "construction-grouped-rhythm-fabric-archive", family: archive, fabricAssignments: assignments });
+    expect(await readGroupedRhythmFabricArchive(JSON.parse(JSON.stringify(fabricArchive)))).toEqual(fabricArchive);
+    const alteredFabric = structuredClone(fabricArchive); alteredFabric.fabricAssignments.members[0].documentId = "changed";
+    const { contentHash: _fabricArchiveHash, ...alteredBody } = alteredFabric; void _fabricArchiveHash; alteredFabric.contentHash = await hashCanonicalJson(alteredBody);
+    await expect(readGroupedRhythmFabricArchive(alteredFabric)).rejects.toThrow(/saved hash/);
+    const { contentHash: _assignmentHash, ...assignmentBody } = assignments; void _assignmentHash;
+    const wrongFamily = await createConstructionFamilyFabricAssignments({ ...assignmentBody, familyId: "different_family" });
+    await expect(createGroupedRhythmFabricArchive({ schemaVersion: "0.1.0", kind: "construction-grouped-rhythm-fabric-archive", family: archive, fabricAssignments: wrongFamily })).rejects.toThrow(/owning family/);
     const top = await createGroupedRhythmFamilyArchive({ ...request, policy: { ...request.policy, schemaVersion: "0.2.0", scope: "top-upper-front" } });
     const reopenedTop = await readGroupedRhythmFamilyArchive(JSON.parse(JSON.stringify(top)));
     expect(reopenedTop).toEqual(top);
@@ -77,4 +90,4 @@ it("replays a portable rhythm family with real material and fabric source and re
     const mismatched = structuredClone(request); mismatched.plan.source.graph.documentId = "different";
     await expect(createGroupedRhythmFamilyArchive(mismatched)).rejects.toThrow();
   } finally { base.familyRuntime.dispose(); }
-}, 180000);
+}, 240000);

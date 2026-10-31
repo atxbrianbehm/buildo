@@ -258,6 +258,17 @@ describe("live construction controls and ownership", () => {
     } finally { view.unmount(); read.mockRestore(); }
   }, 30000);
 
+  it("keeps the current building when a fabric archive is not yet supported", async () => {
+    const view = mount({ graph: createBuildingConstructionGraph(), materials });
+    try {
+      await ready(); const workspace = view.container.querySelector<HTMLElement>(".construction-workspace")!, before = workspace.dataset.constructionHash;
+      fireEvent.change(screen.getByLabelText("Open family file"), { target: { files: [new File(['{"kind":"construction-grouped-rhythm-fabric-archive"}'], "fabric.json")] } });
+      await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("Fabric family archives are not yet supported in the workspace."));
+      expect(workspace.dataset.constructionHash).toBe(before); expect(workspace.dataset.constructionPreview).toBe("output");
+      expect(view.onSessionChange).toHaveBeenCalledTimes(1);
+    } finally { view.unmount(); }
+  }, 30000);
+
   it("ignores an older family load after a newer load fails", async () => {
     let rejectOld!: (reason: Error) => void;
     const old = new Promise<Awaited<ReturnType<typeof familySources.readConstructionFamilySource>>>((_resolve, reject) => { rejectOld = reject; });
