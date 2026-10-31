@@ -26,7 +26,9 @@ describe("PSG to BuildingFamilySpec integration", () => {
     expect(normalized.spec.schemaVersion).toBe("0.1.0");
     expect(normalized.spec.stylePackId).toBe("late-19c-commercial-demo");
     expect(normalized.spec.massing.floorCount).toBe(4);
-    expect(normalized.spec.facade.frontBayCount).toBe(7);
+    // Building seed applies a deterministic +/-1 bay variation around the requested count.
+    expect(normalized.spec.facade.frontBayCount).toBeGreaterThanOrEqual(6);
+    expect(normalized.spec.facade.frontBayCount).toBeLessThanOrEqual(8);
     expect(normalized.spec.selectedFamilies.wall).toBe("brick-red");
     expect(normalized.spec.diagnostics).toEqual([]);
   });

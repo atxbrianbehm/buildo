@@ -60,7 +60,7 @@ export interface OpeningSeed {
   semanticPath?: string;
 }
 
-function openingWorldCenter(scope: FacadeBayScope, _wallDepthM: number): Vec3 {
+function openingWorldCenter(scope: FacadeBayScope): Vec3 {
   const open = scope.opening!;
   const isSide = scope.facade === "left" || scope.facade === "right";
   // Sit frames slightly proud of the outer wall face (GN: instance on facade face).
@@ -127,7 +127,7 @@ function attachOpeningMeta(
     const seed = seedMap.get(key);
     const resolvedKind: "window" | "door" =
       seed?.kind ?? scope.opening.kind ?? "window";
-    const centerM = openingWorldCenter(scope, wallDepthM);
+    const centerM = openingWorldCenter(scope);
     const depth =
       scope.facade === "left" || scope.facade === "right" ? scope.sizeM[0] * 0.5 : scope.sizeM[2] * 0.55;
     openings.push({

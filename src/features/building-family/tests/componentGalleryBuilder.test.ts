@@ -84,7 +84,7 @@ describe("buildComponentGallery", () => {
       batchId: "mesh.wall-panels",
       stage: "facade",
       materialSlotId: "wall.primary",
-      sampleSemanticPath: expect.stringContaining("/wall/panel")
+      sampleSemanticPath: expect.stringContaining("/wall/subdivided/piece")
     });
     expect(wallPanel?.metrics.elementCount).toBe(
       ir.semanticIndex.filter((entry) => entry.batchId === "mesh.wall-panels").length
@@ -104,16 +104,25 @@ describe("buildComponentGallery", () => {
   });
 
   it("keeps recipe-only entries with diagnostics when the current compiler has not emitted a matching IR batch yet", async () => {
-    const { ir, catalog } = await fixtureGalleryInputs();
+    const { ir, catalog: compiledCatalog } = await fixtureGalleryInputs();
+    // Fake part: a catalog recipe whose id and role match no emitted mesh or instance batch.
+    const missingRecipe = {
+      ...compiledCatalog.recipes.find((recipe) => recipe.role === "opening")!,
+      id: "recipe.test.missing-part",
+      role: "testMissingPart"
+    };
+    const catalog = { ...compiledCatalog, recipes: [...compiledCatalog.recipes, missingRecipe] };
     const gallery = await buildComponentGallery({ catalog, ir });
-    const opening = gallery.entries.find((entry) => entry.role === "opening");
+    const missingPart = gallery.entries.find((entry) => entry.recipeId === "recipe.test.missing-part");
     const beltCourse = gallery.entries.find((entry) => entry.role === "horizontalTrim");
 
-    expect(opening).toMatchObject({
+    expect(ComponentGallerySchema.safeParse(gallery).success).toBe(true);
+    expect(missingPart).toMatchObject({
       source: "recipeOnly",
-      stage: "openings",
+      stage: "trim",
       batchId: undefined,
-      sampleSemanticPath: undefined
+      sampleSemanticPath: undefined,
+      metrics: { vertexCount: 0, triangleCount: 0, instanceCount: 0, elementCount: 0 }
     });
     // Belt courses are emitted as high-detail mesh batches after profiled-trim work.
     expect(beltCourse).toMatchObject({
@@ -126,7 +135,7 @@ describe("buildComponentGallery", () => {
       expect.objectContaining({
         code: "componentGallery.recipeOnly",
         severity: "warning",
-        received: "recipe.opening.window.recess"
+        received: "recipe.test.missing-part"
       })
     );
   });
@@ -153,12 +162,13 @@ describe("buildComponentGallery", () => {
     });
     expect(verticalTrim).toMatchObject({
       label: "Pilaster / vertical trim",
-      source: "instanceBatch",
-      atlasSlotIds: ["trim.vertical.primary"],
-      metrics: expect.objectContaining({
-        instanceCount: 8
-      })
+      source: "meshBatch",
+      batchId: "mesh.vertical-pilasters",
+      atlasSlotIds: ["trim.vertical.primary"]
     });
+    expect(verticalTrim?.metrics.elementCount).toBe(
+      ir.semanticIndex.filter((entry) => entry.batchId === "mesh.vertical-pilasters").length
+    );
     expect(windowFrame?.dimensionsM.depth).toBeGreaterThanOrEqual(0.28);
     expect(windowFrame?.anchorIds).toEqual(expect.arrayContaining(["origin", "sill-center", "lintel-center"]));
     expect(gallery.entries.every((entry) => entry.atlasSlotIds.length > 0)).toBe(true);

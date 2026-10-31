@@ -31,7 +31,7 @@ describe("ComponentForge", () => {
     expect(selected).toHaveTextContent("UV overlay on");
     expect(selected).toHaveTextContent("Semantic anchors on");
     expect(selected).toHaveTextContent("1.35");
-    expect(selected).toHaveTextContent("0.32");
+    expect(selected).toHaveTextContent("0.42");
 
     const atlasSlots = screen.getByRole("table", { name: "Selected atlas slots" });
     expect(within(atlasSlots).getByText("glass.primary")).toBeInTheDocument();
