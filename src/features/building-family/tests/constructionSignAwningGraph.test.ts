@@ -9,7 +9,7 @@ import { evaluateConstruction } from "../compiler/evaluateConstruction";
 import { evaluateConstructionSignAwningBuildingStudy } from "../compiler/evaluateConstructionSignAwningBuildingStudy";
 import { BayConstructionWorkerReplySchema, BayConstructionWorkerRequestSchema } from "../compiler/bayConstructionWorkerProtocol";
 import { defaultConstructionGenerationControls, resolveWorkbenchGeneration } from "../state/constructionGenerationState";
-import { assertConstructionWorkspaceSupported } from "../state/constructionWorkspaceAdmission";
+import { supportsGroupedConstruction } from "../ui/constructionBuildingBindings";
 
 describe("versioned sign and awning graph", () => {
   it("retains authored geometry and matches the building study", async () => {
@@ -17,6 +17,7 @@ describe("versioned sign and awning graph", () => {
       [{ bayIndex: 0, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }]), [{ bayIndex: 0, anchorRiseM: 0.15, thicknessM: 0.03 }]);
     const sign = { bayIndex: 0, heightM: 0.18, projectionM: 0.08, frameWidthM: 0.035 }, signed = withConstructionStorefrontSign(base, sign);
     const graph = withConstructionSignAwningClearance(signed, 0.04), original = structuredClone(graph);
+    expect(supportsGroupedConstruction(graph)).toBe(true);
     await expect(evaluateConstruction(signed)).rejects.toThrow(/shared clearance/);
     const result = await evaluateConstruction(JSON.parse(JSON.stringify(graph)));
     const study = await evaluateConstructionSignAwningBuildingStudy({ schemaVersion: "0.1.0", kind: "construction-sign-awning-building-study-request", graph: base, ...sign, gapM: 0.04 });
@@ -30,7 +31,6 @@ describe("versioned sign and awning graph", () => {
     expect(BayConstructionWorkerReplySchema.safeParse({ schemaVersion: "0.17.0", type: "bay-result", requestId: 1, result }).success).toBe(true);
     expect(BayConstructionWorkerReplySchema.safeParse({ schemaVersion: "0.16.0", type: "bay-result", requestId: 1, result }).success).toBe(false);
     await expect(resolveWorkbenchGeneration(graph, null, defaultConstructionGenerationControls)).rejects.toThrow(/not yet supported/);
-    expect(() => assertConstructionWorkspaceSupported(graph)).toThrow(/not yet supported/);
     await expect(evaluateConstruction(graph, "window")).rejects.toThrow(/complete matching graph/);
   });
 });

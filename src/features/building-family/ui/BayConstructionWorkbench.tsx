@@ -37,7 +37,6 @@ import { BayConstructionClient } from "../compiler/bayConstructionClient";
 import { BayConstructionGraphSchema, BayConstructionNodeSchema, constructionOutputSocket, createBuildingConstructionGraph, type BayConstructionGraph, type BayConstructionNode } from "../contracts/bayConstructionGraph";
 import { constructionUsesOperator, completeFacadeAsBuilding, repeatConstructionWithSurfaces, validateConstructionSurfaceSources } from "../core/constructionSurfaceAuthoring";
 import { createBayConstructionProject, readBayConstructionProject } from "../state/bayConstructionProject";
-import { assertConstructionWorkspaceSupported } from "../state/constructionWorkspaceAdmission";
 import { ConstructionHistory, type ConstructionHistorySnapshot } from "../state/constructionHistory";
 import { constructionRecoveryText, type ConstructionRecoveryStatus } from "../state/useConstructionWorkspace";
 import type { BuildingFixtureViewerPreparer, PreparedBuildingFixtureView } from "../state/buildingRunController";
@@ -288,7 +287,6 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   async function open(file: File) {
     await perform(async (token, signal) => {
       const { project, materials } = await readBayConstructionProject(JSON.parse(await file.text()));
-      assertConstructionWorkspaceSupported(project.graph);
       await publish(project.graph, { ...materials, file: project.materialSource, ...(project.awningFabric ? { awningFabric: project.awningFabric } : {}) }, token, signal, "open", project.generation ?? null);
     });
   }
@@ -698,7 +696,8 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   }
   const labelFor = (key: string) => key === "bayIndex" && node.type === "PlaceDoor" ? "Entrance bay index" : key === "count" ? (node.type === "SplitFloors" || node.type === "Storeys") ? "Floor count" : "Bay count" : labels[key];
   const pierProtected = accepted?.construction.graph.schemaVersion === "0.15.0";
-  const signProtected = accepted?.construction.graph.schemaVersion === "0.16.0";
+  const combinedProtected = accepted?.construction.graph.schemaVersion === "0.17.0";
+  const signProtected = accepted?.construction.graph.schemaVersion === "0.16.0" || combinedProtected;
   const effectiveSignBay = accepted?.construction.graph.storefrontSign?.bayIndex ?? Math.min(signBay, (accepted?.construction.graph.nodes.find(node => node.type === "SplitBays")?.parameters.count ?? 1) - 1);
   const buildingMode = accepted && constructionUsesOperator(accepted.construction.graph,"Footprint");
   const facadeMode = accepted && (constructionUsesOperator(accepted.construction.graph,"SplitFloors") || constructionUsesOperator(accepted.construction.graph,"SplitBays"));
@@ -814,20 +813,20 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         onChange={(bay, enabled, dimensions) => void changeAwning(bay, enabled, dimensions)} /> : null}
       {buildingMode && !advancedOpen && !familyMemberMode && accepted && supportsGroupedConstruction(accepted.construction.graph) && constructionHasStorefront(accepted.construction.graph) ? <section className="construction-generate" aria-label="Storefront sign">
         <h3>Storefront sign</h3>
-        <p>A blank framed demo sign fits one bay's head band. It cannot share a bay with an awning yet.</p>
+        <p>{combinedProtected ? "The sign and awning share this bay. Their controls are retained while editing the building." : "A blank framed demo sign fits one bay's head band. It cannot share a bay with an awning yet."}</p>
         <label>Bay <select aria-label="Sign bay" value={effectiveSignBay}
           disabled={disabled || dirty || Boolean(accepted.construction.graph.storefrontSign)} onChange={event => setSignBay(Number(event.currentTarget.value))}>
           {Array.from({ length: accepted.construction.graph.nodes.find(node => node.type === "SplitBays")?.parameters.count ?? 0 }, (_, index) => <option key={index} value={index}>Bay {index + 1}</option>)}
         </select></label>
-        <button type="button" disabled={disabled || dirty || openingDirty || groupDirty || !viewerReady || Boolean(previewNode)} onClick={() => void changeStorefrontSign(!signProtected, effectiveSignBay)}>{signProtected ? "Remove sign" : "Add sign"}</button>
+        <button type="button" disabled={combinedProtected || disabled || dirty || openingDirty || groupDirty || !viewerReady || Boolean(previewNode)} onClick={() => void changeStorefrontSign(!signProtected, effectiveSignBay)}>{signProtected ? "Remove sign" : "Add sign"}</button>
         {accepted.construction.graph.storefrontSign ? <form key={JSON.stringify(accepted.construction.graph.storefrontSign)} onSubmit={event => {
           event.preventDefault(); const fields = new FormData(event.currentTarget);
           void changeStorefrontSign(true, effectiveSignBay, { heightM: Number(fields.get("height")), projectionM: Number(fields.get("projection")), frameWidthM: Number(fields.get("frame")) });
         }}>
-          <label>Height (m) <input aria-label="Sign height" name="height" type="number" min="0.16" max="0.8" step="any" required defaultValue={accepted.construction.graph.storefrontSign.heightM} disabled={disabled || dirty || !viewerReady} /></label>
-          <label>Projection (m) <input aria-label="Sign projection" name="projection" type="number" min="0.04" max="0.3" step="any" required defaultValue={accepted.construction.graph.storefrontSign.projectionM} disabled={disabled || dirty || !viewerReady} /></label>
-          <label>Frame width (m) <input aria-label="Sign frame width" name="frame" type="number" min="0.02" max="0.12" step="any" required defaultValue={accepted.construction.graph.storefrontSign.frameWidthM} disabled={disabled || dirty || !viewerReady} /></label>
-          <button type="submit" disabled={disabled || dirty || !viewerReady}>Apply sign dimensions</button>
+          <label>Height (m) <input aria-label="Sign height" name="height" type="number" min="0.16" max="0.8" step="any" required defaultValue={accepted.construction.graph.storefrontSign.heightM} disabled={combinedProtected || disabled || dirty || !viewerReady} /></label>
+          <label>Projection (m) <input aria-label="Sign projection" name="projection" type="number" min="0.04" max="0.3" step="any" required defaultValue={accepted.construction.graph.storefrontSign.projectionM} disabled={combinedProtected || disabled || dirty || !viewerReady} /></label>
+          <label>Frame width (m) <input aria-label="Sign frame width" name="frame" type="number" min="0.02" max="0.12" step="any" required defaultValue={accepted.construction.graph.storefrontSign.frameWidthM} disabled={combinedProtected || disabled || dirty || !viewerReady} /></label>
+          <button type="submit" disabled={combinedProtected || disabled || dirty || !viewerReady}>Apply sign dimensions</button>
         </form> : null}
       </section> : null}
       {buildingMode && !advancedOpen && !signProtected && accepted && supportsGroupedConstruction(accepted.construction.graph) ? <section className="construction-generate" aria-label="Upper facade piers">
