@@ -52,3 +52,15 @@ it("offers support rods only for the selected awning and guards family members",
   rerender(<ConstructionAwningControls graph={supported} disabled={false} onChange={() => {}} onSupportChange={change} supportDisabled />);
   expect(screen.getByRole("button", { name: "Remove support rods" })).toBeDisabled();
 });
+
+it("locks the combined bay and permits only its dimensions to change", () => {
+  const graph = withConstructionAwningSupports(withConstructionAwnings(withConstructionStorefront(createBuildingConstructionGraph(), 1),
+    [{ bayIndex: 1, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }]), [{ bayIndex: 1, anchorRiseM: 0.15, thicknessM: 0.03 }]);
+  const change = vi.fn(), support = vi.fn();
+  render(<ConstructionAwningControls graph={graph} disabled={false} onChange={change} onSupportChange={support} lockedBayIndex={1} dimensionsOnly />);
+  expect(screen.getByLabelText("Awning bay")).toHaveValue("1"); expect(screen.getByLabelText("Awning bay")).toBeDisabled();
+  expect(screen.getByRole("button", { name: "Remove awning" })).toBeDisabled(); expect(screen.getByRole("button", { name: "Remove support rods" })).toBeDisabled();
+  fireEvent.change(screen.getByLabelText("Awning projection"), { target: { value: "0.9" } });
+  fireEvent.click(screen.getByRole("button", { name: "Apply awning dimensions" }));
+  expect(change).toHaveBeenCalledWith(1, true, { projectionM: 0.9, dropM: 0.55, valanceHeightM: 0.2 }); expect(support).not.toHaveBeenCalled();
+});
