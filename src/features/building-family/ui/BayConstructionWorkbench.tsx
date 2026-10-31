@@ -36,6 +36,7 @@ import { defaultConstructionGenerationControls, resolveWorkbenchGeneration, rebi
 import { resolveConstructionSignGenerationStudy } from "../state/constructionSignGenerationStudy";
 import { createGroupedRhythmFamilyArchive, readGroupedRhythmFamilyArchive } from "../state/constructionGroupedRhythmFamilyArchive";
 import { createGroupedRhythmFabricArchive, readGroupedRhythmFabricArchive } from "../state/constructionGroupedRhythmFabricArchive";
+import { createConstructionEvidenceRhythmFamily, readConstructionEvidenceRhythmFamily } from "../state/constructionEvidenceRhythmFamily";
 import { ConstructionGenerationPanel } from "./ConstructionGenerationPanel";
 import { ZodError } from "zod";
 import { BayConstructionClient } from "../compiler/bayConstructionClient";
@@ -139,6 +140,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   const [previewNode, setPreviewNode] = useState<string | null>(null);
   const [familyPreview, setFamilyPreview] = useState(false);
   const [rhythmArchivePreview, setRhythmArchivePreview] = useState(false);
+  const [rhythmEvidence, setRhythmEvidence] = useState<Awaited<ReturnType<typeof readConstructionEvidenceRhythmFamily>> | null>(null);
   const [familyDirty, setFamilyDirty] = useState(false);
   const [familySeed, setFamilySeed] = useState("building-family-1");
   const [rhythmWindowCount, setRhythmWindowCount] = useState<2 | 3>(2);
@@ -243,7 +245,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       if (nextGeneration) setGenerationControls(controls => ({ ...controls, ...controlsFrom(nextGeneration) }));
       setPreviewNode(null);
       setFamilyPreview(false);
-      setRhythmArchivePreview(false);
+      setRhythmArchivePreview(false); setRhythmEvidence(null);
       rhythmArchive.current = null; rhythmFabricArchive.current = null;
       setFamilyDirty(false);
       familySource.current = null;
@@ -537,14 +539,14 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         if (viewer.current) prepared = await viewer.current(candidate, { signal });
         if (!isCurrent()) { prepared?.discard(); if (id) retire(candidate); return; }
         const finalize = prepared?.commit(), previous = shown.current;
-        shown.current = candidate; setAccepted(candidate); setPreviewNode(id); setFamilyPreview(false); setRhythmArchivePreview(false); setFamilyDirty(false); familySource.current = null; rhythmArchive.current = null; rhythmFabricArchive.current = null; memberHistories.current.clear();
+        shown.current = candidate; setAccepted(candidate); setPreviewNode(id); setFamilyPreview(false); setRhythmArchivePreview(false); setRhythmEvidence(null); setFamilyDirty(false); familySource.current = null; rhythmArchive.current = null; rhythmFabricArchive.current = null; memberHistories.current.clear();
         if (previous && previous !== source.fixture && previous !== candidate) retire(previous);
         finalize?.();
       } catch (failure) { prepared?.discard(); if (id) retire(candidate); throw failure; }
     });
   }
   async function displayRhythmArchive(archive: Awaited<ReturnType<typeof readGroupedRhythmFamilyArchive>>, token: number, signal: AbortSignal,
-    previous: typeof current.current, fabricArchive?: Awaited<ReturnType<typeof readGroupedRhythmFabricArchive>>) {
+    previous: typeof current.current, fabricArchive?: Awaited<ReturnType<typeof readGroupedRhythmFabricArchive>>, evidenceArchive?: Awaited<ReturnType<typeof readConstructionEvidenceRhythmFamily>>) {
     const isCurrent = () => alive.current && sequence.current === token && !signal.aborted && current.current === previous;
     const source = archive.request.sourceProject, parsed = await readBayConstructionProject(source);
     if (!isCurrent()) return;
@@ -560,7 +562,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       if (viewer.current) prepared = await viewer.current(candidate, { signal });
       if (!isCurrent()) { prepared?.discard(); retire(candidate); return; }
       const finalize = prepared?.commit(), previousShown = shown.current;
-      shown.current = candidate; setAccepted(candidate); setPreviewNode(null); setFamilyPreview(true); setRhythmArchivePreview(true); setFamilyDirty(false);
+      shown.current = candidate; setAccepted(candidate); setPreviewNode(null); setFamilyPreview(true); setRhythmArchivePreview(true); setRhythmEvidence(evidenceArchive ?? null); setFamilyDirty(false);
       familySource.current = null; rhythmArchive.current = archive; rhythmFabricArchive.current = fabricArchive ?? null; setRhythmPreviewWindowCount(archive.request.policy.memberCount); setRhythmPreviewScope(archive.request.policy.scope);
       setFamilyFabricView(source.awningFabric ? { inherited: source.awningFabric, memberIds: archive.result.members.map(member => member.graph.documentId), assignments: fabricArchive?.fabricAssignments } : null);
       setRhythmPreviewPiers((archive.request.policy.schemaVersion === "0.3.0" || archive.request.policy.schemaVersion === "0.4.0" || archive.request.policy.schemaVersion === "0.5.0") && Boolean(archive.request.policy.pierVariation?.source.enabled));
@@ -578,6 +580,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
     const source = current.current;
     if (!source?.generation || !source.materials.awningFabric || dirty) return;
     const inheritedFabric = source.materials.awningFabric;
+    const sourceEvidence = history.currentEvidenceApplication;
     await perform(async (token, signal) => {
       const isCurrent = () => alive.current && sequence.current === token && !signal.aborted && current.current === source;
       const graph = source.fixture.construction.graph;
@@ -599,8 +602,14 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         rhythmFabricCache.current = { key, assignments };
         const fabricArchive = await createGroupedRhythmFabricArchive({ schemaVersion: "0.1.0", kind: "construction-grouped-rhythm-fabric-archive", family: archive, fabricAssignments: assignments });
         if (!isCurrent()) return;
-        await displayRhythmArchive(archive, token, signal, source, fabricArchive);
-      } else await displayRhythmArchive(archive, token, signal, source);
+        const linked = sourceEvidence ? await createConstructionEvidenceRhythmFamily({ schemaVersion: "0.1.0", kind: "construction-evidence-rhythm-family-request", family: fabricArchive, application: sourceEvidence }) : undefined;
+        if (!isCurrent()) return;
+        await displayRhythmArchive(archive, token, signal, source, fabricArchive, linked);
+      } else {
+        const linked = sourceEvidence ? await createConstructionEvidenceRhythmFamily({ schemaVersion: "0.1.0", kind: "construction-evidence-rhythm-family-request", family: archive, application: sourceEvidence }) : undefined;
+        if (!isCurrent()) return;
+        await displayRhythmArchive(archive, token, signal, source, undefined, linked);
+      }
     });
   }
   async function previewFamily() {
@@ -634,7 +643,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         if (viewer.current) prepared = await viewer.current(candidate, { signal });
         if (!isCurrent()) { prepared?.discard(); retire(candidate); return; }
         const finalize = prepared?.commit(), previous = shown.current;
-        shown.current = candidate; setAccepted(candidate); setPreviewNode(null); setFamilyPreview(true); setFamilyDirty(false); chooseFrame(null);
+        shown.current = candidate; setAccepted(candidate); setPreviewNode(null); setFamilyPreview(true); setRhythmEvidence(null); setFamilyDirty(false); chooseFrame(null);
         const familyBase = { kind: "construction-family-source" as const, familyId: plan.source.familyId,
           sourceDocumentId: source.fixture.construction.graph.documentId, familySeed: plan.source.familySeed,
           sourceGraph: source.fixture.construction.graph, sourceGeneration: source.generation!, materialSource: source.materials.file,
@@ -758,6 +767,8 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         sourceDocumentId: family.request.sourceProject.graph.documentId, inheritedFabric: inherited, members: prior.map(item => item.documentId === member.graph.documentId ? replacement : item) });
       const archive = await createGroupedRhythmFabricArchive({ schemaVersion: "0.1.0", kind: "construction-grouped-rhythm-fabric-archive", family, fabricAssignments: assignments });
       if (!isCurrent()) return;
+      const linked = rhythmEvidence ? await createConstructionEvidenceRhythmFamily({ schemaVersion: "0.1.0", kind: "construction-evidence-rhythm-family-request", family: archive, application: rhythmEvidence.application }) : null;
+      if (!isCurrent()) return;
       const parsed = await readBayConstructionProject(family.request.sourceProject);
       if (!isCurrent()) return;
       const materials = { ...parsed.materials, file: family.request.sourceProject.materialSource, awningFabric: inherited };
@@ -771,7 +782,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         if (viewer.current) prepared = await viewer.current(candidate, { signal });
         if (!isCurrent()) { prepared?.discard(); retire(candidate); return; }
         const finalize = prepared?.commit(), previous = shown.current;
-        shown.current = candidate; setAccepted(candidate); rhythmFabricArchive.current = archive;
+        shown.current = candidate; setAccepted(candidate); rhythmFabricArchive.current = archive; setRhythmEvidence(linked);
         setFamilyFabricView({ inherited, memberIds: family.result.members.map(item => item.graph.documentId), assignments });
         setRhythmPreviewFabricVariation(assignments.members.some(item => item.mode === "override")); setFamilyDirty(true);
         if (previous && previous !== original.fixture && previous !== candidate) retire(previous);
@@ -788,7 +799,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
   }
   async function saveFamily() {
     if (rhythmArchivePreview && rhythmArchive.current) {
-      const file = rhythmFabricArchive.current ?? rhythmArchive.current;
+      const file = rhythmEvidence ?? rhythmFabricArchive.current ?? rhythmArchive.current;
       downloadJson(file, `${rhythmArchive.current.request.plan.source.familyId}.buildo-rhythm-family.json`);
       setFamilyDirty(false);
       return;
@@ -808,6 +819,13 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       const previous = current.current;
       const isCurrent = () => alive.current && sequence.current === token && !signal.aborted && current.current === previous;
       const input: unknown = JSON.parse(await file.text());
+      if (input && typeof input === "object" && "kind" in input && input.kind === "construction-evidence-rhythm-family") {
+        const linked = await readConstructionEvidenceRhythmFamily(input);
+        if (!isCurrent()) return;
+        if (linked.family.kind === "construction-grouped-rhythm-fabric-archive") await displayRhythmArchive(linked.family.family, token, signal, previous, linked.family, linked);
+        else await displayRhythmArchive(linked.family, token, signal, previous, undefined, linked);
+        return;
+      }
       if (input && typeof input === "object" && "kind" in input && input.kind === "construction-grouped-rhythm-fabric-archive") {
         const archive = await readGroupedRhythmFabricArchive(input);
         if (!isCurrent()) return;
@@ -851,7 +869,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         setFamilyFabricView("awningFabric" in source && source.awningFabric ? { inherited: source.awningFabric, memberIds: source.members.map(member => member.documentId), ...((source.schemaVersion === "0.11.0" || source.schemaVersion === "0.12.0" || source.schemaVersion === "0.13.0" || source.schemaVersion === "0.14.0") && source.fabricAssignments ? { assignments: source.fabricAssignments } : {}) } : null);
         setFamilySeed(source.familySeed); setFamilyPierVariation(source.schemaVersion === "0.14.0" && source.initialPierVariation.source.enabled); setFamilyVariation(composition ? { ...composition.source.policy, groupedBays: "groupedBays" in composition.source.policy ? composition.source.policy.groupedBays : false, storefrontLights: "storefrontLights" in composition.source.policy ? composition.source.policy.storefrontLights : false, massing: "massing" in composition.source.policy ? composition.source.policy.massing : false, awnings: "awnings" in composition.source.policy ? composition.source.policy.awnings : false, entranceBay: "entranceBay" in composition.source.policy ? composition.source.policy.entranceBay : false } : { openings: false, frontage: false, roof: false, groupedBays: false, storefrontLights: false, massing: false, awnings: false, entranceBay: false }); setFamilyDetails(source.members.map(member => describeFamilyMember(member.graph))); setPreviewNode(null); setFamilyPreview(true); setRhythmArchivePreview(false); setFamilyDirty(false); chooseFrame(null);
         setDirty(false); setOpeningDirty(false); setError(null); referenceSequence.current++; setReferenceDraft(null);
-        const { contentHash: _hash, ...payload } = source; void _hash; familySource.current = payload; rhythmArchive.current = null; rhythmFabricArchive.current = null;
+        const { contentHash: _hash, ...payload } = source; void _hash; familySource.current = payload; rhythmArchive.current = null; rhythmFabricArchive.current = null; setRhythmEvidence(null);
         memberHistories.current.clear(); setMemberIndex(0);
         history.record(source.sourceGraph, materials.file.contentHash, true, source.sourceGeneration);
         onSessionChange({ graph: source.sourceGraph, materials, history: history.snapshot(), generation: source.sourceGeneration });
@@ -1097,7 +1115,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         onChange={setGenerationControls} onGenerate={reroll => void generateBuilding(reroll)} /></details> : null}
       {buildingMode && !familyMemberMode ? <section className="construction-generate" aria-label="Building family preview"><h3>Related buildings</h3>
         <p>Preview six related buildings using this building's material. Choose which architectural details may vary; unchecked groups keep your authored choices. The current choices use a small demo catalog.</p>
-        {history.currentEvidenceApplication ? <p>Family previews and family files do not yet carry this interpretation record. Save the linked building separately first.</p> : null}
+        {history.currentEvidenceApplication && !familyPreview ? <p>{combinedProtected ? "A grouped family will include the source interpretation and full staged extract." : "This family format does not yet carry the interpretation record. Save the linked building separately first."}</p> : null}
         <div className="control-panel__fields"><label><span>Family seed</span><input aria-label="Family seed" value={familySeed} disabled={pending || saving || familyPreview} onChange={event => setFamilySeed(event.currentTarget.value)} /></label></div>
         {!signProtected ? <fieldset className="construction-family-variation" disabled={pending || saving || familyPreview}><legend>Vary architectural details</legend>
           <label><input type="checkbox" checked={familyVariation.openings} onChange={event => { const checked = event.currentTarget.checked; setFamilyVariation(value => ({ ...value, openings: checked })); }} /> Opening heads and sash</label>
@@ -1137,6 +1155,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
             onChange={event => { const file = event.currentTarget.files?.[0]; event.currentTarget.value = ""; if (file) void openFamily(file); }} /></div>
         {familyPreview ? <><div className="control-panel__fields"><label><span>Family member</span><select aria-label="Family member" value={memberIndex} disabled={pending || saving} onChange={event => setMemberIndex(Number(event.currentTarget.value))}>
           {Array.from({ length: 6 }, (_, index) => <option key={index} value={index}>Building {index + 1}</option>)}</select></label></div>
+          {rhythmEvidence ? <p aria-label="Family source interpretation">Source claim {rhythmEvidence.application.proposal.claimId} is unreviewed. Building {memberIndex + 1}'s opening-head setting {rhythmEvidence.members[memberIndex]?.openingHead === "matches-source" ? "matches" : rhythmEvidence.members[memberIndex]?.openingHead === "differs-from-source" ? "differs from" : "cannot be compared with"} the source choice. This comparison does not verify the claim for this building. Saving this family includes the full staged extract.</p> : null}
           {familyDetails[memberIndex] ? <p aria-label="Selected building details">{familyDetails[memberIndex]}</p> : null}
           {familyFabricView ? (() => { const assignment = familyFabricView.assignments?.members.find(item => item.documentId === familyFabricView.memberIds[memberIndex]);
             const fabric = assignment?.mode === "override" ? assignment.fabric : familyFabricView.inherited;
