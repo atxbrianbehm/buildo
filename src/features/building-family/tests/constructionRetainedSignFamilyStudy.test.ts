@@ -56,7 +56,7 @@ describe("retained-sign family study", () => {
   it("rejects unsupported variation and release of authored choices", async () => {
     const { plan, lineage, composition } = await fixture();
     const mixed = resolveConstructionFamilyComposition({ ...composition.source, policy: { openings: false, frontage: true, roof: true } });
-    await expect(resolveConstructionRetainedSignFamilyStudy(plan, lineage, defaultConstructionGenerationControls, mixed)).rejects.toThrow(/roof, massing, openings and grouped-bay/);
+    await expect(resolveConstructionRetainedSignFamilyStudy(plan, lineage, defaultConstructionGenerationControls, mixed)).rejects.toThrow(/additional-awning/);
     await expect(resolveConstructionRetainedSignFamilyStudy(plan, lineage, { ...defaultConstructionGenerationControls, preserveAuthored: false }, composition)).rejects.toThrow(/requires preserving/);
     const controller = new AbortController(); controller.abort();
     await expect(resolveConstructionRetainedSignFamilyStudy(plan, lineage, defaultConstructionGenerationControls, composition, controller.signal)).rejects.toMatchObject({ name: "AbortError" });
@@ -154,6 +154,23 @@ describe("retained-sign family study", () => {
       expect(member.lineage.materialPlan.materialInputsHash).toBe(lineage.materialPlan.materialInputsHash);
     }
     expect(result.receipt.schemaVersion).toBe("0.2.0");
+  }, 120000);
+  it("adds awnings only to free bays while retaining the signed awning and supports", async () => {
+    const { graph, plan, lineage } = await fixture();
+    const composition = resolveConstructionFamilyComposition({ schemaVersion: "0.5.0", kind: "construction-family-composition-request", familySeed: plan.source.familySeed, openingLock: false,
+      policy: { openings: true, frontage: false, roof: true, groupedBays: false, storefrontLights: false, massing: true, awnings: true } });
+    const result = await resolveConstructionRetainedSignFamilyStudy(plan, lineage, defaultConstructionGenerationControls, composition);
+    expect(new Set(result.members.map(member => member.construction.graph.awnings?.length)).size).toBeGreaterThan(1);
+    for (const member of result.members) {
+      expect(member.construction.graph.storefrontSign).toEqual(graph.storefrontSign);
+      expect(member.construction.graph.awningSupports).toEqual(graph.awningSupports);
+      expect(member.construction.graph.signAwningGapM).toBe(graph.signAwningGapM);
+      expect(member.construction.graph.awnings).toContainEqual(graph.awnings![0]);
+      expect(member.construction.graph.awnings!.filter(awning => awning.bayIndex === graph.storefrontSign!.bayIndex)).toHaveLength(1);
+      expect(member.lineage.materialPlan.materialInputsHash).toBe(lineage.materialPlan.materialInputsHash);
+    }
+    const snapshot = structuredClone(result.receipt);
+    expect((await resolveConstructionRetainedSignFamilyStudy(plan, lineage, defaultConstructionGenerationControls, composition)).receipt).toEqual(snapshot);
   }, 120000);
   it("records final source-aware rhythm geometry across a mixed-head family", async () => {
     const { graph, plan, lineage } = await fixture();
