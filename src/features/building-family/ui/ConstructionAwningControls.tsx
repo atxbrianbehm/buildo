@@ -3,10 +3,10 @@ import type { BayConstructionGraph } from "../contracts/bayConstructionGraph";
 import type { ConstructionAwningFabricArtifact } from "../contracts/constructionAwningFabric";
 
 /** A single explicit front-bay scope; multiple bays can be authored one at a time. */
-export function ConstructionAwningControls({ graph, disabled, unavailableReason, onChange, fabric, fabricDisabled, onFabricChange, supportDisabled, onSupportChange, lockedBayIndex, dimensionsOnly, allowRemoval }: {
+export function ConstructionAwningControls({ graph, disabled, unavailableReason, onChange, fabric, fabricDisabled, onFabricChange, supportDisabled, onSupportChange, lockedBayIndex, dimensionsOnly, allowRemoval, allowSupport }: {
   graph: BayConstructionGraph; disabled: boolean; unavailableReason?: string; onChange: (bayIndex: number, enabled: boolean, dimensions?: { projectionM: number; dropM: number; valanceHeightM: number }) => void;
   fabric?: ConstructionAwningFabricArtifact; fabricDisabled?: boolean; supportDisabled?: boolean; onSupportChange?: (bayIndex: number, enabled: boolean) => void;
-  lockedBayIndex?: number; dimensionsOnly?: boolean; allowRemoval?: boolean;
+  lockedBayIndex?: number; dimensionsOnly?: boolean; allowRemoval?: boolean; allowSupport?: boolean;
   onFabricChange?: (pattern: "solid" | "striped", primary: [number, number, number], secondary: [number, number, number]) => void;
 }) {
   const [bayIndex, setBay] = useState(0);
@@ -18,7 +18,7 @@ export function ConstructionAwningControls({ graph, disabled, unavailableReason,
   return <section className="construction-grouped-bay" aria-label="Storefront awnings">
     <h3>Storefront awnings</h3>
     <p>Choose a front bay. The first awning starts with striped demo fabric; its source is saved separately.</p>
-    {dimensionsOnly ? <p>This awning shares a bay with the sign. Removing it also removes its support rods; the sign and fabric stay. Support and fabric controls remain unavailable.</p> : null}
+    {dimensionsOnly ? <p>This awning shares a bay with the sign. Removing it also removes its support rods; the sign and fabric stay. Fabric controls remain unavailable.</p> : null}
     {unavailableReason ? <p>{unavailableReason}</p> : null}
     <fieldset disabled={disabled}>
       <label>Bay <select aria-label="Awning bay" value={selected} disabled={lockedBayIndex !== undefined} onChange={event => setBay(Number(event.currentTarget.value))}>
@@ -26,7 +26,7 @@ export function ConstructionAwningControls({ graph, disabled, unavailableReason,
       </select></label>
       <button type="button" disabled={dimensionsOnly && !(allowRemoval && present)} onClick={() => onChange(selected, !present)}>{present ? "Remove awning" : "Add awning"}</button>
       {awning && onSupportChange ? <div>
-        <button type="button" disabled={supportDisabled || dimensionsOnly} onClick={() => onSupportChange(selected, !graph.awningSupports?.some(item => item.bayIndex === selected))}>{graph.awningSupports?.some(item => item.bayIndex === selected) ? "Remove support rods" : "Add support rods"}</button>
+        <button type="button" disabled={supportDisabled || (dimensionsOnly && !allowSupport)} onClick={() => onSupportChange(selected, !graph.awningSupports?.some(item => item.bayIndex === selected))}>{graph.awningSupports?.some(item => item.bayIndex === selected) ? "Remove support rods" : "Add support rods"}</button>
         {supportDisabled ? <p>Support editing is unavailable in a family member.</p> : null}
       </div> : null}
       {awning ? <form key={`${selected}:${awning.projectionM}:${awning.dropM}:${awning.valanceHeightM}`} onSubmit={event => {

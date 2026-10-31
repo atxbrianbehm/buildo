@@ -398,6 +398,12 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       const supports = (original.awningSupports ?? []).filter(support => support.bayIndex !== bayIndex);
       if (enabled) supports.push({ bayIndex, anchorRiseM: 0.15, thicknessM: 0.03 });
       supports.sort((a, b) => a.bayIndex - b.bayIndex);
+      if (original.schemaVersion === "0.17.0") {
+        if (bayIndex !== original.storefrontSign?.bayIndex) throw new Error("Choose the combined awning before editing supports.");
+        const { awningSupports: _removed, ...prior } = original; void _removed;
+        await publish(BayConstructionGraphSchema.parse({ ...prior, ...(supports.length ? { awningSupports: supports } : {}) }), source.materials, token, signal);
+        return;
+      }
       let graph: BayConstructionGraph;
       if (supports.length) graph = withConstructionAwningSupports(original, supports);
       else if (original.schemaVersion === "0.14.0" || original.schemaVersion === "0.15.0") { const { awningSupports: _removed, ...prior } = original; void _removed; graph = BayConstructionGraphSchema.parse({ ...prior, schemaVersion: original.schemaVersion === "0.15.0" ? "0.15.0" : "0.13.0" }); }
@@ -822,9 +828,9 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
         onDraftChange={value => { setGroupDirty(value); if (!value) setError(null); }} onApply={edit => void applyGroupedBay(edit)} /> : null}
       {buildingMode && !advancedOpen && accepted && supportsGroupedConstruction(accepted.construction.graph) && constructionHasStorefront(accepted.construction.graph) ? <ConstructionAwningControls
         graph={accepted.construction.graph} disabled={pending || saving || openingDirty || buildingDirty || groupDirty || familyPreview || familyReturning || !viewerReady || Boolean(previewNode) || (familyMemberMode && !startingSession?.materials.awningFabric)}
-        lockedBayIndex={signProtected ? accepted.construction.graph.storefrontSign?.bayIndex : undefined} dimensionsOnly={combinedProtected} allowRemoval={combinedProtected}
+        lockedBayIndex={signProtected ? accepted.construction.graph.storefrontSign?.bayIndex : undefined} dimensionsOnly={combinedProtected} allowRemoval={combinedProtected} allowSupport={combinedProtected}
         unavailableReason={familyMemberMode && !startingSession?.materials.awningFabric ? "Add an awning to the original building before creating this family." : undefined}
-        supportDisabled={familyMemberMode || signProtected} onSupportChange={(bay, enabled) => void changeAwningSupport(bay, enabled)}
+        supportDisabled={familyMemberMode || (signProtected && !combinedProtected)} onSupportChange={(bay, enabled) => void changeAwningSupport(bay, enabled)}
         fabric={awningFabric} fabricDisabled={familyMemberMode || signProtected}
         onFabricChange={(pattern, primary, secondary) => void changeAwningFabric(pattern, primary, secondary)}
         onChange={(bay, enabled, dimensions) => void changeAwning(bay, enabled, dimensions)} /> : null}

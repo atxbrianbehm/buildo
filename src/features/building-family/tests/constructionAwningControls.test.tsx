@@ -80,3 +80,11 @@ it("allows removal in a combined bay without enabling support editing", () => {
   fireEvent.click(screen.getByRole("button", { name: "Remove awning" })); expect(change).toHaveBeenCalledWith(1, false);
   expect(screen.getByRole("button", { name: "Remove support rods" })).toBeDisabled();
 });
+
+it("allows the combined bay's rods to be toggled without unlocking other bays", () => {
+  const graph = withConstructionAwnings(withConstructionStorefront(createBuildingConstructionGraph(), 1), [{ bayIndex: 1, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }]);
+  const support = vi.fn();
+  render(<ConstructionAwningControls graph={graph} disabled={false} onChange={() => {}} onSupportChange={support} lockedBayIndex={1} dimensionsOnly allowSupport />);
+  expect(screen.getByLabelText("Awning bay")).toBeDisabled(); fireEvent.click(screen.getByRole("button", { name: "Add support rods" }));
+  expect(support).toHaveBeenCalledWith(1, true);
+});
