@@ -21,6 +21,9 @@ import { withConstructionSignAwningClearance } from "../core/constructionSignAwn
 import { createConstructionAwningFabric } from "../materials/constructionAwningFabric";
 import { createGroupedRhythmFamilyArchive } from "../state/constructionGroupedRhythmFamilyArchive";
 import * as rhythmArchives from "../state/constructionGroupedRhythmFamilyArchive";
+import { createGroupedRhythmFabricArchive } from "../state/constructionGroupedRhythmFabricArchive";
+import * as rhythmFabricArchives from "../state/constructionGroupedRhythmFabricArchive";
+import { resolveConstructionFamilyFabricStudy } from "../materials/constructionFamilyFabricStudy";
 import { defaultBuildingPromptControls } from "../state/buildingStore";
 import { createBayConstructionProject, readBayConstructionProject } from "../state/bayConstructionProject";
 import { createBayConstructionGraph, repeatBayAsFacade, createBuildingConstructionGraph } from "../contracts/bayConstructionGraph";
@@ -230,6 +233,9 @@ describe("live construction controls and ownership", () => {
       policy: { openings: true, frontage: false, roof: true, groupedBays: false, storefrontLights: false, massing: true } });
     const archive = await createGroupedRhythmFamilyArchive({ schemaVersion: "0.1.0", kind: "construction-grouped-rhythm-family-archive-request", sourceProject, plan, composition,
       policy: { schemaVersion: "0.1.0", kind: "construction-grouped-rhythm-family-policy", scope: "all-upper-front", memberCount: 2, memberWidthM: 0.55, pierWidthM: 0.24 }, controls: defaultConstructionGenerationControls });
+    const assignments = await resolveConstructionFamilyFabricStudy({ schemaVersion: "0.1.0", kind: "construction-family-fabric-study-request", familyId: plan.source.familyId,
+      sourceDocumentId: graph.documentId, memberIds: archive.result.members.map(member => member.graph.documentId), materialSeed: "demo", inheritedFabric: fabric });
+    const fabricArchive = await createGroupedRhythmFabricArchive({ schemaVersion: "0.1.0", kind: "construction-grouped-rhythm-fabric-archive", family: archive, fabricAssignments: assignments });
     const prepared = vi.spyOn(fixtures, "prepareConstructionFamilyFixture"), view = mount({ graph: createBuildingConstructionGraph(), materials });
     try {
       await ready(); const workspace = view.container.querySelector<HTMLElement>(".construction-workspace")!, before = workspace.dataset.constructionHash;
@@ -243,8 +249,17 @@ describe("live construction controls and ownership", () => {
       fireEvent.click(screen.getByRole("button", { name: "Return to building" }));
       await waitFor(() => expect(workspace.dataset.constructionPreview).toBe("output"));
       expect(workspace.dataset.constructionHash).toBe(before); expect(displayed.familyRuntime.disposed).toBe(true);
+      fireEvent.change(screen.getByLabelText("Open family file"), { target: { files: [new File([JSON.stringify(fabricArchive)], "fabric.json", { type: "application/json" })] } });
+      await waitFor(() => expect(screen.getByText(/Archived family preview is read-only/)).toBeInTheDocument(), { timeout: 120000 });
+      expect(prepared.mock.calls.at(-1)![4]).toEqual(assignments);
+      const fabricDisplayed = await prepared.mock.results.at(-1)!.value as fixtures.BayConstructionFixture;
+      const actual = [...fabricDisplayed.familyRuntime.buildingRuntimes.values()].map(runtime => [...runtime.semanticLookup.values()].find(entry => entry.object.userData.role === "awning.canopy")!.object.material.userData.fabricContentHash);
+      expect(new Set(actual).size).toBe(6);
+      fireEvent.click(screen.getByRole("button", { name: "Return to building" }));
+      await waitFor(() => expect(workspace.dataset.constructionPreview).toBe("output"));
+      expect(workspace.dataset.constructionHash).toBe(before); expect(fabricDisplayed.familyRuntime.disposed).toBe(true);
     } finally { view.unmount(); prepared.mockRestore(); }
-  }, 180000);
+  }, 240000);
 
   it("keeps the current building when rhythm archive verification fails", async () => {
     const read = vi.spyOn(rhythmArchives, "readGroupedRhythmFamilyArchive").mockRejectedValueOnce(new Error("Archive verification failed"));
@@ -258,15 +273,16 @@ describe("live construction controls and ownership", () => {
     } finally { view.unmount(); read.mockRestore(); }
   }, 30000);
 
-  it("keeps the current building when a fabric archive is not yet supported", async () => {
+  it("keeps the current building when a fabric archive fails verification", async () => {
+    const read = vi.spyOn(rhythmFabricArchives, "readGroupedRhythmFabricArchive").mockRejectedValueOnce(new Error("Fabric archive verification failed"));
     const view = mount({ graph: createBuildingConstructionGraph(), materials });
     try {
       await ready(); const workspace = view.container.querySelector<HTMLElement>(".construction-workspace")!, before = workspace.dataset.constructionHash;
       fireEvent.change(screen.getByLabelText("Open family file"), { target: { files: [new File(['{"kind":"construction-grouped-rhythm-fabric-archive"}'], "fabric.json")] } });
-      await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("Fabric family archives are not yet supported in the workspace."));
+      await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("Fabric archive verification failed"));
       expect(workspace.dataset.constructionHash).toBe(before); expect(workspace.dataset.constructionPreview).toBe("output");
       expect(view.onSessionChange).toHaveBeenCalledTimes(1);
-    } finally { view.unmount(); }
+    } finally { view.unmount(); read.mockRestore(); }
   }, 30000);
 
   it("ignores an older family load after a newer load fails", async () => {
