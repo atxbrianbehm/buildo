@@ -496,7 +496,7 @@ function createBasePlinthMeshPlan(spec: BuildingFamilySpec, catalog: ComponentCa
   const primitives = buildBasePlinthPrimitives(spec);
   return {
     batchId: "mesh.base-plinth",
-    role: "horizontalTrim",
+    role: "basePlinth",
     materialSlotId: firstAtlasSlot(trimRecipe),
     stage: "facade",
     primitives,
