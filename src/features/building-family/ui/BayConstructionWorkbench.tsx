@@ -307,7 +307,7 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
       const original = source.fixture.construction.graph;
       let graph = enabled ? withConstructionStorefrontSign(original, { bayIndex, ...(dimensions ?? { heightM: 0.18, projectionM: 0.08, frameWidthM: 0.035 }) })
         : withoutConstructionStorefrontSign(original);
-      if (enabled && original.awnings?.some(awning => awning.bayIndex === bayIndex)) graph = withConstructionSignAwningClearance(graph, 0.04);
+      if (enabled && original.schemaVersion !== "0.17.0" && original.awnings?.some(awning => awning.bayIndex === bayIndex)) graph = withConstructionSignAwningClearance(graph, 0.04);
       await publish(graph, source.materials, token, signal);
     });
   }
@@ -826,10 +826,10 @@ export function BayConstructionWorkbench({ base, acquireBaseLease, initialSessio
           event.preventDefault(); const fields = new FormData(event.currentTarget);
           void changeStorefrontSign(true, effectiveSignBay, { heightM: Number(fields.get("height")), projectionM: Number(fields.get("projection")), frameWidthM: Number(fields.get("frame")) });
         }}>
-          <label>Height (m) <input aria-label="Sign height" name="height" type="number" min="0.16" max="0.8" step="any" required defaultValue={accepted.construction.graph.storefrontSign.heightM} disabled={combinedProtected || disabled || dirty || !viewerReady} /></label>
-          <label>Projection (m) <input aria-label="Sign projection" name="projection" type="number" min="0.04" max="0.3" step="any" required defaultValue={accepted.construction.graph.storefrontSign.projectionM} disabled={combinedProtected || disabled || dirty || !viewerReady} /></label>
-          <label>Frame width (m) <input aria-label="Sign frame width" name="frame" type="number" min="0.02" max="0.12" step="any" required defaultValue={accepted.construction.graph.storefrontSign.frameWidthM} disabled={combinedProtected || disabled || dirty || !viewerReady} /></label>
-          <button type="submit" disabled={combinedProtected || disabled || dirty || !viewerReady}>Apply sign dimensions</button>
+          <label>Height (m) <input aria-label="Sign height" name="height" type="number" min="0.16" max="0.8" step="any" required defaultValue={accepted.construction.graph.storefrontSign.heightM} disabled={disabled || dirty || !viewerReady} /></label>
+          <label>Projection (m) <input aria-label="Sign projection" name="projection" type="number" min="0.04" max="0.3" step="any" required defaultValue={accepted.construction.graph.storefrontSign.projectionM} disabled={disabled || dirty || !viewerReady} /></label>
+          <label>Frame width (m) <input aria-label="Sign frame width" name="frame" type="number" min="0.02" max="0.12" step="any" required defaultValue={accepted.construction.graph.storefrontSign.frameWidthM} disabled={disabled || dirty || !viewerReady} /></label>
+          <button type="submit" disabled={disabled || dirty || !viewerReady}>Apply sign dimensions</button>
         </form> : null}
       </section> : null}
       {buildingMode && !advancedOpen && !signProtected && accepted && supportsGroupedConstruction(accepted.construction.graph) ? <section className="construction-generate" aria-label="Upper facade piers">
