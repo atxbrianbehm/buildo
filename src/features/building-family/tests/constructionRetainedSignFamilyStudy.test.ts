@@ -16,6 +16,8 @@ import { ConstructionRetainedSignFamilyStudyReceiptSchema } from "../contracts/c
 import { hashCanonicalJson } from "../core/contentHash";
 import { captureConstructionGenerationSource } from "../core/constructionGenerationSource";
 import { resolveConstructionGeneration } from "../core/constructionGenerationResolver";
+import { resolveConstructionGroupedRhythmFamilyStudy } from "../state/constructionGroupedRhythmFamilyStudy";
+import { GroupedRhythmFamilyReceiptSchema } from "../contracts/constructionGroupedRhythmFamilyStudy";
 
 async function fixture() {
   const initial = await resolveWorkbenchGeneration(createBuildingConstructionGraph("family_sign_source"), null, defaultConstructionGenerationControls);
@@ -152,5 +154,42 @@ describe("retained-sign family study", () => {
       expect(member.lineage.materialPlan.materialInputsHash).toBe(lineage.materialPlan.materialInputsHash);
     }
     expect(result.receipt.schemaVersion).toBe("0.2.0");
+  }, 120000);
+  it("records final source-aware rhythm geometry across a mixed-head family", async () => {
+    const { graph, plan, lineage } = await fixture();
+    const composition = resolveConstructionFamilyComposition({ schemaVersion: "0.4.0", kind: "construction-family-composition-request", familySeed: plan.source.familySeed, openingLock: false,
+      policy: { openings: true, frontage: false, roof: true, groupedBays: false, storefrontLights: false, massing: true } });
+    const policy = { schemaVersion: "0.1.0" as const, kind: "construction-grouped-rhythm-family-policy" as const, scope: "all-upper-front" as const,
+      memberCount: 2 as const, memberWidthM: 0.55, pierWidthM: 0.24 };
+    const original = structuredClone(plan), base = await resolveConstructionRetainedSignFamilyStudy(plan, lineage, defaultConstructionGenerationControls, composition);
+    const result = await resolveConstructionGroupedRhythmFamilyStudy(plan, lineage, defaultConstructionGenerationControls, composition, policy);
+    expect(plan).toEqual(original); expect(result.receipt.policyHash).toBe(await hashCanonicalJson(policy));
+    expect(result.receipt.baseReceiptHash).toBe(await hashCanonicalJson(base.receipt));
+    expect(result.members.filter(member => member.applied)).toHaveLength(3);
+    for (const [index, member] of result.members.entries()) {
+      expect(member.construction.graph.storefrontSign).toEqual(graph.storefrontSign); expect(member.construction.graph.awnings).toEqual(graph.awnings);
+      expect(member.lineage.materialPlan.materialInputsHash).toBe(lineage.materialPlan.materialInputsHash);
+      expect(result.receipt.members[index].graphHash).toBe(member.construction.ir.sourceGraphHash);
+      expect(result.receipt.members[index].geometryHash).toBe(member.geometryHash);
+      if (member.applied) {
+        expect(member.geometryHash).not.toBe(base.members[index].geometryHash);
+        const floors = member.construction.graph.nodes.find(node => node.type === "Storeys")!.parameters.count;
+        const bays = member.construction.graph.nodes.find(node => node.type === "SplitBays")!.parameters.count;
+        expect(member.construction.graph.upperBayGroups).toHaveLength((floors - 1) * bays);
+      } else expect(member.geometryHash).toBe(base.members[index].geometryHash);
+    }
+    expect((await resolveConstructionGroupedRhythmFamilyStudy(plan, lineage, defaultConstructionGenerationControls, composition, policy)).receipt).toEqual(result.receipt);
+    const malformed = structuredClone(result.receipt); malformed.members[1].geometryHash = malformed.members[0].geometryHash;
+    expect(GroupedRhythmFamilyReceiptSchema.safeParse(malformed).success).toBe(false);
+    await expect(resolveConstructionGroupedRhythmFamilyStudy(plan, lineage, defaultConstructionGenerationControls, composition, { ...policy, memberWidthM: 20 })).rejects.toThrow();
+    const overlapping = resolveConstructionFamilyComposition({ ...composition.source, policy: { ...composition.source.policy, groupedBays: true } });
+    await expect(resolveConstructionGroupedRhythmFamilyStudy(plan, lineage, defaultConstructionGenerationControls, overlapping, policy)).rejects.toThrow(/conflicts with an existing grouped bay/);
+    const old = lineage.source, pinned = await captureConstructionGenerationSource({ schemaVersion: "0.1.0", kind: "construction-generation-input", documentId: old.documentId,
+      intent: { ...old.intent, locks: [{ semanticPath: "construction/opening/upperFrontRoundHead", scope: "family", lockedValue: 0, reason: "Imported pin" }] },
+      recipe: old.recipe, reference: old.reference, intentionalExceptions: old.intentionalExceptions });
+    const pinnedLineage = { ...lineage, source: pinned, resolution: await resolveConstructionGeneration(pinned), materialPlan: await planConstructionReferenceMaterials(lineage.materialPlan.templateSpec, pinned) };
+    await expect(resolveConstructionGroupedRhythmFamilyStudy(plan, pinnedLineage, defaultConstructionGenerationControls, composition, policy)).rejects.toThrow(/pinned lock/);
+    const controller = new AbortController(); controller.abort();
+    await expect(resolveConstructionGroupedRhythmFamilyStudy(plan, lineage, defaultConstructionGenerationControls, composition, policy, controller.signal)).rejects.toMatchObject({ name: "AbortError" });
   }, 120000);
 });
