@@ -4,7 +4,7 @@ import { withConstructionAwnings } from "../core/constructionAwningGraph";
 import { withConstructionAwningSupports } from "../core/constructionAwningSupportGraph";
 import { withConstructionStorefrontSign } from "../core/constructionStorefrontSignGraph";
 import { withConstructionSignAwningClearance } from "../core/constructionSignAwningGraph";
-import { resolveConstructionUncoveredEntranceStudy } from "../core/constructionUncoveredEntranceStudy";
+import { assertUncoveredEntranceLocks, resolveConstructionUncoveredEntranceStudy } from "../core/constructionUncoveredEntranceStudy";
 import { evaluateConstruction } from "../compiler/evaluateConstruction";
 
 it("replays uncovered entrances while retaining signed awnings and their supports", async () => {
@@ -29,3 +29,9 @@ it("replays uncovered entrances while retaining signed awnings and their support
   const covered = withConstructionAwnings(storefront, [0, 1, 2, 3].map(bayIndex => ({ bayIndex, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 })));
   expect(() => resolveConstructionUncoveredEntranceStudy({ ...source, graph: covered })).toThrow(/bay without an authored awning/);
 }, 120000);
+
+it("protects entrance and frontage pins without blocking unrelated architectural locks", () => {
+  for (const semanticPath of ["construction", "construction/entrance", "construction/entrance/bayIndex", "construction/door/bayIndex", "construction/opening/entrance/bayIndex", "construction/frontage/mode"])
+    expect(() => assertUncoveredEntranceLocks([{ semanticPath }])).toThrow(/pinned lock/);
+  expect(() => assertUncoveredEntranceLocks([{ semanticPath: "construction/roof/parapetHeightM" }])).not.toThrow();
+});
