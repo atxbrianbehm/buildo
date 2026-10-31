@@ -42,6 +42,15 @@ describe("grouped facade rhythm study", () => {
     await expect(compileConstructionGroupedFacadeRhythmStudy({ ...request, graph: edited })).rejects.toThrow(/local width edit/);
     await expect(compileConstructionGroupedFacadeRhythmStudy({ ...request, memberWidthM: 20 })).rejects.toThrow();
   });
+  it("requires the new explicit request version to group round heads", async () => {
+    const request = fixture(), graph = structuredClone(request.graph);
+    graph.nodes.find(node => node.type === "PlaceOpening")!.parameters.upperFrontRoundHead = 1;
+    await expect(compileConstructionGroupedFacadeRhythmStudy({ ...request, graph })).rejects.toThrow(/flat upper openings/);
+    const result = await compileConstructionGroupedFacadeRhythmStudy({ ...request, graph, schemaVersion: "0.2.0", allowRoundHeads: true });
+    expect(result.graph.upperBayGroups).toHaveLength(8);
+    expect(result.graph.nodes.find(node => node.type === "PlaceOpening")!.parameters.upperFrontRoundHead).toBe(1);
+    expect(result.graph.storefrontSign).toEqual(graph.storefrontSign);
+  });
   it("replays source lineage and protects imported and workbench opening locks", async () => {
     const request = fixture();
     const initial = await resolveWorkbenchGeneration(createBuildingConstructionGraph(request.graph.documentId), null, defaultConstructionGenerationControls);

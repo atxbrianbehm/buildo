@@ -80,6 +80,19 @@ it("replays a portable rhythm family with real material and fabric source and re
     const entranceAndPiers = await createGroupedRhythmFamilyArchive({ ...request, policy: { ...entrancePolicy, pierVariation: variation } });
     expect(await readGroupedRhythmFamilyArchive(JSON.parse(JSON.stringify(entranceAndPiers)))).toEqual(entranceAndPiers);
     expect(entranceAndPiers.result.members.some(member => Boolean(member.graph.facadePiers))).toBe(true);
+    const archPolicy = { ...request.policy, schemaVersion: "0.5.0" as const, groupRoundHeads: true as const, uncoveredEntrances: true as const };
+    const groupedArches = await createGroupedRhythmFamilyArchive({ ...request, policy: archPolicy });
+    expect(await readGroupedRhythmFamilyArchive(JSON.parse(JSON.stringify(groupedArches)))).toEqual(groupedArches);
+    const arched = groupedArches.result.members.filter(member => member.graph.nodes.find(node => node.type === "PlaceOpening")!.parameters.upperFrontRoundHead === 1);
+    expect(arched.length).toBeGreaterThan(0);
+    expect(arched.every(member => Boolean(member.graph.upperBayGroups?.length) && member.graph.awnings?.every(awning => awning.bayIndex !== member.graph.nodes.find(node => node.type === "PlaceDoor")!.parameters.bayIndex))).toBe(true);
+    expect(groupedArches.request.sourceProject.materialSource).toEqual(materials.file);
+    const archFabrics = await createGroupedRhythmFabricArchive({ schemaVersion: "0.1.0", kind: "construction-grouped-rhythm-fabric-archive", family: groupedArches, fabricAssignments: assignments });
+    expect(await readGroupedRhythmFabricArchive(JSON.parse(JSON.stringify(archFabrics)))).toEqual(archFabrics);
+    const alteredArch = structuredClone(groupedArches);
+    alteredArch.result.members.find(member => member.graph.nodes.find(node => node.type === "PlaceOpening")!.parameters.upperFrontRoundHead === 1)!.graph.upperBayGroups = [];
+    const { contentHash: _archHash, ...archPayload } = alteredArch; void _archHash; alteredArch.contentHash = await hashCanonicalJson(archPayload);
+    await expect(readGroupedRhythmFamilyArchive(alteredArch)).rejects.toThrow(/does not replay/);
     const badEntrance = structuredClone(withEntrances);
     badEntrance.result.members[0].graph.nodes.find(node => node.type === "PlaceDoor")!.parameters.bayIndex = 0;
     const { contentHash: _entranceHash, ...entrancePayload } = badEntrance; void _entranceHash;
@@ -92,6 +105,7 @@ it("replays a portable rhythm family with real material and fabric source and re
       recipe: oldSource.recipe, reference: oldSource.reference, intentionalExceptions: oldSource.intentionalExceptions });
     const pinnedLineage = { ...lineage, source: pinned, resolution: await resolveConstructionGeneration(pinned), materialPlan: await planConstructionReferenceMaterials(base.spec, pinned) };
     await expect(resolveConstructionGroupedRhythmFamilyStudy(plan, pinnedLineage, defaultConstructionGenerationControls, composition, entrancePolicy)).rejects.toThrow(/pinned lock.*entrance/);
+    await expect(resolveConstructionGroupedRhythmFamilyStudy(plan, pinnedLineage, defaultConstructionGenerationControls, composition, archPolicy)).rejects.toThrow(/pinned lock.*entrance/);
     const altered = structuredClone(withPiers);
     if (altered.request.policy.schemaVersion !== "0.3.0") throw new Error("Expected pier policy");
     altered.request.policy.pierVariation = resolveConstructionFamilyPierVariation({ ...variation.source, enabled: false });
