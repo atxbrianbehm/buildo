@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { findBuildingDocumentJsonIssue } from "./buildingDocument";
+import { ConstructionFamilyPierVariationPlanSchema } from "./constructionFamilyPierVariation";
 
 const json = z.unknown().superRefine((value, context) => { const issue = findBuildingDocumentJsonIssue(value);
   if (issue) context.addIssue({ code: "custom", path: issue.path, message: issue.message }); });
@@ -8,7 +9,8 @@ const policyFields = { kind: z.literal("construction-grouped-rhythm-family-polic
   memberWidthM: z.number().finite().positive(), pierWidthM: z.number().finite().gt(0.2) };
 export const GroupedRhythmFamilyPolicySchema = json.pipe(z.discriminatedUnion("schemaVersion", [
   z.object({ schemaVersion: z.literal("0.1.0"), ...policyFields, scope: z.literal("all-upper-front") }).strict(),
-  z.object({ schemaVersion: z.literal("0.2.0"), ...policyFields, scope: z.enum(["all-upper-front", "top-upper-front"]) }).strict()
+  z.object({ schemaVersion: z.literal("0.2.0"), ...policyFields, scope: z.enum(["all-upper-front", "top-upper-front"]) }).strict(),
+  z.object({ schemaVersion: z.literal("0.3.0"), ...policyFields, scope: z.enum(["all-upper-front", "top-upper-front"]), pierVariation: ConstructionFamilyPierVariationPlanSchema }).strict()
 ]));
 export const GroupedRhythmFamilyReceiptSchema = json.pipe(z.object({ schemaVersion: z.literal("0.1.0"), kind: z.literal("construction-grouped-rhythm-family-receipt"),
   familyId: z.string().min(1), baseReceiptHash: hash, policyHash: hash, materialSourceHash: hash, referenceContentHash: hash,

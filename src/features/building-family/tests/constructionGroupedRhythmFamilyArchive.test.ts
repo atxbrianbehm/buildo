@@ -6,6 +6,7 @@ import { withConstructionStorefrontSign } from "../core/constructionStorefrontSi
 import { withConstructionSignAwningClearance } from "../core/constructionSignAwningGraph";
 import { resolveConstructionFamilyPlan } from "../core/constructionFamilyPlan";
 import { resolveConstructionFamilyComposition } from "../core/constructionFamilyComposition";
+import { resolveConstructionFamilyPierVariation } from "../core/constructionFamilyPierVariation";
 import { hashCanonicalJson } from "../core/contentHash";
 import { createConstructionAwningFabric } from "../materials/constructionAwningFabric";
 import { defaultConstructionGenerationControls, resolveWorkbenchGeneration } from "../state/constructionGenerationState";
@@ -39,6 +40,20 @@ it("replays a portable rhythm family with real material and fabric source and re
     const reopenedTop = await readGroupedRhythmFamilyArchive(JSON.parse(JSON.stringify(top)));
     expect(reopenedTop).toEqual(top);
     expect(reopenedTop.result.members.some(member => (member.graph.upperBayGroups ?? []).length > 0 && member.graph.upperBayGroups!.every(group => group.floorIndex === member.graph.nodes.find(node => node.type === "Storeys")!.parameters.count - 1))).toBe(true);
+    const variation = resolveConstructionFamilyPierVariation({ schemaVersion: "0.1.0", kind: "construction-family-pier-variation-request", familySeed: plan.source.familySeed, enabled: true, openingLock: false });
+    const withPiers = await createGroupedRhythmFamilyArchive({ ...request, policy: { ...request.policy, schemaVersion: "0.3.0", pierVariation: variation } });
+    const reopenedPiers = await readGroupedRhythmFamilyArchive(JSON.parse(JSON.stringify(withPiers)));
+    expect(reopenedPiers).toEqual(withPiers);
+    expect(reopenedPiers.result.members.some(member => Boolean(member.graph.facadePiers))).toBe(true);
+    expect(reopenedPiers.result.members.some(member => Boolean(member.graph.facadePiers) && Boolean(member.graph.upperBayGroups?.length))).toBe(true);
+    expect(reopenedPiers.result.members.every(member => JSON.stringify(member.graph.storefrontSign) === JSON.stringify(graph.storefrontSign))).toBe(true);
+    expect(reopenedPiers.request.sourceProject.materialSource).toEqual(materials.file);
+    const altered = structuredClone(withPiers);
+    if (altered.request.policy.schemaVersion !== "0.3.0") throw new Error("Expected pier policy");
+    altered.request.policy.pierVariation = resolveConstructionFamilyPierVariation({ ...variation.source, enabled: false });
+    const { contentHash: _pierHash, ...pierPayload } = altered; void _pierHash; altered.contentHash = await hashCanonicalJson(pierPayload);
+    await expect(readGroupedRhythmFamilyArchive(altered)).rejects.toThrow(/does not replay/);
+    await expect(createGroupedRhythmFamilyArchive({ ...request, policy: { ...request.policy, schemaVersion: "0.3.0", pierVariation: resolveConstructionFamilyPierVariation({ ...variation.source, familySeed: "different" }) } })).rejects.toThrow(/seed/);
     const edited = structuredClone(archive); edited.result.members[0].graph.nodes.find(node => node.type === "Storeys")!.parameters.count = 6;
     const { contentHash: _old, ...payload } = edited; void _old; edited.contentHash = await hashCanonicalJson(payload);
     await expect(readGroupedRhythmFamilyArchive(edited)).rejects.toThrow(/does not replay/);
