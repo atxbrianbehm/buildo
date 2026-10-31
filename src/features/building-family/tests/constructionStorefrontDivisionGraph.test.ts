@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { BayConstructionGraphSchema, createBuildingConstructionGraph } from "../contracts/bayConstructionGraph";
 import { withConstructionStorefront } from "../core/constructionStorefrontGraph";
-import { withConstructionStorefrontDivision } from "../core/constructionStorefrontDivisionGraph";
+import { withConstructionStorefrontDivision, withoutConstructionStorefrontDivision } from "../core/constructionStorefrontDivisionGraph";
 import { withConstructionGroupedBays } from "../core/constructionGroupedBayGraph";
 import { withConstructionCorniceLayout } from "../core/constructionCorniceVocabulary";
 import { withConstructionFacadePiers } from "../core/constructionFacadePierGraph";
@@ -19,6 +19,25 @@ import { defaultBuildingPromptControls } from "../state/buildingStore";
 
 const base = () => withConstructionGroupedBays(withConstructionStorefront(createBuildingConstructionGraph(), 1), []);
 describe("storefront division graph", () => {
+  it("clears explicit divisions without losing a signed awning or piers", async () => {
+    const piers = withConstructionFacadePiers(base(), { pierWidthM: 0.28, projectionM: 0.18, endHeightM: 0.15, clearanceM: 0.04 });
+    const awnings = withConstructionAwnings(piers, [{ bayIndex: 0, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }]);
+    const supported = withConstructionAwningSupports(awnings, [{ bayIndex: 0, anchorRiseM: 0.15, thicknessM: 0.03 }]);
+    const sign = { bayIndex: 0, heightM: 0.18, projectionM: 0.08, frameWidthM: 0.035 };
+    const signed = withConstructionStorefrontSign(piers, sign);
+    const graph = withConstructionSignAwningClearance(withConstructionStorefrontSign(supported, sign), 0.04);
+    for (const source of [piers, signed, graph]) {
+      const divided = withConstructionStorefrontDivision(source, { displayLights: 2, transomLights: 3 }), before = structuredClone(divided);
+      const cleared = withoutConstructionStorefrontDivision(divided);
+      expect(divided).toEqual(before); expect(cleared).toEqual(source); expect(withoutConstructionStorefrontDivision(cleared)).toEqual(cleared);
+      const [a, b] = await Promise.all([evaluateConstruction(source), evaluateConstruction(cleared)]);
+      expect(b.ir.meshBatches).toEqual(a.ir.meshBatches); expect(b.prototypes).toEqual(a.prototypes);
+    }
+    const legacy = withConstructionStorefrontDivision(base(), { displayLights: 2, transomLights: 3 });
+    expect(withoutConstructionStorefrontDivision(legacy)).toEqual(base());
+    const required = withConstructionAwnings(legacy, [{ bayIndex: 0, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }]);
+    expect(() => withoutConstructionStorefrontDivision(required)).toThrow(/requires storefront divisions/);
+  });
   it("edits storefront lights on pier, signed and shared-awning graphs while retaining other choices", async () => {
     const piers = withConstructionFacadePiers(base(), { pierWidthM: 0.28, projectionM: 0.18, endHeightM: 0.15, clearanceM: 0.04 });
     const awnings = withConstructionAwnings(piers, [{ bayIndex: 0, projectionM: 1, dropM: 0.55, valanceHeightM: 0.2 }]);
